@@ -18,7 +18,7 @@ from sklearn.base import BaseEstimator
 from sklearn.base import RegressorMixin
 
 
-class cRidge(BaseEstimator, RegressorMixin):
+class Ridge1(BaseEstimator, RegressorMixin):
     """Custom ridge regression class"""
 
     def __init__(self, alphas=[0.1, 0.1], nsp=3):
@@ -42,6 +42,24 @@ class cRidge(BaseEstimator, RegressorMixin):
     #        setattr(self, parameter, value)
     #    return self
 
+class Ridge2(BaseEstimator, RegressorMixin):
+    """Custom ridge regression class"""
+
+    def __init__(self, alphas=[0.1, 0.1, 0.1], nsp=3):
+        self.alphas = alphas
+        self.nsp = nsp
+
+    def fit(self, X, y):
+        # print("calling fit")
+        self.coef_ = ridge_fit_pert(X.T, y.T, self.alphas, self.nsp)
+        # return self
+
+    def predict(self, X):
+        return X @ self.coef_.T
+
+    def get_params(self, deep=True):
+        # suppose this estimator has parameters "alpha" and "recursive"
+        return {"alphas": self.alphas, "nsp": self.nsp}
 
 def ridge_fit(X, F, alphas, nsp):
     # To do: redo this with transposed X and Y
@@ -56,6 +74,18 @@ def ridge_fit(X, F, alphas, nsp):
     
     return beta
 
+def ridge_fit_pert(X, F, alphas, nsp):
+    # To do: redo this with transposed X and Y
+    
+    # standard least squares
+    # beta = np.dot( np.dot(F,np.transpose(X)), la.inv(np.dot(X,np.transpose(X))))
+    
+    # compute ridge estimate
+    penalty = np.diagflat(np.hstack([np.repeat(alphas[0], nsp), alphas[1], alphas[2]]))
+    
+    beta = (F @ X.T) @ la.inv(X @ X.T + penalty) 
+    
+    return beta
 
 # can use
 # import importlib
@@ -107,6 +137,25 @@ def linearize_time_course_16S(yobs, times):
 
     return tX, tF
 
+# here u should be of length timepoints
+def linearize_time_course_16S_u(yobs, times, u):
+    nsp = yobs.shape[1]
+    nt = len(times)
+
+    # F = dlnX/dt
+    DlnX = np.diff(np.log(yobs), axis=0)
+    Dt = np.tile(np.diff(times), (nsp, 1))
+    F = np.divide(DlnX, np.transpose(Dt))
+
+    # X matrix: stacked observed counts
+    X = np.vstack([np.transpose(yobs), np.ones(nt), u])
+
+    # remove last column of X and transpose to get design matrix
+    tX = np.transpose(X[:, 0:-1])
+    # print("tX:",np.shape(tX))
+
+    return tX, F
+
 
 def linearise_time_course_metabolites(sobs, yobs, times):
     nm = sobs.shape[1]
@@ -150,7 +199,7 @@ def plot_coeffs():
     plt.show()
 
 
-def fit_alpha_cRidge(X, F, nsp, n_a0, n_a1):
+def fit_alpha_Ridge1(X, F, nsp, n_a0, n_a1):
     # use own ridge model
     
     a0 = np.logspace(-2, 2, n_a0)    # constraint on Mij matrix elements
@@ -162,7 +211,7 @@ def fit_alpha_cRidge(X, F, nsp, n_a0, n_a1):
     for i in range(n_a0):
         for j in range(n_a1):
             # print(i, j, xv[i,j], yv[i,j])
-            candidate_regressors.append(cRidge(alphas=[xv[i, j], yv[i, j]], nsp=nsp))
+            candidate_regressors.append(Ridge1(alphas=[xv[i, j], yv[i, j]], nsp=nsp))
     
     cv = RepeatedKFold(n_splits=10, n_repeats=10)
     cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv) for r in candidate_regressors]
@@ -175,24 +224,32 @@ def fit_alpha_cRidge(X, F, nsp, n_a0, n_a1):
     print("minimum found: a0/a1/error:", a0[inds[0]], a1[inds[1]], cv_means[min_i])
 
     # unconstrained to compare
-    unc_model = cRidge(alphas=[0, 0], nsp=nsp)
+    unc_model = Ridge1(alphas=[0, 0], nsp=nsp)
     cv_results = -cross_val_score(unc_model, X, F, scoring='neg_root_mean_squared_error', cv=cv) 
     print("unconstrained error        :", np.mean(cv_results))
     
     return a0[inds[0]], a1[inds[1]]
 
 
-def do_final_fit_cRidge(X, F, nsp, a0, a1):
-    model = cRidge(alphas=[a0, a1], nsp=nsp)
+def do_final_fit_Ridge1(X, F, nsp, a0, a1):
+    model = Ridge1(alphas=[a0, a1], nsp=nsp)
     model.fit(X, F)
     mu_h = [model.coef_[i][-1] for i in range(0, nsp)]
     M_h = [model.coef_[i][0:nsp].tolist() for i in range(0, nsp)]
     return mu_h, M_h
 
+def do_final_fit_Ridge2(X, F, nsp, a0, a1, a2):
+    model = Ridge2(alphas=[a0, a1, a2], nsp=nsp)
+    model.fit(X, F)
+    e_h = [model.coef_[i][-1] for i in range(0, nsp)]
+    mu_h = [model.coef_[i][-2] for i in range(0, nsp)]
+    M_h = [model.coef_[i][0:nsp].tolist() for i in range(0, nsp)]
+    return mu_h, M_h, e_h
+
 
 def do_bootstrapping(X, F, nsp, a0, a1, nt, nboots=100):
     # do some bootstrapping 
-    model = cRidge(alphas=[a0, a1], nsp=nsp)
+    model = Ridge1(alphas=[a0, a1], nsp=nsp)
 
     mus = np.zeros([nboots, nsp])
     mms = np.zeros([nboots, nsp*nsp])
