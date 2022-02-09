@@ -230,6 +230,39 @@ def fit_alpha_Ridge1(X, F, nsp, n_a0, n_a1):
     
     return a0[inds[0]], a1[inds[1]]
 
+def fit_alpha_Ridge2(X, F, nsp, n_a0, n_a1, n_a2):
+    # use own ridge model
+    
+    a0 = np.logspace(-2, 2, n_a0)    # constraint on Mij matrix elements
+    a1 = np.logspace(-6, 0, n_a1)    # constraint on mu
+    a2 = np.logspace(-6, 0, n_a2)    # constraint on epsilon
+    
+    xv, yv, zv = np.meshgrid(a0, a1, a2, indexing='ij')
+
+    candidate_regressors = []
+    for i in range(n_a0):
+        for j in range(n_a1):
+            for k in range(n_a2):
+                # print(i, j, xv[i,j], yv[i,j])
+                candidate_regressors.append(Ridge2(alphas=[ xv[i, j, k], yv[i, j, k], zv[i, j, k] ], nsp=nsp))
+    
+    cv = RepeatedKFold(n_splits=10, n_repeats=10)
+    cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv) for r in candidate_regressors]
+
+    cv_means = np.array([np.mean(x) for x in cv_results])
+    cv_se = np.array([np.std(x) / np.sqrt(100) for x in cv_results])
+
+    min_i = np.argmin(cv_means)
+    inds = np.unravel_index(min_i, (n_a0, n_a1, n_a2))
+    print("minimum found: a0/a1/a2/error:", a0[inds[0]], a1[inds[1]], a2[inds[2]], cv_means[min_i])
+
+    # unconstrained to compare
+    unc_model = Ridge2(alphas=[0, 0, 0], nsp=nsp)
+    cv_results = -cross_val_score(unc_model, X, F, scoring='neg_root_mean_squared_error', cv=cv) 
+    print("unconstrained error        :", np.mean(cv_results))
+    
+    return a0[inds[0]], a1[inds[1]], a2[inds[2]]
+
 
 def do_final_fit_Ridge1(X, F, nsp, a0, a1):
     model = Ridge1(alphas=[a0, a1], nsp=nsp)
