@@ -1,123 +1,89 @@
+import random
 import numpy as np
 from scipy.integrate import odeint
 
 
-def gLV(y, t, nsp, mu, M):
-    dN = np.multiply(mu, y) + np.multiply(y, M @ y)
-    return dN
+class gMLV_sim:
+    def __init__(self, num_species=2, num_metabolites=0, mu=None, M=None, beta=None, epsilon=None):
+        self.nsp = num_species
+        self.nm = num_metabolites
 
-# include a step perturbation after time tp for one hour
-def gLVp(y, t, nsp, mu, M, tp, epsilon):
-    if (t >= tp) and (t < (tp+1)):
-        dN = np.multiply(mu, y) + np.multiply(y, M @ y) + np.multiply(y, epsilon)
-    else:
-        dN = np.multiply(mu, y) + np.multiply(y, M @ y) 
-    
-    return dN
+        if mu is None:
+            self.mu = np.random.lognormal(0.01, 0.5, self.nsp)
+        else:
+            self.mu = mu
 
-def gMLV(sy, t, nsp, mu, M, beta):
+        if M is None:
+            self.M = np.zeros((self.nsp, self.nsp))
+            # add self repression on the diagonal
+            for species_idx in range(self.nsp):
+                self.M[species_idx, species_idx] = random.uniform(-0.5, 0.0)
+
+            # add random interactions
+            for _ in range(self.nsp):
+                i = random.randint(0, self.nsp-1)
+                j = random.randint(0, self.nsp-1)
+                self.M[i, j] = random.normalvariate(mu=0, sigma=0.1)
+        else:
+            self.M = M
+
+        if beta is None and self.nm > 0:
+            self.beta = np.zeros((self.nm, self.nsp))
+            for _ in range(self.nm):
+                i = random.randint(0, self.nm-1)
+                j = random.randint(0, self.nsp-1)
+                self.beta[i, j] = random.uniform(a=0, b=1)
+        else:
+            self.beta = beta
+
+        self.epsilon = epsilon
+
+    def simulate(self, times, sy0, tp=None):
+        syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.mu, self.M, self.beta, (tp, self.epsilon)))
+        yobs = syobs[:, 0:self.nsp]
+        sobs = syobs[:, self.nsp:]
+        return yobs, sobs, sy0, self.mu, self.M, self.beta
+
+    def print(self):
+        print(f'number of species: {self.nsp}')
+        print(f'specific growth rates: {self.mu}')
+        print(f'interaction matrix: \n{self.M}')
+        print(f'metabolite production: \n{self.beta}')
+
+
+def gMLV(sy, t, nsp, mu, M, beta, p):
+    """
+    generalised Lotka Volterra with metabolite production
+
+    :param sy: species + metabolites vector
+    :param t: time
+    :param nsp: number of species
+    :param mu: specific growth rates vector
+    :param M: interaction matrix
+    :param beta: metabolite production rate matrix
+    :param p: a tuple containing time-dependent perturbation and perturbation matrix
+    :return: change in species + metabolites vector
+    """
+
+    # separate species and metabolites
     y = sy[0:nsp]
     s = sy[nsp:]
-    dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+
+    if p[0] is None:
+        dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+    else:
+        if p[0] <= t < (p[0] + 1):
+            dN = np.multiply(mu, y) + np.multiply(y, M @ y) + np.multiply(y, p[1])
+        else:
+            dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+
+    if beta is None:
+        dS = []
+    else:
+        # this is simple production
+        dS = beta @ y
     
-    # this is simple production
-    dS = beta @ y
-    
-    # this is growth linked production: model need reconsidering
-    # dS = beta @ mp.multiply( dN, y )
+        # this is growth linked production: model need reconsidering
+        # dS = beta @ mp.multiply( dN, y )
     
     return np.hstack((dN, dS))
-
-
-def sim_gLV_2(times, y0):
-    # do two species
-    nsp = 2
-    # y0=[10,10]
-    mu = [1, 2] 
-    M = [[-0.005, 0.01], [0, -0.01]]
-
-    yobs = odeint(gLV, y0, times, args=(nsp, mu, M))
-    return yobs, y0, mu, M
-
-
-def sim_gLV_5(times, y0, mu=np.array([])):
-    # do five species
-    # set up interaction matrix for five species
-    M = np.zeros((5, 5))
-    np.fill_diagonal(M, [-0.05, -0.1, -0.15, -0.01, -0.2])
-    M[0, 2] = -0.025
-    M[1, 3] = 0.05
-    M[4, 0] = 0.02
-    
-    nsp = 5
-    if mu.size == 0:
-        mu = np.random.lognormal(0.01, 0.5, nsp)
-    
-    if 0:
-        print("mu:")
-        print(mu)
-        print("M:")
-        print(M)
-
-    yobs = odeint(gLV, y0, times, args=(nsp, mu, M))
-    return yobs, y0, mu, M
-
-# This assumes a step function
-def sim_gLV_5_pert(times, y0, mu=np.array([])):
-    # do five species
-    # set up interaction matrix for five species
-    M = np.zeros((5, 5))
-    np.fill_diagonal(M, [-0.05, -0.1, -0.15, -0.01, -0.2])
-    M[0, 2] = -0.025
-    M[1, 3] = 0.05
-    M[4, 0] = 0.02
-    
-    nsp = 5
-    if mu.size == 0:
-        mu = np.random.lognormal(0.01, 0.5, nsp)
-    
-    if 0:
-        print("mu:")
-        print(mu)
-        print("M:")
-        print(M)
-        
-    tp = 2
-    epsilon = np.array([0, -1, 0 , -1, 0])
-        
-    yobs = odeint(gLVp, y0, times, args=(nsp, mu, M, tp, epsilon))
-    return yobs, y0, mu, M
-
-def sim_gMLV_6by5(times, y0, mu=np.array([])):
-    # do five species
-    # set up interaction matrix for five species (note this is sparser matrix than in gLV case)
-    M = np.zeros((5, 5))
-    np.fill_diagonal(M, [-0.05, -0.1, -0.15, -0.01, -0.2])
-    
-    # M[0,2] = -0.025
-    M[1, 3] = 0.05
-    # M[4,0] = 0.02
-    
-    nsp = 5
-    if mu.size == 0:
-        mu = np.random.lognormal(0.01, 0.5, nsp)
-    
-    nm = 6
-    alpha = np.zeros([nm, nsp])
-    alpha[1, 4] = 1
-    alpha[4, 2] = -0.5
-    sy0 = np.hstack((y0, 10*np.ones(nm)))
-   
-    if 0:
-        print("mu:")
-        print(mu)
-        print("M:")
-        print(M)
-        print("alpha:")
-        print(alpha)
-
-    syobs = odeint(gMLV, sy0, times, args=(nsp, mu, M, alpha))
-    yobs = syobs[:, 0:nsp]
-    sobs = syobs[:, nsp:]
-        
-    return yobs, sobs, sy0, mu, M, alpha
