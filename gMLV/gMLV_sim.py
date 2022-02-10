@@ -4,7 +4,7 @@ from scipy.integrate import odeint
 
 
 class gMLV_sim:
-    def __init__(self, num_species=2, num_metabolites=0, mu=None, M=None, beta=None):
+    def __init__(self, num_species=2, num_metabolites=0, mu=None, M=None, beta=None, epsilon=None):
         self.nsp = num_species
         self.nm = num_metabolites
 
@@ -36,8 +36,10 @@ class gMLV_sim:
         else:
             self.beta = beta
 
-    def simulate(self, times, sy0):
-        syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.mu, self.M, self.beta))
+        self.epsilon = epsilon
+
+    def simulate(self, times, sy0, tp=None):
+        syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.mu, self.M, self.beta, (tp, self.epsilon)))
         yobs = syobs[:, 0:self.nsp]
         sobs = syobs[:, self.nsp:]
         return yobs, sobs, sy0, self.mu, self.M, self.beta
@@ -49,7 +51,7 @@ class gMLV_sim:
         print(f'metabolite production: \n{self.beta}')
 
 
-def gMLV(sy, t, nsp, mu, M, beta):
+def gMLV(sy, t, nsp, mu, M, beta, p):
     """
     generalised Lotka Volterra with metabolite production
 
@@ -59,6 +61,7 @@ def gMLV(sy, t, nsp, mu, M, beta):
     :param mu: specific growth rates vector
     :param M: interaction matrix
     :param beta: metabolite production rate matrix
+    :param p: a tuple containing time-dependent perturbation and perturbation matrix
     :return: change in species + metabolites vector
     """
 
@@ -66,7 +69,13 @@ def gMLV(sy, t, nsp, mu, M, beta):
     y = sy[0:nsp]
     s = sy[nsp:]
 
-    dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+    if p[0] is None:
+        dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+    else:
+        if p[0] <= t < (p[0] + 1):
+            dN = np.multiply(mu, y) + np.multiply(y, M @ y) + np.multiply(y, p[1])
+        else:
+            dN = np.multiply(mu, y) + np.multiply(y, M @ y)
 
     if beta is None:
         dS = []
