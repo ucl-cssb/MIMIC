@@ -70,20 +70,29 @@ def gMLV(sy, t, nsp, mu, M, beta, p):
     s = sy[nsp:]
 
     if p[0] is None:
-        dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+        instantaneous_growth = mu + M @ y
+        # dN = np.multiply(mu, y) + np.multiply(y, M @ y)
     else:
         if p[0] <= t < (p[0] + 1):
-            dN = np.multiply(mu, y) + np.multiply(y, M @ y) + np.multiply(y, p[1])
+            instantaneous_growth = mu + M @ y + p[1]
+            # dN = np.multiply(mu, y) + np.multiply(y, M @ y) + np.multiply(y, p[1])
         else:
-            dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+            instantaneous_growth = mu + M @ y
+            # dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+    dN = np.multiply(y, instantaneous_growth)
 
     if beta is None:
         dS = []
     else:
         # this is simple production
-        dS = beta @ y
-    
-        # this is growth linked production: model need reconsidering
-        # dS = beta @ mp.multiply( dN, y )
-    
+        # dS = beta @ y
+
+        # metabolite production as in Clark et al., 2021: eqs(4 & 5)
+        if len(beta.shape) == 3:
+            rho = np.dot(beta, y)  # eq(6)
+        else:
+            rho = beta
+        q = np.multiply(rho, instantaneous_growth)
+        dS = q @ y
+
     return np.hstack((dN, dS))
