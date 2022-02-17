@@ -42,6 +42,7 @@ class Ridge1(BaseEstimator, RegressorMixin):
     #        setattr(self, parameter, value)
     #    return self
 
+
 class Ridge2(BaseEstimator, RegressorMixin):
     """Custom ridge regression class"""
 
@@ -61,6 +62,7 @@ class Ridge2(BaseEstimator, RegressorMixin):
         # suppose this estimator has parameters "alpha" and "recursive"
         return {"alphas": self.alphas, "nsp": self.nsp}
 
+
 def ridge_fit(X, F, alphas, nsp):
     # To do: redo this with transposed X and Y
     
@@ -73,6 +75,7 @@ def ridge_fit(X, F, alphas, nsp):
     beta = (F @ X.T) @ la.inv(X @ X.T + penalty) 
     
     return beta
+
 
 def ridge_fit_pert(X, F, alphas, nsp):
     # To do: redo this with transposed X and Y
@@ -91,6 +94,7 @@ def ridge_fit_pert(X, F, alphas, nsp):
 # import importlib
 # import gLV_ML 
 # importlib.reload(gLV_ML);
+
 
 def ridge_fit_test(X, Y):
     print("default ridge")
@@ -137,6 +141,7 @@ def linearize_time_course_16S(yobs, times):
 
     return tX, tF
 
+
 # here u should be of length timepoints
 def linearize_time_course_16S_u(yobs, times, u):
     nsp = yobs.shape[1]
@@ -159,16 +164,18 @@ def linearize_time_course_16S_u(yobs, times, u):
 
 def linearise_time_course_metabolites(sobs, yobs, times):
     nm = sobs.shape[1]
-    # print("nm:",nm)
-    nt = len(times)
+    ns = yobs.shape[1]
     
     # S = ds/dt
     DS = np.diff(sobs, axis=0)
     Dt = np.tile(np.diff(times), (nm, 1))
     S = np.divide(DS, np.transpose(Dt))
-    X = yobs[0:-1, :]
-    # print("S:",np.shape(S))
-    # print("X:",np.shape(X))
+
+    # X = dX/dt
+    DX = np.diff(yobs, axis=0)
+    Dt = np.tile(np.diff(times), (ns, 1))
+    X = np.divide(DX, np.transpose(Dt))
+    # X = yobs[0:-1, :]
     return X, S
 
 
@@ -230,6 +237,7 @@ def fit_alpha_Ridge1(X, F, nsp, n_a0, n_a1):
     
     return a0[inds[0]], a1[inds[1]]
 
+
 def fit_alpha_Ridge2(X, F, nsp, n_a0, n_a1, n_a2):
     # use own ridge model
     
@@ -270,6 +278,7 @@ def do_final_fit_Ridge1(X, F, nsp, a0, a1):
     mu_h = [model.coef_[i][-1] for i in range(0, nsp)]
     M_h = [model.coef_[i][0:nsp].tolist() for i in range(0, nsp)]
     return mu_h, M_h
+
 
 def do_final_fit_Ridge2(X, F, nsp, a0, a1, a2):
     model = Ridge2(alphas=[a0, a1, a2], nsp=nsp)
