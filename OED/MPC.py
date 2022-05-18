@@ -1,11 +1,9 @@
 import sys
 import os
 
-IMPORT_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'imports')
 
-sys.path.append(IMPORT_PATH)
-sys.path.append('/Users/neythen/Desktop/Projects/ROCC/')
-sys.path.append('/Users/neythen/Desktop/Projects/RED_master/')
+
+sys.path.append('../../RED_master/')
 
 import math
 from casadi import *
@@ -39,77 +37,63 @@ plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 
 if __name__ == '__main__':
-    #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+    y0 = np.array([1., 1., 1.])
 
-    M = np.ones((3, 3)) * -0.1
-    gr = np.ones((3, 1))
-    E = np.eye(3) * -1  # 3 antibiotics, one for each bacteria
+    gMLV_params = json.load(open('gMLV_params.json'))
+    M = np.array(gMLV_params['M'])
+    E = np.array(gMLV_params['E'])
+    gr = np.array(gMLV_params['gr'])
+    y0 = np.array(gMLV_params['y0'])
+    scale_factor = gMLV_params['scale_factor']
+    eta = gMLV_params['eta']
 
-    # M = np.array([
-    #     [-0.1, 0, 0],
-    #     [0, -0.1, 0],
-    #     [0, 0, -0.1]
-    # ])
-
-    gr = np.array([
-        [1],
-        [1.1],
-        [1.2]
-    ])
-
-    y0 = [1, 1, 1]
+    M *= -scale_factor
+    E *= scale_factor
+    gr *= scale_factor ** 2
+    y0 *= scale_factor
 
     params = np.hstack((M.flatten(), gr.flatten(), E.flatten()))  # need to flatten for FIM calc
     print(params)
 
     params = DM(params)
 
-
+    print(params.size())
     actual_params = params
     N_control_intervals = 10
-    control_interval_time = 12 # AU
-
+    control_interval_time = 1  # AU
     num_inputs = -1
-    input_bounds = [[0,1], [0,1], [0,1]]
+    input_bounds = [[0, 1], [0, 1], [0, 1]]
     n_observed_variables = 3
     n_controlled_inputs = 3
-    dt = 1
+    dt = 0.01
     normaliser = -1
-
 
     save_path = './'
 
-
-
-    args = y0, xdot, params, actual_params, n_observed_variables, n_controlled_inputs, num_inputs, input_bounds, dt, control_interval_time,normaliser
+    args = y0, xdot, params, actual_params, n_observed_variables, n_controlled_inputs, num_inputs, input_bounds, dt, control_interval_time, normaliser
     env = OED_env(*args)
 
-
     # test simulation
-    us = np.random.rand(3, 10)
-    us = np.zeros((3, 10))
-    # us = np.array([[0,0,1]]*10).T
-
-    trajectory_solver = env.get_sampled_trajectory_solver(N_control_intervals, control_interval_time, dt)
-    est_trajectory = trajectory_solver(env.initial_Y, param_guesses,
-                                       reshape(us, (n_controlled_inputs, N_control_intervals)))
-
-
-    print(est_trajectory)
+    us = np.random.rand(3, N_control_intervals)
+    # us = np.zeros((3,N_control_intervals))*scale_factor
+    # us = np.array([[0,0,1]]*N_control_intervals).T*scale_factor
 
 
 
-    env.u0 = DM(u0)
+
+
+
 
 
 
     def get_full_u_solver():
         us = SX.sym('us', N_control_intervals * n_controlled_inputs)
         trajectory_solver = env.get_sampled_trajectory_solver(N_control_intervals, control_interval_time, dt)
-        est_trajectory = trajectory_solver(env.initial_Y, param_guesses, reshape(us , (n_controlled_inputs, N_control_intervals)))
+        est_trajectory = trajectory_solver(env.initial_Y, actual_params, reshape(us , (n_controlled_inputs, N_control_intervals)))
 
         print(est_trajectory.shape)
         FIM = env.get_FIM(est_trajectory)
+        FIM += DM(np.ones(FIM.size()) * eta)
         print(FIM.shape)
         q, r = qr(FIM)
 
@@ -123,11 +107,22 @@ if __name__ == '__main__':
         return solver
 
 
-    u0 = [(input_bounds[1] - input_bounds[0]) / 2] * n_controlled_inputs*N_control_intervals
+    u0 = [0.5] * n_controlled_inputs*N_control_intervals
+    env.u0 = DM(u0)
     u_solver = get_full_u_solver()
-    sol = u_solver(x0=u0, lbx = [input_bounds[0]]*n_controlled_inputs*N_control_intervals, ubx = [input_bounds[1]]*n_controlled_inputs*N_control_intervals)
+    sol = u_solver(x0=u0, lbx = [0]*n_controlled_inputs*N_control_intervals, ubx = [1]*n_controlled_inputs*N_control_intervals)
     us = sol['x']
     print(sol)
+    us = np.array(us.elements()).reshape(n_controlled_inputs,  N_control_intervals, order = 'F').T
+    print('logdetFIM:', -sol['f'])
+    print('us:')
+    print(us)
+
+    plt.plot(us)
+    np.save('working_dir/us.npy', us)
+    plt.show()
+
+
 
 
 
