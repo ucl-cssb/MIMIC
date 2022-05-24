@@ -79,15 +79,9 @@ if __name__ == '__main__':
     # us = np.array([[0,0,1]]*N_control_intervals).T*scale_factor
 
 
-
-
-
-
-
-
-
     def get_full_u_solver():
         us = SX.sym('us', N_control_intervals * n_controlled_inputs)
+        env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='OED')
         trajectory_solver = env.get_sampled_trajectory_solver(N_control_intervals, control_interval_time, dt)
         est_trajectory = trajectory_solver(env.initial_Y, actual_params, reshape(us , (n_controlled_inputs, N_control_intervals)))
 
@@ -118,9 +112,9 @@ if __name__ == '__main__':
     print('us:')
     print(us)
 
-    plt.plot(us)
+
     np.save('working_dir/us.npy', us)
-    plt.show()
+
 
 
 

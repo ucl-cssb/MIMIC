@@ -56,7 +56,12 @@ def simulate(us, plot = False, calculate_FIM = True):
         print(est_trajectory.shape)
         FIM = env.get_FIM(est_trajectory)
         FIM += DM(np.ones(FIM.size()) * eta)
+        print()
+        print('FIM')
         print(FIM)
+        print()
+        print('inverse FIM:')
+        print(inv(FIM).elements())
         print('trace FIM:', trace(FIM))
         print('eigen values: ', np.linalg.eig(FIM)[0], np.sum(np.linalg.eig(FIM)[0]))
         print(FIM.size())
@@ -79,7 +84,12 @@ def simulate(us, plot = False, calculate_FIM = True):
         est_trajectory = np.hstack((np.array(y0).reshape(3, 1), est_trajectory))
 
     if plot:
-        plt.plot(us.T, alpha=0.5, linewidth=4)
+        t = np.arange(0, 11) * 2
+        us = np.vstack((us[:, 0], us.T))
+        plt.step(t, us[:, 0], '--', alpha=0.5, linewidth=4)
+        plt.step(t, us[:, 1], '--', alpha=0.5, linewidth=4)
+        plt.step(t, us[:, 2], '--', alpha=0.5, linewidth=4)
+
         plt.xlabel('Time (AU)')
         plt.ylabel('Perturbation (AU)')
         plt.savefig('./working_dir/perturbation.png', dpi=300)
@@ -92,7 +102,14 @@ def simulate(us, plot = False, calculate_FIM = True):
 
         plt.figure()
         plt.spy(FIM)
-        plt.xticks(range(21),range(0,21))
+
+        plt.title('FIM')
+        plt.savefig('./working_dir/FIM.png', dpi=300)
+
+        plt.figure()
+        plt.spy(np.array(inv(FIM).elements()).reshape(FIM.size()))
+        plt.title('Covariance matrix')
+        plt.savefig('./working_dir/Covariance matrix.png', dpi=300)
 
 
         plt.show()
@@ -146,7 +163,7 @@ if __name__ == '__main__':
 
     us = np.random.rand(3, N_control_intervals)
     #us = np.zeros((3,N_control_intervals))*scale_factor
-    #us = np.array([[0,0,1]]*N_control_intervals).T*scale_factor
+    #us = np.array([[0,1,1]]*N_control_intervals).T*scale_factor
 
     us = np.load('working_dir/us.npy').T
     simulate(us, plot=True)
