@@ -164,9 +164,11 @@ def multihot(perts, n_unique = 10):
 
     return mh
 
-def get_X_P_subjects(combined_dict):
+def get_X_P_subjects(combined_dict, subject_IDs = False):
     '''
     get the design matrix X, perturbation amtrix P and the corresponding subjects list from the combined taxa and perturbation dict
+
+    if subject_IDs argument is supplied (list of strings) gets data for those IDs, otherwise gets data for all subjects
     '''
 
     # extract the taxa data ordered by subject and time
@@ -176,8 +178,10 @@ def get_X_P_subjects(combined_dict):
 
     count = 0
 
+    if not subject_IDs:
+        subject_IDs = combined_dict.keys()
 
-    for subject in combined_dict.keys():
+    for subject in subject_IDs:
         subjects.append((subject, count, count + len(combined_dict[subject])))
         X.extend([d[1] for d in sorted(combined_dict[subject])])
 
