@@ -2,8 +2,16 @@ import numpy as np
 
 import pandas as pd
 import matplotlib as mpl
+
 mpl.use('tkagg')
 import matplotlib.pyplot as plt
+import sys
+import os
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
 from gMLV import *
 from sklearn import linear_model
 from sklearn.model_selection import train_test_split
@@ -34,12 +42,12 @@ plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 def cart2pol(x, y):
     rho = np.sqrt(x**2 + y**2)
     phi = np.arctan2(y, x)
-    return(rho, phi)
+    return np.vstack((rho, phi))
 
 def pol2cart(rho, phi):
     x = rho * np.cos(phi)
     y = rho * np.sin(phi)
-    return(x, y)
+    return np.hstack((x, y))
 
 
 def plot_dendrogram(model, **kwargs):
@@ -60,16 +68,18 @@ def plot_dendrogram(model, **kwargs):
 
     dendrogram(linkagematrix, **kwargs)
 
-Y = np.loadtxt(open("./data/Y.csv", "rb"), delimiter=",")
-F = np.loadtxt(open("./data/F.csv", "rb"), delimiter=",")
-
-Y = Y.T
+Y = np.loadtxt(open("../data/Y.csv", "rb"), delimiter=",")
+F = np.loadtxt(open("../data/F.csv", "rb"), delimiter=",")
 
 print(Y.shape)
+Y = Y[:94].T # remove the growth rate and perturbations from Y
+print(np.max(Y))
+print(Y.shape)
+print(F.shape)
 
-pca = PCA(n_components=107, svd_solver="randomized", whiten=True).fit(Y)
+pca = PCA(n_components=94, svd_solver="randomized", whiten=True).fit(Y)
 
-plt.plot(range(1,108), np.cumsum(pca.explained_variance_ratio_))
+plt.plot(range(1,95), np.cumsum(pca.explained_variance_ratio_))
 plt.ylim(bottom = 0.0)
 plt.xlabel('Number of dimensions')
 plt.ylabel('Explained variance')
@@ -84,10 +94,10 @@ Y_pca = pca.fit_transform(Y)
 print(np.sum(pca.explained_variance_ratio_))
 print(Y_pca.shape)
 
-k_means = 0
+k_means = 1
 spectral = 0
 guassian_mixture = 0
-hierarchical = 1
+hierarchical = 0
 
 if k_means:
     n_clusters = 3
@@ -116,7 +126,7 @@ if guassian_mixture:
     print(c_km.shape)
 
 if hierarchical:
-    n_clusters = 3
+    n_clusters = 1
     km = AgglomerativeClustering(n_clusters = n_clusters, linkage = 'ward', compute_distances = True)
 
     c_km = km.fit_predict(Y_pca)
@@ -129,6 +139,7 @@ if hierarchical:
 
 plt.figure()
 for i in range(n_clusters):
+
     plt.scatter(
         Y_pca[c_km == i, 0], Y_pca[c_km == i, 1],
         label='cluster ' + str(i)
