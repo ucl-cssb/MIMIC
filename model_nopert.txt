@@ -1,0 +1,74 @@
+functions {
+  vector lotka_volterra_N_red(real[] x, int N, vector mu, vector Md, vector M) {
+     // Model: F = dlnX/dt = mu + M x
+     
+     vector[N] dydt;
+     
+     int countM = 1;
+     
+     for(i in 1:N){
+        dydt[i] = mu[i] - Md[i]*x[i];
+        
+        for(j in 1:N){
+            if ( i != j ){
+                dydt[i] += M[countM]*x[j];
+                countM += 1; 
+                //print("loop iteration: ", i, j, countM);
+             }
+         }
+     }
+     
+     return dydt;
+  }
+
+}
+
+data {
+  int<lower=1> N;
+  int<lower=1> T;
+  
+  array[T,N] real y;
+  array[T,N] real x;
+  
+  real tau0;
+  real sigma;
+}
+
+parameters {
+  vector<lower=0>[N]  mu;
+  vector<lower=0>[N]  Md;
+  vector[N*N - N]     M;
+
+  vector<lower=0>[N*N - N]  lambda;
+  real<lower=0>  tau;
+  
+  //real<lower=0>  sigma;
+}
+
+model {
+  
+  // mu
+  target += lognormal_lpdf(mu | 0.01, 0.5);
+  
+  // Md 
+  target += normal_lpdf(Md | 0.1, 0.05);
+  
+  // Mij: Horsehoe prior
+  target += cauchy_lpdf(tau | 0, tau0);
+
+  for(i in 1:(N*(N-1))){
+        target += normal_lpdf(M[i] | 0, lambda[i]*tau);
+        target += cauchy_lpdf(lambda[i] | 0, 1);
+  }
+  //
+
+  // sigma
+  //target += lognormal_lpdf(sigma | 0.01, 0.5);
+
+  for (t in 1:T) {
+      vector[N] y_hat = lotka_volterra_N_red(x[t,:], N, mu, Md, M);
+      for (s in 1:N){
+        target += normal_lpdf(y[t,s] | y_hat[s], sigma);
+      }
+    }
+}
