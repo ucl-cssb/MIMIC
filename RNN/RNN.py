@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sklearn.linear_model
 from scipy.integrate import odeint
-
+import copy
 from numpy import linalg as la
 import os
 import sys
@@ -46,18 +46,26 @@ def plot_gMLV(yobs, sobs, timepoints):
 
 def plot_fit_gMLV(yobs, yobs_h, sobs, sobs_h, timepoints):
     # plot the fit
-    fig, axs = plt.subplots(1, 2)
+    fig, axs = plt.subplots(1, 1)
 
     for species_idx in range(yobs.shape[1]):
-        axs[0].plot(timepoints, yobs[:, species_idx])
+        axs.plot(timepoints, yobs[:, species_idx], label = 'simulation')
 
     plt.gca().set_prop_cycle(None)
 
     for species_idx in range(yobs.shape[1]):
-        axs[0].plot(timepoints, yobs_h[:, species_idx], '--')
+        axs.plot(timepoints, yobs_h[:, species_idx], '--', label = 'prediction')
 
-    axs[0].set_xlabel('time')
-    axs[0].set_ylabel('[species]');
+    axs.set_xlabel('time')
+    axs.set_ylabel('[species]')
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+    newLabels, newHandles = [], []
+    for handle, label in zip(handles, labels):
+        if label not in newLabels:
+            newLabels.append(label)
+            newHandles.append(handle)
+    plt.legend(newHandles, newLabels)
 
     # for metabolite_idx in range(sobs.shape[1]):
     #     axs[1].plot(timepoints, sobs[:, metabolite_idx], color=cols[metabolite_idx])
@@ -109,12 +117,59 @@ def compare_params(mu=None, M=None, alpha=None, e=None):
         ax.set_ylabel('e[i]');
 
 
+def generate_params(num_species, num_pert, hetergeneous = False):
+
+    '''
+    generates parameters for GLV simulation according to Cao et al 2017
+    '''
+
+    N = np.random.normal(0, 1, (num_species, num_species))
+
+    if hetergeneous:
+        y = 1.2
+        u = np.random.uniform(0, 1, size=(num_species))
+        H = (1-u)**(1/(1-y))
+        H = np.diag(H)
+        s = np.sum(H)
+    else:
+        H = np.eye(num_species)
+        s = 1
+
+    a = np.random.binomial(1, 0.8, size=(num_species, num_species))
+
+
+    # the interaction matrix
+    A = 1/s*N@H*a
+
+    #set all diagonal elements to -1 to ensure stability
+    np.fill_diagonal(A,-1)
+
+    # generate feasible growth rate
+    r = np.random.uniform(0.001,1, size = (num_species))
+    ss = -np.linalg.inv(A)@r
+
+    while not np.all(ss>0):
+        r = np.random.uniform(0.001, 1, size=(num_species))
+        ss = -np.linalg.inv(A) @ r
+
+
+    C = np.random.uniform(-3,3, size = (num_species, num_pert))
+
+
+    # for the binary pert scheme choose ICs to be close to the ss
+    ICs = ss # this can be change to start slightly away from ss
+
+    return A, C, ICs
+
+#A, C, ICs = generate_params(3,2,hetergeneous=False)
+
+
 
 #set_all_seeds(1234)
 
 ## SETUP MODEL
 # establish size of model
-num_species = 500
+num_species = 10
 num_metabolites = 0
 
 # construct interaction matrix
@@ -174,8 +229,11 @@ print(f"X: {X.shape}")
 print(f"F: {F.shape}")
 print(f"n: {num_species*F.shape[0]}, p: {num_species + num_species**2}")
 
-inputs = ryobs[:,:-1,:]
-targets = ryobs[:,1:,:]
+inputs = copy.deepcopy(ryobs[:,:-1,:])
+
+#inputs[:, 1:, :] = 0 #rmove everything apart from ICs in inputs
+
+targets = copy.deepcopy(ryobs[:,1:,:])
 
 
 ## FIT RNN
@@ -193,16 +251,16 @@ model.add(layers.Dense(num_species))
 model.compile(optimizer = keras.optimizers.Adam(), loss = 'mse')
 model.build()
 print(model.summary())
-history = model.fit(inputs, targets, verbose = True, batch_size = 32, epochs = 10000, validation_split=0.1)
+history = model.fit(inputs, targets, verbose = True, batch_size = 32, epochs = 5000, validation_split=0.1)
 
-print(history.history)
+#print(history.history)
 
 pred = model.predict(inputs)
 print(pred.shape)
 
 for i in range(10):
     plot_fit_gMLV(np.vstack((inputs[-i,0,:][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:][np.newaxis,:],pred[-i,:,:])),None, None, times)
-
+    plt.savefig('working_dir/plot_'+str(i) + '.png', dpi = 300)
 
 plt.figure()
 plt.plot(history.history['loss'], label = 'train')
