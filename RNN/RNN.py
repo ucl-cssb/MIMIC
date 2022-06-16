@@ -75,6 +75,47 @@ def plot_fit_gMLV(yobs, yobs_h, sobs, sobs_h, timepoints):
     # axs[1].set_xlabel('time')
     # axs[1].set_ylabel('[metabolite]');
 
+
+def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, timepoints):
+    # plot the fit
+    fig, axs = plt.subplots(1, 2)
+
+    for species_idx in range(yobs.shape[1]):
+        axs[0].plot(timepoints, yobs[:, species_idx], label = 'simulation')
+
+    plt.gca().set_prop_cycle(None)
+
+    for species_idx in range(yobs.shape[1]):
+        axs[0].plot(timepoints, yobs_h[:, species_idx], '--', label = 'prediction')
+
+    axs[0].set_xlabel('time')
+    axs[0].set_ylabel('[species]')
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+    newLabels, newHandles = [], []
+    for handle, label in zip(handles, labels):
+        if label not in newLabels:
+            newLabels.append(label)
+            newHandles.append(handle)
+    plt.legend(newHandles, newLabels)
+
+
+    perts = np.vstack((perts[0], perts))
+
+    for pert_idx in range(perts.shape[1]):
+        axs[1].step(timepoints, perts[:, pert_idx], '--')
+
+
+    plt.ylabel('u')
+    plt.xlabel('Time (hours)')
+
+
+    # for metabolite_idx in range(sobs.shape[1]):
+    #     axs[1].plot(timepoints, sobs[:, metabolite_idx], color=cols[metabolite_idx])
+    #     axs[1].plot(timepoints, sobs_h[:, metabolite_idx], '--', color=cols[metabolite_idx])
+    # axs[1].set_xlabel('time')
+    # axs[1].set_ylabel('[metabolite]');
+
 def compare_params(mu=None, M=None, alpha=None, e=None):
     # each argument is a tuple of true and predicted values
     if mu is not None:
@@ -192,8 +233,8 @@ def binary_step_pert(t, pert_matrix, dt):
 
 ## SETUP MODEL
 # establish size of model
-num_species = 5
-num_pert = 3
+num_species = 100
+num_pert = 20
 num_metabolites = 0
 
 # construct interaction matrix
@@ -222,7 +263,7 @@ F = np.array([], dtype=np.double).reshape(0, num_species)
 
 num_timecourses = 3200
 tmax = 100
-
+n_epochs = 1000
 
 
 pert_dt = 10
@@ -277,7 +318,7 @@ print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
 
 model = get_RNN(num_species, num_pert, tmax//dt)
 
-history = model.fit(inputs, targets, verbose = True, batch_size = 32, epochs = 100, validation_split=0.1)
+history = model.fit(inputs, targets, verbose = True, batch_size = 32, epochs = n_epochs, validation_split=0.1)
 
 print(history.history)
 
@@ -285,7 +326,8 @@ pred = model.predict(inputs)
 #print(pred.shape)
 
 for i in range(10):
-    plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
+    #plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
+    plot_fit_gMLV_pert(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])), all_perts[i], None, None, times)
     #plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
     plt.savefig('working_dir/plot_'+str(i) + '.png', dpi = 300)
 
