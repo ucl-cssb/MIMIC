@@ -1,78 +1,124 @@
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(ggplot2)
 
 get.top.taxa <- function(data,all.taxa, ntop){
-    tots <- apply(data,MARGIN=2,sum)
-    itots <- order(tots, decreasing=T)
-    ##print(itots)
-    stots <- tots[itots]
+  tots <- apply(data,MARGIN=2,sum)
+  itots <- order(tots, decreasing=T)
+  ##print(itots)
+  stots <- tots[itots]
 
-    ##pdf("plot-population-fractions.pdf")
-    ##plot(cumsum(stots)/sum(tots), xlab="OTU", ylab="fraction of total")
-    ##dev.off()
+  ##pdf("plot-population-fractions.pdf")
+  ##plot(cumsum(stots)/sum(tots), xlab="OTU", ylab="fraction of total")
+  ##dev.off()
 
-    #ntop <- 10
-    top.taxa <- all.taxa[itots][1:ntop]
-    cat( sample, ": top n :", top.taxa, "\n", sep=" ")
+  #ntop <- 10
+  top.taxa <- all.taxa[itots][1:ntop]
+  cat( subject, ": top ", ntop, " :", top.taxa, "\n", sep=" ")
 
-    M <- as.matrix( ds[,top.taxa] )
-    fmiss <- length(which(M==0))/( dim(M)[1]*dim(M)[2] )
-        
-    cat( sample, ": missingness:", fmiss , "\n", sep=" ")
+  M <- as.matrix( ds[,top.taxa] )
+  fmiss <- length(which(M==0))/( dim(M)[1]*dim(M)[2] )
 
-    return( list(top.taxa, fmiss) )
+  cat( subject, ": missingness:", fmiss , "\n", sep=" ")
+
+  return( list(top.taxa, fmiss) )
+}
+
+add_pseudocounts <- function(data){
+  data %>%
+    pivot_longer(cols = starts_with('taxa_')) %>%
+    group_by(timepoint, subjectID) %>%
+    mutate(value = (.data$value + 1e-3) / (1 + 1e-3 * length(unique(.data$name)))) %>%
+    pivot_wider(names_from = name, values_from = value)
 }
 
 if(1){
 
-    d <- read.csv("trimmed.csv")
+  d <- read.csv("trimmed.csv")
 
-    d <- d[,c(2,3,23:185)]
+  # normalise reads
+  d <- d %>%
+    pivot_longer(cols = starts_with('taxa_')) %>%
+    group_by(sampleID) %>%
+    mutate(value = value / sum(value)) %>%
+    ungroup() %>%
+    pivot_wider(names_from = name, values_from = value)
 
-    dd <- split(d,d$subjectID)
-    ns <- length(dd)
+  d <- d[,c(2,3,23:185)]
 
-    fmiss.5 <- rep(0,ns)
-    fmiss.8 <- rep(0,ns)
-    fmiss.10 <- rep(0,ns)
-    samples <- rep("",ns)
-    ntime <- rep(0,ns)
-    
-    for(i in c(1:ns) ){
-        ## write out individual level data
-        sample <- as.character(dd[[i]][1,2])
-        samples[i] <- sample
-        fname <- paste("data-",sample,".csv",sep="")
-        print(fname)
+  dd <- split(d,d$subjectID)
+  ns <- length(dd)
 
-        ds <- dd[[i]]
-        ds <- ds[order(ds$timepoint),]
+  subjects <- rep("",ns)
+  ntime <- rep(0,ns)
 
-        ntime[i] <- nrow(ds)
-        
-        write.table(ds, file=fname, row.names=F, col.names=T, sep=",", quote=FALSE)
+  top_n <- c(5, 8, 10)
+  dinfo <- c()
 
-        all.taxa <- names(ds)[-c(1,2)]
+  for(i in c(1:ns) ){
+    ## write out individual level data
+    subject <- as.character(dd[[i]][1,2])
+    subjects[i] <- subject
+    fname <- paste("data-",subject,".csv",sep="")
+    print(fname)
 
-        ret <- get.top.taxa(ds[,-c(1,2)], all.taxa, ntop=10)
-        top.taxa.10 <- ret[[1]]
-        fmiss.10[i] <- ret[[2]]
-        dds <- ds[,c("timepoint","subjectID", top.taxa.10)]
-        write.table(dds, file=paste("data-top10-",sample,".csv",sep=""), row.names=F, col.names=T, sep=",", quote=FALSE)
+    ds <- dd[[i]]
+    ds <- ds[order(ds$timepoint),]
 
-        ret <- get.top.taxa(ds[,-c(1,2)], all.taxa, ntop=5)
-        top.taxa.5 <- ret[[1]]
-        fmiss.5[i] <- ret[[2]]
-        dds <- ds[,c("timepoint","subjectID", top.taxa.5)]
-        write.table(dds, file=paste("data-top5-",sample,".csv",sep=""), row.names=F, col.names=T, sep=",", quote=FALSE)
+    ntime[i] <- nrow(ds)
 
-        ret <- get.top.taxa(ds[,-c(1,2)], all.taxa, ntop=8)
-        top.taxa.8 <- ret[[1]]
-        fmiss.8[i] <- ret[[2]]
-        dds <- ds[,c("timepoint","subjectID", top.taxa.8)]
-        write.table(dds, file=paste("data-top8-",sample,".csv",sep=""), row.names=F, col.names=T, sep=",", quote=FALSE)
+    write.table(ds, file=fname, row.names=F, col.names=T, sep=",", quote=FALSE)
+
+    all.taxa <- names(ds)[-c(1,2)]
+
+    for(n in top_n){
+      ret <- get.top.taxa(ds[,-c(1,2)], all.taxa, ntop=n)
+      top.taxa <- ret[[1]]
+      fmiss <- ret[[2]]
+
+      dinfo <- rbind(dinfo,
+                     data.frame(subjectID=subject,
+                                ntime=nrow(ds),
+                                top_n=n,
+                                fmiss=fmiss))
+
+      dds <- ds[,c("timepoint","subjectID", top.taxa)]
+      dds <- add_pseudocounts(dds)
+
+      smoothed <- dds %>%
+        pivot_longer(cols = starts_with('taxa_')) %>%
+        nest(timepoint, value) %>%
+        mutate(m = purrr::map(data, ~ksmooth(x = .$timepoint,
+                                             y = .$value,
+                                             bandwidth = 3,
+                                             kernel = 'normal',
+                                             x.points = .$timepoint))) %>%
+        select(-data)  %>%
+        unnest_wider(m) %>%
+        unnest_longer(c(x, y)) %>%
+        rename(timepoint = x, f_value = y)
+
+      ggplot() +
+        geom_point(data = dds %>% pivot_longer(cols = starts_with('taxa_')),
+                   aes(timepoint, value, colour = name)) +
+        geom_line(data = smoothed,
+                  aes(timepoint, f_value, colour = name)) +
+        theme_bw(base_size = 8)
+
+      ggsave(paste0("plot-top", n, "-",subject,".pdf"), height = 80, width = 80, units = 'mm')
+
+      out <- dds %>%
+        pivot_longer(cols = starts_with('taxa_')) %>%
+        left_join(smoothed) %>%
+        select(-value) %>%
+        pivot_wider(names_from = name, values_from = f_value)
+
+      write.table(out, file=paste0("data-top", n, "-",subject,".csv"), row.names=F, col.names=T, sep=",", quote=FALSE)
     }
+  }
 
-    dinfo <- data.frame(sample=samples,ntime=ntime,fmiss.10=fmiss.10, fmiss.8=fmiss.8, fmiss.5=fmiss.5)
-    write.table(dinfo, "data-info.csv", row.names=F, col.names=T, sep=",", quote=FALSE)
+  write.table(dinfo, "data-info.csv", row.names=F, col.names=T, sep=",", quote=FALSE)
 
-    print( dinfo[ dinfo$fmiss.5 < 0.1,] )
+  # print( dinfo[ dinfo$fmiss.5 < 0.1,] )
 }
