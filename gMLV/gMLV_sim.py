@@ -4,7 +4,7 @@ from scipy.integrate import odeint
 
 
 class gMLV_sim:
-    def __init__(self, num_species=2, num_metabolites=0, mu=None, M=None, beta=None, epsilon=None):
+    def __init__(self, num_species=2, num_metabolites=0, mu=None, M=None, beta=None, epsilon=None, C=None):
         self.nsp = num_species
         self.nm = num_metabolites
 
@@ -37,9 +37,10 @@ class gMLV_sim:
             self.beta = beta
 
         self.epsilon = epsilon
+        self.C = C
 
-    def simulate(self, times, sy0, tp=None):
-        syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.mu, self.M, self.beta, (tp, self.epsilon)))
+    def simulate(self, times, sy0, p=None):
+        syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.mu, self.M, self.beta, self.C, p))
         yobs = syobs[:, 0:self.nsp]
         sobs = syobs[:, self.nsp:]
         return yobs, sobs, sy0, self.mu, self.M, self.beta
@@ -51,7 +52,7 @@ class gMLV_sim:
         print(f'metabolite production: \n{self.beta}')
 
 
-def gMLV(sy, t, nsp, mu, M, beta, p):
+def gMLV(sy, t, nsp, mu, M, beta, C, p):
     """
     generalised Lotka Volterra with metabolite production
 
@@ -61,7 +62,7 @@ def gMLV(sy, t, nsp, mu, M, beta, p):
     :param mu: specific growth rates vector
     :param M: interaction matrix
     :param beta: metabolite production rate matrix
-    :param p: a tuple containing time-dependent perturbation and perturbation matrix
+    :param p: perturbation function that returns the perturbation vector as a function of time
     :return: change in species + metabolites vector
     """
 
@@ -69,16 +70,16 @@ def gMLV(sy, t, nsp, mu, M, beta, p):
     y = sy[0:nsp]
     s = sy[nsp:]
 
-    if p[0] is None:
+    if p is None:
         instantaneous_growth = mu + M @ y
         # dN = np.multiply(mu, y) + np.multiply(y, M @ y)
     else:
-        if p[0] <= t < (p[0] + 1):
-            instantaneous_growth = mu + M @ y + p[1]
-            # dN = np.multiply(mu, y) + np.multiply(y, M @ y) + np.multiply(y, p[1])
-        else:
-            instantaneous_growth = mu + M @ y
-            # dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+
+        #instantaneous_growth = mu + M @ y + p[1]
+
+        instantaneous_growth = mu + M @ y + C @ p(t)
+        # dN = np.multiply(mu, y) + np.multiply(y, M @ y) + np.multiply(y, p[1])
+
     dN = np.multiply(y, instantaneous_growth)
 
     if beta is None:

@@ -2,6 +2,8 @@ import random
 import pandas as pd
 
 import numpy as np
+import matplotlib as mpl
+mpl.use('tkagg')
 import matplotlib.pyplot as plt
 import sklearn.linear_model
 from scipy.integrate import odeint
@@ -33,23 +35,23 @@ def set_all_seeds(seed):
 
 
 def plot_gMLV(yobs, sobs, timepoints):
-    fig, axs = plt.subplots(1, 2)
+    fig, axs = plt.subplots(1,1)
     for species_idx in range(yobs.shape[1]):
-        axs[0].plot(timepoints, yobs[:, species_idx], color=cols[species_idx])
-    axs[0].set_xlabel('time')
-    axs[0].set_ylabel('[species]')
-    if sobs.shape[1] > 0:
-        for metabolite_idx in range(sobs.shape[1]):
-            axs[1].plot(timepoints, sobs[:, metabolite_idx], color=cols[metabolite_idx])
-        axs[1].set_xlabel('time')
-        axs[1].set_ylabel('[metabolite]');
+        axs.plot(timepoints, yobs[:, species_idx])
+    axs.set_xlabel('time')
+    axs.set_ylabel('[species]')
+    # if sobs.shape[1] > 0:
+    #     for metabolite_idx in range(sobs.shape[1]):
+    #         axs[1].plot(timepoints, sobs[:, metabolite_idx], color=cols[metabolite_idx])
+    #     axs[1].set_xlabel('time')
+    #     axs[1].set_ylabel('[metabolite]');
 
 def plot_fit_gMLV(yobs, yobs_h, sobs, sobs_h, timepoints):
     # plot the fit
     fig, axs = plt.subplots(1, 1)
 
     for species_idx in range(yobs.shape[1]):
-        axs.plot(timepoints, yobs[:, species_idx], label = 'simulation')
+        axs.plot(timepoints, yobs[:, species_idx])
 
     plt.gca().set_prop_cycle(None)
 
@@ -133,7 +135,8 @@ def generate_params(num_species, num_pert, hetergeneous = False):
         s = np.sum(H)
     else:
         H = np.eye(num_species)
-        s = 1
+        #s = 1 from the paper
+        s = np.sum(H) # to prevent instability when more species
 
     a = np.random.binomial(1, 0.8, size=(num_species, num_species))
 
@@ -145,23 +148,43 @@ def generate_params(num_species, num_pert, hetergeneous = False):
     np.fill_diagonal(A,-1)
 
     # generate feasible growth rate
-    r = np.random.uniform(0.001,1, size = (num_species))
+    r = np.random.uniform(0.00001,1, size = (num_species))
     ss = -np.linalg.inv(A)@r
 
-    while not np.all(ss>0):
-        r = np.random.uniform(0.001, 1, size=(num_species))
+    while not np.all(ss>=0):
+        r = np.random.uniform(0.00001, 1, size=(num_species))
         ss = -np.linalg.inv(A) @ r
 
 
-    C = np.random.uniform(-3,3, size = (num_species, num_pert))
+    C = np.random.uniform(-3,3, size = (num_species, num_pert)) * 1/s
 
 
     # for the binary pert scheme choose ICs to be close to the ss
     ICs = ss # this can be change to start slightly away from ss
 
-    return A, C, ICs
+    return r, A, C, ICs
 
-#A, C, ICs = generate_params(3,2,hetergeneous=False)
+
+def get_RNN(num_species, num_pert, num_ts):
+    model = keras.Sequential()
+
+    # The output of GRU will be a 3D tensor of shape (batch_size, timesteps, 256)
+    model.add(keras.Input(shape=(num_ts - 1, num_species + num_pert), name="S_input"))
+    model.add(layers.GRU(32, return_sequences=True))
+
+    model.add(layers.Dense(num_species))
+
+    model.compile(optimizer=keras.optimizers.Adam(), loss='mse')
+
+    return model
+
+
+def binary_step_pert(t, pert_matrix, dt):
+    i = min(int(t//dt), len(pert_matrix)-1) # solver sometimes goes slightly past end of time interval
+
+    p = pert_matrix[i]
+    return p
+
 
 
 
@@ -169,26 +192,23 @@ def generate_params(num_species, num_pert, hetergeneous = False):
 
 ## SETUP MODEL
 # establish size of model
-num_species = 10
+num_species = 5
+num_pert = 3
 num_metabolites = 0
 
 # construct interaction matrix
-#TODO do this programmatically
-M = np.zeros((num_species, num_species))
-np.fill_diagonal(M, [-0.05, -0.1, -0.15, -0.01, -0.2])
-M[0, 2] = -0.025
-M[1, 3] = 0.05
-M[4, 0] = 0.02
+mu, M, C, ICs = generate_params(num_species, num_pert, hetergeneous=False)
 
 # construct growth rates matrix
-mu = np.random.lognormal(0.01, 0.5, num_species)
+
 
 # instantiate simulator
 simulator = gMLV_sim(num_species=num_species,
                      num_metabolites=num_metabolites,
                      M=M,
-                     mu=mu)
-simulator.print()
+                     mu=mu,
+                     C=C)
+#simulator.print()
 
 ## PRODUCE SIMULATED RESULTS
 # data structures for results
@@ -196,23 +216,35 @@ ryobs = [] # species
 rsobs = [] # metabolites
 ry0 = []
 rs0 = []
+all_perts = []
 X = np.array([], dtype=np.double).reshape(0, num_species+1)
 F = np.array([], dtype=np.double).reshape(0, num_species)
 
-num_timecourses = 320
-tmax = 10
-dt = 1
-times = np.arange(0,10,dt)
+num_timecourses = 3200
+tmax = 100
+
+
+
+pert_dt = 10
+dt = pert_dt
+times = np.arange(0,tmax,dt)
+
 for timecourse_idx in range(num_timecourses):
+    # generate binary perturbations matrix
+    pert_matrix = np.random.binomial(1, 0.5, size=(tmax//dt-1, num_pert
+                                                   ))
+
+    all_perts.append(pert_matrix)
+
     # initial conditions
-    init_species = np.random.uniform(low=10, high=50, size=num_species)
+    init_species = np.random.uniform(low=0, high=2, size=(num_species,)) * ICs
     init_metabolites = np.random.uniform(low=10, high=50, size=num_metabolites)
 
-    yobs, sobs, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((init_species, init_metabolites)))
+    yobs, sobs, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((init_species, init_metabolites)), p = lambda t: binary_step_pert(t, pert_matrix, pert_dt))
 
     # add some gaussian noise
-    yobs = yobs + np.random.normal(loc=0, scale=0.1, size=yobs.shape)
-    sobs = sobs + np.random.normal(loc=0, scale=0.1, size=sobs.shape)
+    #yobs = yobs + np.random.normal(loc=0, scale=0.1, size=yobs.shape)
+    #sobs = sobs + np.random.normal(loc=0, scale=0.1, size=sobs.shape)
 
     # append results
     ryobs.append(yobs)
@@ -224,42 +256,37 @@ for timecourse_idx in range(num_timecourses):
     F = np.vstack([F, Fs])
 
 ryobs = np.array(ryobs)
+all_perts = np.array(all_perts)
 print(ryobs.shape)
 print(f"X: {X.shape}")
 print(f"F: {F.shape}")
 print(f"n: {num_species*F.shape[0]}, p: {num_species + num_species**2}")
 
 inputs = copy.deepcopy(ryobs[:,:-1,:])
+print(inputs.shape, all_perts.shape)
+inputs[:, 1:, :] = 0 #rmove everything apart from ICs in inputs
 
-#inputs[:, 1:, :] = 0 #rmove everything apart from ICs in inputs
-
+inputs = np.concatenate((inputs, all_perts), axis = 2)
+print(inputs.shape)
 targets = copy.deepcopy(ryobs[:,1:,:])
-
-
-## FIT RNN
-model = keras.Sequential()
 
 
 print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
 
-# The output of GRU will be a 3D tensor of shape (batch_size, timesteps, 256)
-model.add(keras.Input(shape = (len(times)-1, num_species), name = "S_input"))
-model.add(layers.GRU(32, return_sequences=True))
+## FIT RNN
 
-model.add(layers.Dense(num_species))
+model = get_RNN(num_species, num_pert, tmax//dt)
 
-model.compile(optimizer = keras.optimizers.Adam(), loss = 'mse')
-model.build()
-print(model.summary())
-history = model.fit(inputs, targets, verbose = True, batch_size = 32, epochs = 5000, validation_split=0.1)
+history = model.fit(inputs, targets, verbose = True, batch_size = 32, epochs = 100, validation_split=0.1)
 
-#print(history.history)
+print(history.history)
 
 pred = model.predict(inputs)
-print(pred.shape)
+#print(pred.shape)
 
 for i in range(10):
-    plot_fit_gMLV(np.vstack((inputs[-i,0,:][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:][np.newaxis,:],pred[-i,:,:])),None, None, times)
+    plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
+    #plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
     plt.savefig('working_dir/plot_'+str(i) + '.png', dpi = 300)
 
 plt.figure()
