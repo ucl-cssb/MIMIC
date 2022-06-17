@@ -76,17 +76,25 @@ def plot_fit_gMLV(yobs, yobs_h, sobs, sobs_h, timepoints):
     # axs[1].set_ylabel('[metabolite]');
 
 
-def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, timepoints):
+def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, times):
     # plot the fit
-    fig, axs = plt.subplots(1, 2)
+    fig, axs = plt.subplots(1, 2, figsize = (16., 6.))
+
+
 
     for species_idx in range(yobs.shape[1]):
-        axs[0].plot(timepoints, yobs[:, species_idx], label = 'simulation')
+        axs[0].plot(times, ysim[:, species_idx], label = 'simulation')
 
-    plt.gca().set_prop_cycle(None)
+
+    axs[0].set_prop_cycle(None)
 
     for species_idx in range(yobs.shape[1]):
-        axs[0].plot(timepoints, yobs_h[:, species_idx], '--', label = 'prediction')
+        axs[0].scatter(sampling_times, yobs[:, species_idx],marker ='o', label = 'simulation')
+
+    axs[0].set_prop_cycle(None)
+
+    for species_idx in range(yobs.shape[1]):
+        axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 400,marker ='x', label = 'prediction')
 
     axs[0].set_xlabel('time')
     axs[0].set_ylabel('[species]')
@@ -103,11 +111,11 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, timepoints):
     perts = np.vstack((perts[0], perts))
 
     for pert_idx in range(perts.shape[1]):
-        axs[1].step(timepoints, perts[:, pert_idx], '--')
+        axs[1].step(sampling_times, perts[:, pert_idx], '--')
 
 
-    plt.ylabel('u')
-    plt.xlabel('Time (hours)')
+    axs[1].set_ylabel('perturbation')
+    axs[1].set_xlabel('time')
 
 
     # for metabolite_idx in range(sobs.shape[1]):
@@ -233,8 +241,8 @@ def binary_step_pert(t, pert_matrix, dt):
 
 ## SETUP MODEL
 # establish size of model
-num_species = 100
-num_pert = 20
+num_species = 5
+num_pert = 3
 num_metabolites = 0
 
 # construct interaction matrix
@@ -255,6 +263,8 @@ simulator = gMLV_sim(num_species=num_species,
 # data structures for results
 ryobs = [] # species
 rsobs = [] # metabolites
+rysim = []
+rssim =[]
 ry0 = []
 rs0 = []
 all_perts = []
@@ -266,13 +276,14 @@ tmax = 100
 n_epochs = 1000
 
 
-pert_dt = 10
-dt = pert_dt
+sampling_time = 10
+dt = 1
 times = np.arange(0,tmax,dt)
+sampling_times = np.arange(0,tmax,sampling_time)
 
 for timecourse_idx in range(num_timecourses):
     # generate binary perturbations matrix
-    pert_matrix = np.random.binomial(1, 0.5, size=(tmax//dt-1, num_pert
+    pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time-1, num_pert
                                                    ))
 
     all_perts.append(pert_matrix)
@@ -281,22 +292,28 @@ for timecourse_idx in range(num_timecourses):
     init_species = np.random.uniform(low=0, high=2, size=(num_species,)) * ICs
     init_metabolites = np.random.uniform(low=10, high=50, size=num_metabolites)
 
-    yobs, sobs, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((init_species, init_metabolites)), p = lambda t: binary_step_pert(t, pert_matrix, pert_dt))
+    ysim, ssim, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((init_species, init_metabolites)), p = lambda t: binary_step_pert(t, pert_matrix, sampling_time))
 
+    yobs = ysim[0:-1:int(sampling_time//dt)]
+    sobs = ssim[0:-1:int(sampling_time//dt)]
     # add some gaussian noise
-    #yobs = yobs + np.random.normal(loc=0, scale=0.1, size=yobs.shape)
-    #sobs = sobs + np.random.normal(loc=0, scale=0.1, size=sobs.shape)
+    yobs = yobs + np.random.normal(loc=0, scale=0.1, size=yobs.shape)
+    sobs = sobs + np.random.normal(loc=0, scale=0.1, size=sobs.shape)
 
     # append results
     ryobs.append(yobs)
     rsobs.append(sobs)
+    rysim.append(ysim)
+    rssim.append(rssim)
+
     ry0.append(init_species)
     rs0.append(init_metabolites)
-    Xs, Fs = linearize_time_course_16S(yobs,times)
-    X = np.vstack([X, Xs])
-    F = np.vstack([F, Fs])
+    #Xs, Fs = linearize_time_course_16S(yobs,times)
+    #X = np.vstack([X, Xs])
+    #F = np.vstack([F, Fs])
 
 ryobs = np.array(ryobs)
+rysim = np.array(rysim)
 all_perts = np.array(all_perts)
 print(ryobs.shape)
 print(f"X: {X.shape}")
@@ -320,14 +337,16 @@ model = get_RNN(num_species, num_pert, tmax//dt)
 
 history = model.fit(inputs, targets, verbose = True, batch_size = 32, epochs = n_epochs, validation_split=0.1)
 
-print(history.history)
+#print(history.history)
 
 pred = model.predict(inputs)
 #print(pred.shape)
 
 for i in range(10):
+    #print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])))
+    #print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])))
     #plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
-    plot_fit_gMLV_pert(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])), all_perts[i], None, None, times)
+    plot_fit_gMLV_pert(ryobs[-i], np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])), all_perts[-i], None, None, sampling_times, rysim[-i], times)
     #plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
     plt.savefig('working_dir/plot_'+str(i) + '.png', dpi = 300)
 
