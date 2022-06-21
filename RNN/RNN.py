@@ -94,7 +94,7 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
     axs[0].set_prop_cycle(None)
 
     for species_idx in range(yobs.shape[1]):
-        axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 400,marker ='x', label = 'prediction')
+        axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 200,marker ='x', label = 'prediction')
 
     axs[0].set_xlabel('time')
     axs[0].set_ylabel('[species]')
