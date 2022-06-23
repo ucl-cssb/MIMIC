@@ -222,7 +222,11 @@ def get_RNN(num_species, num_pert, num_ts):
 
     # The output of GRU will be a 3D tensor of shape (batch_size, timesteps, 256)
     model.add(keras.Input(shape=(num_ts - 1, num_species + num_pert), name="S_input"))
-    model.add(layers.GRU(32, return_sequences=True))
+
+    model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
+
+    model.add(layers.GRU(256, return_sequences=True))
+    model.add(layers.GRU(256, return_sequences=True))
 
     model.add(layers.Dense(num_species))
 
@@ -259,7 +263,7 @@ def generate_data_perts():
         all_perts.append(pert_matrix)
 
         # initial conditions
-        init_species = np.random.uniform(low=0, high=2, size=(num_species,)) * ICs
+        init_species = np.random.uniform(low=0, high=2, size=(num_species,)) * ICs * np.random.binomial(1, species_prob, size=(1, num_species))
         init_metabolites = np.random.uniform(low=10, high=50, size=num_metabolites)
 
         ysim, ssim, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((init_species, init_metabolites)),
@@ -306,9 +310,11 @@ def generate_data_transplant():
         # generate binary perturbations matrix
         # pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time-1, num_pert
         #                                               ))
+        if timecourse_idx%100 == 0:
+            print(timecourse_idx/num_timecourses * 100)
 
         # initial conditions
-        init_species = np.random.uniform(low=0, high=2, size=(1, num_species)) * ICs
+        init_species = np.random.uniform(low=0, high=2, size=(1, num_species)) * ICs * np.random.binomial(1, species_prob, size=(1, num_species))
         init_metabolites = np.random.uniform(low=10, high=50, size=(1,num_metabolites))
 
         ysim = []
@@ -348,7 +354,9 @@ def generate_data_transplant():
                 yobs.append(yo)
                 sobs.append(so)
                 if np.random.uniform() < 0.2:
-                    p = np.random.uniform(low=-1, high=1, size=(num_species,))* ICs
+                    p_rem = np.random.uniform(low=-1, high=0, size=(num_species,))
+                    p_add = np.random.uniform(low=0, high=1, size=(num_species,)) * ICs * np.random.binomial(1, species_prob, size=(num_species, ))
+                    p = p_rem + p_add
                 else:
                     p = np.zeros((num_species,))
                 p_matrix.append(p)
@@ -375,7 +383,8 @@ def generate_data_transplant():
 
 ## SETUP MODEL
 # establish size of model
-num_species = 5
+num_species = 100
+species_prob = 0.1
 num_pert = 20
 num_metabolites = 0
 
@@ -395,7 +404,7 @@ simulator = gMLV_sim(num_species=num_species,
 
 num_timecourses = 3200
 tmax = 100
-n_epochs = 200
+n_epochs = 100
 noise_std = 0.0
 transplant_pert = True # transplant or antibiotic perturbations
 if transplant_pert:
@@ -451,7 +460,12 @@ for i in range(10):
     #plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
     plot_fit_gMLV_pert(ryobs[-i], np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])), all_perts[-i], None, None, sampling_times, rysim[-i], times)
     #plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
-    plt.savefig(save_path + '/plot_'+str(i) + '.png', dpi = 300)
+    plt.savefig(save_path + '/test_plot_'+str(i) + '.png', dpi = 300)
+
+    plot_fit_gMLV_pert(ryobs[i], np.vstack((inputs[i, 0, :num_species][np.newaxis, :], pred[i, :, :])),
+                       all_perts[i], None, None, sampling_times, rysim[i], times)
+    # plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
+    plt.savefig(save_path + '/train_plot_' + str(i) + '.png', dpi=300)
 
 plt.figure()
 plt.plot(history.history['loss'], label = 'train')
