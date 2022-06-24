@@ -87,6 +87,42 @@ perts = load_perturbations_dict()
 
 combined_dict = combine_taxa_pert_dicts(data, perts)
 
+species_indicators = []
+
+for key in combined_dict.keys():
+
+
+    dat = combined_dict[key]
+    s_i = np.zeros(len(dat[0][1])) == 1
+
+    for d in dat:
+        taxa = d[1]
+
+        s_i = s_i | taxa > 0
+
+    species_indicators.append(s_i)
+
+print(len(dat[0][1]))
+print(len(combined_dict.keys()))
+species_indicators = np.array(species_indicators)
+print(species_indicators.shape) # (n_subjects, n_taxa)
+species_counts = np.sum(species_indicators, axis = 1)
+print(species_counts)
+print(np.sum(species_indicators, axis = 0))
+
+
+plt.bar(range(len(species_counts)), sorted(species_counts, reverse = True))
+plt.xlabel('subject')
+plt.ylabel('species count')
+
+plt.figure()
+plt.bar(range(len(np.sum(species_indicators, axis = 0))), sorted(np.sum(species_indicators, axis = 0), reverse = True))
+plt.xlabel('species')
+plt.ylabel('subject count')
+plt.show()
+
+sys.exit()
+
 X, P, subjects = get_X_P_subjects(combined_dict)
 
 subject_status = get_subject_status()
