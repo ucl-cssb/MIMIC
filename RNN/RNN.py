@@ -15,6 +15,7 @@ sys.path.append('../')
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
+from tensorflow.keras import regularizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from gMLV import *
 
@@ -86,18 +87,18 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
 
 
     for species_idx in range(yobs.shape[1]):
-        axs[0].plot(times, ysim[:, species_idx], label = 'simulation')
+        axs[0].plot(times, ysim[:, species_idx], '--', label = 'simulation')
 
 
     axs[0].set_prop_cycle(None)
 
-    for species_idx in range(yobs.shape[1]):
-        axs[0].scatter(sampling_times, yobs[:, species_idx],marker ='o', label = 'simulation')
+    #for species_idx in range(yobs.shape[1]):
+    #    axs[0].scatter(sampling_times, yobs[:, species_idx],s= 100,marker ='o', label = 'simulation')
 
     axs[0].set_prop_cycle(None)
 
     for species_idx in range(yobs.shape[1]):
-        axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 200,marker ='x', label = 'prediction')
+        axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 100,marker ='x', label = 'prediction')
 
     axs[0].set_xlabel('time')
     axs[0].set_ylabel('[species]')
@@ -204,7 +205,7 @@ def generate_params(num_species, num_pert, hetergeneous = False):
     ss = -np.linalg.inv(A)@r
 
     while not np.all(ss>=0):
-        r = np.random.uniform(0.00001, 1, size=(num_species))
+        r = np.random.uniform(0.00001, 1., size=(num_species)) # changed max from 1 to 0.5 for stability of binary perts with few species
         ss = -np.linalg.inv(A) @ r
 
 
@@ -223,12 +224,12 @@ def get_RNN(num_species, num_pert, num_ts):
     # The output of GRU will be a 3D tensor of shape (batch_size, timesteps, 256)
     model.add(keras.Input(shape=(num_ts - 1, num_species + num_pert), name="S_input"))
 
-    model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
+    #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
+    reg = 0#1e-6
+    #model.add(layers.GRU(256, return_sequences=True))
+    model.add(layers.GRU(256, return_sequences=True, kernel_regularizer=regularizers.L2(reg)))
 
-    model.add(layers.GRU(256, return_sequences=True))
-    model.add(layers.GRU(256, return_sequences=True))
-
-    model.add(layers.Dense(num_species))
+    model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(reg)))
 
     model.compile(optimizer=keras.optimizers.Adam(), loss='mse')
 
@@ -254,35 +255,38 @@ def generate_data_perts():
 
 
     for timecourse_idx in range(num_timecourses):
+        if timecourse_idx%100 == 0:
+            print(timecourse_idx/num_timecourses * 100)
+
         # generate binary perturbations matrix
-        # pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time-1, num_pert
-        #                                               ))
-        pert_matrix = np.zeros((tmax // sampling_time - 1, num_pert
-                                ))
+        pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time-1, num_pert))
+        #pert_matrix = np.zeros((tmax // sampling_time - 1, num_pert))
 
         all_perts.append(pert_matrix)
 
         # initial conditions
-        init_species = np.random.uniform(low=0, high=2, size=(num_species,)) * ICs * np.random.binomial(1, species_prob, size=(1, num_species))
+        init_species = np.random.uniform(low=0, high=2, size=(num_species,)) * ICs * np.random.binomial(1, species_prob, size=(num_species,))
         init_metabolites = np.random.uniform(low=10, high=50, size=num_metabolites)
 
         ysim, ssim, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((init_species, init_metabolites)),
                                                        p=lambda t: binary_step_pert(t, pert_matrix, sampling_time))
+        if np.sum(ysim > 10)<0: # instability
+            print('unstable')
+        else:
+            yobs = ysim[0:-1:int(sampling_time // dt)]
+            sobs = ssim[0:-1:int(sampling_time // dt)]
+            # add some gaussian noise
+            yobs = yobs + np.random.normal(loc=0, scale=noise_std, size=yobs.shape)
+            sobs = sobs + np.random.normal(loc=0, scale=noise_std, size=sobs.shape)
 
-        yobs = ysim[0:-1:int(sampling_time // dt)]
-        sobs = ssim[0:-1:int(sampling_time // dt)]
-        # add some gaussian noise
-        yobs = yobs + np.random.normal(loc=0, scale=noise_std, size=yobs.shape)
-        sobs = sobs + np.random.normal(loc=0, scale=noise_std, size=sobs.shape)
+            # append results
+            ryobs.append(yobs)
+            rsobs.append(sobs)
+            rysim.append(ysim)
+            rssim.append(rssim)
 
-        # append results
-        ryobs.append(yobs)
-        rsobs.append(sobs)
-        rysim.append(ysim)
-        rssim.append(rssim)
-
-        ry0.append(init_species)
-        rs0.append(init_metabolites)
+            ry0.append(init_species)
+            rs0.append(init_metabolites)
         # Xs, Fs = linearize_time_course_16S(yobs,times)
         # X = np.vstack([X, Xs])
         # F = np.vstack([F, Fs])
@@ -385,7 +389,7 @@ def generate_data_transplant():
 # establish size of model
 num_species = 100
 species_prob = 0.1
-num_pert = 20
+num_pert = 0
 num_metabolites = 0
 
 # construct interaction matrix
@@ -402,11 +406,11 @@ simulator = gMLV_sim(num_species=num_species,
                      C=C)
 #simulator.print()
 
-num_timecourses = 3200
+num_timecourses = 1000
 tmax = 100
-n_epochs = 100
+n_epochs = 1000
 noise_std = 0.0
-transplant_pert = True # transplant or antibiotic perturbations
+transplant_pert = False# transplant or antibiotic perturbations
 if transplant_pert:
     num_pert = num_species
 sampling_time = 10
@@ -414,8 +418,25 @@ dt = 1
 
 if transplant_pert:
     ryobs, rysim, all_perts = generate_data_transplant()
+
+    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy', ryobs)
+    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy', rysim)
+    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/perts.npy', all_perts)
+
+    # ryobs = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy')[:num_timecourses]
+    # rysim = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy')[:num_timecourses]
+    # all_perts = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/perts.npy')[:num_timecourses]
 else:
     ryobs, rysim, all_perts = generate_data_perts()
+
+    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/ryobs.npy', ryobs)
+    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy', rysim)
+    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy', all_perts)
+
+    # ryobs = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/ryobs.npy')[:num_timecourses]
+    # rysim = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy')[:num_timecourses]
+    # all_perts = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy')[:num_timecourses]
+
 
 if len(sys.argv) == 3:
     exp = int(sys.argv[2])
@@ -445,7 +466,8 @@ targets = copy.deepcopy(ryobs[:,1:,:])
 print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
 
 ## FIT RNN
-model = get_RNN(num_species, num_pert, tmax//dt)
+print(len(sampling_times))
+model = get_RNN(num_species, num_pert, len(sampling_times))
 
 history = model.fit(inputs, targets, verbose = True, batch_size = 32, epochs = n_epochs, validation_split=0.1)
 
@@ -471,5 +493,9 @@ plt.figure()
 plt.plot(history.history['loss'], label = 'train')
 plt.plot(history.history['val_loss'], label = 'test')
 plt.legend()
+plt.xlabel('epoch')
+plt.ylabel('loss')
+plt.savefig(save_path + '/train_test_SSE.png', dpi=300)
+
 
 plt.show()
