@@ -68,7 +68,7 @@ def gMLV(sy, t, nsp, mu, M, beta, C, p):
 
     # separate species and metabolites
 
-    #sy[sy < 0] = 0
+    sy[sy < 0] = 0
     y = sy[0:nsp]
     s = sy[nsp:]
 
