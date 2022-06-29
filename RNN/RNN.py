@@ -19,18 +19,23 @@ from tensorflow.keras import regularizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from gMLV import *
 import math
+from time import time
 
-physical_devices = tf.config.list_physical_devices('GPU')
-try:
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
-except:
-    pass
+
 
 
 # work around for retracing warning
 import logging, os
 logging.disable(logging.WARNING)
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+
+physical_devices = tf.config.list_physical_devices('GPU')
+try:
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+except:
+    # Invalid device or cannot modify virtual devices once initialized.
+    pass
 
 
 def set_all_seeds(seed):
@@ -232,7 +237,7 @@ def get_RNN(num_species, num_pert, num_ts):
     #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
     reg = 0#1e-6
     #model.add(layers.GRU(256, return_sequences=True))
-    model.add(layers.GRU(32, return_sequences=True, kernel_regularizer=regularizers.L2(reg)))
+    model.add(layers.GRU(32, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(reg)))
 
     model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(reg)))
 
@@ -393,6 +398,34 @@ def generate_data_transplant():
 ## SETUP MODEL
 # establish size of model
 
+@tf.function
+def train_batch(model, opt, batch_inputs, batch_targets):
+
+    t_inputs = batch_inputs
+    #t_inputs = tf.Variable(batch_inputs, dtype=float)  # (32, 9, 10)
+    # targets = tf.Variable(targets[start:end], dtype = float)
+    with tf.GradientTape() as model_tape:
+        with tf.GradientTape() as loss_tape:
+            loss_tape.watch(t_inputs)
+            pred = model(t_inputs)  # (32, 9, 10)
+            # print(t_inputs.shape)
+            # print(pred.shape)
+
+            # print(loss_tape.gradient(pred[0], t_inputs[1]))
+        # dy_dx = loss_tape.gradient(pred, t_inputs, unconnected_gradients=tf.UnconnectedGradients.ZERO) # (32, 9, 10)
+        dy_dx = loss_tape.batch_jacobian(pred, t_inputs)#[0, :, [0,1,2] , :, [1, 2, 3]]  # (32, 9, 10, 9, 10)
+
+
+        loss = tf.math.reduce_mean(
+            tf.square(pred - batch_targets)) + 1000000000*tf.math.reduce_mean(tf.square(dy_dx))
+        # print('loss time', time() - t)
+
+    loss_grad = model_tape.gradient(loss, model.trainable_variables)
+    # print('grad time', time() - t)
+
+    opt.apply_gradients(zip(loss_grad, model.trainable_variables))
+
+    return loss
 
 def custom_fit():
     opt = keras.optimizers.Adam()
@@ -404,35 +437,13 @@ def custom_fit():
             start = batch * batch_size
             end = start + batch_size
 
-            t_inputs = tf.Variable(inputs[start:end], dtype=float)
-            # targets = tf.Variable(targets[start:end], dtype = float)
-            with tf.GradientTape() as model_tape:
-                with tf.GradientTape() as loss_tape:
-                    loss_tape.watch(t_inputs)
-                    pred = model(t_inputs)
+            batch_loss = train_batch(model, opt, inputs[start:end], targets[start:end])
+            batch_losses.append(batch_loss)
+            #print('opt time', time() - t)
 
-                # dy_dx = loss_tape.gradient(pred, t_inputs, unconnected_gradients=tf.UnconnectedGradients.ZERO) # (32, 9, 10)
-
-                dy_dx = loss_tape.jacobian(pred, t_inputs)  # (32, 9, 10, 32, 9, 10)
-
-                #print(dy_dx[0, :, 0, 0, :, 1])
-                # print(dy_dx)
-                # print(pred.shape, t_inputs.shape, dy_dx.shape)
-                # print()
-                # print('pred loss', tf.math.reduce_mean(tf.square(pred - targets[start:end])))
-                # print('dy_dx loss', tf.math.reduce_mean(tf.square(dy_dx)))
-                loss = tf.math.reduce_mean(
-                    tf.square(pred - targets[start:end]))   + tf.math.reduce_mean(tf.square(dy_dx))
-
-            batch_losses.append(loss)
-
-            loss_grad = model_tape.gradient(loss, model.trainable_variables)
-
-            opt.apply_gradients(zip(loss_grad, model.trainable_variables))
-
-
-        epoch_losses.append(np.mean(batch_losses))
-        print('epoch:', epoch, epoch_losses[-1])
+        epoch_losses.append(tf.math.reduce_mean(batch_losses))
+        tf.print('epoch:', epoch, epoch_losses[-1])
+    return epoch_losses
 
 
 num_species = 10
@@ -507,9 +518,9 @@ inputs = copy.deepcopy(ryobs[:,:-1,:])
 print(inputs.shape, all_perts.shape)
 inputs[:, 1:, :] = 0 #rmove everything apart from ICs in inputs
 
-inputs = np.concatenate((inputs, all_perts), axis = 2)
+inputs = np.concatenate((inputs, all_perts), axis = 2).astype(np.float32)
 print(inputs.shape)
-targets = copy.deepcopy(ryobs[:,1:,:])
+targets = copy.deepcopy(ryobs[:,1:,:]).astype(np.float32)
 
 
 print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
@@ -521,7 +532,7 @@ model = get_RNN(num_species, num_pert, len(sampling_times))
 # custom training loop to incorporate prior knowledge
 
 
-custom_fit()
+epoch_losses = custom_fit()
 
 
 
