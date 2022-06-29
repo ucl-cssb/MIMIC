@@ -18,6 +18,7 @@ from tensorflow.keras import layers
 from tensorflow.keras import regularizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from gMLV import *
+import math
 
 physical_devices = tf.config.list_physical_devices('GPU')
 try:
@@ -26,6 +27,10 @@ except:
     pass
 
 
+# work around for retracing warning
+import logging, os
+logging.disable(logging.WARNING)
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 
 def set_all_seeds(seed):
@@ -227,7 +232,7 @@ def get_RNN(num_species, num_pert, num_ts):
     #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
     reg = 0#1e-6
     #model.add(layers.GRU(256, return_sequences=True))
-    model.add(layers.GRU(256, return_sequences=True, kernel_regularizer=regularizers.L2(reg)))
+    model.add(layers.GRU(32, return_sequences=True, kernel_regularizer=regularizers.L2(reg)))
 
     model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(reg)))
 
@@ -357,7 +362,7 @@ def generate_data_transplant():
 
                 yobs.append(yo)
                 sobs.append(so)
-                if np.random.uniform() < 0.2:
+                if np.random.uniform() < 0:
                     p_rem = np.random.uniform(low=-1, high=0, size=(num_species,))
                     p_add = np.random.uniform(low=0, high=1, size=(num_species,)) * ICs * np.random.binomial(1, species_prob, size=(num_species, ))
                     p = p_rem + p_add
@@ -387,8 +392,51 @@ def generate_data_transplant():
 
 ## SETUP MODEL
 # establish size of model
-num_species = 100
-species_prob = 0.1
+
+
+def custom_fit():
+    opt = keras.optimizers.Adam()
+    n_batches = math.ceil(inputs.shape[0] / batch_size)
+    epoch_losses = []
+    for epoch in range(n_epochs):
+        batch_losses = []
+        for batch in range(n_batches):
+            start = batch * batch_size
+            end = start + batch_size
+
+            t_inputs = tf.Variable(inputs[start:end], dtype=float)
+            # targets = tf.Variable(targets[start:end], dtype = float)
+            with tf.GradientTape() as model_tape:
+                with tf.GradientTape() as loss_tape:
+                    loss_tape.watch(t_inputs)
+                    pred = model(t_inputs)
+
+                # dy_dx = loss_tape.gradient(pred, t_inputs, unconnected_gradients=tf.UnconnectedGradients.ZERO) # (32, 9, 10)
+
+                dy_dx = loss_tape.jacobian(pred, t_inputs)  # (32, 9, 10, 32, 9, 10)
+
+                #print(dy_dx[0, :, 0, 0, :, 1])
+                # print(dy_dx)
+                # print(pred.shape, t_inputs.shape, dy_dx.shape)
+                # print()
+                # print('pred loss', tf.math.reduce_mean(tf.square(pred - targets[start:end])))
+                # print('dy_dx loss', tf.math.reduce_mean(tf.square(dy_dx)))
+                loss = tf.math.reduce_mean(
+                    tf.square(pred - targets[start:end]))   + tf.math.reduce_mean(tf.square(dy_dx))
+
+            batch_losses.append(loss)
+
+            loss_grad = model_tape.gradient(loss, model.trainable_variables)
+
+            opt.apply_gradients(zip(loss_grad, model.trainable_variables))
+
+
+        epoch_losses.append(np.mean(batch_losses))
+        print('epoch:', epoch, epoch_losses[-1])
+
+
+num_species = 10
+species_prob = 1
 num_pert = 0
 num_metabolites = 0
 
@@ -408,7 +456,8 @@ simulator = gMLV_sim(num_species=num_species,
 
 num_timecourses = 1000
 tmax = 100
-n_epochs = 1000
+n_epochs = 200
+batch_size = 32
 noise_std = 0.0
 transplant_pert = False# transplant or antibiotic perturbations
 if transplant_pert:
@@ -419,9 +468,9 @@ dt = 1
 if transplant_pert:
     ryobs, rysim, all_perts = generate_data_transplant()
 
-    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy', ryobs)
-    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy', rysim)
-    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/perts.npy', all_perts)
+    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy', ryobs)
+    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy', rysim)
+    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/perts.npy', all_perts)
 
     # ryobs = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy')[:num_timecourses]
     # rysim = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy')[:num_timecourses]
@@ -429,9 +478,9 @@ if transplant_pert:
 else:
     ryobs, rysim, all_perts = generate_data_perts()
 
-    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/ryobs.npy', ryobs)
-    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy', rysim)
-    np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy', all_perts)
+    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/ryobs.npy', ryobs)
+    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy', rysim)
+    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy', all_perts)
 
     # ryobs = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/ryobs.npy')[:num_timecourses]
     # rysim = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy')[:num_timecourses]
@@ -469,7 +518,15 @@ print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
 print(len(sampling_times))
 model = get_RNN(num_species, num_pert, len(sampling_times))
 
-history = model.fit(inputs, targets, verbose = True, batch_size = 32, epochs = n_epochs, validation_split=0.1)
+# custom training loop to incorporate prior knowledge
+
+
+custom_fit()
+
+
+
+
+#history = model.fit(inputs, targets, verbose = True, batch_size = batch_size, epochs = n_epochs, validation_split=0.1)
 
 #print(history.history)
 
@@ -490,8 +547,8 @@ for i in range(10):
     plt.savefig(save_path + '/train_plot_' + str(i) + '.png', dpi=300)
 
 plt.figure()
-plt.plot(history.history['loss'], label = 'train')
-plt.plot(history.history['val_loss'], label = 'test')
+plt.plot(epoch_losses, label = 'train')
+#plt.plot(epoch_losses, label = 'test')
 plt.legend()
 plt.xlabel('epoch')
 plt.ylabel('loss')

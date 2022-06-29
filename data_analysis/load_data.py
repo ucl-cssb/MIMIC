@@ -206,8 +206,8 @@ def get_subject_status(metadata_path =  '/Users/neythen/Desktop/Projects/gMLV/da
         clss = items[13].strip('"')
         outcome = items[17].strip('"')
 
-        if clss != 'NA' or outcome != 'NA':
-            results_dict[subject_ID] = {'class': clss, 'outcome':outcome}
+        #if clss != 'NA' or outcome != 'NA':
+        results_dict[subject_ID] = {'class': clss, 'outcome':outcome}
 
     return results_dict
 

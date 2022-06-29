@@ -87,9 +87,27 @@ perts = load_perturbations_dict()
 
 combined_dict = combine_taxa_pert_dicts(data, perts)
 
+X, P, subjects = get_X_P_subjects(combined_dict)
+
+subject_status = get_subject_status()
+
+all_subject_info = combine_subject_dicts(subjects, subject_status)
+
 species_indicators = []
+subject_class = [] # combination of healthy, diseased with survived, died
 
 for key in combined_dict.keys():
+
+    ss = subject_status[key]
+    print(ss)
+    if ss['class'] == 'healthy' and ss['outcome'] == 'survival':
+        subject_class.append(0)
+    elif ss['class'] == 'disease' and ss['outcome'] == 'survival':
+        subject_class.append(1)
+    elif ss['class'] == 'disease' and ss['outcome'] == 'mortality':
+        subject_class.append(2)
+    else:
+        subject_class.append(3)
 
 
     dat = combined_dict[key]
@@ -102,32 +120,61 @@ for key in combined_dict.keys():
 
     species_indicators.append(s_i)
 
-print(len(dat[0][1]))
-print(len(combined_dict.keys()))
+subject_class = np.array(subject_class)
+
+plt.spy(species_indicators)
+plt.xlabel('species')
+plt.ylabel('subjects')
+
 species_indicators = np.array(species_indicators)
-print(species_indicators.shape) # (n_subjects, n_taxa)
+
 species_counts = np.sum(species_indicators, axis = 1)
-print(species_counts)
-print(np.sum(species_indicators, axis = 0))
 
 
-plt.bar(range(len(species_counts)), sorted(species_counts, reverse = True))
+args = np.argsort(species_counts)[::-1]
+
+colours = ['green','black',  'red', 'blue', 'cyan']
+plt.figure()
+plt.bar(range(len(species_counts)), species_counts[args], color = [colours[i] for i in subject_class[args]])
 plt.xlabel('subject')
 plt.ylabel('species count')
 
+
+
+
+
+print(species_indicators.shape)
+print(subject_class)
+subject_counts = []
+
+for sp in range(species_indicators.shape[1]):
+
+    subjects = np.nonzero(species_indicators[:, sp] > 0)
+
+    clss = subject_class[subjects]
+
+    subject_counts.append([np.count_nonzero(clss == i) for i in range(4)])
+
+subject_counts = np.array(subject_counts)
+print(subject_counts.shape)
+
+args = np.argsort(np.sum(species_indicators, axis = 0))[::-1]
+subject_counts = subject_counts[args]
+
+
 plt.figure()
-plt.bar(range(len(np.sum(species_indicators, axis = 0))), sorted(np.sum(species_indicators, axis = 0), reverse = True))
+labels = ['healthy -> survival', 'disease -> survived', 'disease -> mortality', 'No label']
+for i in range(4):
+    print(np.sum([subject_counts[:, j] for j in range(i)], axis = 0))
+    plt.bar(range(94), subject_counts[:, i], color = colours[i], bottom = np.sum([subject_counts[:, j] for j in range(i)], axis = 0), label = labels[i])
+plt.legend()
 plt.xlabel('species')
 plt.ylabel('subject count')
 plt.show()
 
 sys.exit()
 
-X, P, subjects = get_X_P_subjects(combined_dict)
 
-subject_status = get_subject_status()
-
-all_subject_info = combine_subject_dicts(subjects, subject_status)
 
 
 
