@@ -201,14 +201,17 @@ def generate_params(num_species, num_pert, hetergeneous = False):
         #s = 1 from the paper
         s = np.sum(H) # to prevent instability when more species
 
-    a = np.random.binomial(1, 0.8, size=(num_species, num_species))
+    a = np.random.binomial(1, 1-zero_prop, size=(num_species, num_species))
 
 
     # the interaction matrix
     A = 1/s*N@H*a
 
+
+
     #set all diagonal elements to -1 to ensure stability
     np.fill_diagonal(A,-1)
+
 
     # generate feasible growth rate
     r = np.random.uniform(0.00001,1, size = (num_species))
@@ -399,7 +402,7 @@ def generate_data_transplant():
 # establish size of model
 
 @tf.function
-def train_batch(model, opt, batch_inputs, batch_targets):
+def run_batch(model, opt, batch_inputs, batch_targets, train = True):
 
     t_inputs = batch_inputs
     #t_inputs = tf.Variable(batch_inputs, dtype=float)  # (32, 9, 10)
@@ -415,44 +418,84 @@ def train_batch(model, opt, batch_inputs, batch_targets):
         # dy_dx = loss_tape.gradient(pred, t_inputs, unconnected_gradients=tf.UnconnectedGradients.ZERO) # (32, 9, 10)
         dy_dx = loss_tape.batch_jacobian(pred, t_inputs)#[0, :, [0,1,2] , :, [1, 2, 3]]  # (32, 9, 10, 9, 10)
 
+        #dy_dx = tf.gather_nd(dy_dx[:, :, [1, 2, 3, 0, 0, 4], :, [0, 0, 4, 1, 2, 3] ])
 
-        loss = tf.math.reduce_mean(
-            tf.square(pred - batch_targets)) + 1000000000*tf.math.reduce_mean(tf.square(dy_dx))
+
+        dy_dx = tf.gather(dy_dx, known_zeros[1], axis = 2)
+
+
+        dy_dx = tf.gather(dy_dx,known_zeros[0], axis= 4)
+
+
+
+        print(tf.math.reduce_mean(tf.square(dy_dx)), tf.math.reduce_mean(tf.square(pred - batch_targets)))
+
+        loss = tf.math.reduce_mean(tf.square(pred - batch_targets)) + 1e-5*tf.math.reduce_mean(tf.square(dy_dx))
         # print('loss time', time() - t)
 
-    loss_grad = model_tape.gradient(loss, model.trainable_variables)
-    # print('grad time', time() - t)
+    if train:
+        loss_grad = model_tape.gradient(loss, model.trainable_variables)
+        # print('grad time', time() - t)
 
-    opt.apply_gradients(zip(loss_grad, model.trainable_variables))
+        opt.apply_gradients(zip(loss_grad, model.trainable_variables))
 
     return loss
 
-def custom_fit():
+def custom_fit(inputs, targets, val_prop):
+
+    split = int(val_prop*len(inputs))
+    train_inputs = inputs[:split]
+    train_targets = targets[:split]
+
+    val_inputs = inputs[split:]
+    val_targets = targets[split:]
+
     opt = keras.optimizers.Adam()
-    n_batches = math.ceil(inputs.shape[0] / batch_size)
-    epoch_losses = []
+    n_batches = math.ceil(train_inputs.shape[0] / batch_size)
+    training_losses = []
+    validation_losses = []
+
     for epoch in range(n_epochs):
+
         batch_losses = []
+
         for batch in range(n_batches):
             start = batch * batch_size
             end = start + batch_size
 
-            batch_loss = train_batch(model, opt, inputs[start:end], targets[start:end])
+            batch_loss = run_batch(model, opt, train_inputs[start:end], train_targets[start:end])
             batch_losses.append(batch_loss)
             #print('opt time', time() - t)
 
-        epoch_losses.append(tf.math.reduce_mean(batch_losses))
-        tf.print('epoch:', epoch, epoch_losses[-1])
-    return epoch_losses
+        training_losses.append(tf.math.reduce_mean(batch_losses))
+        validation_losses.append(run_batch(model, opt, val_inputs, val_targets, train=False))
 
+        tf.print('epoch:', epoch, training_losses[-1], validation_losses[-1])
 
-num_species = 10
+    return training_losses, validation_losses
+
+np.random.seed(0)
+
+num_species = 100
 species_prob = 1
 num_pert = 0
 num_metabolites = 0
 
 # construct interaction matrix
+zero_prop = 0.8
+known_zero_prop = 0.8
+
 mu, M, C, ICs = generate_params(num_species, num_pert, hetergeneous=False)
+
+
+zeros = np.where(M==0)
+
+
+randomize = np.arange(M.shape[0])
+np.random.shuffle(randomize)
+
+known_zeros = [zeros[0][randomize][:int(len(zeros) * known_zero_prop)],
+               zeros[1][randomize][:int(len(zeros) * known_zero_prop)]]
 
 # construct growth rates matrix
 
@@ -465,11 +508,15 @@ simulator = gMLV_sim(num_species=num_species,
                      C=C)
 #simulator.print()
 
-num_timecourses = 1000
+num_timecourses = 10000
 tmax = 100
-n_epochs = 200
+n_epochs = 20
 batch_size = 32
 noise_std = 0.0
+val_prop = 0.1
+
+
+
 transplant_pert = False# transplant or antibiotic perturbations
 if transplant_pert:
     num_pert = num_species
@@ -532,7 +579,7 @@ model = get_RNN(num_species, num_pert, len(sampling_times))
 # custom training loop to incorporate prior knowledge
 
 
-epoch_losses = custom_fit()
+train_loss, val_loss = custom_fit(inputs, targets, val_prop)
 
 
 
@@ -558,8 +605,8 @@ for i in range(10):
     plt.savefig(save_path + '/train_plot_' + str(i) + '.png', dpi=300)
 
 plt.figure()
-plt.plot(epoch_losses, label = 'train')
-#plt.plot(epoch_losses, label = 'test')
+plt.plot(train_loss, label = 'train')
+plt.plot(val_loss, label = 'test')
 plt.legend()
 plt.xlabel('epoch')
 plt.ylabel('loss')
