@@ -13,6 +13,7 @@ import os
 import sys
 sys.path.append('../')
 import tensorflow as tf
+#tf.config.run_functions_eagerly(True)
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras import regularizers
@@ -30,12 +31,12 @@ logging.disable(logging.WARNING)
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 
-physical_devices = tf.config.list_physical_devices('GPU')
-try:
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
-except:
-    # Invalid device or cannot modify virtual devices once initialized.
-    pass
+# physical_devices = tf.config.list_physical_devices('GPU')
+# try:
+#     tf.config.experimental.set_memory_growth(physical_devices[0], True)
+# except:
+#     # Invalid device or cannot modify virtual devices once initialized.
+#     pass
 
 
 def set_all_seeds(seed):
@@ -231,20 +232,20 @@ def generate_params(num_species, num_pert, hetergeneous = False):
     return r, A, C, ICs
 
 
-def get_RNN(num_species, num_pert, num_ts):
+def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0.):
     model = keras.Sequential()
 
     # The output of GRU will be a 3D tensor of shape (batch_size, timesteps, 256)
     model.add(keras.Input(shape=(num_ts - 1, num_species + num_pert), name="S_input"))
 
     #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
-    reg = 0#1e-6
+
     #model.add(layers.GRU(256, return_sequences=True))
-    model.add(layers.GRU(32, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(reg)))
+    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(L2_reg)))
 
-    model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(reg)))
+    model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(L2_reg)))
 
-    model.compile(optimizer=keras.optimizers.Adam(), loss='mse')
+    #model.compile(optimizer=keras.optimizers.Adam(), loss='mse')
 
     return model
 
@@ -344,6 +345,7 @@ def generate_data_transplant():
         sobs = [ss[0]]
 
         p = np.zeros((num_species,))
+        perturbed = False
         for i in range(int(tmax//sampling_time)):
 
             #print(yo.shape, ss.shape)
@@ -370,10 +372,13 @@ def generate_data_transplant():
 
                 yobs.append(yo)
                 sobs.append(so)
-                if np.random.uniform() < 0:
-                    p_rem = np.random.uniform(low=-1, high=0, size=(num_species,))
+
+                if np.random.uniform() < 0.1 and not perturbed:
+                    perturbed = True
+
+                    #p_rem = np.random.uniform(low=-1, high=0, size=(num_species,))
                     p_add = np.random.uniform(low=0, high=1, size=(num_species,)) * ICs * np.random.binomial(1, species_prob, size=(num_species, ))
-                    p = p_rem + p_add
+                    p =  p_add
                 else:
                     p = np.zeros((num_species,))
                 p_matrix.append(p)
@@ -402,21 +407,21 @@ def generate_data_transplant():
 # establish size of model
 
 @tf.function
-def run_batch(model, opt, batch_inputs, batch_targets, train = True):
+def run_batch(model, opt, batch_inputs, batch_targets, train = True, dy_dx_reg = 1e-5):
 
-    t_inputs = batch_inputs
-    #t_inputs = tf.Variable(batch_inputs, dtype=float)  # (32, 9, 10)
+    #t_inputs = batch_inputs
+    #batch_inputs = tf.Variable(batch_inputs, dtype=float)  # (32, 9, 10)
     # targets = tf.Variable(targets[start:end], dtype = float)
     with tf.GradientTape() as model_tape:
         with tf.GradientTape() as loss_tape:
-            loss_tape.watch(t_inputs)
-            pred = model(t_inputs)  # (32, 9, 10)
+            loss_tape.watch(batch_inputs)
+            pred = model(batch_inputs)  # (32, 9, 10)
             # print(t_inputs.shape)
             # print(pred.shape)
 
             # print(loss_tape.gradient(pred[0], t_inputs[1]))
         # dy_dx = loss_tape.gradient(pred, t_inputs, unconnected_gradients=tf.UnconnectedGradients.ZERO) # (32, 9, 10)
-        dy_dx = loss_tape.batch_jacobian(pred, t_inputs)#[0, :, [0,1,2] , :, [1, 2, 3]]  # (32, 9, 10, 9, 10)
+        dy_dx = loss_tape.batch_jacobian(pred, batch_inputs)#[0, :, [0,1,2] , :, [1, 2, 3]]  # (32, 9, 10, 9, 10)
 
         #dy_dx = tf.gather_nd(dy_dx[:, :, [1, 2, 3, 0, 0, 4], :, [0, 0, 4, 1, 2, 3] ])
 
@@ -428,9 +433,9 @@ def run_batch(model, opt, batch_inputs, batch_targets, train = True):
 
 
 
-        print(tf.math.reduce_mean(tf.square(dy_dx)), tf.math.reduce_mean(tf.square(pred - batch_targets)))
+        #print(tf.math.reduce_mean(tf.square(dy_dx)), tf.math.reduce_mean(tf.square(pred - batch_targets)))
 
-        loss = tf.math.reduce_mean(tf.square(pred - batch_targets)) + 1e-5*tf.math.reduce_mean(tf.square(dy_dx))
+        loss = tf.math.reduce_mean(tf.square(pred - batch_targets)) + dy_dx_reg*tf.math.reduce_mean(tf.square(dy_dx))
         # print('loss time', time() - t)
 
     if train:
@@ -441,9 +446,24 @@ def run_batch(model, opt, batch_inputs, batch_targets, train = True):
 
     return loss
 
-def custom_fit(inputs, targets, val_prop):
 
-    split = int(val_prop*len(inputs))
+def run_epoch(model, opt, inputs, targets, train = True, dy_dx_reg = 1e-5):
+    batch_losses = []
+    n_batches = math.ceil(inputs.shape[0] / batch_size)
+
+    for batch in range(n_batches):
+        start = batch * batch_size
+        end = start + batch_size
+
+        batch_loss = run_batch(model, opt, inputs[start:end], targets[start:end], dy_dx_reg=dy_dx_reg)
+        batch_losses.append(batch_loss)
+        # print('opt time', time() - t)
+
+    return batch_losses
+
+def custom_fit(model, inputs, targets, val_prop, dy_dx_reg = 1e-5, verbose=False):
+
+    split = int((1-val_prop)*len(inputs))
     train_inputs = inputs[:split]
     train_targets = targets[:split]
 
@@ -451,28 +471,23 @@ def custom_fit(inputs, targets, val_prop):
     val_targets = targets[split:]
 
     opt = keras.optimizers.Adam()
-    n_batches = math.ceil(train_inputs.shape[0] / batch_size)
+
     training_losses = []
     validation_losses = []
 
     for epoch in range(n_epochs):
 
-        batch_losses = []
+        train_losses = run_epoch(model, opt, train_inputs, train_targets, train=True, dy_dx_reg=dy_dx_reg)
+        val_losses = run_epoch(model, opt, val_inputs, val_targets, train=False, dy_dx_reg=dy_dx_reg)
 
-        for batch in range(n_batches):
-            start = batch * batch_size
-            end = start + batch_size
+        training_losses.append(tf.math.reduce_mean(train_losses))
 
-            batch_loss = run_batch(model, opt, train_inputs[start:end], train_targets[start:end])
-            batch_losses.append(batch_loss)
-            #print('opt time', time() - t)
+        validation_losses.append(tf.math.reduce_mean(val_losses))
 
-        training_losses.append(tf.math.reduce_mean(batch_losses))
-        validation_losses.append(run_batch(model, opt, val_inputs, val_targets, train=False))
+        if verbose:
+            tf.print('epoch:', epoch, training_losses[-1], validation_losses[-1])
 
-        tf.print('epoch:', epoch, training_losses[-1], validation_losses[-1])
-
-    return training_losses, validation_losses
+    return training_losses, validation_losses, model
 
 np.random.seed(0)
 
@@ -482,8 +497,8 @@ num_pert = 0
 num_metabolites = 0
 
 # construct interaction matrix
-zero_prop = 0.8
-known_zero_prop = 0.8
+zero_prop = 0.7
+known_zero_prop = 0.5
 
 mu, M, C, ICs = generate_params(num_species, num_pert, hetergeneous=False)
 
@@ -508,16 +523,47 @@ simulator = gMLV_sim(num_species=num_species,
                      C=C)
 #simulator.print()
 
-num_timecourses = 10000
+num_timecourses = 100
 tmax = 100
-n_epochs = 20
+n_epochs = 300
 batch_size = 32
 noise_std = 0.0
 val_prop = 0.1
 
 
+if len(sys.argv) == 3:
+    exp = int(sys.argv[2]) -1
 
-transplant_pert = False# transplant or antibiotic perturbations
+
+
+    tc, zp, sp = np.unravel_index(exp, ((4, 5, 5)))  # get indices into param arrays
+    # inestigation scan over
+
+    num_timecoursess = [100, 500, 1000, 5000]
+    known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
+    species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
+
+
+    num_timecourses = num_timecoursess[tc]
+    known_zero_prop = known_zero_props[zp]
+    species_prob = species_probs[sp]
+
+    save_path = sys.argv[1] + '/repeat' + sys.argv[2] + '/'
+
+    os.makedirs(save_path, exist_ok=True)
+elif len(sys.argv) == 2:
+    save_path = sys.argv[1] + '/'
+    os.makedirs(save_path, exist_ok=True)
+else:
+    save_path = './working_dir'
+
+n_batch_updates = 300*900/32 # change n_epochs so that the same number of batch updates are run for each test
+n_epochs = int(32*n_batch_updates/(num_timecourses*0.9))
+
+print(num_timecourses, known_zero_prop, species_prob, n_epochs)
+
+transplant_pert = True
+
 if transplant_pert:
     num_pert = num_species
 sampling_time = 10
@@ -545,17 +591,7 @@ else:
     # all_perts = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy')[:num_timecourses]
 
 
-if len(sys.argv) == 3:
-    exp = int(sys.argv[2])
 
-    save_path = sys.argv[1] + sys.argv[2] + '/'
-
-    os.makedirs(save_path, exist_ok=True)
-elif len(sys.argv) == 2:
-    save_path = sys.argv[1] + '/'
-    os.makedirs(save_path, exist_ok=True)
-else:
-    save_path = './working_dir'
 
 
 times = np.arange(0, tmax, dt)
@@ -574,21 +610,40 @@ print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
 
 ## FIT RNN
 print(len(sampling_times))
-model = get_RNN(num_species, num_pert, len(sampling_times))
+
 
 # custom training loop to incorporate prior knowledge
+L2_regs = [1e-8, 1e-7, 1e-6, 1e-5]
+GRU_sizes = [32, 64, 128, 256, 512]
+dy_dx_regs = [1e-2, 1e-3, 1e-4]
 
 
-train_loss, val_loss = custom_fit(inputs, targets, val_prop)
+# best parameters from param scan
+L2_reg = 1e-7
+dy_dx_reg = 0.01
+GRU_size = 256
+
+print(L2_reg, GRU_size, dy_dx_reg)
 
 
 
 
+model = get_RNN(num_species, num_pert, len(sampling_times), GRU_size=GRU_size, L2_reg=L2_reg)
+train_loss, val_loss, model = custom_fit(model, inputs, targets, val_prop, dy_dx_reg=dy_dx_reg, verbose=True)
+
+pred = model.predict(inputs)
+
+np.save(save_path + '/inputs.npy', inputs)
+np.save(save_path + '/preds.npy', pred)
+np.save(save_path + '/preds.npy', pred)
+np.save(save_path + '/targets.npy', targets)
+#model.save(save_path + '/RNN' )
+sys.exit()
 #history = model.fit(inputs, targets, verbose = True, batch_size = batch_size, epochs = n_epochs, validation_split=0.1)
 
 #print(history.history)
 
-pred = model.predict(inputs)
+
 print(pred.shape)
 print(rysim.shape)
 for i in range(10):
