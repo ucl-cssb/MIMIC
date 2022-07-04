@@ -1,4 +1,8 @@
 import random
+import os
+import sys
+gMLV_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'gMLV') # for some readson this is required to get lcluster to see gMLV
+sys.path.append(gMLV_path)
 
 
 import numpy as np
@@ -10,7 +14,7 @@ from scipy.integrate import odeint
 import copy
 from numpy import linalg as la
 import os
-import sys
+
 sys.path.append('../')
 import tensorflow as tf
 #tf.config.run_functions_eagerly(True)
@@ -19,6 +23,7 @@ from tensorflow.keras import layers
 from tensorflow.keras import regularizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from gMLV import *
+from gMLV_sim import *
 import math
 from time import time
 
