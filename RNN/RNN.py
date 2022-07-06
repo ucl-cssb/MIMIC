@@ -460,7 +460,7 @@ def run_epoch(model, opt, inputs, targets, train = True, dy_dx_reg = 1e-5):
         start = batch * batch_size
         end = start + batch_size
 
-        batch_loss = run_batch(model, opt, inputs[start:end], targets[start:end], dy_dx_reg=dy_dx_reg)
+        batch_loss = run_batch(model, opt, inputs[start:end], targets[start:end], dy_dx_reg=dy_dx_reg, train = train)
         batch_losses.append(batch_loss)
         # print('opt time', time() - t)
 
@@ -562,7 +562,7 @@ elif len(sys.argv) == 2:
 else:
     save_path = './working_dir'
 
-n_batch_updates = 300*900/32 # change n_epochs so that the same number of batch updates are run for each test
+n_batch_updates = n_epochs*900/32 # change n_epochs so that the same number of batch updates are run for each test
 n_epochs = int(32*n_batch_updates/(num_timecourses*0.9))
 
 print(num_timecourses, known_zero_prop, species_prob, n_epochs)
@@ -640,9 +640,10 @@ pred = model.predict(inputs)
 
 np.save(save_path + '/inputs.npy', inputs)
 np.save(save_path + '/preds.npy', pred)
-np.save(save_path + '/preds.npy', pred)
 np.save(save_path + '/targets.npy', targets)
-#model.save(save_path + '/RNN' )
+np.save(save_path + '/val_loss.npy', val_loss)
+np.save(save_path + '/train_loss.npy', train_loss)
+#model.save(save_path + '/RNN' ) # not working on cluster
 sys.exit()
 #history = model.fit(inputs, targets, verbose = True, batch_size = batch_size, epochs = n_epochs, validation_split=0.1)
 
