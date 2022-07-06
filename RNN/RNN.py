@@ -530,7 +530,7 @@ simulator = gMLV_sim(num_species=num_species,
 
 num_timecourses = 100
 tmax = 100
-n_epochs = 300
+n_epochs = 500
 batch_size = 32
 noise_std = 0.0
 val_prop = 0.1
@@ -562,8 +562,8 @@ elif len(sys.argv) == 2:
 else:
     save_path = './working_dir'
 
-n_batch_updates = n_epochs*900/32 # change n_epochs so that the same number of batch updates are run for each test
-n_epochs = int(32*n_batch_updates/(num_timecourses*0.9))
+#n_batch_updates = n_epochs*900/32 # change n_epochs so that the same number of batch updates are run for each test
+#n_epochs = int(32*n_batch_updates/(num_timecourses*0.9))
 
 print(num_timecourses, known_zero_prop, species_prob, n_epochs)
 
