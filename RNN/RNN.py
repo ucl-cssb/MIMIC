@@ -247,6 +247,7 @@ def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0.):
 
     #model.add(layers.GRU(256, return_sequences=True))
     model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(L2_reg)))
+    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(L2_reg)))
 
     model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(L2_reg)))
 
