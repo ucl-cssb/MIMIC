@@ -1,6 +1,7 @@
 
 import numpy as np
-
+import matplotlib as mpl
+mpl.use('tkagg')
 import matplotlib.pyplot as plt
 
 
@@ -46,5 +47,15 @@ for exp in range(0, 100):
     print(num_timecourses, known_zero_prop, species_prob, train_loss, val_loss)
 
 for tc in range(0, 4):
+    plt.figure()
+    plt.title('num timecourses ' + str(num_timecoursess[tc]))
+    plt.imshow(errors[tc, :, :, 1], vmax = 0.015)
+    plt.ylabel('known zeros prob')
+    plt.yticks([0,1,2,3], known_zero_props)
+    plt.xlabel('species prob')
+    plt.xticks([0, 1, 2, 3], species_probs)
+    plt.colorbar()
 
     print(num_timecoursess[tc], errors[tc, :, :, 1])
+
+plt.show()
