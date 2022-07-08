@@ -246,7 +246,7 @@ def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0.):
     #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
 
     #model.add(layers.GRU(256, return_sequences=True))
-    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(L2_reg)))
+
     model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(L2_reg)))
 
     model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(L2_reg)))
@@ -532,7 +532,7 @@ if __name__ == '__main__':
 
     num_timecourses = 100
     tmax = 100
-    n_epochs = 1
+    n_epochs = 500
     batch_size = 32
     noise_std = 0.0
     val_prop = 0.1
