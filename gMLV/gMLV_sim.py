@@ -100,4 +100,6 @@ def gMLV(sy, t, nsp, mu, M, beta, C, p):
         q = np.multiply(rho, instantaneous_growth)
         dS = q @ y
 
+
+
     return np.hstack((dN, dS))
