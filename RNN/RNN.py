@@ -549,7 +549,7 @@ if __name__ == '__main__':
         num_timecoursess = [100, 500, 1000, 5000]
         known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
         #species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
-        dy_dx_regs = [10, 1, 0.1, 0.01, 0.001]
+        dy_dx_regs = [100, 10, 1, 0.1, 0.01]
 
         num_timecourses = num_timecoursess[tc]
         known_zero_prop = known_zero_props[zp]
