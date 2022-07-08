@@ -96,14 +96,14 @@ def plot_fit_gMLV(yobs, yobs_h, sobs, sobs_h, timepoints):
     # axs[1].set_ylabel('[metabolite]');
 
 
-def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, times):
+def plot_fit_gMLV_pert(yobs_h, perts, sobs, sobs_h, sampling_times, ysim, times):
     # plot the fit
     fig, axs = plt.subplots(1, 2, figsize = (16., 6.))
 
 
 
-    for species_idx in range(yobs.shape[1]):
-        axs[0].plot(times, ysim[:, species_idx], '--', label = 'simulation')
+    for species_idx in range(ysim.shape[1]):
+        axs[0].plot(sampling_times, ysim[:, species_idx], '--', label = 'simulation')
 
 
     axs[0].set_prop_cycle(None)
@@ -113,7 +113,7 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
 
     axs[0].set_prop_cycle(None)
 
-    for species_idx in range(yobs.shape[1]):
+    for species_idx in range(yobs_h.shape[1]):
         axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 100,marker ='x', label = 'prediction')
 
     axs[0].set_xlabel('time')
@@ -495,184 +495,187 @@ def custom_fit(model, inputs, targets, val_prop, dy_dx_reg = 1e-5, verbose=False
 
     return training_losses, validation_losses, model
 
-np.random.seed(0)
+if __name__ == '__main__':
+    np.random.seed(0)
 
-num_species = 100
-species_prob = 1
-num_pert = 0
-num_metabolites = 0
+    num_species = 100
+    species_prob = 1
+    num_pert = 0
+    num_metabolites = 0
 
-# construct interaction matrix
-zero_prop = 0.7
-known_zero_prop = 0.5
+    # construct interaction matrix
+    zero_prop = 0.7
+    known_zero_prop = 0.5
 
-mu, M, C, ICs = generate_params(num_species, num_pert, hetergeneous=False)
-
-
-zeros = np.where(M==0)
+    mu, M, C, ICs = generate_params(num_species, num_pert, hetergeneous=False)
 
 
-randomize = np.arange(M.shape[0])
-np.random.shuffle(randomize)
-
-known_zeros = [zeros[0][randomize][:int(len(zeros) * known_zero_prop)],
-               zeros[1][randomize][:int(len(zeros) * known_zero_prop)]]
-
-# construct growth rates matrix
+    zeros = np.where(M==0)
 
 
-# instantiate simulator
-simulator = gMLV_sim(num_species=num_species,
-                     num_metabolites=num_metabolites,
-                     M=M,
-                     mu=mu,
-                     C=C)
-#simulator.print()
+    randomize = np.arange(M.shape[0])
+    np.random.shuffle(randomize)
 
-num_timecourses = 100
-tmax = 100
-n_epochs = 500
-batch_size = 32
-noise_std = 0.0
-val_prop = 0.1
+    known_zeros = [zeros[0][randomize][:int(len(zeros) * known_zero_prop)],
+                   zeros[1][randomize][:int(len(zeros) * known_zero_prop)]]
+
+    # construct growth rates matrix
 
 
-if len(sys.argv) == 3:
-    exp = int(sys.argv[2]) -1
+    # instantiate simulator
+    simulator = gMLV_sim(num_species=num_species,
+                         num_metabolites=num_metabolites,
+                         M=M,
+                         mu=mu,
+                         C=C)
+    #simulator.print()
+
+    num_timecourses = 100
+    tmax = 100
+    n_epochs = 1
+    batch_size = 32
+    noise_std = 0.0
+    val_prop = 0.1
 
 
-
-    tc, zp, sp = np.unravel_index(exp, ((4, 5, 5)))  # get indices into param arrays
-    # inestigation scan over
-
-    num_timecoursess = [100, 500, 1000, 5000]
-    known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
-    species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
-
-
-    num_timecourses = num_timecoursess[tc]
-    known_zero_prop = known_zero_props[zp]
-    species_prob = species_probs[sp]
-
-    save_path = sys.argv[1] + '/repeat' + sys.argv[2] + '/'
-
-    os.makedirs(save_path, exist_ok=True)
-elif len(sys.argv) == 2:
-    save_path = sys.argv[1] + '/'
-    os.makedirs(save_path, exist_ok=True)
-else:
-    save_path = './working_dir'
-
-#n_batch_updates = n_epochs*900/32 # change n_epochs so that the same number of batch updates are run for each test
-#n_epochs = int(32*n_batch_updates/(num_timecourses*0.9))
-
-print(num_timecourses, known_zero_prop, species_prob, n_epochs)
-
-transplant_pert = True
-
-if transplant_pert:
-    num_pert = num_species
-sampling_time = 10
-dt = 1
-
-if transplant_pert:
-    ryobs, rysim, all_perts = generate_data_transplant()
-
-    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy', ryobs)
-    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy', rysim)
-    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/perts.npy', all_perts)
-
-    # ryobs = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy')[:num_timecourses]
-    # rysim = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy')[:num_timecourses]
-    # all_perts = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/perts.npy')[:num_timecourses]
-else:
-    ryobs, rysim, all_perts = generate_data_perts()
-
-    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/ryobs.npy', ryobs)
-    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy', rysim)
-    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy', all_perts)
-
-    # ryobs = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/ryobs.npy')[:num_timecourses]
-    # rysim = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy')[:num_timecourses]
-    # all_perts = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy')[:num_timecourses]
+    if len(sys.argv) == 3:
+        exp = int(sys.argv[2]) -1
 
 
 
+        tc, zp, sp = np.unravel_index(exp, ((4, 5, 5)))  # get indices into param arrays
+        # inestigation scan over
 
+        num_timecoursess = [100, 500, 1000, 5000]
+        known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
+        #species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
+        dy_dx_regs = [10, 1, 0.1, 0.01, 0.001]
 
-times = np.arange(0, tmax, dt)
-sampling_times = np.arange(0, tmax, sampling_time)
+        num_timecourses = num_timecoursess[tc]
+        known_zero_prop = known_zero_props[zp]
+        #species_prob = species_probs[sp]
+        species_prob = 1
+        dy_dx_reg = dy_dx_regs[sp]
 
-inputs = copy.deepcopy(ryobs[:,:-1,:])
-print(inputs.shape, all_perts.shape)
-inputs[:, 1:, :] = 0 #rmove everything apart from ICs in inputs
+        save_path = sys.argv[1] + '/repeat' + sys.argv[2] + '/'
 
-inputs = np.concatenate((inputs, all_perts), axis = 2).astype(np.float32)
-print(inputs.shape)
-targets = copy.deepcopy(ryobs[:,1:,:]).astype(np.float32)
+        os.makedirs(save_path, exist_ok=True)
+    elif len(sys.argv) == 2:
+        save_path = sys.argv[1] + '/'
+        os.makedirs(save_path, exist_ok=True)
+    else:
+        save_path = './working_dir'
 
+    #n_batch_updates = n_epochs*900/32 # change n_epochs so that the same number of batch updates are run for each test
+    #n_epochs = int(32*n_batch_updates/(num_timecourses*0.9))
 
-print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
+    print(num_timecourses, known_zero_prop, species_prob, n_epochs)
 
-## FIT RNN
-print(len(sampling_times))
+    transplant_pert = True
 
+    if transplant_pert:
+        num_pert = num_species
+    sampling_time = 10
+    dt = 1
 
-# custom training loop to incorporate prior knowledge
-L2_regs = [1e-8, 1e-7, 1e-6, 1e-5]
-GRU_sizes = [32, 64, 128, 256, 512]
-dy_dx_regs = [1e-2, 1e-3, 1e-4]
+    if transplant_pert:
+        ryobs, rysim, all_perts = generate_data_transplant()
 
+        #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy', ryobs)
+        #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy', rysim)
+        #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/perts.npy', all_perts)
 
-# best parameters from param scan
-L2_reg = 1e-7
-dy_dx_reg = 0.01
-GRU_size = 256
+        # ryobs = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy')[:num_timecourses]
+        # rysim = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy')[:num_timecourses]
+        # all_perts = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/perts.npy')[:num_timecourses]
+    else:
+        ryobs, rysim, all_perts = generate_data_perts()
 
-print(L2_reg, GRU_size, dy_dx_reg)
+        #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/ryobs.npy', ryobs)
+        #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy', rysim)
+        #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy', all_perts)
+
+        # ryobs = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/ryobs.npy')[:num_timecourses]
+        # rysim = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy')[:num_timecourses]
+        # all_perts = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy')[:num_timecourses]
 
 
 
 
-model = get_RNN(num_species, num_pert, len(sampling_times), GRU_size=GRU_size, L2_reg=L2_reg)
-train_loss, val_loss, model = custom_fit(model, inputs, targets, val_prop, dy_dx_reg=dy_dx_reg, verbose=True)
 
-pred = model.predict(inputs)
+    times = np.arange(0, tmax, dt)
+    sampling_times = np.arange(0, tmax, sampling_time)
 
-np.save(save_path + '/inputs.npy', inputs)
-np.save(save_path + '/preds.npy', pred)
-np.save(save_path + '/targets.npy', targets)
-np.save(save_path + '/val_loss.npy', val_loss)
-np.save(save_path + '/train_loss.npy', train_loss)
-#model.save(save_path + '/RNN' ) # not working on cluster
-sys.exit()
-#history = model.fit(inputs, targets, verbose = True, batch_size = batch_size, epochs = n_epochs, validation_split=0.1)
+    inputs = copy.deepcopy(ryobs[:,:-1,:])
+    print(inputs.shape, all_perts.shape)
+    inputs[:, 1:, :] = 0 #rmove everything apart from ICs in inputs
 
-#print(history.history)
+    inputs = np.concatenate((inputs, all_perts), axis = 2).astype(np.float32)
+    print(inputs.shape)
+    targets = copy.deepcopy(ryobs[:,1:,:]).astype(np.float32)
 
 
-print(pred.shape)
-print(rysim.shape)
-for i in range(10):
-    #print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])))
-    #print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])))
-    #plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
-    plot_fit_gMLV_pert(ryobs[-i], np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])), all_perts[-i], None, None, sampling_times, rysim[-i], times)
-    #plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
-    plt.savefig(save_path + '/test_plot_'+str(i) + '.png', dpi = 300)
+    print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
 
-    plot_fit_gMLV_pert(ryobs[i], np.vstack((inputs[i, 0, :num_species][np.newaxis, :], pred[i, :, :])),
-                       all_perts[i], None, None, sampling_times, rysim[i], times)
-    # plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
-    plt.savefig(save_path + '/train_plot_' + str(i) + '.png', dpi=300)
-
-plt.figure()
-plt.plot(train_loss, label = 'train')
-plt.plot(val_loss, label = 'test')
-plt.legend()
-plt.xlabel('epoch')
-plt.ylabel('loss')
-plt.savefig(save_path + '/train_test_SSE.png', dpi=300)
+    ## FIT RNN
+    print(len(sampling_times))
 
 
-plt.show()
+    # custom training loop to incorporate prior knowledge
+    L2_regs = [1e-8, 1e-7, 1e-6, 1e-5]
+    GRU_sizes = [32, 64, 128, 256, 512]
+    dy_dx_regs = [1e-2, 1e-3, 1e-4]
+
+
+    # best parameters from param scan
+    L2_reg = 1e-7
+    #dy_dx_reg = 0.01
+    GRU_size = 256
+
+    print(L2_reg, GRU_size, dy_dx_reg)
+
+
+
+
+    model = get_RNN(num_species, num_pert, len(sampling_times), GRU_size=GRU_size, L2_reg=L2_reg)
+    train_loss, val_loss, model = custom_fit(model, inputs, targets, val_prop, dy_dx_reg=dy_dx_reg, verbose=True)
+
+    pred = model.predict(inputs)
+
+    np.save(save_path + '/inputs.npy', inputs)
+    np.save(save_path + '/preds.npy', pred)
+    np.save(save_path + '/targets.npy', targets)
+    np.save(save_path + '/val_loss.npy', val_loss)
+    np.save(save_path + '/train_loss.npy', train_loss)
+    #model.save(save_path + '/RNN' ) # not working on cluster
+    sys.exit()
+    #history = model.fit(inputs, targets, verbose = True, batch_size = batch_size, epochs = n_epochs, validation_split=0.1)
+
+    #print(history.history)
+
+
+    print(pred.shape)
+    print(rysim.shape)
+    for i in range(10):
+        #print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])))
+        #print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])))
+        #plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
+        plot_fit_gMLV_pert( np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])), all_perts[-i], None, None, sampling_times, rysim[-i], times)
+        #plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
+        plt.savefig(save_path + '/test_plot_'+str(i) + '.png', dpi = 300)
+
+        plot_fit_gMLV_pert(np.vstack((inputs[i, 0, :num_species][np.newaxis, :], pred[i, :, :])),
+                           all_perts[i], None, None, sampling_times, rysim[i], times)
+        # plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
+        plt.savefig(save_path + '/train_plot_' + str(i) + '.png', dpi=300)
+
+    plt.figure()
+    plt.plot(train_loss, label = 'train')
+    plt.plot(val_loss, label = 'test')
+    plt.legend()
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.savefig(save_path + '/train_test_SSE.png', dpi=300)
+
+
+    plt.show()
