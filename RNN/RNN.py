@@ -294,7 +294,7 @@ def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0.):
 
     #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
 
-    #model.add(layers.GRU(256, return_sequences=True))
+    model.add(layers.GRU(256, return_sequences=True))
 
     model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(L2_reg)))
 
@@ -480,7 +480,7 @@ def run_batch(model, opt, batch_inputs, batch_targets, train = True, dy_dx_reg =
 
         #dy_dx = tf.gather_nd(dy_dx[:, :, [1, 2, 3, 0, 0, 4], :, [0, 0, 4, 1, 2, 3] ])
 
-        # TODO:: uncomment following two lines
+
         dy_dx = tf.gather(dy_dx, known_zeros[1], axis = 2)
 
 
@@ -553,8 +553,8 @@ if __name__ == '__main__':
     num_metabolites = 0
 
     # construct interaction matrix
-    zero_prop = 0.0
-    known_zero_prop = 0.
+    zero_prop = 0.5
+    known_zero_prop = 1
 
     mu, M, C, ICs = generate_params(num_species, num_pert, hetergeneous=False)
 
@@ -571,6 +571,8 @@ if __name__ == '__main__':
     else:
         known_zeros = [[],[]]
 
+    print(known_zeros)
+
     # construct growth rates matrix
 
 
@@ -584,11 +586,20 @@ if __name__ == '__main__':
 
     num_timecourses = 1000
     tmax = 100
-    n_epochs = 200
+    n_epochs = 400
     batch_size = 32
     noise_std = 0.0
     val_prop = 0.1
 
+    # custom training loop to incorporate prior knowledge
+    L2_regs = [1e-8, 1e-7, 1e-6, 1e-5]
+    GRU_sizes = [32, 64, 128, 256, 512]
+    dy_dx_regs = [1e-2, 1e-3, 1e-4]
+
+    # best parameters from param scan
+    L2_reg = 1e-7
+    dy_dx_reg = 100
+    GRU_size = 256
 
     if len(sys.argv) == 3:
         exp = int(sys.argv[2]) -1
@@ -673,16 +684,7 @@ if __name__ == '__main__':
     print(len(sampling_times))
 
 
-    # custom training loop to incorporate prior knowledge
-    L2_regs = [1e-8, 1e-7, 1e-6, 1e-5]
-    GRU_sizes = [32, 64, 128, 256, 512]
-    dy_dx_regs = [1e-2, 1e-3, 1e-4]
 
-
-    # best parameters from param scan
-    L2_reg = 1e-7
-    #dy_dx_reg = 100
-    GRU_size = 256
 
     print(L2_reg, GRU_size, dy_dx_reg)
 
