@@ -262,10 +262,12 @@ def generate_params(num_species, num_pert, hetergeneous = False):
     # the interaction matrix
     A = 1/s*N@H*a
 
-
-
+    # TODO:: remove this line
+    #A = np.zeros_like(A)
     #set all diagonal elements to -1 to ensure stability
     np.fill_diagonal(A,-1)
+
+
 
 
     # generate feasible growth rate
@@ -294,7 +296,7 @@ def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0.):
 
     #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
 
-    model.add(layers.GRU(256, return_sequences=True))
+    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True))
 
     model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(L2_reg)))
 
@@ -467,34 +469,71 @@ def run_batch(model, opt, batch_inputs, batch_targets, train = True, dy_dx_reg =
     #t_inputs = batch_inputs
     #batch_inputs = tf.Variable(batch_inputs, dtype=float)  # (32, 9, 10)
     # targets = tf.Variable(targets[start:end], dtype = float)
+
+
     with tf.GradientTape() as model_tape:
-        with tf.GradientTape() as loss_tape:
+        with tf.GradientTape(persistent=True) as loss_tape:
             loss_tape.watch(batch_inputs)
+
             pred = model(batch_inputs)  # (32, 9, 10)
+            loss_tape.watch(pred)
+
+            #prev_steps = tf.concat([tf.expand_dims(batch_inputs[:, 0, :num_species], 1), pred[:, 0:-1, :]], axis=1)
+            prev_steps = pred[:, 0:-1, :]
+
+
+            loss_tape.watch(prev_steps)
             # print(t_inputs.shape)
             # print(pred.shape)
 
             # print(loss_tape.gradient(pred[0], t_inputs[1]))
+            #sliced_ins = tf.expand_dims(batch_inputs[:,0,:num_species],1)
         # dy_dx = loss_tape.gradient(pred, t_inputs, unconnected_gradients=tf.UnconnectedGradients.ZERO) # (32, 9, 10)
-        dy_dx = loss_tape.batch_jacobian(pred, batch_inputs)#[0, :, [0,1,2] , :, [1, 2, 3]]  # (32, 9, 10, 9, 10)
 
+        # first get gradients of pred wrt inputs
+        dy_dx = loss_tape.batch_jacobian(pred,
+                                         batch_inputs)  # [0, :, [0,1,2] , :, [1, 2, 3]]  # (batch, time, species, time, species+inputs)
+
+        dy_dx_loss = 0.
+
+        for n in range(len(known_zeros[0])):
+            dy_dx_loss = tf.add(dy_dx_loss, tf.reduce_mean(tf.square(dy_dx[:, 0, known_zeros[1][n], 0, known_zeros[0][n]]))) # [all_batches, first pred, sp, ICs, sp]
+            # tf.print(tf.reduce_mean(tf.square(dy_dx[:,:,known_zeros[1][n], :, known_zeros[0][n]])))
+
+
+
+        dy_dx = loss_tape.batch_jacobian(pred, pred)#[0, :, [0,1,2] , :, [1, 2, 3]]  # (batch, time, species, time, species)
+
+        for n in range(len(known_zeros[0])):
+            tf.print(dy_dx[0, :, known_zeros[1][n], :, known_zeros[0][n]])
+            tf.print(tf.reduce_mean(tf.square(dy_dx)))
+            tf.print(tf.reduce_mean(tf.square(dy_dx[:, :, known_zeros[1][n], :, known_zeros[0][n]])))
+            dy_dx_loss = tf.add(dy_dx_loss, tf.reduce_mean(tf.square(dy_dx[:, :, known_zeros[1][n], :, known_zeros[0][n]])))# [all_batches, all_ts, sp, all_ts, sp]
+        tf.print(dy_dx.shape)
         #dy_dx = tf.gather_nd(dy_dx[:, :, [1, 2, 3, 0, 0, 4], :, [0, 0, 4, 1, 2, 3] ])
 
+        tf.print(dy_dx.shape)
 
-        dy_dx = tf.gather(dy_dx, known_zeros[1], axis = 2)
-
-
-        dy_dx = tf.gather(dy_dx,known_zeros[0], axis= 4)
+        # have to do it like this because tensorflow doesnt have integer array indexing
 
 
 
-        #tf.print(tf.math.reduce_mean(tf.square(dy_dx)), tf.math.reduce_mean(tf.square(pred - batch_targets)))
+        #dy_dx = tf.gather(dy_dx, known_zeros[1], axis = 2)
+        tf.print(dy_dx_loss)
 
-        loss = tf.math.reduce_mean(tf.square(pred - batch_targets)) + dy_dx_reg*tf.math.reduce_mean(tf.square(dy_dx))
+        #dy_dx = tf.gather(dy_dx,known_zeros[0], axis= 4)
+
+
+        tf.print(dy_dx_reg,pred.shape, batch_inputs.shape,dy_dx.shape, tf.math.reduce_mean(tf.square(pred - batch_targets)), tf.multiply(dy_dx_reg, dy_dx_loss))
+
+        #loss = tf.add(tf.math.reduce_mean(tf.square(pred - batch_targets)), tf.multiply(dy_dx_reg, dy_dx_loss))
+        loss = tf.multiply(dy_dx_reg, dy_dx_loss)
         # print('loss time', time() - t)
 
     if train:
         loss_grad = model_tape.gradient(loss, model.trainable_variables)
+
+        #tf.print( loss_grad)
         # print('grad time', time() - t)
 
         opt.apply_gradients(zip(loss_grad, model.trainable_variables))
@@ -509,6 +548,7 @@ def run_epoch(model, opt, inputs, targets, train = True, dy_dx_reg = 1e-5):
     for batch in range(n_batches):
         start = batch * batch_size
         end = start + batch_size
+
 
         batch_loss = run_batch(model, opt, inputs[start:end], targets[start:end], dy_dx_reg=dy_dx_reg, train = train)
         batch_losses.append(batch_loss)
@@ -545,7 +585,7 @@ def custom_fit(model, inputs, targets, val_prop, dy_dx_reg = 1e-5, verbose=False
     return training_losses, validation_losses, model
 
 if __name__ == '__main__':
-    np.random.seed(0)
+    set_all_seeds(0)
 
     num_species = 10
     species_prob = 1
@@ -553,7 +593,7 @@ if __name__ == '__main__':
     num_metabolites = 0
 
     # construct interaction matrix
-    zero_prop = 0.5
+    zero_prop = 0
     known_zero_prop = 1
 
     mu, M, C, ICs = generate_params(num_species, num_pert, hetergeneous=False)
@@ -565,12 +605,16 @@ if __name__ == '__main__':
     randomize = np.arange(M.shape[0])
     np.random.shuffle(randomize)
 
-    if known_zero_prop > 0:
+    if known_zero_prop > 0 and zero_prop > 0:
         known_zeros = [zeros[0][randomize][:int(len(zeros) * known_zero_prop)],
                    zeros[1][randomize][:int(len(zeros) * known_zero_prop)]]
     else:
         known_zeros = [[],[]]
-
+    # TODO:: remove these lines
+    eye = np.eye(M.shape[0])
+    zeros = np.where(eye == 0)
+    known_zeros = [zeros[0],
+                   zeros[1]]
     print(known_zeros)
 
     # construct growth rates matrix
@@ -584,9 +628,9 @@ if __name__ == '__main__':
                          C=C)
     #simulator.print()
 
-    num_timecourses = 1000
+    num_timecourses = 500
     tmax = 100
-    n_epochs = 400
+    n_epochs = 10
     batch_size = 32
     noise_std = 0.0
     val_prop = 0.1
@@ -598,7 +642,7 @@ if __name__ == '__main__':
 
     # best parameters from param scan
     L2_reg = 1e-7
-    dy_dx_reg = 100
+    dy_dx_reg = 1e6
     GRU_size = 256
 
     if len(sys.argv) == 3:
@@ -612,7 +656,7 @@ if __name__ == '__main__':
         num_timecoursess = [100, 500, 1000, 5000]
         known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
         #species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
-        dy_dx_regs = [10000, 1000, 100, 10, 0]
+        dy_dx_regs = [10000., 1000., 100., 10., 0]
 
         num_timecourses = num_timecoursess[tc]
         known_zero_prop = known_zero_props[zp]
