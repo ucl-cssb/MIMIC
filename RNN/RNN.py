@@ -516,7 +516,7 @@ def run_batch(model, opt, batch_data, train = True, dy_dx_reg = 1e-5):
             #loss_grad = model_tape.gradient(loss, model.trainable_variables)
             #accum_grad = [(a_grad + grad/int(tmax//sampling_time)) for a_grad, grad in zip(accum_grad, loss_grad)] # accumulate the mean gradient
             abundances = pred
-        tf.print(dy_dx_reg,pred.shape, batch_inputs.shape,dy_dx.shape,total_pred_loss,total_reg_loss)
+
         total_loss = tf.divide(tf.add(total_reg_loss, total_pred_loss), batch_size)
         #
 
