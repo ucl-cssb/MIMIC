@@ -161,7 +161,8 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
     #    axs[0].scatter(sampling_times, yobs[:, species_idx],s= 100,marker ='o', label = 'simulation')
 
     axs[0].set_prop_cycle(None)
-
+    print(yobs_h[:, species_idx].shape)
+    print(sampling_times)
     for species_idx in range(yobs.shape[1]):
         axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 100,marker ='x', label = 'prediction')
 
@@ -262,8 +263,7 @@ def generate_params(num_species, num_pert, hetergeneous = False):
     # the interaction matrix
     A = 1/s*N@H*a
 
-    # TODO:: remove this line
-    #A = np.zeros_like(A)
+
     #set all diagonal elements to -1 to ensure stability
     np.fill_diagonal(A,-1)
 
@@ -292,13 +292,13 @@ def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0.):
     model = keras.Sequential()
 
     # The output of GRU will be a 3D tensor of shape (batch_size, timesteps, 256)
-    model.add(keras.Input(shape=(num_ts - 1, num_species + num_pert), name="S_input"))
+    model.add(keras.Input(shape=(num_ts - 1, num_species + num_pert), name="S_input", batch_size = batch_size))
 
     #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
 
-    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True))
+    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, stateful = True))
 
-    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, kernel_regularizer=regularizers.L2(L2_reg)))
+    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, stateful = True, kernel_regularizer=regularizers.L2(L2_reg)))
 
     model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(L2_reg)))
 
@@ -464,106 +464,112 @@ def generate_data_transplant():
 # establish size of model
 
 @tf.function
-def run_batch(model, opt, batch_inputs, batch_targets, train = True, dy_dx_reg = 1e-5):
+def run_batch(model, opt, batch_data, train = True, dy_dx_reg = 1e-5):
 
     #t_inputs = batch_inputs
-    #batch_inputs = tf.Variable(batch_inputs, dtype=float)  # (32, 9, 10)
+    #batch_inputs = tf.Variable(batch_inputs, dtype=float)  # (32, 1, 10)
     # targets = tf.Variable(targets[start:end], dtype = float)
 
 
-    with tf.GradientTape() as model_tape:
-        with tf.GradientTape(persistent=True) as loss_tape:
-            loss_tape.watch(batch_inputs)
 
-            pred = model(batch_inputs)  # (32, 9, 10)
-            loss_tape.watch(pred)
+    with tf.GradientTape(persistent = True) as model_tape:
 
-            #prev_steps = tf.concat([tf.expand_dims(batch_inputs[:, 0, :num_species], 1), pred[:, 0:-1, :]], axis=1)
-            prev_steps = pred[:, 0:-1, :]
+        # get trainable variables
+        train_vars = model.trainable_variables
+        # Create empty gradient list (not a tf.Variable list)
+        accum_grad = [tf.zeros_like(this_var) for this_var in train_vars]
 
+        abundances = batch_data[:, 0:1, :num_species] #get ICs
+        all_preds = [abundances]
+        total_pred_loss = 0.
+        total_reg_loss = 0.
 
-            loss_tape.watch(prev_steps)
-            # print(t_inputs.shape)
-            # print(pred.shape)
+        for i in range(int(tmax//sampling_time)-1):
 
-            # print(loss_tape.gradient(pred[0], t_inputs[1]))
-            #sliced_ins = tf.expand_dims(batch_inputs[:,0,:num_species],1)
-        # dy_dx = loss_tape.gradient(pred, t_inputs, unconnected_gradients=tf.UnconnectedGradients.ZERO) # (32, 9, 10)
+            perts = batch_data[:, i:i+1, num_species:]  # get perts for the first timestep
 
-        # first get gradients of pred wrt inputs
-        dy_dx = loss_tape.batch_jacobian(pred,
-                                         batch_inputs)  # [0, :, [0,1,2] , :, [1, 2, 3]]  # (batch, time, species, time, species+inputs)
+            batch_inputs = tf.concat([abundances, perts], 2)
 
-        dy_dx_loss = 0.
+            with tf.GradientTape(persistent=True) as loss_tape:
+                loss_tape.watch(batch_inputs)
 
-        for n in range(len(known_zeros[0])):
-            dy_dx_loss = tf.add(dy_dx_loss, tf.reduce_mean(tf.square(dy_dx[:, 0, known_zeros[1][n], 0, known_zeros[0][n]]))) # [all_batches, first pred, sp, ICs, sp]
-            # tf.print(tf.reduce_mean(tf.square(dy_dx[:,:,known_zeros[1][n], :, known_zeros[0][n]])))
+                #tf.print('timestep', i)
+                pred = model(batch_inputs)  # (32, 1, 10)
+            all_preds.append(pred)
+            # first get gradients of pred wrt inputs
+            dy_dx = loss_tape.batch_jacobian(pred,
+                                             batch_inputs)  #  (batch, time, species, time, species+perts)
 
-
-
-        dy_dx = loss_tape.batch_jacobian(pred, pred)#[0, :, [0,1,2] , :, [1, 2, 3]]  # (batch, time, species, time, species)
-
-        for n in range(len(known_zeros[0])):
-            tf.print(dy_dx[0, :, known_zeros[1][n], :, known_zeros[0][n]])
-            tf.print(tf.reduce_mean(tf.square(dy_dx)))
-            tf.print(tf.reduce_mean(tf.square(dy_dx[:, :, known_zeros[1][n], :, known_zeros[0][n]])))
-            dy_dx_loss = tf.add(dy_dx_loss, tf.reduce_mean(tf.square(dy_dx[:, :, known_zeros[1][n], :, known_zeros[0][n]])))# [all_batches, all_ts, sp, all_ts, sp]
-        tf.print(dy_dx.shape)
-        #dy_dx = tf.gather_nd(dy_dx[:, :, [1, 2, 3, 0, 0, 4], :, [0, 0, 4, 1, 2, 3] ])
-
-        tf.print(dy_dx.shape)
-
-        # have to do it like this because tensorflow doesnt have integer array indexing
+            dy_dx_loss = 0.
+            for n in range(len(known_zeros[0])):
+                #tf.print(known_zeros[1][n], 0, known_zeros[0][n])
+                #tf.print(dy_dx.shape)
+                #tf.print(dy_dx[:, 0, known_zeros[1][n], 0, known_zeros[0][n]].shape)
+                dy_dx_loss = tf.add(dy_dx_loss, tf.reduce_mean(tf.square(
+                    dy_dx[:, 0, known_zeros[1][n], 0, known_zeros[0][n]])))  # [all_batches, 1, n_sp, 1, n_sp]
 
 
+            targets = batch_data[:, i+1:i+2, :num_species] # get the targets for this time point
+            #loss = tf.add(tf.math.reduce_mean(tf.square(pred - targets)), tf.multiply(dy_dx_reg, dy_dx_loss))
+            total_pred_loss = tf.add(total_pred_loss, tf.math.reduce_mean(tf.square(pred - targets)))
+            total_reg_loss = tf.add(total_reg_loss, tf.multiply(dy_dx_reg, dy_dx_loss))
+            #loss_grad = model_tape.gradient(loss, model.trainable_variables)
+            #accum_grad = [(a_grad + grad/int(tmax//sampling_time)) for a_grad, grad in zip(accum_grad, loss_grad)] # accumulate the mean gradient
+            abundances = pred
+        tf.print(dy_dx_reg,pred.shape, batch_inputs.shape,dy_dx.shape,total_pred_loss,total_reg_loss)
+        total_loss = tf.divide(tf.add(total_reg_loss, total_pred_loss), batch_size)
+        #
 
-        #dy_dx = tf.gather(dy_dx, known_zeros[1], axis = 2)
-        tf.print(dy_dx_loss)
-
-        #dy_dx = tf.gather(dy_dx,known_zeros[0], axis= 4)
-
-
-        tf.print(dy_dx_reg,pred.shape, batch_inputs.shape,dy_dx.shape, tf.math.reduce_mean(tf.square(pred - batch_targets)), tf.multiply(dy_dx_reg, dy_dx_loss))
-
-        #loss = tf.add(tf.math.reduce_mean(tf.square(pred - batch_targets)), tf.multiply(dy_dx_reg, dy_dx_loss))
-        loss = tf.multiply(dy_dx_reg, dy_dx_loss)
         # print('loss time', time() - t)
 
     if train:
-        loss_grad = model_tape.gradient(loss, model.trainable_variables)
 
         #tf.print( loss_grad)
         # print('grad time', time() - t)
 
-        opt.apply_gradients(zip(loss_grad, model.trainable_variables))
+        grad = model_tape.gradient(total_loss, train_vars)
 
-    return loss
+        opt.apply_gradients(zip(grad, train_vars))
+
+    model.reset_states()
+
+    return all_preds,  total_loss
 
 
-def run_epoch(model, opt, inputs, targets, train = True, dy_dx_reg = 1e-5):
+def run_epoch(model, opt, data, train = True, dy_dx_reg = 1e-5):
     batch_losses = []
-    n_batches = math.ceil(inputs.shape[0] / batch_size)
-
+    n_batches = data.shape[0] // batch_size
+    all_preds = []
     for batch in range(n_batches):
         start = batch * batch_size
         end = start + batch_size
 
 
-        batch_loss = run_batch(model, opt, inputs[start:end], targets[start:end], dy_dx_reg=dy_dx_reg, train = train)
+        preds, batch_loss = run_batch(model, opt, data[start:end],  dy_dx_reg=dy_dx_reg, train = train)
+
+        preds = np.squeeze(np.array(preds), 2)
+
+        preds = np.swapaxes(preds, 0, 1)
+        all_preds.extend(preds)
+
+
         batch_losses.append(batch_loss)
         # print('opt time', time() - t)
 
-    return batch_losses
+    return all_preds, batch_losses
 
-def custom_fit(model, inputs, targets, val_prop, dy_dx_reg = 1e-5, verbose=False):
+def custom_fit(model, data, val_prop, dy_dx_reg = 1e-5, verbose=False):
 
     split = int((1-val_prop)*len(inputs))
-    train_inputs = inputs[:split]
-    train_targets = targets[:split]
+    # round split to multiple of batch size, assuming there is a multiple of batch size simulations then both training and valudation will be also
+    split = batch_size * math.floor(split/batch_size)
+    train_data= data[:split]
 
-    val_inputs = inputs[split:]
-    val_targets = targets[split:]
+
+    val_data = data[split:]
+
+
+
 
     opt = keras.optimizers.Adam()
 
@@ -572,8 +578,8 @@ def custom_fit(model, inputs, targets, val_prop, dy_dx_reg = 1e-5, verbose=False
 
     for epoch in range(n_epochs):
 
-        train_losses = run_epoch(model, opt, train_inputs, train_targets, train=True, dy_dx_reg=dy_dx_reg)
-        val_losses = run_epoch(model, opt, val_inputs, val_targets, train=False, dy_dx_reg=dy_dx_reg)
+        train_preds, train_losses = run_epoch(model, opt, train_data, train=True, dy_dx_reg=dy_dx_reg)
+        val_preds, val_losses = run_epoch(model, opt, val_data, train=False, dy_dx_reg=dy_dx_reg)
 
         training_losses.append(tf.math.reduce_mean(train_losses))
 
@@ -582,7 +588,7 @@ def custom_fit(model, inputs, targets, val_prop, dy_dx_reg = 1e-5, verbose=False
         if verbose:
             tf.print('epoch:', epoch, training_losses[-1], validation_losses[-1])
 
-    return training_losses, validation_losses, model
+    return train_preds, val_preds, training_losses, validation_losses, model
 
 if __name__ == '__main__':
     set_all_seeds(0)
@@ -610,12 +616,15 @@ if __name__ == '__main__':
                    zeros[1][randomize][:int(len(zeros) * known_zero_prop)]]
     else:
         known_zeros = [[],[]]
+
+    '''
     # TODO:: remove these lines
     eye = np.eye(M.shape[0])
     zeros = np.where(eye == 0)
     known_zeros = [zeros[0],
                    zeros[1]]
     print(known_zeros)
+    '''
 
     # construct growth rates matrix
 
@@ -628,12 +637,16 @@ if __name__ == '__main__':
                          C=C)
     #simulator.print()
 
-    num_timecourses = 500
+    num_timecourses = 640
+
+
     tmax = 100
-    n_epochs = 10
+    n_epochs = 200
     batch_size = 32
     noise_std = 0.0
     val_prop = 0.1
+
+    # training set and testing set have to be a multiple of batch size
 
     # custom training loop to incorporate prior knowledge
     L2_regs = [1e-8, 1e-7, 1e-6, 1e-5]
@@ -642,7 +655,8 @@ if __name__ == '__main__':
 
     # best parameters from param scan
     L2_reg = 1e-7
-    dy_dx_reg = 1e6
+    dy_dx_reg = 1e1
+    #dy_dx_reg = 0.
     GRU_size = 256
 
     if len(sys.argv) == 3:
@@ -656,7 +670,7 @@ if __name__ == '__main__':
         num_timecoursess = [100, 500, 1000, 5000]
         known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
         #species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
-        dy_dx_regs = [10000., 1000., 100., 10., 0]
+        dy_dx_regs = [1e3, 1e2, 1e1, 1., 1e-1]
 
         num_timecourses = num_timecoursess[tc]
         known_zero_prop = known_zero_props[zp]
@@ -715,11 +729,19 @@ if __name__ == '__main__':
 
     inputs = copy.deepcopy(ryobs[:,:-1,:])
     print(inputs.shape, all_perts.shape)
-    inputs[:, 1:, :] = 0 #rmove everything apart from ICs in inputs
+    #inputs[:, 1:, :] = 0 #rmove everything apart from ICs in inputs
 
-    inputs = np.concatenate((inputs, all_perts), axis = 2).astype(np.float32)
-    print(inputs.shape)
+    #inputs = inputs[:,0:1,:] # change to inputting each timestep sequentially for dy_dx calculation
+    #print(all_perts.shape)
+    #inputs = np.concatenate((inputs, all_perts[:, 0:1, :]), axis = 2).astype(np.float32)
+
+    #print(inputs.shape)
     targets = copy.deepcopy(ryobs[:,1:,:]).astype(np.float32)
+
+    # add 0 perturbation to the end so that shapes match
+    all_perts = np.concatenate((all_perts, np.zeros(all_perts[:, 0:1, :].shape)), axis = 1)
+
+    data = np.concatenate((ryobs, all_perts), axis = 2).astype(np.float32) # species levels and perturbations for each time point
 
 
     print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
@@ -736,9 +758,12 @@ if __name__ == '__main__':
 
 
     model = get_RNN(num_species, num_pert, len(sampling_times), GRU_size=GRU_size, L2_reg=L2_reg)
-    train_loss, val_loss, model = custom_fit(model, inputs, targets, val_prop, dy_dx_reg=dy_dx_reg, verbose=True)
+    train_preds, val_preds, train_loss, val_loss, model = custom_fit(model, data, val_prop, dy_dx_reg=dy_dx_reg, verbose=True)
+    train_preds.extend(val_preds)
 
-    pred = model.predict(inputs)
+    pred = np.array(train_preds)
+
+
 
     np.save(save_path + '/inputs.npy', inputs)
     np.save(save_path + '/preds.npy', pred)
@@ -758,13 +783,13 @@ if __name__ == '__main__':
         # print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])))
         # print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])))
         # plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
-        plot_fit_gMLV_pert(ryobs[-i], np.vstack((inputs[-i, 0, :num_species][np.newaxis, :], pred[-i, :, :])),
-                           all_perts[-i], None, None, sampling_times, rysim[-i], times)
+        plot_fit_gMLV_pert(ryobs[-i], pred[-i, :, :],
+                           all_perts[-i, 0:-1, :], None, None, sampling_times, rysim[-i], times)
         # plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
         plt.savefig(save_path + '/test_plot_' + str(i) + '.png', dpi=300)
 
-        plot_fit_gMLV_pert(ryobs[i], np.vstack((inputs[i, 0, :num_species][np.newaxis, :], pred[i, :, :])),
-                           all_perts[i], None, None, sampling_times, rysim[i], times)
+        plot_fit_gMLV_pert(ryobs[i], pred[i, :, :],
+                           all_perts[i, 0:-1, :], None, None, sampling_times, rysim[i], times)
         # plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
         plt.savefig(save_path + '/train_plot_' + str(i) + '.png', dpi=300)
 
