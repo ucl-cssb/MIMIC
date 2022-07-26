@@ -38,12 +38,8 @@ plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 
-def simulate(us, plot = False, calculate_FIM = True):
+def simulate(env, us, plot = False, calculate_FIM = True):
     # test simulation
-
-
-
-
     if calculate_FIM:
         env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='OED')
         trajectory_solver = env.get_sampled_trajectory_solver(N_control_intervals, control_interval_time, dt)
@@ -114,6 +110,8 @@ def simulate(us, plot = False, calculate_FIM = True):
 
         plt.show()
 
+    return est_trajectory
+
 
 if __name__ == '__main__':
     #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
@@ -166,7 +164,8 @@ if __name__ == '__main__':
     #us = np.array([[0,1,1]]*N_control_intervals).T*scale_factor
 
     us = np.load('working_dir/us.npy').T
-    simulate(us, plot=True)
+
+    simulate(env, us, plot=True)
 
 
 

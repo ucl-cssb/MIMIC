@@ -237,8 +237,7 @@ def compare_params(mu=None, M=None, alpha=None, e=None):
         ax.stem(np.arange(0, e[0].shape[0]), np.array(e[0]).flatten(), markerfmt="X")
         ax.set_ylabel('e[i]');
 
-
-def generate_params(num_species, num_pert, hetergeneous = False):
+def generate_params(num_species, num_pert, zero_prop = 0, hetergeneous = False):
 
     '''
     generates parameters for GLV simulation according to Cao et al 2017
@@ -267,9 +266,6 @@ def generate_params(num_species, num_pert, hetergeneous = False):
     #set all diagonal elements to -1 to ensure stability
     np.fill_diagonal(A,-1)
 
-
-
-
     # generate feasible growth rate
     r = np.random.uniform(0.00001,1, size = (num_species))
     ss = -np.linalg.inv(A)@r
@@ -286,25 +282,6 @@ def generate_params(num_species, num_pert, hetergeneous = False):
     ICs = ss # this can be change to start slightly away from ss
 
     return r, A, C, ICs
-
-
-def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0.):
-    model = keras.Sequential()
-
-    # The output of GRU will be a 3D tensor of shape (batch_size, timesteps, 256)
-    model.add(keras.Input(shape=(num_ts - 1, num_species + num_pert), name="S_input", batch_size = batch_size))
-
-    #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
-
-    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, stateful = True))
-
-    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, stateful = True, kernel_regularizer=regularizers.L2(L2_reg)))
-
-    model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(L2_reg)))
-
-    #model.compile(optimizer=keras.optimizers.Adam(), loss='mse')
-
-    return model
 
 
 def binary_step_pert(t, pert_matrix, dt):
@@ -458,7 +435,27 @@ def generate_data_transplant():
     all_perts = np.array(all_perts)
 
     return ryobs, rysim, all_perts
+
 #set_all_seeds(1234)
+
+
+def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0.):
+    model = keras.Sequential()
+
+    # The output of GRU will be a 3D tensor of shape (batch_size, timesteps, 256)
+    model.add(keras.Input(shape=(num_ts - 1, num_species + num_pert), name="S_input", batch_size = batch_size))
+
+    #model.add(layers.Dense(100, use_bias = False)) # 'embedding' layer
+
+    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, stateful = True))
+
+    model.add(layers.GRU(GRU_size, return_sequences=True, unroll = True, stateful = True, kernel_regularizer=regularizers.L2(L2_reg)))
+
+    model.add(layers.Dense(num_species, kernel_regularizer=regularizers.L2(L2_reg)))
+
+    #model.compile(optimizer=keras.optimizers.Adam(), loss='mse')
+
+    return model
 
 ## SETUP MODEL
 # establish size of model
@@ -593,19 +590,20 @@ def custom_fit(model, data, val_prop, dy_dx_reg = 1e-5, verbose=False):
 if __name__ == '__main__':
     set_all_seeds(0)
 
-    num_species = 10
+    num_species = 100
     species_prob = 1
     num_pert = 0
     num_metabolites = 0
 
     # construct interaction matrix
-    zero_prop = 0
+    zero_prop = 0.75
     known_zero_prop = 1
 
-    mu, M, C, ICs = generate_params(num_species, num_pert, hetergeneous=False)
+    mu, M, C, ICs = generate_params(num_species, num_pert, zero_prop = zero_prop, hetergeneous=False)
 
 
     zeros = np.where(M==0)
+
 
 
     randomize = np.arange(M.shape[0])
