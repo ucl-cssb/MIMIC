@@ -106,3 +106,203 @@ def gMLV(sy, t, nsp, mu, M, beta, C, p):
 
 
 
+def generate_params(num_species, num_pert, zero_prop = 0, hetergeneous = False):
+
+    '''
+    generates parameters for GLV simulation according to Cao et al 2017
+    '''
+
+    N = np.random.normal(0, 1, (num_species, num_species))
+
+    if hetergeneous:
+        y = 1.2
+        u = np.random.uniform(0, 1, size=(num_species))
+        H = (1-u)**(1/(1-y))
+        H = np.diag(H)
+        s = np.sum(H)
+    else:
+        H = np.eye(num_species)
+        #s = 1 from the paper
+        s = np.sum(H) # to prevent instability when more species
+
+    a = np.random.binomial(1, 1-zero_prop, size=(num_species, num_species))
+
+
+    # the interaction matrix
+    A = 1/s*N@H*a
+
+
+    #set all diagonal elements to -1 to ensure stability
+    np.fill_diagonal(A,-1)
+
+    # generate feasible growth rate
+    r = np.random.uniform(0.00001,1, size = (num_species))
+    ss = -np.linalg.inv(A)@r
+
+    while not np.all(ss>=0):
+        r = np.random.uniform(0.00001, 1., size=(num_species)) # changed max from 1 to 0.5 for stability of binary perts with few species
+        ss = -np.linalg.inv(A) @ r
+
+
+    C = np.random.uniform(-3,3, size = (num_species, num_pert)) * 1/s
+
+
+    # for the binary pert scheme choose ICs to be close to the ss
+    ICs = ss # this can be change to start slightly away from ss
+
+    return r, A, C, ICs
+
+
+def binary_step_pert(t, pert_matrix, dt):
+    i = min(int(t//dt), len(pert_matrix)-1) # solver sometimes goes slightly past end of time interval
+
+    p = pert_matrix[i]
+    return p
+
+def generate_data_perts():
+    ryobs = []  # species
+    rsobs = []  # metabolites
+    rysim = []
+    rssim = []
+    ry0 = []
+    rs0 = []
+    all_perts = []
+
+    times = np.arange(0, tmax, dt)
+
+
+    for timecourse_idx in range(num_timecourses):
+        if timecourse_idx%100 == 0:
+            print(timecourse_idx/num_timecourses * 100)
+
+        # generate binary perturbations matrix
+        pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time-1, num_pert))
+        #pert_matrix = np.zeros((tmax // sampling_time - 1, num_pert))
+
+        all_perts.append(pert_matrix)
+
+        # initial conditions
+        init_species = np.random.uniform(low=0, high=2, size=(num_species,)) * ICs * np.random.binomial(1, species_prob, size=(num_species,))
+        init_metabolites = np.random.uniform(low=10, high=50, size=num_metabolites)
+
+        ysim, ssim, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((init_species, init_metabolites)),
+                                                       p=lambda t: binary_step_pert(t, pert_matrix, sampling_time))
+        if np.sum(ysim > 10)<0: # instability
+            print('unstable')
+        else:
+            yobs = ysim[0:-1:int(sampling_time // dt)]
+            sobs = ssim[0:-1:int(sampling_time // dt)]
+            # add some gaussian noise
+            yobs = yobs + np.random.normal(loc=0, scale=noise_std, size=yobs.shape)
+            sobs = sobs + np.random.normal(loc=0, scale=noise_std, size=sobs.shape)
+
+            # append results
+            ryobs.append(yobs)
+            rsobs.append(sobs)
+            rysim.append(ysim)
+            rssim.append(rssim)
+
+            ry0.append(init_species)
+            rs0.append(init_metabolites)
+        # Xs, Fs = linearize_time_course_16S(yobs,times)
+        # X = np.vstack([X, Xs])
+        # F = np.vstack([F, Fs])
+
+    ryobs = np.array(ryobs)
+    rysim = np.array(rysim)
+    all_perts = np.array(all_perts)
+
+    return ryobs, rysim, all_perts
+
+
+def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, steady_state, species_prob = 1, num_metabolites=0, noise_std = 0):
+    ryobs = []  # species
+    rsobs = []  # metabolites
+    rysim = []
+    rssim = []
+    ry0 = []
+    rs0 = []
+    all_perts = []
+
+    times = np.arange(0, sampling_time, dt)
+
+    num_species = simulator.nsp
+
+
+    for timecourse_idx in range(num_timecourses):
+        # generate binary perturbations matrix
+        # pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time-1, num_pert
+        #                                               ))
+        if timecourse_idx%100 == 0:
+            print(timecourse_idx/num_timecourses * 100)
+
+        # initial conditions
+        init_species = np.random.uniform(low=0, high=2, size=(1, num_species)) * steady_state * np.random.binomial(1, species_prob, size=(1, num_species))
+        init_metabolites = np.random.uniform(low=10, high=50, size=(1,num_metabolites))
+
+        ysim = []
+        ssim = []
+
+        p_matrix = []
+        ys = init_species
+        ss = init_metabolites
+        yobs = [ys[0]]
+        sobs = [ss[0]]
+
+        p = np.zeros((num_species,))
+        perturbed = False
+        for i in range(int(tmax//sampling_time)):
+
+            #print(yo.shape, ss.shape)
+
+            ys, ss, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((ys[-1,:], ss[-1,:])))
+
+            ys[-1, :] += p
+            ys[ys < 0] = 0
+
+
+            #print(yo.shape, ss.shape)
+            yo = ys[-1]
+            so = ss[-1]
+            # add some gaussian noise
+
+            yo = yo + np.random.normal(loc=0, scale=noise_std, size=yo.shape)
+            so = so + np.random.normal(loc=0, scale=noise_std, size=so.shape)
+
+            ysim.extend(ys)
+            ssim.extend(ss)
+
+
+            if i < int(tmax//sampling_time)-1:
+
+                yobs.append(yo)
+                sobs.append(so)
+
+                if np.random.uniform() < 0.1 and not perturbed:
+                    perturbed = True
+
+                    #p_rem = np.random.uniform(low=-1, high=0, size=(num_species,))
+                    p_add = np.random.uniform(low=0, high=1, size=(num_species,)) * steady_state * np.random.binomial(1, species_prob, size=(num_species, ))
+                    p =  p_add
+                else:
+                    p = np.zeros((num_species,))
+                p_matrix.append(p)
+
+        all_perts.append(p_matrix)
+        # append results
+        ryobs.append(yobs)
+        rsobs.append(sobs)
+        rysim.append(ysim)
+        rssim.append(rssim)
+
+        ry0.append(init_species)
+        rs0.append(init_metabolites)
+        # Xs, Fs = linearize_time_course_16S(yobs,times)
+        # X = np.vstack([X, Xs])
+        # F = np.vstack([F, Fs])
+
+    ryobs = np.array(ryobs)
+    rysim = np.array(rysim)
+    all_perts = np.array(all_perts)
+
+    return ryobs, rysim, all_perts
