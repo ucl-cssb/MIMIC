@@ -442,7 +442,7 @@ if __name__ == '__main__':
 
 
     tmax = 100
-    n_epochs = 200
+    n_epochs = 600
     batch_size = 32
 
     val_prop = 0.1
