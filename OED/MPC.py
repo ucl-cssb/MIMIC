@@ -1,15 +1,15 @@
 import sys
 import os
 
-
-
 sys.path.append('../../RED_master/')
-
+sys.path.append('../')
 import math
 from casadi import *
 import numpy as np
 import matplotlib.pyplot as plt
 from RED.environments.OED_env import *
+from gMLV import *
+from gMLV.gMLV_sim import *
 
 import tensorflow as tf
 import time
@@ -37,23 +37,24 @@ plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 
 if __name__ == '__main__':
-    y0 = np.array([1., 1., 1.])
 
     gMLV_params = json.load(open('gMLV_params.json'))
-    M = np.array(gMLV_params['M'])
-    E = np.array(gMLV_params['E'])
-    gr = np.array(gMLV_params['gr'])
-    y0 = np.array(gMLV_params['y0'])
-    scale_factor = gMLV_params['scale_factor']
-    eta = gMLV_params['eta']
 
-    M *= -scale_factor
-    E *= scale_factor
-    gr *= scale_factor ** 2
-    y0 *= scale_factor
+    eta = gMLV_params['eta']
+    num_pert = 3
+    num_species = 3
+    zero_prop = 0
+
+
+
+
+    gr, M, E, y0 = generate_params(num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
+
+    print(gr.shape, M.shape, E.shape, y0.shape)
+    print(E)
 
     params = np.hstack((M.flatten(), gr.flatten(), E.flatten()))  # need to flatten for FIM calc
-    print(params)
+    print(params.shape)
 
     params = DM(params)
 
