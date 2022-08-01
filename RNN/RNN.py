@@ -360,16 +360,13 @@ def run_epoch(model, opt, data, train = True, dy_dx_reg = 1e-5):
 
 def custom_fit(model, data, val_prop, dy_dx_reg = 1e-5, verbose=False):
 
-    split = int((1-val_prop)*len(inputs))
+
     # round split to multiple of batch size, assuming there is a multiple of batch size simulations then both training and valudation will be also
+    split = int((1 - val_prop) * len(inputs))
     split = batch_size * math.floor(split/batch_size)
-    train_data= data[:split]
 
-
+    train_data = data[:split]
     val_data = data[split:]
-
-
-
 
     opt = keras.optimizers.Adam()
 
@@ -468,7 +465,7 @@ if __name__ == '__main__':
         tc, zp, sp = np.unravel_index(exp, ((4, 5, 5)))  # get indices into param arrays
         # inestigation scan over
 
-        num_timecoursess = [100, 500, 1000, 5000]
+        num_timecoursess = [96, 480, 960, 4800]
         known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
         #species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
         dy_dx_regs = [1e3, 1e2, 1e1, 1., 1e-1]
@@ -521,10 +518,6 @@ if __name__ == '__main__':
         # rysim = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/rysim.npy')[:num_timecourses]
         # all_perts = np.load('/home/neythen/Desktop/Projects/gMLV/OED/training_data/antibiotic_pert/perts.npy')[:num_timecourses]
 
-
-
-
-
     times = np.arange(0, tmax, dt)
     sampling_times = np.arange(0, tmax, sampling_time)
 
@@ -572,7 +565,7 @@ if __name__ == '__main__':
     np.save(save_path + '/val_loss.npy', val_loss)
     np.save(save_path + '/train_loss.npy', train_loss)
     #model.save(save_path + '/RNN' ) # not working on cluster
-    #sys.exit()
+    sys.exit()
     #history = model.fit(inputs, targets, verbose = True, batch_size = batch_size, epochs = n_epochs, validation_split=0.1)
 
     #print(history.history)
@@ -593,6 +586,7 @@ if __name__ == '__main__':
                            all_perts[i, 0:-1, :], None, None, sampling_times, rysim[i], times)
         # plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
         plt.savefig(save_path + '/train_plot_' + str(i) + '.png', dpi=300)
+
 
     plt.figure()
     plt.plot(train_loss, label = 'train')
