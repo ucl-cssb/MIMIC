@@ -306,3 +306,7 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
     all_perts = np.array(all_perts)
 
     return ryobs, rysim, all_perts
+
+def set_all_seeds(seed):
+    np.random.seed(seed)
+    random.seed(seed)

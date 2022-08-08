@@ -280,7 +280,7 @@ def run_batch(model, opt, batch_data, train = True, dy_dx_reg = 1e-5):
         accum_grad = [tf.zeros_like(this_var) for this_var in train_vars]
 
         abundances = batch_data[:, 0:1, :num_species] #get ICs
-        all_preds = [abundances]
+        all_preds = []
         total_pred_loss = 0.
         total_reg_loss = 0.
 
