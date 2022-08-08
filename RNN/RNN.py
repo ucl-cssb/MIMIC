@@ -439,7 +439,7 @@ if __name__ == '__main__':
 
 
     tmax = 100
-    n_epochs = 300
+    n_epochs = 50
     batch_size = 32
 
     val_prop = 0.1
@@ -477,6 +477,8 @@ if __name__ == '__main__':
         dy_dx_reg = dy_dx_regs[sp]
 
         save_path = sys.argv[1] + '/repeat' + sys.argv[2] + '/'
+        n_epochs = 50 #number of epochs for largest dataset
+        n_epochs = int(n_epochs*num_timecoursess[-1]/num_timecourses) # change n_epochs so that the same number of batch updates are run for each test
 
         os.makedirs(save_path, exist_ok=True)
     elif len(sys.argv) == 2:
@@ -485,8 +487,7 @@ if __name__ == '__main__':
     else:
         save_path = './working_dir'
 
-    #n_batch_updates = n_epochs*900/32 # change n_epochs so that the same number of batch updates are run for each test
-    #n_epochs = int(32*n_batch_updates/(num_timecourses*0.9))
+
 
     print(num_timecourses, known_zero_prop, species_prob, n_epochs)
 
