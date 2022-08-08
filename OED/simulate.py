@@ -10,7 +10,7 @@ import math
 from casadi import *
 import numpy as np
 import matplotlib as mpl
-mpl.use('module://backend_interagg')
+mpl.use('agg')
 import matplotlib.pyplot as plt
 from RED.environments.OED_env import *
 from gMLV.gMLV_sim import *

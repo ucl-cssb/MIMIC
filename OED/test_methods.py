@@ -2,7 +2,7 @@ import sys
 import os
 
 sys.path.append('../../RED_master/')
-
+sys.path.append('../')
 
 import json
 import math
@@ -10,6 +10,8 @@ from casadi import *
 import numpy as np
 import matplotlib.pyplot as plt
 from RED.environments.OED_env import *
+from gMLV import *
+from gMLV.gMLV_sim import *
 import tensorflow as tf
 import time
 from xdot import xdot
@@ -20,33 +22,30 @@ def check_symmetric(a, rtol=1e-05, atol=1e-08):
     return numpy.allclose(a, a.T, rtol=rtol, atol=atol)
 
 
+set_all_seeds(0)
+
 gMLV_params = json.load(open('gMLV_params.json'))
-M = np.array(gMLV_params['M'])
-E = np.array(gMLV_params['E'])
-gr = np.array(gMLV_params['gr'])
-y0 = np.array(gMLV_params['y0'])
-scale_factor = gMLV_params['scale_factor']
+
 eta = gMLV_params['eta']
+num_pert = 3
+num_species = 3
+zero_prop = 0
 
-M *= -scale_factor
-E *= scale_factor
-gr *= scale_factor ** 2
-y0 *= scale_factor
-
-params = np.hstack((M.flatten(), gr.flatten(), E.flatten()))  # need to flatten for FIM calc
+params = np.load('working_dir/generated_params.npy')
+y0 = np.load('working_dir/generated_y0.npy')
 
 
 lb = params.copy()
-lb[lb>0] *= 0.8
-lb[lb<0] *= 1.2
+lb[lb>0] *= 0.5
+lb[lb<0] *= 1.5
 ub = params.copy()
-ub[ub>0] *= 1.2
-ub[ub<0] *= 0.8
+ub[ub>0] *= 1.5
+ub[ub<0] *= 0.5
 
 print(lb)
 print(ub)
 
-sys.exit()
+
 
 params = DM(params)
 
@@ -75,12 +74,9 @@ print(us.shape)
 env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='sim')
 trajectory_solver = env.get_sampled_trajectory_solver(N_control_intervals, control_interval_time, dt)
 
-
-
-
 all_losses = []
 
-for i in range(30):
+for i in range(3):
     print()
     print('SAMPLE: ', i)
     initial_params = np.random.uniform(low=lb, high=ub)
@@ -90,7 +86,7 @@ for i in range(30):
     print('initial params: ', param_guesses)
     env.reset()
 
-    env.us = us
+    env.us = us.T
 
 
     trajectory = trajectory_solver(y0, params,
