@@ -65,8 +65,8 @@ if __name__ == '__main__':
 
     print(params.size())
     actual_params = params
-    N_control_intervals = 100
-    control_interval_time = 10 # in days
+    N_control_intervals = 10
+    control_interval_time = 1 # in days
     num_inputs = -1
     input_bounds = [[0, 1], [0, 1], [0, 1]]
     n_observed_variables = 3
