@@ -59,7 +59,9 @@ if __name__ == '__main__':
     np.save('working_dir/generated_params.npy', params)
     np.save('working_dir/generated_y0.npy', y0)
 
-    print(params.shape)
+    print(params)
+    print(y0)
+
 
     params = DM(params)
 
