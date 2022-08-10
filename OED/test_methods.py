@@ -51,7 +51,7 @@ params = DM(params)
 
 print(params.size())
 actual_params = params
-N_control_intervals = 100
+N_control_intervals = 10
 control_interval_time = 1  # days
 num_inputs = -1
 input_bounds = [[0, 1], [0, 1], [0, 1]]
@@ -68,7 +68,7 @@ print('trajectory solver initialised')
 all_final_params = []
 all_initial_params = []
 
-us = np.load('working_dir/us.npy')
+us = np.load('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_results_100822/rand_ten_days/us.npy')
 
 
 env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='sim')
