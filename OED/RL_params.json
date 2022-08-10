@@ -1,0 +1,13 @@
+{
+    "n_episodes": 1000,
+    "skip": 1,
+    "input_bounds": [[0.0, 1],[0.0, 1],[0.0, 1]],
+    "n_controlled_inputs": 3,
+    "num_inputs": 10,
+    "dt":0.1,
+    "N_control_intervals":10,
+    "control_interval_time":1,
+    "n_observed_variables":3,
+    "prior":false,
+    "normaliser":[1e1, 1e1, 1e1, 1e1]
+}
