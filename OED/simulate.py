@@ -143,10 +143,10 @@ if __name__ == '__main__':
 
 
 
-    us = np.load('working_dir/us.npy')
-
+    us = np.load('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_results_100822/rand_ten_days/us.npy')
+    print(us)
     #us = np.random.rand(*us.shape)
-
+    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_results_100822/rand_ten_days/us.npy', us)
     simulate(env, us, plot=True)
 
 

@@ -57,7 +57,7 @@ num_inputs = -1
 input_bounds = [[0, 1], [0, 1], [0, 1]]
 n_observed_variables = 3
 n_controlled_inputs = 3
-dt = 0.01
+dt = 0.001
 normaliser = -1
 
 save_path = './'
@@ -69,8 +69,7 @@ all_final_params = []
 all_initial_params = []
 
 us = np.load('working_dir/us.npy')
-us = np.random.rand(*us.shape)
-print(us.shape)
+
 
 env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='sim')
 trajectory_solver = env.get_sampled_trajectory_solver(N_control_intervals, control_interval_time, dt)
