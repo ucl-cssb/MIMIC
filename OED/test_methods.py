@@ -36,11 +36,11 @@ y0 = np.load('working_dir/generated_y0.npy')
 
 
 lb = params.copy()
-lb[lb>0] *= 0.5
-lb[lb<0] *= 1.5
+lb[lb>0] *= 0.1
+lb[lb<0] *= 10.
 ub = params.copy()
-ub[ub>0] *= 1.5
-ub[ub<0] *= 0.5
+ub[ub>0] *= 10.
+ub[ub<0] *= 0.1
 
 print(lb)
 print(ub)
