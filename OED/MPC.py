@@ -59,13 +59,15 @@ if __name__ == '__main__':
     np.save('working_dir/generated_params.npy', params)
     np.save('working_dir/generated_y0.npy', y0)
 
-    print(params.shape)
+    print(params)
+    print(y0)
+
 
     params = DM(params)
 
     print(params.size())
     actual_params = params
-    N_control_intervals = 10
+    N_control_intervals = 100
     control_interval_time = 1 # in days
     num_inputs = -1
     input_bounds = [[0, 1], [0, 1], [0, 1]]
