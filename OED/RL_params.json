@@ -1,5 +1,5 @@
 {
-    "n_episodes": 5000,
+    "n_episodes": 20000,
     "skip": 10,
     "input_bounds": [[0.001, 1],[0.001, 1],[0.001, 1]],
     "n_controlled_inputs": 3,
