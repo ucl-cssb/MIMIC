@@ -465,7 +465,7 @@ if __name__ == '__main__':
         tc, zp, sp = np.unravel_index(exp, ((4, 5, 5)))  # get indices into param arrays
         # inestigation scan over
 
-        num_timecoursess = [96, 480, 960, 4800]
+        num_timecoursess = [96, 480, 96, 480]
         known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
         #species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
         dy_dx_regs = [1e3, 1e2, 1e1, 1., 1e-1]
@@ -486,8 +486,6 @@ if __name__ == '__main__':
         os.makedirs(save_path, exist_ok=True)
     else:
         save_path = './working_dir'
-
-
 
     print(num_timecourses, known_zero_prop, species_prob, n_epochs)
 
