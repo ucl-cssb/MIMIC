@@ -70,10 +70,12 @@ if __name__ == '__main__':
     N_control_intervals = 10
     control_interval_time = 1 # in days
     num_inputs = -1
-    input_bounds = [[0, 1], [0, 1], [0, 1]]
+    input_bounds = [[0.001, 1], [0.001, 1], [0.001, 1]] # having lower bound sof 0 can give nanas for RL
     n_observed_variables = 3
     n_controlled_inputs = 3
-    dt = 0.1
+
+    # decreasing dt to 0.01 like RL doesnt really affect MPC performance
+    dt = 0.01 # using dt = 0.01 for RL as dt = 0.1 seems to lead to -ve EVs in the FIM which is not allowed. dt=0.1 for MPC hasnt been a problem so leaving that as it is
     normaliser = -1
 
     save_path = './'
@@ -121,7 +123,7 @@ if __name__ == '__main__':
     print(us)
 
 
-    np.save('working_dir/us.npy', us)
+    np.save('MPC_test/us.npy', us)
 
 
 
