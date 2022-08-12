@@ -1,9 +1,9 @@
 import sys
 import os
 
-IMPORT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+IMPORT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(IMPORT_PATH)
-
+print(IMPORT_PATH)
 IMPORT_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'RED_master')
 
 sys.path.append(IMPORT_PATH)
@@ -30,8 +30,6 @@ from gMLV.gMLV_sim import *
 from xdot import xdot
 
 
-def action_scaling(u):
-    return 10**u
 
 if __name__ == '__main__':
     set_all_seeds(0)
@@ -39,8 +37,8 @@ if __name__ == '__main__':
     n_cores = multiprocessing.cpu_count()
     print('Num CPU cores:', n_cores)
 
-
-    params = json.load(open('RL_params.json'))
+    param_dir = os.path.dirname(os.path.abspath(__file__))
+    params = json.load(open(os.path.join(param_dir, 'RL_params.json')))
 
     n_episodes, skip, input_bounds, n_controlled_inputs, num_inputs, dt, N_control_intervals, control_interval_time, n_observed_variables, prior, normaliser = \
         [params[k] for k in params.keys()]
@@ -90,9 +88,10 @@ if __name__ == '__main__':
         os.makedirs(save_path, exist_ok=True)
     elif len(sys.argv) == 2:
         save_path = sys.argv[1] + '/'
-        os.makedirs(save_path, exist_ok=True)
+
     else:
         save_path = './working_results'
+        os.makedirs(save_path, exist_ok=True)
 
     test_episode = False
     recurrent = True
@@ -147,9 +146,12 @@ if __name__ == '__main__':
 
         if prior:
             # TODO:: generate these skip times
-            gr, M, E, y0 = generate_params(num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
-            sim_params = np.hstack((M.flatten(), gr.flatten(), E.flatten()))  # need to flatten for FIM calc
-            actual_params = DM(sim_params)
+            actual_params = []
+            for i in range(skip):
+                gr, M, E, y0 = generate_params(num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
+                sim_params = np.hstack((M.flatten(), gr.flatten(), E.flatten()))  # need to flatten for FIM calc
+                actual_params.append(sim_params)
+
         else:
 
             actual_params = np.repeat([sim_params], skip, axis = 0)
@@ -189,7 +191,7 @@ if __name__ == '__main__':
 
             e_actions.append(actions)
 
-            outputs = env.map_parallel_step(np.array(actions).T, actual_params, continuous=True, scaling=action_scaling)
+            outputs = env.map_parallel_step(np.array(actions).T, actual_params, continuous=True)
             next_states = []
 
             for i, o in enumerate(outputs):
@@ -222,7 +224,7 @@ if __name__ == '__main__':
         for trajectory in trajectories:
             if np.all([np.all(np.abs(trajectory[i][0]) <= 1) for i in range(len(trajectory))]) and not math.isnan(
                     np.sum(trajectory[-1][0])):  # check for instability
-                agent.memory.append(trajectory)  # monte carlo, fitted
+                agent.memory.append(trajectory)
 
             else:
                 unstable += 1
@@ -263,15 +265,15 @@ if __name__ == '__main__':
         print('moving av return:', np.mean(all_returns[-10 * skip:]))
         print('explore rate: ', explore_rate)
         print('alpha:', alpha)
-        print('av return: ', np.mean(all_returns[-skip:]))
+        print('av return: ', np.mean(all_returns))
         print()
 
         # print('us:', np.array(e_us)[0, :])
 
         print('actions:', np.array(e_actions).shape)
         print('actions:', np.array(e_actions)[:, 0])
-        print('rewards:', np.array(e_rewards))
-        print('return:', np.sum(np.array(e_rewards)))
+
+        print('return:', np.sum(np.array(e_rewards)[0, :]))
         print()
 
         if test_episode:

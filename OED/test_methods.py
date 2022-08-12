@@ -36,11 +36,11 @@ y0 = np.load('working_dir/generated_y0.npy')
 
 
 lb = params.copy()
-lb[lb>0] *= 0.5
-lb[lb<0] *= 1.5
+lb[lb>0] *= 0.1
+lb[lb<0] *= 10.
 ub = params.copy()
-ub[ub>0] *= 1.5
-ub[ub<0] *= 0.5
+ub[ub>0] *= 10.
+ub[ub<0] *= 0.1
 
 print(lb)
 print(ub)
@@ -52,12 +52,12 @@ params = DM(params)
 print(params.size())
 actual_params = params
 N_control_intervals = 10
-control_interval_time = 1  # AU
+control_interval_time = 1  # days
 num_inputs = -1
 input_bounds = [[0, 1], [0, 1], [0, 1]]
 n_observed_variables = 3
 n_controlled_inputs = 3
-dt = 0.01
+dt = 0.01 # hard to run 100 days with  dt= 0.001
 normaliser = -1
 
 save_path = './'
@@ -68,15 +68,15 @@ print('trajectory solver initialised')
 all_final_params = []
 all_initial_params = []
 
-us = np.load('working_dir/us.npy')
-print(us.shape)
+us = np.load('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_results_larger_range/MPC_OED_ten_days/us.npy')
+
 
 env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='sim')
 trajectory_solver = env.get_sampled_trajectory_solver(N_control_intervals, control_interval_time, dt)
 
 all_losses = []
 
-for i in range(3):
+for i in range(30):
     print()
     print('SAMPLE: ', i)
     initial_params = np.random.uniform(low=lb, high=ub)
