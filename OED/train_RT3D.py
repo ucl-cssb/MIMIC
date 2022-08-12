@@ -37,8 +37,8 @@ if __name__ == '__main__':
     n_cores = multiprocessing.cpu_count()
     print('Num CPU cores:', n_cores)
 
-
-    params = json.load(open('RL_params.json'))
+    param_dir = os.path.dirname(os.path.abspath(__file__))
+    params = json.load(open(os.path.join(param_dir, 'RL_params.json')))
 
     n_episodes, skip, input_bounds, n_controlled_inputs, num_inputs, dt, N_control_intervals, control_interval_time, n_observed_variables, prior, normaliser = \
         [params[k] for k in params.keys()]
@@ -88,9 +88,10 @@ if __name__ == '__main__':
         os.makedirs(save_path, exist_ok=True)
     elif len(sys.argv) == 2:
         save_path = sys.argv[1] + '/'
-        os.makedirs(save_path, exist_ok=True)
+
     else:
         save_path = './working_results'
+        os.makedirs(save_path, exist_ok=True)
 
     test_episode = False
     recurrent = True
