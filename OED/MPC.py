@@ -75,7 +75,7 @@ if __name__ == '__main__':
     n_controlled_inputs = 3
 
     # decreasing dt to 0.01 like RL doesnt really affect MPC performance
-    dt = 0.1 # using dt = 0.01 for RL as dt = 0.1 seems to lead to -ve EVs in the FIM which is not allowed. dt=0.1 for MPC hasnt been a problem so leaving that as it is
+    dt = 0.01 # using dt = 0.01 for RL as dt = 0.1 seems to lead to -ve EVs in the FIM which is not allowed. dt=0.1 for MPC hasnt been a problem so leaving that as it is
     normaliser = -1
 
     save_path = './'

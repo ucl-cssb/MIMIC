@@ -57,7 +57,7 @@ num_inputs = -1
 input_bounds = [[0, 1], [0, 1], [0, 1]]
 n_observed_variables = 3
 n_controlled_inputs = 3
-dt = 0.001
+dt = 0.01 # hard to run 100 days with  dt= 0.001
 normaliser = -1
 
 save_path = './'
@@ -68,7 +68,7 @@ print('trajectory solver initialised')
 all_final_params = []
 all_initial_params = []
 
-us = np.load('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_results_100822/rand_ten_days/us.npy')
+us = np.load('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_results_larger_range/MPC_OED_ten_days/us.npy')
 
 
 env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='sim')
