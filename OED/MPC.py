@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     print(params.size())
     actual_params = params
-    N_control_intervals = 10
+    N_control_intervals = 8
     control_interval_time = 1 # in days
     num_inputs = -1
     input_bounds = [[0.001, 1], [0.001, 1], [0.001, 1]] # having lower bound sof 0 can give nanas for RL
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         obj = -trace(log(r))
         # obj = -log(det(FIM))
         nlp = {'x': us, 'f': obj}
-        solver = env.gauss_newton(obj, nlp, us, limited_mem = False) # for some reason limited mem works better for the MPC
+        solver = env.gauss_newton(obj, nlp, us, limited_mem = True) # for some reason limited mem works better for the MPC
         # solver.print_options()
         # sys.exit()
 
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     print(us)
 
 
-    np.save('MPC_test/us.npy', us)
+    np.save('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_8_day_rational/OED_MPC/us.npy', us)
 
 
 
