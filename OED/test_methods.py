@@ -36,11 +36,11 @@ y0 = np.load('working_dir/generated_y0.npy')
 
 
 lb = params.copy()
-lb[lb>0] *= 0.1
-lb[lb<0] *= 10.
+lb[lb>0] *= 0.5
+lb[lb<0] *= 2.
 ub = params.copy()
-ub[ub>0] *= 10.
-ub[ub<0] *= 0.1
+ub[ub>0] *= 2.
+ub[ub<0] *= 0.5
 
 print(lb)
 print(ub)
@@ -51,7 +51,7 @@ params = DM(params)
 
 print(params.size())
 actual_params = params
-N_control_intervals = 10
+N_control_intervals = 8
 control_interval_time = 1  # days
 num_inputs = -1
 input_bounds = [[0, 1], [0, 1], [0, 1]]
@@ -68,7 +68,8 @@ print('trajectory solver initialised')
 all_final_params = []
 all_initial_params = []
 
-us = np.load('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_results_larger_range/MPC_OED_ten_days/us.npy')
+path = '/home/neythen/Desktop/Projects/gMLV/OED/results/OED_8_day_rational_tigher_bounds/rational'
+us = np.load(path + '/us.npy')
 
 
 env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='sim')
@@ -142,6 +143,6 @@ print(' det cov: ', det_cov)
 print('eigen values: ', np.linalg.eig(cov)[0])
 print('log det cov; ',logdet_cov)
 print('losses:', all_losses)
-np.save('./working_dir/all_final_params_opt.npy', all_final_params)
-np.save('./working_dir/all_losses_opt.npy', np.array(all_losses))
+np.save(path + '/all_final_params_opt.npy', all_final_params)
+np.save(path + '/all_losses_opt.npy', np.array(all_losses))
 

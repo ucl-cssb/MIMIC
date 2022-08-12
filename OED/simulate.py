@@ -10,7 +10,7 @@ import math
 from casadi import *
 import numpy as np
 import matplotlib as mpl
-mpl.use('agg')
+
 import matplotlib.pyplot as plt
 from RED.environments.OED_env import *
 from gMLV.gMLV_sim import *
@@ -65,7 +65,7 @@ def simulate(env, us, plot = False, calculate_FIM = True):
         est_trajectory = np.hstack((np.array(y0).reshape(3, 1), est_trajectory))
 
     if plot:
-        t = np.arange(0, 101) * 2
+        t = np.arange(0, N_control_intervals+1)
         us = np.vstack((us[:, 0], us.T))
         plt.step(t, us[:, 0], '--', alpha=0.5, linewidth=4)
         plt.step(t, us[:, 1], '--', alpha=0.5, linewidth=4)
@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
     print(params.size())
     actual_params = params
-    N_control_intervals = 10
+    N_control_intervals = 8
     control_interval_time = 1
     num_inputs = -1
     input_bounds = [[0,1], [0,1], [0,1]]
@@ -143,10 +143,12 @@ if __name__ == '__main__':
 
 
 
-    us = np.load('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_results_100822/rand_ten_days/us.npy')
+    us = np.load('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_8_day_rational_tigher_bounds/OED_MPC/us.npy')
+
+    #us = np.array([[0,0,0], [1,0,0],[0,1,0],[0,0,1], [1,1,0],[1,0,1],[0,1,1],[1,1,1]]).T
     print(us)
     #us = np.random.rand(*us.shape)
-    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_results_100822/rand_ten_days/us.npy', us)
+    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_8_day_rational/random/us.npy', us)
     simulate(env, us, plot=True)
 
 
