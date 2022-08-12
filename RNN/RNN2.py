@@ -1,3 +1,6 @@
+# this is just to quickly run alternate file on sluster, delete after use and impliment throiuugh options
+
+
 import random
 import os
 import sys
@@ -465,14 +468,15 @@ if __name__ == '__main__':
         tc, zp, sp = np.unravel_index(exp, ((4, 5, 5)))  # get indices into param arrays
         # inestigation scan over
 
-        num_timecoursess = [96, 480, 96, 480]
-        known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
-        #species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
+        num_timecoursess = [96, 480, 960, 4800]
+        #known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
+        known_zero_prop = 1.0
+        species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
         dy_dx_regs = [1e3, 1e2, 1e1, 1., 1e-1]
 
         num_timecourses = num_timecoursess[tc]
-        known_zero_prop = known_zero_props[zp]
-        #species_prob = species_probs[sp]
+        #known_zero_prop = known_zero_props[zp]
+        species_prob = species_probs[sp]
         species_prob = 1
         dy_dx_reg = dy_dx_regs[sp]
 
