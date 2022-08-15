@@ -157,25 +157,26 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
 
     axs[0].set_prop_cycle(None)
 
-    #for species_idx in range(yobs.shape[1]):
-    #    axs[0].scatter(sampling_times, yobs[:, species_idx],s= 100,marker ='o', label = 'simulation')
+    for species_idx in range(yobs.shape[1]):
+        axs[0].scatter(sampling_times, yobs[:, species_idx], s=100, marker='x', label='observed')
 
     axs[0].set_prop_cycle(None)
-    print(yobs_h[:, species_idx].shape)
-    print(sampling_times)
+
     for species_idx in range(yobs.shape[1]):
-        axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 100,marker ='x', label = 'prediction')
+        axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 100,marker ='o', label = 'prediction')
+
 
     axs[0].set_xlabel('time')
     axs[0].set_ylabel('[species]')
 
-    handles, labels = plt.gca().get_legend_handles_labels()
+    handles, labels = axs[0].get_legend_handles_labels()
     newLabels, newHandles = [], []
     for handle, label in zip(handles, labels):
         if label not in newLabels:
             newLabels.append(label)
             newHandles.append(handle)
-    plt.legend(newHandles, newLabels)
+
+    axs[0].legend(newHandles, newLabels)
 
 
     perts = np.vstack((perts[0], perts))
@@ -280,7 +281,7 @@ def run_batch(model, opt, batch_data, train = True, dy_dx_reg = 1e-5):
         accum_grad = [tf.zeros_like(this_var) for this_var in train_vars]
 
         abundances = batch_data[:, 0:1, :num_species] #get ICs
-        all_preds = []
+        all_preds = [abundances]
         total_pred_loss = 0.
         total_reg_loss = 0.
 
@@ -390,14 +391,14 @@ def custom_fit(model, data, val_prop, dy_dx_reg = 1e-5, verbose=False):
 if __name__ == '__main__':
     set_all_seeds(0)
 
-    num_species = 100
-    species_prob = 1
+    num_species = 10
+    species_prob =0.5
     num_pert = 0
     num_metabolites = 0
 
     # construct interaction matrix
-    zero_prop = 0.75
-    known_zero_prop = 1
+    zero_prop = 0.
+    known_zero_prop = 0
 
     mu, M, C, ss = generate_params(num_species, num_pert, zero_prop = zero_prop, hetergeneous=False)
 
@@ -435,11 +436,11 @@ if __name__ == '__main__':
                          C=C)
     #simulator.print()
 
-    num_timecourses = 640
+    num_timecourses = 96*3
 
 
     tmax = 100
-    n_epochs = 50
+    n_epochs = 400
     batch_size = 32
 
     val_prop = 0.1
@@ -497,7 +498,7 @@ if __name__ == '__main__':
     dt = 1
 
     if transplant_pert:
-        ryobs, rysim, all_perts = generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, ss, species_prob=species_prob)
+        ryobs, rysim, all_perts = generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, ss, species_prob=species_prob, noise_std=0.05)
 
         #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy', ryobs)
         #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy', rysim)
@@ -537,7 +538,7 @@ if __name__ == '__main__':
     data = np.concatenate((ryobs, all_perts), axis = 2).astype(np.float32) # species levels and perturbations for each time point
 
 
-    print(inputs.shape, targets.shape) # (n_simeseries, n_timepoints, n_species)
+    print(data.shape) # (n_simeseries, n_timepoints, n_species)
 
     ## FIT RNN
     print(len(sampling_times))
@@ -558,13 +559,12 @@ if __name__ == '__main__':
 
 
 
-    np.save(save_path + '/inputs.npy', inputs)
+    np.save(save_path + '/data.npy', data)
     np.save(save_path + '/preds.npy', pred)
-    np.save(save_path + '/targets.npy', targets)
     np.save(save_path + '/val_loss.npy', val_loss)
     np.save(save_path + '/train_loss.npy', train_loss)
     #model.save(save_path + '/RNN' ) # not working on cluster
-    sys.exit()
+
     #history = model.fit(inputs, targets, verbose = True, batch_size = batch_size, epochs = n_epochs, validation_split=0.1)
 
     #print(history.history)
@@ -576,8 +576,8 @@ if __name__ == '__main__':
         # print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])))
         # print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])))
         # plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
-        plot_fit_gMLV_pert(ryobs[-i], pred[-i, :, :],
-                           all_perts[-i, 0:-1, :], None, None, sampling_times, rysim[-i], times)
+        plot_fit_gMLV_pert(ryobs[-i-1], pred[-i-1, :, :],
+                           all_perts[-i-1, 0:-1, :], None, None, sampling_times, rysim[-i-1], times)
         # plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
         plt.savefig(save_path + '/test_plot_' + str(i) + '.png', dpi=300)
 
@@ -590,10 +590,11 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(train_loss, label = 'train')
     plt.plot(val_loss, label = 'test')
+    plt.ylim(ymin=0)
     plt.legend()
     plt.xlabel('epoch')
     plt.ylabel('loss')
     plt.savefig(save_path + '/train_test_SSE.png', dpi=300)
 
 
-    plt.show()
+    #plt.show()

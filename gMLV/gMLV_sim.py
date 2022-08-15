@@ -246,8 +246,8 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
         p_matrix = []
         ys = init_species
         ss = init_metabolites
-        yobs = [ys[0]]
-        sobs = [ss[0]]
+        yobs = [ys[0] + np.random.normal(loc=0, scale=noise_std, size=ys[0].shape)]
+        sobs = [ss[0] + np.random.normal(loc=0, scale=noise_std, size=ss[0].shape)]
 
         p = np.zeros((num_species,))
         perturbed = False
