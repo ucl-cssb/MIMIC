@@ -283,7 +283,7 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
 
                     #p_rem = np.random.uniform(low=-1, high=0, size=(num_species,))
                     p_add = np.random.uniform(low=0, high=1, size=(num_species,)) * steady_state * np.random.binomial(1, species_prob, size=(num_species, ))
-                    p =  p_add
+                    p = p_add
                 else:
                     p = np.zeros((num_species,))
                 p_matrix.append(p)

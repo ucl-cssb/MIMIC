@@ -7,10 +7,10 @@ def xdot(x, theta, u):
 
 
     gr = theta[n_species**2:n_species**2 + n_species]
-    E = theta[n_species**2+ n_species:].reshape((n_species,n_species)).T
 
 
-    dx = gr*x + x*M@x + x*E@u
+
+    dx = gr*x + x*M@x + u
 
 
     return dx

@@ -11,7 +11,9 @@ from casadi import *
 import numpy as np
 import matplotlib as mpl
 
+mpl.use('tkagg')
 import matplotlib.pyplot as plt
+
 from RED.environments.OED_env import *
 from gMLV.gMLV_sim import *
 
@@ -67,39 +69,63 @@ def simulate(env, us, plot = False, calculate_FIM = True):
     if plot:
         t = np.arange(0, N_control_intervals+1)
         us = np.vstack((us[:, 0], us.T))
-        plt.step(t, us[:, 0], '--', alpha=0.5, linewidth=4)
-        plt.step(t, us[:, 1], '--', alpha=0.5, linewidth=4)
-        plt.step(t, us[:, 2], '--', alpha=0.5, linewidth=4)
+        fig, axs = plt.subplots(3,1, figsize=(8.0, 7.0))
 
-        plt.xlabel('Time (days)')
+
+        axs[0].step(t, us[:, 0], '--', alpha=1., linewidth=4, color='C0')
+        axs[0].set_ylabel('Perturbation (AU)')
+        axs[1].step(t, us[:, 1], '--', alpha=1., linewidth=4, color='C1')
+        axs[1].set_ylabel('Perturbation (AU)')
+        axs[2].step(t, us[:, 2], '--', alpha=1., linewidth=4, color='C2')
+        axs[2].set_ylabel('Perturbation (AU)')
+
+        plt.xlabel('Time (AU)')
         plt.ylabel('Perturbation (AU)')
         plt.savefig('./working_dir/perturbation.png', dpi=300)
+
         plt.figure()
 
-        plt.plot(est_trajectory[0:n_observed_variables,:].T, alpha=0.5, linewidth=4)
-        plt.xlabel('Time (days)')
+        plt.plot(est_trajectory[0:n_observed_variables,:].T, alpha=1, linewidth=4)
+        plt.xlabel('Time (AU)')
         plt.ylabel('Population (AU)')
         plt.savefig('./working_dir/population.png', dpi=300)
 
         plt.figure()
-        plt.imshow(FIM)
-        plt.colorbar()
+        plt.spy(FIM)
+        param_labels = ['$M_{11}$', '$M_{12}$', '$M_{13}$', '$M_{21}$', '$M_{22}$', '$M_{23}$', '$M_{31}$', '$M_{32}$',
+                        '$M_{33}$', '$\mu_1$', '$\mu_2$', '$\mu_2$', '$E_{11}$', '$E_{12}$', '$E_{13}$', '$E_{21}$',
+                        '$E_{22}$', '$E_{23}$', '$E_{31}$', '$E_{32}$', '$E_{33}$']
+        plt.xticks(range(0, 21), param_labels)
+        plt.yticks(range(0, 21), param_labels)
 
-        plt.title('FIM')
+        #plt.colorbar()
+
+        plt.title('Estimated FIM')
         plt.savefig('./working_dir/FIM.png', dpi=300)
 
         plt.figure()
 
         cov = np.array(inv(FIM).elements()).reshape(FIM.size(), order = 'F')
-        plt.imshow(cov)
-        plt.colorbar()
-        plt.title('Covariance matrix')
+        plt.spy(cov)
+        #plt.colorbar()
+        plt.title('Estimated covariance matrix')
+        plt.xticks(range(0, 21), param_labels)
+        plt.yticks(range(0, 21), param_labels)
         plt.savefig('./working_dir/Covariance matrix.png', dpi=300)
 
         param_variances = [math.sqrt(cov[i][i]) for i in range(cov.shape[0])]
         np.save('./working_dir/param_variances.npy', param_variances)
         print(params)
         print(param_variances)
+
+
+        cov[cov<0] = -1
+        cov[cov>0] = 1
+        plt.figure()
+        plt.imshow(cov)
+        plt.colorbar()
+
+
         plt.show()
 
     return est_trajectory
@@ -119,6 +145,18 @@ if __name__ == '__main__':
 
     print('y0', y0)
     print('params:', params)
+
+    theta = params
+    n_species = 3
+    M = theta[0:n_species ** 2].reshape(
+        (n_species, n_species)).T  # transpose as casadi reshape is inverse compared to numpy
+
+    gr = theta[n_species ** 2:n_species ** 2 + n_species]
+    E = theta[n_species ** 2 + n_species:].reshape((n_species, n_species)).T
+
+    print(M)
+    print(gr)
+    print(E)
 
 
     params = DM(params)
@@ -143,7 +181,7 @@ if __name__ == '__main__':
 
 
 
-    us = np.load('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_8_day_rational_tigher_bounds/OED_MPC/us.npy')
+    us = np.load('/Users/neythen/Desktop/Projects/gMLV/OED/results/OED_results_100822/rand_100_days/us.npy', allow_pickle=True)
 
     #us = np.array([[0,0,0], [1,0,0],[0,1,0],[0,0,1], [1,1,0],[1,0,1],[0,1,1],[1,1,1]]).T
     print(us)

@@ -14,7 +14,7 @@ from gMLV.gMLV_sim import *
 import tensorflow as tf
 import time
 
-from xdot import xdot
+from xdot_transplant import xdot
 import json
 def disablePrint():
     sys.stdout = open(os.devnull, 'w')
@@ -50,6 +50,7 @@ if __name__ == '__main__':
     gr, M, E, y0 = generate_params(num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
 
 
+
     gr = np.arange(3).reshape(gr.shape)
     M = np.arange(M.size).reshape(M.shape)
     E = np.arange(E.size).reshape(E.shape)
@@ -63,7 +64,7 @@ if __name__ == '__main__':
 
     params = np.hstack((M.flatten(), gr.flatten(), E.flatten()))  # need to flatten for FIM calc
     print(params)
-    sys.exit()
+
 
     np.save('working_dir/generated_params.npy', params)
     np.save('working_dir/generated_y0.npy', y0)
