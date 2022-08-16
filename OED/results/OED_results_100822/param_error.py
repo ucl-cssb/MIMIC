@@ -1,10 +1,15 @@
 import numpy as np
 from casadi import *
 import numpy as np
+import matplotlib as mpl
+from matplotlib.colors import DivergingNorm
+mpl.use('tkagg')
 import matplotlib.pyplot as plt
+
 
 actual_params = np.load('../../working_dir/generated_params.npy')
 y0 = np.load('../../working_dir/generated_y0.npy')
+param_labels = ['$M_{11}$', '$M_{12}$', '$M_{13}$', '$M_{21}$', '$M_{22}$', '$M_{23}$', '$M_{31}$', '$M_{32}$', '$M_{33}$', '$\mu_1$', '$\mu_2$', '$\mu_2$','$E_{11}$', '$E_{12}$', '$E_{13}$', '$E_{21}$', '$E_{22}$', '$E_{23}$', '$E_{31}$', '$E_{32}$', '$E_{33}$']
 
 titles = ['Random 10 days', 'OED 10 days', 'Random 100 days', 'OED 100 days']
 for i,dir in enumerate(['rand_ten_days', 'MPC_OED_ten_days']):
@@ -54,4 +59,10 @@ for i,dir in enumerate(['rand_ten_days', 'MPC_OED_ten_days']):
     plt.text(0.5, 0.5, 'Average parameter error: {0:.2f} \nlog(det(COV)): {1:.2f} \n'.format(param_error, logdet_cov))
 
 
+plt.figure()
+norm = DivergingNorm(vmin=cov.min(), vcenter=0, vmax=cov.max())
+plt.imshow(cov, cmap = 'seismic', norm = norm)
+plt.colorbar()
+plt.xticks(range(0,len(actual_params)), param_labels)
+plt.yticks(range(0,len(actual_params)), param_labels)
 plt.show()
