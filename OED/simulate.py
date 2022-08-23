@@ -93,7 +93,7 @@ def simulate(env, us, plot = False, calculate_FIM = True):
         plt.figure()
         plt.spy(FIM)
         param_labels = ['$M_{11}$', '$M_{12}$', '$M_{13}$', '$M_{21}$', '$M_{22}$', '$M_{23}$', '$M_{31}$', '$M_{32}$',
-                        '$M_{33}$', '$\mu_1$', '$\mu_2$', '$\mu_2$', '$E_{11}$', '$E_{12}$', '$E_{13}$', '$E_{21}$',
+                        '$M_{33}$', '$\mu_1$', '$\mu_2$', '$\mu_3$', '$E_{11}$', '$E_{12}$', '$E_{13}$', '$E_{21}$',
                         '$E_{22}$', '$E_{23}$', '$E_{31}$', '$E_{32}$', '$E_{33}$']
         plt.xticks(range(0, 21), param_labels)
         plt.yticks(range(0, 21), param_labels)
