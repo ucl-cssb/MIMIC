@@ -50,20 +50,11 @@ if __name__ == '__main__':
     gr, M, E, y0 = generate_params(num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
 
 
-    gr = np.arange(3).reshape(gr.shape)
-    M = np.arange(M.size).reshape(M.shape)
-    E = np.arange(E.size).reshape(E.shape)
-    y0 = np.arange(y0.size).reshape(y0.shape)
-    print(gr.shape, M.shape, E.shape, y0.shape)
-    print(gr)
-    print(M)
-    print(E)
-    print(y0)
 
 
     params = np.hstack((M.flatten(), gr.flatten(), E.flatten()))  # need to flatten for FIM calc
     print(params)
-    sys.exit()
+
 
     np.save('working_dir/generated_params.npy', params)
     np.save('working_dir/generated_y0.npy', y0)
@@ -110,7 +101,7 @@ if __name__ == '__main__':
         obj = -trace(log(r))
         # obj = -log(det(FIM))
         nlp = {'x': us, 'f': obj}
-        solver = env.gauss_newton(obj, nlp, us, limited_mem = True) # for some reason limited mem works better for the MPC
+        solver = env.gauss_newton(obj, nlp, us, limited_mem = False) # for some reason limited mem works better for the MPC
         # solver.print_options()
         # sys.exit()
 
