@@ -51,23 +51,14 @@ if __name__ == '__main__':
 
 
 
-    gr = np.arange(3).reshape(gr.shape)
-    M = np.arange(M.size).reshape(M.shape)
-    E = np.arange(E.size).reshape(E.shape)
-    y0 = np.arange(y0.size).reshape(y0.shape)
-    print(gr.shape, M.shape, E.shape, y0.shape)
-    print(gr)
-    print(M)
-    print(E)
-    print(y0)
 
 
-    params = np.hstack((M.flatten(), gr.flatten(), E.flatten()))  # need to flatten for FIM calc
+    params = np.hstack((M.flatten(), gr.flatten()))  # need to flatten for FIM calc
     print(params)
 
-
-    np.save('working_dir/generated_params.npy', params)
-    np.save('working_dir/generated_y0.npy', y0)
+    path = '/home/neythen/Desktop/Projects/gMLV/OED/results/OED_transplant_1month_230822'
+    np.save(path +'/generated_params.npy', params)
+    np.save(path + '/generated_y0.npy', y0)
 
     print(params)
     print(y0)
@@ -77,7 +68,7 @@ if __name__ == '__main__':
 
     print(params.size())
     actual_params = params
-    N_control_intervals = 8
+    N_control_intervals = 30
     control_interval_time = 1 # in days
     num_inputs = -1
     input_bounds = [[0.001, 1], [0.001, 1], [0.001, 1]] # having lower bound sof 0 can give nanas for RL
@@ -111,7 +102,7 @@ if __name__ == '__main__':
         obj = -trace(log(r))
         # obj = -log(det(FIM))
         nlp = {'x': us, 'f': obj}
-        solver = env.gauss_newton(obj, nlp, us, limited_mem = True) # for some reason limited mem works better for the MPC
+        solver = env.gauss_newton(obj, nlp, us, limited_mem = False) # for some reason limited mem works better for the MPC
         # solver.print_options()
         # sys.exit()
 
@@ -133,7 +124,7 @@ if __name__ == '__main__':
     print(us)
 
 
-    np.save('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_8_day_rational/OED_MPC/us.npy', us)
+    np.save(path + '/us.npy', us)
 
 
 

@@ -51,6 +51,7 @@ if __name__ == '__main__':
 
 
 
+
     params = np.hstack((M.flatten(), gr.flatten(), E.flatten()))  # need to flatten for FIM calc
     print(params)
 
@@ -100,7 +101,7 @@ if __name__ == '__main__':
         obj = -trace(log(r))
         # obj = -log(det(FIM))
         nlp = {'x': us, 'f': obj}
-        solver = env.gauss_newton(obj, nlp, us, limited_mem = True) # for some reason limited mem works better for the MPC
+        solver = env.gauss_newton(obj, nlp, us, limited_mem = False) # for some reason limited mem works better for the MPC
         # solver.print_options()
         # sys.exit()
 
