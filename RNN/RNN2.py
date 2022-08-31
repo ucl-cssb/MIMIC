@@ -480,6 +480,8 @@ if __name__ == '__main__':
 
         dy_dx_reg = dy_dx_regs[dp]
 
+        print(r, num_timecourses, species_prob, dy_dx_reg)
+
         save_path = sys.argv[1] + '/repeat' + sys.argv[2] + '/'
         n_epochs = 50 #number of epochs for largest dataset
         n_epochs = int(n_epochs*num_timecoursess[-1]/num_timecourses) # change n_epochs so that the same number of batch updates are run for each test
