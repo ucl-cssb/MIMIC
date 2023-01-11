@@ -465,20 +465,20 @@ if __name__ == '__main__':
 
 
 
-        tc, zp, sp = np.unravel_index(exp, ((4, 5, 5)))  # get indices into param arrays
+        r, tc, sp, dp = np.unravel_index(exp, ((3, 4, 3, 5)))  # get indices into param arrays
         # inestigation scan over
-
-        num_timecoursess = [96, 480, 960, 4800]
+        repeat = [0,1,2]
+        num_timecoursess = [96, 192, 288,  384]
         #known_zero_props = [0, 0.25, 0.5, 0.75, 1.]
         known_zero_prop = 1.0
-        species_probs = [0.1, 0.25, 0.5, 0.75, 1.]
-        dy_dx_regs = [1e3, 1e2, 1e1, 1., 1e-1]
+        species_probs = [0.1, 0.5, 1.]
+        dy_dx_regs = [1e2, 1e1, 1., 1e-1, 0]
 
         num_timecourses = num_timecoursess[tc]
         #known_zero_prop = known_zero_props[zp]
         species_prob = species_probs[sp]
-        species_prob = 1
-        dy_dx_reg = dy_dx_regs[sp]
+
+        dy_dx_reg = dy_dx_regs[dp]
 
         save_path = sys.argv[1] + '/repeat' + sys.argv[2] + '/'
         n_epochs = 50 #number of epochs for largest dataset
