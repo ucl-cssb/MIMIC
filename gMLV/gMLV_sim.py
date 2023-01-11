@@ -122,8 +122,8 @@ def generate_params(num_species, num_pert, zero_prop = 0, hetergeneous = False):
         s = np.sum(H)
     else:
         H = np.eye(num_species)
-        #s = 1 from the paper
-        s = np.sum(H) # to prevent instability when more species
+        s = 3 #from the paper
+        #s = np.sum(H) # to prevent instability when more species
 
     a = np.random.binomial(1, 1-zero_prop, size=(num_species, num_species))
 
@@ -132,14 +132,20 @@ def generate_params(num_species, num_pert, zero_prop = 0, hetergeneous = False):
     A = 1/s*N@H*a
 
 
+
+
     #set all diagonal elements to -1 to ensure stability
     np.fill_diagonal(A,-1)
+
+
+
 
     # generate feasible growth rate
     r = np.random.uniform(0.00001,1, size = (num_species))
     ss = -np.linalg.inv(A)@r
 
     while not np.all(ss>=0):
+
         r = np.random.uniform(0.00001, 1., size=(num_species)) # changed max from 1 to 0.5 for stability of binary perts with few species
         ss = -np.linalg.inv(A) @ r
 
@@ -255,7 +261,25 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
 
             #print(yo.shape, ss.shape)
 
+
             ys, ss, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((ys[-1,:], ss[-1,:])))
+
+            if np.random.uniform() < 0.1 and not perturbed and i < int(tmax//sampling_time)-1:
+                perturbed = True
+
+                p_rem = np.random.uniform(low=0, high=1, size=(num_species,)) * np.random.binomial(1,species_prob,
+                                                                                                                  size=(
+                                                                                                                  num_species,))
+
+                p_add = np.random.uniform(low=0, high=1, size=(num_species,)) * np.random.binomial(1,species_prob,
+                                                                                                                  size=(
+                                                                                                                  num_species,))
+                p = p_add - 2*p_rem
+            else:
+                p = np.zeros((num_species,))
+            p_matrix.append(p)
+
+
 
             ys[-1, :] += p
             ys[ys < 0] = 0
@@ -278,15 +302,7 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
                 yobs.append(yo)
                 sobs.append(so)
 
-                if np.random.uniform() < 0.1 and not perturbed:
-                    perturbed = True
 
-                    #p_rem = np.random.uniform(low=-1, high=0, size=(num_species,))
-                    p_add = np.random.uniform(low=0, high=1, size=(num_species,)) * steady_state * np.random.binomial(1, species_prob, size=(num_species, ))
-                    p = p_add
-                else:
-                    p = np.zeros((num_species,))
-                p_matrix.append(p)
 
         all_perts.append(p_matrix)
         # append results
@@ -304,6 +320,7 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
     ryobs = np.array(ryobs)
     rysim = np.array(rysim)
     all_perts = np.array(all_perts)
+
 
     return ryobs, rysim, all_perts
 

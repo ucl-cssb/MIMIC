@@ -71,7 +71,7 @@ if __name__ == '__main__':
     N_control_intervals = 30
     control_interval_time = 1 # in days
     num_inputs = -1
-    input_bounds = [[0.001, 1], [0.001, 1], [0.001, 1]] # having lower bound sof 0 can give nanas for RL
+    input_bounds = [0.001, 1]*num_species# having lower bound sof 0 can give nanas for RL
     n_observed_variables = 3
     n_controlled_inputs = 3
 
@@ -110,6 +110,7 @@ if __name__ == '__main__':
 
 
     u0 = [0.5] * n_controlled_inputs*N_control_intervals
+    #u0 = np.random.rand(n_controlled_inputs*N_control_intervals) + u0
     env.u0 = DM(u0)
     u_solver = get_full_u_solver()
     sol = u_solver(x0=u0, lbx = [0]*n_controlled_inputs*N_control_intervals, ubx = [1]*n_controlled_inputs*N_control_intervals)
