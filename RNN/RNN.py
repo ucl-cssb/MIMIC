@@ -35,7 +35,17 @@ import logging, os
 logging.disable(logging.WARNING)
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+SMALL_SIZE = 13
+MEDIUM_SIZE = 17
+BIGGER_SIZE = 20
 
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 # physical_devices = tf.config.list_physical_devices('GPU')
 # try:
 #     tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -157,13 +167,13 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
 
     axs[0].set_prop_cycle(None)
 
-    for species_idx in range(yobs.shape[1]):
-        axs[0].scatter(sampling_times, yobs[:, species_idx], s=100, marker='x', label='observed')
+    #for species_idx in range(yobs.shape[1]):
+    #   axs[0].scatter(sampling_times, yobs[:, species_idx], s=100, marker='x', label='observed')
 
     axs[0].set_prop_cycle(None)
 
     for species_idx in range(yobs.shape[1]):
-        axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 100,marker ='o', label = 'prediction')
+        axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 100,marker ='x', label = 'prediction')
 
 
     axs[0].set_xlabel('time')
@@ -178,14 +188,16 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
 
     axs[0].legend(newHandles, newLabels)
 
-
-    perts = np.vstack((perts[0], perts))
+    axs[1].set_prop_cycle(None)
+    #perts = np.vstack((perts[0], perts[0], perts))
+    #sampling_times = np.append(sampling_times, 100)
 
     for pert_idx in range(perts.shape[1]):
-        axs[1].step(sampling_times, perts[:, pert_idx], '--')
+        axs[1].scatter(sampling_times[1:],  perts[:, pert_idx], marker='o', s=100)
+        axs[1].set_xlim(left = 0, right = 100)
 
 
-    axs[1].set_ylabel('perturbation')
+    axs[1].set_ylabel('transplant perturbation')
     axs[1].set_xlabel('time')
 
 
@@ -317,7 +329,8 @@ def run_batch(model, opt, batch_data, train = True, dy_dx_reg = 1e-5):
             #accum_grad = [(a_grad + grad/int(tmax//sampling_time)) for a_grad, grad in zip(accum_grad, loss_grad)] # accumulate the mean gradient
             abundances = pred
 
-        total_loss = tf.divide(tf.add(total_reg_loss, total_pred_loss), batch_size)
+        #total_loss = tf.divide(tf.add(total_reg_loss, total_pred_loss), batch_size)
+        total_loss = tf.divide(total_pred_loss, batch_size)
         #
 
         # print('loss time', time() - t)
@@ -391,7 +404,7 @@ if __name__ == '__main__':
     set_all_seeds(0)
 
     num_species = 10
-    species_prob =0.5
+    species_prob = 1.
     num_pert = 0
     num_metabolites = 0
 
@@ -435,11 +448,11 @@ if __name__ == '__main__':
                          C=C)
     #simulator.print()
 
-    num_timecourses = 96*3
+    num_timecourses = 96*100
 
 
     tmax = 100
-    n_epochs = 400
+    n_epochs = 100
     batch_size = 32
 
     val_prop = 0.1
@@ -495,7 +508,7 @@ if __name__ == '__main__':
     dt = 1
 
     if transplant_pert:
-        ryobs, rysim, all_perts = generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, ss, species_prob=species_prob, noise_std=0.05)
+        ryobs, rysim, all_perts = generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, ss, species_prob=species_prob, noise_std=0.00)
 
         #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/ryobs.npy', ryobs)
         #np.save('/home/neythen/Desktop/Projects/gMLV/OED/training_data/transplant_pert/rysim.npy', rysim)
@@ -530,7 +543,7 @@ if __name__ == '__main__':
     targets = copy.deepcopy(ryobs[:,1:,:]).astype(np.float32)
 
     # add 0 perturbation to the end so that shapes match
-    all_perts = np.concatenate((all_perts, np.zeros(all_perts[:, 0:1, :].shape)), axis = 1)
+    #all_perts = np.concatenate((all_perts, np.zeros(all_perts[:, 0:1, :].shape)), axis = 1)
 
     data = np.concatenate((ryobs, all_perts), axis = 2).astype(np.float32) # species levels and perturbations for each time point
 
@@ -558,7 +571,7 @@ if __name__ == '__main__':
 
     np.save(save_path + '/data.npy', data)
     np.save(save_path + '/preds.npy', pred)
-    np.save(save_path + '/val_loss.npy', val_loss)
+    np.save(save_path + '/test_loss.npy', val_loss)
     np.save(save_path + '/train_loss.npy', train_loss)
     #model.save(save_path + '/RNN' ) # not working on cluster
 
@@ -569,19 +582,19 @@ if __name__ == '__main__':
 
     print(pred.shape)
     print(rysim.shape)
-    for i in range(10):
+    for i in range(20):
         # print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])))
         # print(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])))
         # plot_fit_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])), np.vstack((inputs[-i,0,:num_species][np.newaxis,:],pred[-i,:,:])),None, None, times)
         plot_fit_gMLV_pert(ryobs[-i-1], pred[-i-1, :, :],
                            all_perts[-i-1, 0:-1, :], None, None, sampling_times, rysim[-i-1], times)
         # plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
-        plt.savefig(save_path + '/test_plot_' + str(i) + '.png', dpi=300)
+        plt.savefig(save_path + '/test_plot_' + str(i) + '.pdf')
 
         plot_fit_gMLV_pert(ryobs[i], pred[i, :, :],
                            all_perts[i, 0:-1, :], None, None, sampling_times, rysim[i], times)
         # plot_gMLV(np.vstack((inputs[-i,0,:num_species][np.newaxis,:],targets[-i,:,:])),None, times)
-        plt.savefig(save_path + '/train_plot_' + str(i) + '.png', dpi=300)
+        plt.savefig(save_path + '/train_plot_' + str(i) + '.pdf')
 
 
     plt.figure()
