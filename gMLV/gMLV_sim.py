@@ -109,7 +109,7 @@ def gMLV(sy, t, nsp, mu, M, beta, C, p):
 def generate_params(num_species, num_pert, zero_prop = 0, hetergeneous = False):
 
     '''
-    generates parameters for GLV simulation according to Cao et al 2017
+    generates parameters for GLV simulation according to Cao et al 2017 (Inferring human microbial dynamics from temporal metagenomics data: Pitfalls and lessons)
     '''
 
     N = np.random.normal(0, 1, (num_species, num_species))

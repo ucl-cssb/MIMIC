@@ -261,8 +261,7 @@ def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0.):
 
     return model
 
-## SETUP MODEL
-# establish size of model
+
 
 @tf.function
 def run_batch(model, opt, batch_data, train = True, dy_dx_reg = 1e-5):
@@ -460,8 +459,6 @@ if __name__ == '__main__':
 
     if len(sys.argv) == 3:
         exp = int(sys.argv[2]) -1
-
-
 
         tc, zp, sp = np.unravel_index(exp, ((4, 5, 5)))  # get indices into param arrays
         # inestigation scan over
