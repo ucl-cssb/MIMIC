@@ -77,7 +77,7 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
         axs[0].scatter(sampling_times, yobs_h[:, species_idx], s= 100,marker ='x', label = 'prediction')
 
 
-    axs[0].set_xlabel('time')
+    axs[0].set_xlabel('time (days)')
     axs[0].set_ylabel('[species]')
 
     handles, labels = axs[0].get_legend_handles_labels()
@@ -124,21 +124,8 @@ if __name__ == '__main__':
     zero_prop = 0. # the proportion of zeros in the interaction matrix
     known_zero_prop = 0. # the proportion of the zeros that we know are zero
 
-    mu, M, C, ss = generate_params(num_species, num_pert, zero_prop = zero_prop, hetergeneous=False)
-
-
-    zeros = np.where(M==0)
-
-    randomize = np.arange(M.shape[0])
-    np.random.shuffle(randomize)
-
-    if known_zero_prop > 0 and zero_prop > 0:
-        known_zeros = [zeros[0][randomize][:int(len(zeros) * known_zero_prop)],
-                   zeros[1][randomize][:int(len(zeros) * known_zero_prop)]]
-    else:
-        known_zeros = [[],[]]
-
-
+    # generate params according to paper approach
+    mu, M, C, ss = generate_params(num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
     # instantiate simulator
     simulator = gMLV_sim(num_species=num_species,
                          num_metabolites=num_metabolites,
@@ -146,11 +133,24 @@ if __name__ == '__main__':
                          mu=mu,
                          C=C)
 
+
+    # get the zeros that are known a priori. For training the RNN with prior knowledge
+    zeros = np.where(M == 0)
+    randomize = np.arange(M.shape[0])
+    np.random.shuffle(randomize)
+
+    if known_zero_prop > 0 and zero_prop > 0:
+        known_zeros = [zeros[0][randomize][:int(len(zeros) * known_zero_prop)],
+                       zeros[1][randomize][:int(len(zeros) * known_zero_prop)]]
+    else:
+        known_zeros = [[], []]
+
     num_timecourses = 9*100
     tmax = 100
     n_epochs = 100
 
-    val_prop = 0.1
+
+    val_prop = 0.1 # proportion of data in validation set
 
     # best parameters from param scan
     L2_reg = 1e-7
@@ -185,7 +185,7 @@ if __name__ == '__main__':
     else:
         save_path = './working_dir'
 
-    transplant_pert = True
+    transplant_pert = False
 
     if transplant_pert:
         num_pert = num_species
@@ -209,7 +209,6 @@ if __name__ == '__main__':
     all_perts = all_perts.astype(np.float32)
 
 
-
     ## FIT RNN
     model = get_RNN(num_species, num_pert, len(sampling_times), GRU_size=GRU_size, L2_reg=L2_reg)
     train_preds, val_preds, train_loss, val_loss, model = custom_fit(model, ryobs, all_perts, known_zeros, n_epochs, val_prop, dy_dx_reg=dy_dx_reg, verbose=True)
@@ -217,16 +216,16 @@ if __name__ == '__main__':
 
     pred = np.array(train_preds)
 
-    np.save(save_path + '/data.npy', data)
+    np.save(save_path + '/abundances.npy', ryobs)
+    np.save(save_path + '/perts.npy', all_perts)
     np.save(save_path + '/preds.npy', pred)
     np.save(save_path + '/test_loss.npy', val_loss)
     np.save(save_path + '/train_loss.npy', train_loss)
-    model.save(save_path + '/RNN' ) # not working on cluster
+    #model.save(save_path + '/RNN' ) # not working on cluster bug in tensorflow
 
 
     # plot some of the results
     for i in range(20):
-
         plot_fit_gMLV_pert(ryobs[-i-1], pred[-i-1, :, :],
                            all_perts[-i-1, 0:-1, :], None, None, sampling_times, rysim[-i-1], times)
 

@@ -10,6 +10,9 @@ import math
 import numpy as np
 
 def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0., batch_size = 32):
+    '''
+    initialises and returns an RNN
+    '''
     model = keras.Sequential()
 
     # The output of GRU will be a 3D tensor of shape (batch_size, timesteps, 256)
@@ -29,19 +32,16 @@ def get_RNN(num_species, num_pert, num_ts, GRU_size=32, L2_reg = 0., batch_size 
 
 @tf.function
 def run_batch(model, opt, batch_ab, batch_pert, known_zeros, train = True, dy_dx_reg = 1e-5, batch_size = 32):
-
-    #t_inputs = batch_inputs
-    #batch_inputs = tf.Variable(batch_inputs, dtype=float)  # (32, 1, 10)
-    # targets = tf.Variable(targets[start:end], dtype = float)
-
+    '''
+    Runs a batch through the RNN and trains using the custom training loss which regularises the know interaction matrix zeros to be zero
+    '''
 
 
     with tf.GradientTape(persistent = True) as model_tape:
 
         # get trainable variables
         train_vars = model.trainable_variables
-        # Create empty gradient list (not a tf.Variable list)
-        accum_grad = [tf.zeros_like(this_var) for this_var in train_vars]
+
 
         abundances = batch_ab[:, 0:1] #get ICs
         all_preds = [abundances]
@@ -57,40 +57,36 @@ def run_batch(model, opt, batch_ab, batch_pert, known_zeros, train = True, dy_dx
             with tf.GradientTape(persistent=True) as loss_tape:
                 loss_tape.watch(batch_inputs)
 
-                #tf.print('timestep', i)
+
                 pred = model(batch_inputs)  # (32, 1, 10)
             all_preds.append(pred)
+
             # first get gradients of pred wrt inputs
             dy_dx = loss_tape.batch_jacobian(pred,
                                              batch_inputs)  #  (batch, time, species, time, species+perts)
 
+            # calculate loss, these derivatives of the model should be zero, because we know these interactins are 0
             dy_dx_loss = 0.
             for n in range(len(known_zeros[0])):
-                #tf.print(known_zeros[1][n], 0, known_zeros[0][n])
-                #tf.print(dy_dx.shape)
-                #tf.print(dy_dx[:, 0, known_zeros[1][n], 0, known_zeros[0][n]].shape)
                 dy_dx_loss = tf.add(dy_dx_loss, tf.reduce_mean(tf.square(
                     dy_dx[:, 0, known_zeros[1][n], 0, known_zeros[0][n]])))  # [all_batches, 1, n_sp, 1, n_sp]
 
 
             targets = batch_ab[:, i+1:i+2] # get the targets for this time point
-            #loss = tf.add(tf.math.reduce_mean(tf.square(pred - targets)), tf.multiply(dy_dx_reg, dy_dx_loss))
+
             total_pred_loss = tf.add(total_pred_loss, tf.math.reduce_mean(tf.square(pred - targets)))
             total_reg_loss = tf.add(total_reg_loss, tf.multiply(dy_dx_reg, dy_dx_loss))
-            #loss_grad = model_tape.gradient(loss, model.trainable_variables)
-            #accum_grad = [(a_grad + grad/int(tmax//sampling_time)) for a_grad, grad in zip(accum_grad, loss_grad)] # accumulate the mean gradient
+
             abundances = pred
 
-        #total_loss = tf.divide(tf.add(total_reg_loss, total_pred_loss), batch_size)
-        total_loss = tf.divide(total_pred_loss, batch_size)
-        #
+        total_loss = tf.divide(tf.add(total_reg_loss, total_pred_loss), batch_size)  #pred and p,oss due to prior kowledge
+        #total_loss = tf.divide(total_pred_loss, batch_size) # pred loss only
 
-        # print('loss time', time() - t)
+
+
 
     if train:
 
-        #tf.print( loss_grad)
-        # print('grad time', time() - t)
 
         grad = model_tape.gradient(total_loss, train_vars)
 
@@ -101,6 +97,9 @@ def run_batch(model, opt, batch_ab, batch_pert, known_zeros, train = True, dy_dx
     return all_preds,  total_loss
 
 def run_epoch(model, opt, abundances, perturbations, known_zeros, train = True, dy_dx_reg = 1e-5, batch_size = 32):
+    '''
+    runs one epoch of training
+    '''
     batch_losses = []
     n_batches = abundances.shape[0] // batch_size
     all_preds = []
@@ -123,9 +122,9 @@ def run_epoch(model, opt, abundances, perturbations, known_zeros, train = True, 
     return all_preds, batch_losses
 
 def custom_fit(model, abundances, perturbations, known_zeros, n_epochs, val_prop, dy_dx_reg = 1e-5, verbose=False, batch_size = 32):
-
-
-    # round split to multiple of batch size, assuming there is a multiple of batch size simulations then both training and valudation will be als
+    '''
+    performs the custom fitting of the RNN with prior knowledge of some of the interaction matrix zeros
+    '''
 
     abundances = abundances.astype(np.float32)  # species levels and perturbations for each time point
     perturbations = perturbations.astype(np.float32)
@@ -137,7 +136,7 @@ def custom_fit(model, abundances, perturbations, known_zeros, n_epochs, val_prop
     train_ab = abundances[:split]
     train_pert = perturbations[:split]
     val_ab = abundances[split:]
-    val_pert = abundances[split:]
+    val_pert = perturbations[split:]
 
     opt = keras.optimizers.Adam()
 

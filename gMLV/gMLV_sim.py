@@ -114,6 +114,7 @@ def generate_params(num_species, num_pert, zero_prop = 0, hetergeneous = False):
      Method in the supplimentary
      num_species: number of microbial strains
      num_perterbations: number of perterbations
+     zero_prop: proportion of the interaction matrix that should be zeros
     '''
 
     N = np.random.normal(0, 1, (num_species, num_species))
@@ -160,7 +161,20 @@ def binary_step_pert(t, pert_matrix, dt):
     return p
 
 def generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ICs, num_pert, species_prob = 1, num_metabolites=0, noise_std = 0):
+    ''''
+    Generates data with external perturbations e.g. antibiotics or food.
 
+    simulator: simulator object of the gMLV_sim class above
+    tmax: max time (days)
+    sampling_time: time between different perturbations
+    dt: time between different simulated points
+    num_timecourses:number of time courses to simulate
+    ICs: intial conditions
+    num_pert: number of different perturbations
+    species_prob: probability of each species appearing in each timecourse
+    num_metabolites: number of metabolites
+    noise_std: standard dev of measruement noise
+    '''
 
     ryobs = []  # species
     rsobs = []  # metabolites
@@ -179,9 +193,8 @@ def generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ICs
         if timecourse_idx%100 == 0:
             print('percent data generated:',timecourse_idx/num_timecourses * 100)
 
-        # generate binary perturbations matrix
         pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time, num_pert))
-        #pert_matrix = np.zeros((tmax // sampling_time - 1, num_pert))
+
 
         all_perts.append(pert_matrix)
 
@@ -219,7 +232,22 @@ def generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ICs
     return ryobs, rysim, all_perts
 
 
-def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, steady_state, species_prob = 1, num_metabolites=0, noise_std = 0):
+def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, ICs, species_prob = 1, num_metabolites=0, noise_std = 0):
+    ''''
+        Generates data with transplant perturbations
+
+        simulator: simulator object of the gMLV_sim class above
+        tmax: max time (days)
+        sampling_time: time between different perturbations
+        dt: time between different simulated points
+        num_timecourses:number of time courses to simulate
+        ICs: intial conditions
+        species_prob: probability of each species appearing in each timecourse
+        num_metabolites: number of metabolites
+        noise_std: standard dev of measruement noise
+    '''
+
+
     ryobs = []  # species
     rsobs = []  # metabolites
     rysim = []
@@ -234,14 +262,12 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
 
 
     for timecourse_idx in range(num_timecourses):
-        # generate binary perturbations matrix
-        # pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time-1, num_pert
-        #                                               ))
+
         if timecourse_idx%100 == 0:
             print('percent data generated:', timecourse_idx/num_timecourses * 100)
 
         # initial conditions
-        init_species = np.random.uniform(low=0, high=2, size=(1, num_species)) * steady_state * np.random.binomial(1, species_prob, size=(1, num_species))
+        init_species = np.random.uniform(low=0, high=2, size=(1, num_species)) * ICs * np.random.binomial(1, species_prob, size=(1, num_species))
         init_metabolites = np.random.uniform(low=10, high=50, size=(1,num_metabolites))
 
         ysim = []
