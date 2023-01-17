@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('tkagg')
 import matplotlib.pyplot as plt
-from RNN import *
+from RNN_demo import *
 
 num_species = 100
 

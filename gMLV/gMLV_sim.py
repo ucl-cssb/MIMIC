@@ -109,7 +109,11 @@ def gMLV(sy, t, nsp, mu, M, beta, C, p):
 def generate_params(num_species, num_pert, zero_prop = 0, hetergeneous = False):
 
     '''
-    generates parameters for GLV simulation according to Cao et al 2017 (Inferring human microbial dynamics from temporal metagenomics data: Pitfalls and lessons)
+    generates parameters for GLV simulation according to Cao et al 2017
+     (Inferring human microbial dynamics from temporal metagenomics data: Pitfalls and lessons)
+     Method in the supplimentary
+     num_species: number of microbial strains
+     num_perterbations: number of perterbations
     '''
 
     N = np.random.normal(0, 1, (num_species, num_species))
@@ -122,24 +126,15 @@ def generate_params(num_species, num_pert, zero_prop = 0, hetergeneous = False):
         s = np.sum(H)
     else:
         H = np.eye(num_species)
-        s = 3 #from the paper
-        #s = np.sum(H) # to prevent instability when more species
+        #s = 3 #from the paper
+        s = np.sum(H) # this seems to prevent instability when more species
 
     a = np.random.binomial(1, 1-zero_prop, size=(num_species, num_species))
-
-
     # the interaction matrix
     A = 1/s*N@H*a
 
-
-
-
     #set all diagonal elements to -1 to ensure stability
     np.fill_diagonal(A,-1)
-
-
-
-
     # generate feasible growth rate
     r = np.random.uniform(0.00001,1, size = (num_species))
     ss = -np.linalg.inv(A)@r
@@ -154,8 +149,7 @@ def generate_params(num_species, num_pert, zero_prop = 0, hetergeneous = False):
 
 
     # for the binary pert scheme choose ICs to be close to the ss
-    ICs = ss # this can be change to start slightly away from ss
-
+    ICs = ss # this can be changed to start slightly away from ss
     return r, A, C, ICs
 
 
@@ -165,7 +159,9 @@ def binary_step_pert(t, pert_matrix, dt):
     p = pert_matrix[i]
     return p
 
-def generate_data_perts():
+def generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ICs, num_pert, species_prob = 1, num_metabolites=0, noise_std = 0):
+
+
     ryobs = []  # species
     rsobs = []  # metabolites
     rysim = []
@@ -176,13 +172,15 @@ def generate_data_perts():
 
     times = np.arange(0, tmax, dt)
 
+    num_species = simulator.nsp
+
 
     for timecourse_idx in range(num_timecourses):
         if timecourse_idx%100 == 0:
-            print(timecourse_idx/num_timecourses * 100)
+            print('percent data generated:',timecourse_idx/num_timecourses * 100)
 
         # generate binary perturbations matrix
-        pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time-1, num_pert))
+        pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time, num_pert))
         #pert_matrix = np.zeros((tmax // sampling_time - 1, num_pert))
 
         all_perts.append(pert_matrix)
@@ -240,7 +238,7 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
         # pert_matrix = np.random.binomial(1, 0.5, size=(tmax//sampling_time-1, num_pert
         #                                               ))
         if timecourse_idx%100 == 0:
-            print(timecourse_idx/num_timecourses * 100)
+            print('percent data generated:', timecourse_idx/num_timecourses * 100)
 
         # initial conditions
         init_species = np.random.uniform(low=0, high=2, size=(1, num_species)) * steady_state * np.random.binomial(1, species_prob, size=(1, num_species))
@@ -256,6 +254,7 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
         sobs = [ss[0] + np.random.normal(loc=0, scale=noise_std, size=ss[0].shape)]
 
         p = np.zeros((num_species,))
+
         perturbed = False
         for i in range(int(tmax//sampling_time)):
 
@@ -301,7 +300,6 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
 
                 yobs.append(yo)
                 sobs.append(so)
-
 
 
         all_perts.append(p_matrix)
