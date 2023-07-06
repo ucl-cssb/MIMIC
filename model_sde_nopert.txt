@@ -44,6 +44,9 @@ parameters {
   real<lower=0>  tau;
   
   real<lower=0>  sigma;
+  
+  //real d0;
+  //real d1;
 }
 
 model {
@@ -61,7 +64,9 @@ model {
         target += normal_lpdf(M[i] | 0, lambda[i]*tau);
         target += cauchy_lpdf(lambda[i] | 0, 1);
   }
-  //
+  
+  // Negative binomial observation error
+  //target += neg_binomial_lpmf(x[i] | x[i], d0/x[i] + d1)
 
   // sigma
   target += lognormal_lpdf(sigma | 0.01, 0.5);
@@ -69,12 +74,12 @@ model {
   // SDE likelihood
   // log xi(t+1) ~ N( log xi(t) + f(x)dt,  )
 
-  for (t in 2:T) {
+  for (t in 1:(T-1)) {
       vector[N] f_x = gLV_sde(x[t,:], N, mu, Md, M);
-      real dt = times[t] - times[t-1];
+      real dt = times[t+1] - times[t];
       
       for (s in 1:N){
-         target += normal_lpdf(x[t,s] | x[t-1,s] + f_x[s]*dt, sqrt(dt)*sigma);
+         target += normal_lpdf(x[t+1,s] | x[t,s] + f_x[s]*dt, sqrt(dt)*sigma);
       }
   }
   // tmp
