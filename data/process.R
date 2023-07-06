@@ -36,13 +36,33 @@ add_pseudocounts <- function(data){
 if(1){
 
   d <- read.csv("trimmed.csv")
+  q <- read.csv('queries.csv')
+  p <- read.csv('perturbations.csv') %>%
+    filter(! subjectID %in% q$subjectID) %>%
+    mutate(name = as.factor(name))
 
   # normalise reads
   d <- d %>%
+    filter(! subjectID %in% q$subjectID) %>%
     pivot_longer(cols = starts_with('taxa_')) %>%
     group_by(sampleID) %>%
     mutate(value = value / sum(value)) %>%
-    ungroup() %>%
+    ungroup()
+
+  ggplot() +
+    geom_area(data = d,
+             aes(timepoint, value, fill = name),
+             position = 'stack') +
+    geom_segment(data = p,
+                 aes(x = start, xend = end, y = 1+as.numeric(name)/10, yend = 1+as.numeric(name)/10,
+                     colour = name),
+                 size = 1) +
+    scale_fill_discrete(guide = 'none') +
+    facet_wrap(~subjectID, scales = 'free_x') +
+    # guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+    theme_bw()
+
+  d <- d  %>%
     pivot_wider(names_from = name, values_from = value)
 
   d <- d[,c(2,3,23:185)]
