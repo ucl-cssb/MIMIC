@@ -21,7 +21,10 @@ from sklearn.base import RegressorMixin
 class Ridge1(BaseEstimator, RegressorMixin):
     """Custom ridge regression class"""
 
-    def __init__(self, alphas=[0.1, 0.1], num_species=3):
+    def __init__(self, alphas=None, num_species=3):
+        self.coef_ = None
+        if alphas is None:
+            alphas = [0.1, 0.1]
         self.alphas = alphas
         self.num_species = num_species
 
@@ -46,7 +49,10 @@ class Ridge1(BaseEstimator, RegressorMixin):
 class Ridge2(BaseEstimator, RegressorMixin):
     """Custom ridge regression class"""
 
-    def __init__(self, alphas=[0.1, 0.1, 0.1], num_species=3, num_pert=1):
+    def __init__(self, alphas=None, num_species=3, num_pert=1):
+        self.coef_ = None
+        if alphas is None:
+            alphas = [0.1, 0.1, 0.1]
         self.alphas = alphas
         self.num_species = num_species
         self.num_pert = num_pert
@@ -243,9 +249,9 @@ def fit_alpha_Ridge1(X, F, num_species, n_a0, n_a1):
 def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2):
     # use own ridge model
 
-    a0 = np.logspace(-2, 2, n_a0)  # constraint on Mij matrix elements
-    a1 = np.logspace(-6, 0, n_a1)  # constraint on mu
-    a2 = np.logspace(-6, 0, n_a2)  # constraint on epsilon
+    a0 = np.logspace(-6, 3, n_a0)  # constraint on Mij matrix elements
+    a1 = np.logspace(-6, 3, n_a1)  # constraint on mu
+    a2 = np.logspace(-6, 3, n_a2)  # constraint on epsilon
 
     xv, yv, zv = np.meshgrid(a0, a1, a2, indexing='ij')
 
@@ -290,7 +296,7 @@ def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2):
 
     M_h = [model.coef_[i][0:num_species].tolist() for i in range(0, num_species)]
     mu_h = [model.coef_[i][num_species] for i in range(0, num_species)]
-    e_h = [model.coef_[i][(num_species+1):-1] for i in range(0, num_species)]
+    e_h = [model.coef_[i][(num_species+1):] for i in range(0, num_species)]
 
     return mu_h, M_h, e_h
 
