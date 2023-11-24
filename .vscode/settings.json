@@ -1,0 +1,11 @@
+{
+    // This helps VSCode to find the modules in the gMLV folder
+    "python.analysis.extraPaths": [
+        "./clustering",
+        "./gMLV",
+        "./data",
+        "./data_analysis",
+        "./OED",
+        "./RNN"
+    ]
+}
