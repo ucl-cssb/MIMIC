@@ -1,10 +1,9 @@
 import tensorflow as tf
 #tf.config.run_functions_eagerly(True)
 from tensorflow import keras
-from tensorflow.keras import layers
-from tensorflow.keras import regularizers
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-import copy
+from keras import layers
+from keras import regularizers
+from keras.preprocessing.sequence import pad_sequences
 import copy
 import math
 import numpy as np

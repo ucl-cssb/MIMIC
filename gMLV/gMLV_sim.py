@@ -73,7 +73,7 @@ def gMLV(sy, t, nsp, mu, M, beta, C, p):
     s = sy[nsp:]
 
 
-
+    
     if p is None:
         instantaneous_growth = mu + M @ y
         # dN = np.multiply(mu, y) + np.multiply(y, M @ y)
