@@ -1,32 +1,32 @@
+import json
+from xdot import xdot
+import time
+import tensorflow as tf
+from gMLV.gMLV_sim import *
+from RED.environments.OED_env import *
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import numpy as np
+from casadi import *
+import math
 import sys
 import os
-
 
 
 sys.path.append('../')
 sys.path.append('../../RED_master/')
 
-import math
-from casadi import *
-import numpy as np
-import matplotlib as mpl
 
 mpl.use('tkagg')
-import matplotlib.pyplot as plt
 
-from RED.environments.OED_env import *
-from gMLV.gMLV_sim import *
 
-import tensorflow as tf
-import time
-
-from xdot import xdot
-import json
 def disablePrint():
     sys.stdout = open(os.devnull, 'w')
 
+
 def enablePrint():
     sys.stdout = sys.__stdout__
+
 
 SMALL_SIZE = 11
 MEDIUM_SIZE = 14
@@ -41,13 +41,15 @@ plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 
-def simulate(env, us, plot = False, calculate_FIM = True):
+def simulate(env, us, plot=False, calculate_FIM=True):
     # test simulation
     if calculate_FIM:
         print(DM(us))
-        env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='OED')
-        trajectory_solver = env.get_sampled_trajectory_solver(N_control_intervals, control_interval_time, dt)
-        est_trajectory = trajectory_solver(env.initial_Y, params,us)
+        env.CI_solver = env.get_control_interval_solver(
+            control_interval_time, dt, mode='OED')
+        trajectory_solver = env.get_sampled_trajectory_solver(
+            N_control_intervals, control_interval_time, dt)
+        est_trajectory = trajectory_solver(env.initial_Y, params, us)
 
         print('est_trajectory', est_trajectory)
         FIM = env.get_FIM(est_trajectory)
@@ -56,21 +58,24 @@ def simulate(env, us, plot = False, calculate_FIM = True):
         logdet_FIM = trace(log(r))
         print('log det FIM:', logdet_FIM)
 
-        est_trajectory = np.hstack((np.array(env.initial_Y).reshape(-1, 1), est_trajectory))
+        est_trajectory = np.hstack(
+            (np.array(env.initial_Y).reshape(-1, 1), est_trajectory))
 
     else:
-        env.CI_solver = env.get_control_interval_solver(control_interval_time, dt, mode='sim')
-        trajectory_solver = env.get_sampled_trajectory_solver(N_control_intervals, control_interval_time, dt)
+        env.CI_solver = env.get_control_interval_solver(
+            control_interval_time, dt, mode='sim')
+        trajectory_solver = env.get_sampled_trajectory_solver(
+            N_control_intervals, control_interval_time, dt)
         est_trajectory = trajectory_solver(y0, params,
                                            reshape(us, (n_controlled_inputs, N_control_intervals)))
 
-        est_trajectory = np.hstack((np.array(y0).reshape(3, 1), est_trajectory))
+        est_trajectory = np.hstack(
+            (np.array(y0).reshape(3, 1), est_trajectory))
 
     if plot:
         t = np.arange(0, N_control_intervals+1)
         us = np.vstack((us[:, 0], us.T))
-        fig, axs = plt.subplots(3,1, figsize=(8.0, 7.0))
-
+        fig, axs = plt.subplots(3, 1, figsize=(8.0, 7.0))
 
         axs[0].step(t, us[:, 0], '--', alpha=1., linewidth=4, color='C0')
         axs[0].set_ylabel('Perturbation (AU)')
@@ -85,7 +90,8 @@ def simulate(env, us, plot = False, calculate_FIM = True):
 
         plt.figure()
 
-        plt.plot(est_trajectory[0:n_observed_variables,:].T, alpha=1, linewidth=4)
+        plt.plot(est_trajectory[0:n_observed_variables,
+                 :].T, alpha=1, linewidth=4)
         plt.xlabel('Time (AU)')
         plt.ylabel('Population (AU)')
         plt.savefig('./working_dir/population.png', dpi=300)
@@ -98,16 +104,16 @@ def simulate(env, us, plot = False, calculate_FIM = True):
         plt.xticks(range(0, 21), param_labels)
         plt.yticks(range(0, 21), param_labels)
 
-        #plt.colorbar()
+        # plt.colorbar()
 
         plt.title('Estimated FIM')
         plt.savefig('./working_dir/FIM.png', dpi=300)
 
         plt.figure()
 
-        cov = np.array(inv(FIM).elements()).reshape(FIM.size(), order = 'F')
+        cov = np.array(inv(FIM).elements()).reshape(FIM.size(), order='F')
         plt.spy(cov)
-        #plt.colorbar()
+        # plt.colorbar()
         plt.title('Estimated covariance matrix')
         plt.xticks(range(0, 21), param_labels)
         plt.yticks(range(0, 21), param_labels)
@@ -118,13 +124,11 @@ def simulate(env, us, plot = False, calculate_FIM = True):
         print(params)
         print(param_variances)
 
-
-        cov[cov<0] = -1
-        cov[cov>0] = 1
+        cov[cov < 0] = -1
+        cov[cov > 0] = 1
         plt.figure()
         plt.imshow(cov)
         plt.colorbar()
-
 
         plt.show()
 
@@ -132,13 +136,12 @@ def simulate(env, us, plot = False, calculate_FIM = True):
 
 
 if __name__ == '__main__':
-    #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+    # sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
     set_all_seeds(0)
 
     gMLV_params = json.load(open('gMLV_params.json'))
 
     eta = gMLV_params['eta']
-
 
     params = np.load('working_dir/generated_params.npy')
     y0 = np.load('working_dir/generated_y0.npy')
@@ -158,43 +161,79 @@ if __name__ == '__main__':
     print(gr)
     print(E)
 
-
     params = DM(params)
 
     print(params.size())
     actual_params = params
     N_control_intervals = 8
-    control_interval_time = 1
+    control_interval_time = 1  # AU
     num_inputs = -1
-    input_bounds = [[0,1], [0,1], [0,1]]
+    input_bounds = [[0, 1], [0, 1], [0, 1]]
     n_observed_variables = 3
     n_controlled_inputs = 3
     dt = 0.1
     normaliser = -1
 
-
     save_path = './'
 
-
-    args = y0, xdot, params, actual_params, n_observed_variables, n_controlled_inputs, num_inputs, input_bounds, dt, control_interval_time,normaliser
+    args = y0, xdot, params, actual_params, n_observed_variables, n_controlled_inputs, num_inputs, input_bounds, dt, control_interval_time, normaliser
     env = OED_env(*args)
 
+    # TODO: fix this hard-coded path
+    us = np.load(
+        '/Users/neythen/Desktop/Projects/gMLV/OED/results/OED_results_100822/rand_100_days/us.npy', allow_pickle=True)
 
-
-    us = np.load('/Users/neythen/Desktop/Projects/gMLV/OED/results/OED_results_100822/rand_100_days/us.npy', allow_pickle=True)
-
-    #us = np.array([[0,0,0], [1,0,0],[0,1,0],[0,0,1], [1,1,0],[1,0,1],[0,1,1],[1,1,1]]).T
+    # us = np.array([[0,0,0], [1,0,0],[0,1,0],[0,0,1], [1,1,0],[1,0,1],[0,1,1],[1,1,1]]).T
     print(us)
-    #us = np.random.rand(*us.shape)
-    #np.save('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_8_day_rational/random/us.npy', us)
+    # us = np.random.rand(*us.shape)
+    # np.save('/home/neythen/Desktop/Projects/gMLV/OED/results/OED_8_day_rational/random/us.npy', us)
     simulate(env, us, plot=True)
 
+    calculate_FIM = True
 
+    if calculate_FIM:
+        env.CI_solver = env.get_control_interval_solver(
+            control_interval_time, dt, mode='OED')
+        trajectory_solver = env.get_sampled_trajectory_solver(
+            N_control_intervals, control_interval_time, dt)
+        est_trajectory = trajectory_solver(env.initial_Y, params,
+                                           reshape(us, (n_controlled_inputs, N_control_intervals)))
 
+        print(est_trajectory)
+        print(est_trajectory.shape)
+        FIM = env.get_FIM(est_trajectory)
+        FIM += DM(np.ones(FIM.size()) * eta)
+        print(FIM)
+        print(FIM.size())
 
+        q, r = qr(FIM)
 
+        det_FIM = np.prod(diag(r).elements())
 
+        logdet_FIM = trace(log(r)).elements()[
+            0]  # do it like this to protect from numerical errors from multiplying large EVs
+        print('det FIM:', det_FIM)
+        print('log det FIM:', logdet_FIM)
+    else:
+        env.CI_solver = env.get_control_interval_solver(
+            control_interval_time, dt, mode='sim')
+        trajectory_solver = env.get_sampled_trajectory_solver(
+            N_control_intervals, control_interval_time, dt)
+        est_trajectory = trajectory_solver(y0, params,
+                                           reshape(us, (n_controlled_inputs, N_control_intervals)))
 
+        est_trajectory = np.hstack(
+            (np.array(y0).reshape(3, 1), est_trajectory))
 
+        plt.plot(us.T, alpha=0.5, linewidth=4)
+        plt.xlabel('Time (AU)')
+        plt.ylabel('Perturbation (AU)')
+        plt.savefig('./working_dir/perturbation.png', dpi=300)
+        plt.figure()
 
+        plt.plot(est_trajectory.T, alpha=0.5, linewidth=4)
+        plt.xlabel('Time (AU)')
+        plt.ylabel('Population (AU)')
+        plt.savefig('./working_dir/population.png', dpi=300)
 
+        plt.show()
