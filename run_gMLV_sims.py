@@ -1,3 +1,14 @@
+'''
+Simulation script for gMLV model with perturbations and metabolites.
+Usage: python run_gMLV_sims.py <save_path> <num_sims>
+Example: python run_gMLV_sims.py outputs/ 100
+
+The script will create a folder named outputs/ and save the results there.
+The number of simulations is 100 by default, but can be changed by passing
+a different number as the second argument.
+'''
+
+
 import random
 import os
 import sys
@@ -98,10 +109,20 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
 if __name__ == '__main__':
 
     if len(sys.argv) == 3:
+        # check if the third argument is a number, and if the second one is a path
+        if not sys.argv[2].isdigit():
+            print("Please enter a valid number of simulations")
+            sys.exit(1)
+        if not os.path.isdir(sys.argv[1]):
+            print("Please enter a valid path to save the outputs")
+            sys.exit(1)
+        
         num_sims = int( sys.argv[2] )
         save_path = sys.argv[1] + '/'
         os.makedirs(save_path, exist_ok=True)
     else:
+        print("Using default values for number of simulations and save path")
+        print("Usage: python run_gMLV_sims.py <save_path> <num_sims>")
         num_sims = 100
         save_path = 'outputs/'
         os.makedirs(save_path, exist_ok=True)
@@ -173,6 +194,13 @@ if __name__ == '__main__':
         # species levels and perturbations for each time point
         all_ryobs[nsim,:,:] = ryobs.astype(np.float32) 
         all_rysim[nsim,:,:] = rysim.astype(np.float32)
+        # export each simulation as csv
+        # create a numpy array concatenating the time points and the simulated data
+        data_export = np.concatenate( (times.reshape(-1,1), rysim[0,:,:]), axis=1 )
+        np.savetxt(save_path + '/simulations' + str(nsim) + '.csv', data_export, delimiter=',')
+
+        #np.savetxt(save_path + '/simulations' + str(nsim) + '.csv', rysim, delimiter=',')
+        #np.savetxt(save_path + '/simulations.csv', rysim[0,:,:], delimiter=',')
         all_perts[nsim,:,:] = perts.astype(np.float32)
         
 
