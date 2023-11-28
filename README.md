@@ -3,7 +3,8 @@
 
 ## Overview
 
-The gMLV project utilizes generalized Lotka-Volterra (gLV) models to predict the dynamics of microbial communities. This repository contains Python code developed for modeling, simulating, and analyzing these dynamics. Our approach is detailed in [this paper](https://onlinelibrary.wiley.com/doi/full/10.1002/bies.201600188).
+The gMLV project utilizes generalized Lotka-Volterra (gLV) models to predict the dynamics of microbial communities. This repository contains Python code developed for modeling, simulating, and analyzing these dynamics. 
+
 
 ## Structure
 
