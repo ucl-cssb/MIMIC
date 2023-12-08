@@ -1,7 +1,9 @@
 import numpy as np
 import sys
+
 from gMLV import *
-from gMLV.gMLV_ML import predict, compute_prediction_error
+# FIXME: this is a hack to stop the errors. Need to fix this properly
+from gMLV.gMLV_ML import predict, compute_prediction_error, ridge_regression_clv
 
 
 class CompositionalLotkaVolterra:
