@@ -1,4 +1,5 @@
-
+import numpy as np
+import sys
 
 class CompositionalLotkaVolterra:
     """Inference for compositional Lotka-Volterra.
