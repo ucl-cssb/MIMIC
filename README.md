@@ -1,5 +1,5 @@
 
-# gMLV Project
+# Modelling and Inference of MICrobiomes Project (MIMIC)
 
 ## Overview
 
