@@ -1,5 +1,8 @@
 import numpy as np
 import sys
+from gMLV import *
+from gMLV.gMLV_ML import predict, compute_prediction_error
+
 
 class CompositionalLotkaVolterra:
     """Inference for compositional Lotka-Volterra.
@@ -122,7 +125,8 @@ def choose_denom(P):
     for p in P:  # for each subject
         s = p.sum(axis=1, keepdims=True)  # sum each taxon across time
         s[s == 0] = 1
-        deltas = np.log((p/s)[1:]) - np.log((p/s)[:-1])  # calculate the log change between timepoints
+        # calculate the log change between timepoints
+        deltas = np.log((p/s)[1:]) - np.log((p/s)[:-1])
         if log_change is None:
             log_change = deltas
         else:
@@ -188,7 +192,7 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
     best_r = 0
     best_sqr_err = np.inf
     for i, (alpha, r_A, r_g, r_B) in enumerate(alpha_rA_rg_rB):
-        #print("\tTesting regularization parameter set", i+1, "of", len(alpha_rA_rg_rB), file=sys.stderr)
+        # print("\tTesting regularization parameter set", i+1, "of", len(alpha_rA_rg_rB), file=sys.stderr)
         sqr_err = 0
         for fold in range(folds):
             train_X = []
@@ -214,8 +218,10 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
                     train_T.append(T[i])
 
             Q_inv = np.eye(train_X[0].shape[1])
-            A, g, B = elastic_net_clv(train_X, train_P, train_U, train_T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3)
-            sqr_err += compute_prediction_error(test_X, test_P, test_U, test_T, A, g, B, denom)
+            A, g, B = elastic_net_clv(
+                train_X, train_P, train_U, train_T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3)
+            sqr_err += compute_prediction_error(test_X,
+                                                test_P, test_U, test_T, A, g, B, denom)
 
         if sqr_err < best_sqr_err:
             best_r = (alpha, r_A, r_g, r_B)
@@ -231,42 +237,45 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
         grad = Q_inv.dot(f.T.dot(pgu_stacked))
 
         # l2 regularization terms
-        A = AgB[:,:yDim]
-        g = AgB[:,yDim:(yDim+1)]
-        B = AgB[:,(yDim+1):]
+        A = AgB[:, :yDim]
+        g = AgB[:, yDim:(yDim+1)]
+        B = AgB[:, (yDim+1):]
 
-        grad[:,:yDim] += -2*alpha*(1-r_A)*A
-        grad[:,yDim:(yDim+1)] += -2*alpha*(1-r_g)*g
-        grad[:,(yDim+1):] += -2*alpha*(1-r_B)*B
+        grad[:, :yDim] += -2*alpha*(1-r_A)*A
+        grad[:, yDim:(yDim+1)] += -2*alpha*(1-r_g)*g
+        grad[:, (yDim+1):] += -2*alpha*(1-r_B)*B
         return -grad
 
     def generalized_gradient(AgB, grad, step):
-            nxt_AgB = prv_AgB - step*grad
+        nxt_AgB = prv_AgB - step*grad
 
-            # threshold A
-            A_prox = nxt_AgB[:,:yDim]
-            A_prox[A_prox < -step*alpha*r_A] += step*alpha*r_A
-            A_prox[A_prox > step*alpha*r_A] -= step*alpha*r_A
-            A_prox[np.logical_and(A_prox >= -step*alpha*r_A, A_prox <= step*alpha*r_A)] = 0
+        # threshold A
+        A_prox = nxt_AgB[:, :yDim]
+        A_prox[A_prox < -step*alpha*r_A] += step*alpha*r_A
+        A_prox[A_prox > step*alpha*r_A] -= step*alpha*r_A
+        A_prox[np.logical_and(A_prox >= -step*alpha*r_A,
+                              A_prox <= step*alpha*r_A)] = 0
 
-            # threshold g
-            g_prox = nxt_AgB[:,yDim:(yDim+1)]
-            g_prox[g_prox < -step*alpha*r_g] += step*alpha*r_g
-            g_prox[g_prox > step*alpha*r_g] -= step*alpha*r_g
-            g_prox[np.logical_and(g_prox >= -step*alpha*r_g, g_prox <= step*alpha*r_g)] = 0
+        # threshold g
+        g_prox = nxt_AgB[:, yDim:(yDim+1)]
+        g_prox[g_prox < -step*alpha*r_g] += step*alpha*r_g
+        g_prox[g_prox > step*alpha*r_g] -= step*alpha*r_g
+        g_prox[np.logical_and(g_prox >= -step*alpha*r_g,
+                              g_prox <= step*alpha*r_g)] = 0
 
-            # threshold B
-            B_prox = nxt_AgB[:,(yDim+1):]
-            B_prox[B_prox < -step*alpha*r_B] += step*alpha*r_B
-            B_prox[B_prox > step*alpha*r_B] -= step*alpha*r_B
-            B_prox[np.logical_and(B_prox >= -step*alpha*r_B, B_prox <= step*alpha*r_B)] = 0
+        # threshold B
+        B_prox = nxt_AgB[:, (yDim+1):]
+        B_prox[B_prox < -step*alpha*r_B] += step*alpha*r_B
+        B_prox[B_prox > step*alpha*r_B] -= step*alpha*r_B
+        B_prox[np.logical_and(B_prox >= -step*alpha*r_B,
+                              B_prox <= step*alpha*r_B)] = 0
 
-            AgB_proximal = np.zeros(AgB.shape)
-            AgB_proximal[:,:yDim] = A_prox
-            AgB_proximal[:,yDim:(yDim+1)] = g_prox
-            AgB_proximal[:,(yDim+1):] = B_prox
+        AgB_proximal = np.zeros(AgB.shape)
+        AgB_proximal[:, :yDim] = A_prox
+        AgB_proximal[:, yDim:(yDim+1)] = g_prox
+        AgB_proximal[:, (yDim+1):] = B_prox
 
-            return (AgB - AgB_proximal)/step
+        return (AgB - AgB_proximal)/step
 
     def objective(AgB, x_stacked, pgu_stacked):
         f = x_stacked - AgB.dot(pgu_stacked.T).T
@@ -301,11 +310,12 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
     yDim = xDim + 1
     uDim = U[0].shape[1]
 
-    AgB = np.zeros(( xDim, yDim + 1 + uDim ))
-    A,g,B = ridge_regression_clv(X, P, U, T, np.max((alpha*(1-r_A), 0.01)), np.max((alpha*(1-r_g), 0.01)), np.max((alpha*(1-r_B), 0.01)))
-    AgB[:,:yDim] = A
-    AgB[:,yDim:(yDim+1)] = np.expand_dims(g,axis=1)
-    AgB[:,(yDim+1):] = B
+    AgB = np.zeros((xDim, yDim + 1 + uDim))
+    A, g, B = ridge_regression_clv(X, P, U, T, np.max(
+        (alpha*(1-r_A), 0.01)), np.max((alpha*(1-r_g), 0.01)), np.max((alpha*(1-r_B), 0.01)))
+    AgB[:, :yDim] = A
+    AgB[:, yDim:(yDim+1)] = np.expand_dims(g, axis=1)
+    AgB[:, (yDim+1):] = B
 
     x_stacked, pgu_stacked = stack_observations(X, P, U, T)
     prv_obj = np.inf
@@ -329,12 +339,12 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
             nxt_AgB = prv_AgB - step*gen_grad
             obj = objective(nxt_AgB, x_stacked, pgu_stacked)
 
-        A = nxt_AgB[:,:yDim]
-        g = nxt_AgB[:,yDim:(yDim+1)]
-        B = nxt_AgB[:,(yDim+1):]
-        AgB[:,:yDim] = A
-        AgB[:,yDim:(yDim+1)] = g
-        AgB[:,(yDim+1):] = B
+        A = nxt_AgB[:, :yDim]
+        g = nxt_AgB[:, yDim:(yDim+1)]
+        B = nxt_AgB[:, (yDim+1):]
+        AgB[:, :yDim] = A
+        AgB[:, yDim:(yDim+1)] = g
+        AgB[:, (yDim+1):] = B
 
         obj = objective(AgB, x_stacked, pgu_stacked)
         it += 1
@@ -343,11 +353,12 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
             print("\t", it, obj)
 
         if it > max_iter:
-            print("Warning: maximum number of iterations ({}) reached".format(max_iter), file=sys.stderr)
+            print("Warning: maximum number of iterations ({}) reached".format(
+                max_iter), file=sys.stderr)
             break
 
-    A = AgB[:,:yDim]
-    g = AgB[:,yDim:(yDim+1)].flatten()
-    B = AgB[:,(yDim+1):]
+    A = AgB[:, :yDim]
+    g = AgB[:, yDim:(yDim+1)].flatten()
+    B = AgB[:, (yDim+1):]
 
     return A, g, B
