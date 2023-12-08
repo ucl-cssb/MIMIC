@@ -1,6 +1,6 @@
-# Contributing to gMLV
+# Contributing to MIMIC
 
-We're excited to have you contribute to gMLV! This document outlines the guidelines for contributing to our project. By following these guidelines, you help us maintain the quality of our project and ensure that everyone's contributions can be incorporated smoothly.
+We're excited to have you contribute to MIMIC! This document outlines the guidelines for contributing to our project. By following these guidelines, you help us maintain the quality of our project and ensure that everyone's contributions can be incorporated smoothly.
 
 ## Getting Started
 
@@ -74,4 +74,4 @@ Before submitting your Pull Request, ensure:
 ## Additional Notes
 
 
-Thank you for contributing to gMLV!
+Thank you for contributing to MIMIC!
