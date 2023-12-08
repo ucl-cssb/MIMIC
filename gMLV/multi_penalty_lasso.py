@@ -2,6 +2,7 @@ from sklearn.linear_model import Lasso, LinearRegression
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.model_selection import RepeatedKFold, cross_val_score
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
@@ -39,7 +40,8 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
     def non_zero_penalties(self, X, y):
         n_samples, n_features = X.shape
         n_targets = y.shape[1]
-        print(f'n_samples: {n_samples}, n_features: {n_features}, n_targets: {n_targets}')
+        print(
+            f'n_samples: {n_samples}, n_features: {n_features}, n_targets: {n_targets}')
 
         lambda_p = np.diag(self.alpha)
 
@@ -54,7 +56,8 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
     def penalised_lasso(self, X, y):
         n_samples, n_features = X.shape
         n_targets = y.shape[1]
-        print(f'n_samples: {n_samples}, n_features: {n_features}, n_targets: {n_targets}')
+        print(
+            f'n_samples: {n_samples}, n_features: {n_features}, n_targets: {n_targets}')
 
         alpha_zeros_idx = np.nonzero(self.alpha == 0)[0]
         alpha_nonzeros_idx = np.nonzero(self.alpha != 0)[0]
@@ -67,8 +70,10 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
         # 1. Project out the non-penalized coefficients: Calculate the residual matrix for the non-penalized
         # coefficients (λ_i=0):
         #   MNP = I − X_NP (X^T_NP X_NP)^−1 X^T_NP
-        print((X_NP @ np.linalg.inv(np.transpose(X_NP) @ X_NP) @ np.transpose(X_NP)).shape)
-        M_NP = np.subtract(np.identity(n_samples), X_NP @ np.linalg.inv(np.transpose(X_NP) @ X_NP) @ np.transpose(X_NP))
+        print((X_NP @ np.linalg.inv(np.transpose(X_NP) @ X_NP)
+              @ np.transpose(X_NP)).shape)
+        M_NP = np.subtract(np.identity(
+            n_samples), X_NP @ np.linalg.inv(np.transpose(X_NP) @ X_NP) @ np.transpose(X_NP))
 
         # and apply it to the response variable (y → M_NP y)
         y_prime = M_NP @ y
@@ -110,15 +115,18 @@ def fit_alpha_MPLasso(X, y, n_a):
 
     candidate_alpha_1 = np.logspace(-9, 2, n_a)
     candidate_alpha_2 = np.logspace(-9, 2, n_a)
-    candidate_alphas = np.transpose([np.tile(candidate_alpha_1, len(candidate_alpha_2)), np.repeat(candidate_alpha_2, len(candidate_alpha_1))])
+    candidate_alphas = np.transpose([np.tile(candidate_alpha_1, len(
+        candidate_alpha_2)), np.repeat(candidate_alpha_2, len(candidate_alpha_1))])
 
     candidate_regressors = []
     for a in candidate_alphas:
-        lambda_p = np.append(np.ones(y.shape[1])*a[0], a[1])  # this sets the diag(Lambda) penalties matrix with a[0] penality for M and a[1] penalty for mu
+        # this sets the diag(Lambda) penalties matrix with a[0] penality for M and a[1] penalty for mu
+        lambda_p = np.append(np.ones(y.shape[1])*a[0], a[1])
         candidate_regressors.append(MultiPenaltyLasso(alpha=lambda_p))
 
     cv = RepeatedKFold(n_splits=5, n_repeats=10)
-    cv_results = [-cross_val_score(r, X, y, scoring='neg_root_mean_squared_error', cv=cv, n_jobs=-1) for r in candidate_regressors]
+    cv_results = [-cross_val_score(r, X, y, scoring='neg_root_mean_squared_error',
+                                   cv=cv, n_jobs=-1) for r in candidate_regressors]
 
     n_est = np.array([len(x) for x in cv_results])
     cv_means = np.array([np.mean(x) for x in cv_results])
@@ -130,11 +138,13 @@ def fit_alpha_MPLasso(X, y, n_a):
 
     fig, axs = plt.subplots(1, 2, layout='constrained')
     for i in range(2):
-        axs[i].scatter(candidate_alphas[:, i].T, cv_means, marker='o', color='blue')
-        axs[i].scatter([candidate_alphas[min_i, i]], [cv_means[min_i]], marker='o', color='red', label='Minimum rule')
+        axs[i].scatter(candidate_alphas[:, i].T,
+                       cv_means, marker='o', color='blue')
+        axs[i].scatter([candidate_alphas[min_i, i]], [cv_means[min_i]],
+                       marker='o', color='red', label='Minimum rule')
         axs[i].legend()
         axs[i].set_xscale('log')
         axs[i].set_xlabel('Log alpha')
-        axs[i].set_ylabel('MSE');
+        axs[i].set_ylabel('MSE')
 
     return candidate_alphas[min_i]
