@@ -3,7 +3,5 @@
 .idea*
 build*
 .ipynb_checkpoints*
-!.vscode/
-!.vscode/launch.json
-!.vscode/settings.json
-
+data/*
+.vscode/
