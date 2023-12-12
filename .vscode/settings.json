@@ -1,8 +1,0 @@
-{
-    // This helps VSCode to find the modules in the gMLV folder
-    "python.analysis.extraPaths": [
-        "./gMLV",
-        "./data",
-        "./data_analysis"
-    ]
-}
