@@ -15,5 +15,5 @@ jobs:
       - name: Automatic requirements.txt for Python Project
         uses: ryan-rozario/pipreqs-action@master
         with:
-          PROJECT_PATH: project_folder   # Replace with the path to your Python project
-          REQUIREMENT_PATH: project_folder/requirements.txt  # Replace with your requirements.txt file path
+          PROJECT_PATH: ./   # Set to root of the repository
+          REQUIREMENT_PATH: ./requirements.txt  # Path to requirements.txt in the root of the repository
