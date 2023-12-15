@@ -2,6 +2,10 @@
 *.pyc
 .idea*
 build/
-.ipynb_checkpoints*
 data/
 .vscode/
+.ipynb_checkpoints*
+.ipynb_checkpoints/
+.pytest_cache/
+venv/
+.venv/
