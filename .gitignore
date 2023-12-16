@@ -1,6 +1,6 @@
 *.pdf
 *.pyc
-.idea*
+.idea/
 build/
 data/
 .vscode/

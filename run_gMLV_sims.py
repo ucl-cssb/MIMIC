@@ -169,6 +169,7 @@ if __name__ == '__main__':
 
         # generate params according to paper approach
         #  C is perturbation interaction vector/m
+        # TODO: #25 generate_params is not defined anywhere
         mu, M, C, ss = generate_params(
             num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
 
@@ -187,6 +188,7 @@ if __name__ == '__main__':
                              mu=mu,
                              C=C)
 
+        # FIXME: #26 generate_data_perts is not defined anywhere
         ryobs, rysim, perts = generate_data_perts(
             simulator, tmax, sampling_time, dt, num_timecourses, ss, num_pert, species_prob=species_prob, noise_std=0.00)
 
