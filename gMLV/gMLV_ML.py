@@ -18,7 +18,7 @@ from sklearn.base import BaseEstimator
 from sklearn.base import RegressorMixin
 
 #FIXME: this is a hack to stop the errors. Need to fix this properly
-from gMLV_sim import gLV, yobs, times, num_species, mu, M, y0, tX, tF, cRidge
+#from gMLV_sim import gLV, yobs, times, num_species, mu, M, y0, tX, tF, cRidge
 
 class Ridge1(BaseEstimator, RegressorMixin):
     """Custom ridge regression class"""
