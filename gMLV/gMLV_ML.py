@@ -17,8 +17,6 @@ from scipy.integrate import odeint
 from sklearn.base import BaseEstimator
 from sklearn.base import RegressorMixin
 
-#FIXME: this is a hack to stop the errors. Need to fix this properly
-#from gMLV_sim import gLV, yobs, times, num_species, mu, M, y0, tX, tF, cRidge
 
 class Ridge1(BaseEstimator, RegressorMixin):
     """Custom ridge regression class"""
@@ -61,7 +59,8 @@ class Ridge2(BaseEstimator, RegressorMixin):
 
     def fit(self, X, y):
         # print("calling fit")
-        self.coef_ = ridge_fit_pert(X.T, y.T, self.alphas, self.num_species, self.num_pert)
+        self.coef_ = ridge_fit_pert(
+            X.T, y.T, self.alphas, self.num_species, self.num_pert)
         # return self
 
     def predict(self, X):
@@ -79,7 +78,8 @@ def ridge_fit(X, F, alphas, num_species):
     # beta = np.dot( np.dot(F,np.transpose(X)), la.inv(np.dot(X,np.transpose(X))))
 
     # compute ridge estimate
-    penalty = np.diagflat(np.hstack([np.repeat(alphas[0], num_species), alphas[1]]))
+    penalty = np.diagflat(
+        np.hstack([np.repeat(alphas[0], num_species), alphas[1]]))
 
     beta = (F @ X.T) @ la.inv(X @ X.T + penalty)
 
@@ -93,7 +93,8 @@ def ridge_fit_pert(X, F, alphas, num_species, num_pert):
     # beta = np.dot( np.dot(F,np.transpose(X)), la.inv(np.dot(X,np.transpose(X))))
 
     # compute ridge estimate
-    penalty = np.diagflat(np.hstack([np.repeat(alphas[0], num_species), alphas[1], np.repeat(alphas[2], num_pert)]))
+    penalty = np.diagflat(np.hstack(
+        [np.repeat(alphas[0], num_species), alphas[1], np.repeat(alphas[2], num_pert)]))
 
     beta = np.dot(F, X.T) @ la.inv(X @ X.T + penalty)
 
@@ -102,7 +103,7 @@ def ridge_fit_pert(X, F, alphas, num_species, num_pert):
 
 # can use
 # import importlib
-# import gLV_ML 
+# import gLV_ML
 # importlib.reload(gLV_ML);
 
 
@@ -115,6 +116,7 @@ def ridge_fit_test(X, Y):
     print(model.predict(tX))
 
     print("custom ridge")
+    # FIXME: #27 is this `cRidge` defined anywhere? or is it `Ridge`?
     model = cRidge(alphas=[0.01, 0.01], num_species=num_species)
     model.fit(tX, tF)
     print(model.coef_)
@@ -228,21 +230,25 @@ def fit_alpha_Ridge1(X, F, num_species, n_a0, n_a1):
     for i in range(n_a0):
         for j in range(n_a1):
             # print(i, j, xv[i,j], yv[i,j])
-            candidate_regressors.append(Ridge1(alphas=[xv[i, j], yv[i, j]], num_species=num_species))
+            candidate_regressors.append(
+                Ridge1(alphas=[xv[i, j], yv[i, j]], num_species=num_species))
 
     cv = RepeatedKFold(n_splits=10, n_repeats=10)
-    cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv) for r in candidate_regressors]
+    cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv)
+                  for r in candidate_regressors]
 
     cv_means = np.array([np.mean(x) for x in cv_results])
     cv_se = np.array([np.std(x) / np.sqrt(100) for x in cv_results])
 
     min_i = np.argmin(cv_means)
     inds = np.unravel_index(min_i, (n_a0, n_a1))
-    print("minimum found: a0/a1/error:", a0[inds[0]], a1[inds[1]], cv_means[min_i])
+    print("minimum found: a0/a1/error:",
+          a0[inds[0]], a1[inds[1]], cv_means[min_i])
 
     # unconstrained to compare
     unc_model = Ridge1(alphas=[0, 0], num_species=num_species)
-    cv_results = -cross_val_score(unc_model, X, F, scoring='neg_root_mean_squared_error', cv=cv)
+    cv_results = -cross_val_score(unc_model, X, F,
+                                  scoring='neg_root_mean_squared_error', cv=cv)
     print("unconstrained error        :", np.mean(cv_results))
 
     return a0[inds[0]], a1[inds[1]]
@@ -267,18 +273,22 @@ def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2):
                                                    num_pert=num_pert))
 
     cv = RepeatedKFold(n_splits=10, n_repeats=10)
-    cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv) for r in candidate_regressors]
+    cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv)
+                  for r in candidate_regressors]
 
     cv_means = np.array([np.mean(x) for x in cv_results])
     cv_se = np.array([np.std(x) / np.sqrt(100) for x in cv_results])
 
     min_i = np.argmin(cv_means)
     inds = np.unravel_index(min_i, (n_a0, n_a1, n_a2))
-    print("minimum found: a0/a1/a2/error:", a0[inds[0]], a1[inds[1]], a2[inds[2]], cv_means[min_i])
+    print("minimum found: a0/a1/a2/error:",
+          a0[inds[0]], a1[inds[1]], a2[inds[2]], cv_means[min_i])
 
     # unconstrained to compare
-    unc_model = Ridge2(alphas=[0, 0, 0], num_species=num_species, num_pert=num_pert)
-    cv_results = -cross_val_score(unc_model, X, F, scoring='neg_root_mean_squared_error', cv=cv)
+    unc_model = Ridge2(
+        alphas=[0, 0, 0], num_species=num_species, num_pert=num_pert)
+    cv_results = -cross_val_score(unc_model, X, F,
+                                  scoring='neg_root_mean_squared_error', cv=cv)
     print("unconstrained error        :", np.mean(cv_results))
 
     return a0[inds[0]], a1[inds[1]], a2[inds[2]]
@@ -288,15 +298,18 @@ def do_final_fit_Ridge1(X, F, num_species, a0, a1):
     model = Ridge1(alphas=[a0, a1], num_species=num_species)
     model.fit(X, F)
     mu_h = [model.coef_[i][-1] for i in range(0, num_species)]
-    M_h = [model.coef_[i][0:num_species].tolist() for i in range(0, num_species)]
+    M_h = [model.coef_[i][0:num_species].tolist()
+           for i in range(0, num_species)]
     return mu_h, M_h
 
 
 def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2):
-    model = Ridge2(alphas=[a0, a1, a2], num_species=num_species, num_pert=num_pert)
+    model = Ridge2(alphas=[a0, a1, a2],
+                   num_species=num_species, num_pert=num_pert)
     model.fit(X, F)
 
-    M_h = [model.coef_[i][0:num_species].tolist() for i in range(0, num_species)]
+    M_h = [model.coef_[i][0:num_species].tolist()
+           for i in range(0, num_species)]
     mu_h = [model.coef_[i][num_species] for i in range(0, num_species)]
     e_h = [model.coef_[i][(num_species+1):] for i in range(0, num_species)]
 
@@ -304,7 +317,7 @@ def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2):
 
 
 def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
-    # do some bootstrapping 
+    # do some bootstrapping
     model = Ridge1(alphas=[a0, a1], num_species=num_species)
 
     mus = np.zeros([nboots, num_species])
@@ -317,7 +330,8 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
 
         model.fit(X_s, F_s)
         mu_h = [model.coef_[i][-1] for i in range(0, num_species)]
-        M_h = [model.coef_[i][0:num_species].tolist() for i in range(0, num_species)]
+        M_h = [model.coef_[i][0:num_species].tolist()
+               for i in range(0, num_species)]
 
         mus[i, :] = mu_h
         mms[i, :] = np.array(M_h).flatten()
@@ -336,7 +350,8 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
             elif mus_min[i] < 0 and mus_max[i] < 0:
                 star = "*"
 
-        print(i, np.round(mus_min[i], decimals=3), " - ", np.round(mus_max[i], decimals=3), star)
+        print(i, np.round(mus_min[i], decimals=3),
+              " - ", np.round(mus_max[i], decimals=3), star)
 
     mms_max = mms.max(axis=0)
     mms_min = mms.min(axis=0)
@@ -355,7 +370,8 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
 
 def plot_alpha_lasso(X, S, n_a):
     candidate_alpha = np.logspace(-1, 2, n_a)
-    candidate_regressors = [Lasso(alpha=a, fit_intercept=False, max_iter=10000, tol=1e-1) for a in candidate_alpha]
+    candidate_regressors = [Lasso(
+        alpha=a, fit_intercept=False, max_iter=10000, tol=1e-1) for a in candidate_alpha]
 
     coefs = [r.fit(X, S).coef_.flatten() for r in candidate_regressors]
 
@@ -374,7 +390,8 @@ def plot_alpha_lasso(X, S, n_a):
 
 def fit_alpha_lasso(X, S, n_a):
     candidate_alpha = np.logspace(-1, 2, n_a)
-    candidate_regressors = [Lasso(alpha=a, fit_intercept=False, max_iter=10000, tol=1e-1) for a in candidate_alpha]
+    candidate_regressors = [Lasso(
+        alpha=a, fit_intercept=False, max_iter=10000, tol=1e-1) for a in candidate_alpha]
 
     cv = RepeatedKFold(n_splits=10, n_repeats=10)
     cv_results = [-cross_val_score(r, X, S, scoring='neg_root_mean_squared_error', cv=cv, n_jobs=-1) for r in
@@ -389,15 +406,18 @@ def fit_alpha_lasso(X, S, n_a):
     one_se_rule_i = np.argmax(candidate_alpha * (cv_means < cutoff))
 
     print("minimum found: a/error:", candidate_alpha[min_i], cv_means[min_i])
-    print("min + se rule: a/error:", candidate_alpha[one_se_rule_i], cv_means[one_se_rule_i])
+    print("min + se rule: a/error:",
+          candidate_alpha[one_se_rule_i], cv_means[one_se_rule_i])
 
     plt.figure()
     plt.plot(candidate_alpha, cv_means)
-    plt.fill_between(candidate_alpha, cv_means + 1 * cv_se, cv_means - 1 * cv_se, alpha=.1)
+    plt.fill_between(candidate_alpha, cv_means + 1 *
+                     cv_se, cv_means - 1 * cv_se, alpha=.1)
     plt.axhline(cutoff, linestyle='dotted', label='Best + One SE')
     plt.scatter([candidate_alpha[one_se_rule_i]], [cv_means[one_se_rule_i]], marker='o', color='orange',
                 label='One SE Rule')
-    plt.scatter([candidate_alpha[min_i]], [cv_means[min_i]], marker='o', color='blue', label='Minimum rule')
+    plt.scatter([candidate_alpha[min_i]], [cv_means[min_i]],
+                marker='o', color='blue', label='Minimum rule')
     plt.legend()
     plt.xscale('log')
     plt.xlabel('Log alpha')
@@ -423,7 +443,8 @@ def fit_alpha_default():
     grid['alpha'] = np.logspace(-6, 0, n_alphas)
 
     # define search
-    search = GridSearchCV(model, grid, scoring='neg_mean_squared_error', cv=cv, n_jobs=-1)
+    search = GridSearchCV(
+        model, grid, scoring='neg_mean_squared_error', cv=cv, n_jobs=-1)
     # perform the search
     results = search.fit(tX, tF)
 
@@ -433,19 +454,22 @@ def fit_alpha_default():
 
     # fit using optimal alpha
     # model = Ridge(alpha=results.best_params_['alpha'], fit_intercept=False)
-    model = Lasso(alpha=results.best_params_['alpha'], fit_intercept=False, max_iter=10000)
+    model = Lasso(alpha=results.best_params_[
+                  'alpha'], fit_intercept=False, max_iter=10000)
     # model = ElasticNet(alpha=results.best_params_['alpha'], fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)
 
     # model = ElasticNet(alpha=0.01, fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)
 
     model.fit(tX, tF)
     mu_h = [model.coef_[i][-1] for i in range(0, num_species)]
-    M_h = [model.coef_[i][0:num_species].tolist() for i in range(0, num_species)]
+    M_h = [model.coef_[i][0:num_species].tolist()
+           for i in range(0, num_species)]
 
     modelB = LinearRegression(fit_intercept=False)
     modelB.fit(tX, tF)
     mu_l = [modelB.coef_[i][-1] for i in range(0, num_species)]
-    M_l = [modelB.coef_[i][0:num_species].tolist() for i in range(0, num_species)]
+    M_l = [modelB.coef_[i][0:num_species].tolist()
+           for i in range(0, num_species)]
 
     print("\ninferred params:")
     print("mu_hat/mu/mu_l:")
@@ -464,9 +488,12 @@ def fit_alpha_default():
 
     # plot the params
     plt.figure()
-    plt.stem(np.arange(0, len(mu), dtype="int32"), np.array(mu_h), markerfmt="D")
+    plt.stem(np.arange(0, len(mu), dtype="int32"),
+             np.array(mu_h), markerfmt="D")
     plt.stem(np.arange(0, len(mu), dtype="int32"), np.array(mu), markerfmt="X")
 
     plt.figure()
-    plt.stem(np.arange(0, num_species * num_species), np.array(M_h).flatten(), markerfmt="D")
-    plt.stem(np.arange(0, num_species * num_species), np.array(M).flatten(), markerfmt="X")
+    plt.stem(np.arange(0, num_species * num_species),
+             np.array(M_h).flatten(), markerfmt="D")
+    plt.stem(np.arange(0, num_species * num_species),
+             np.array(M).flatten(), markerfmt="X")
