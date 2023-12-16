@@ -2,8 +2,6 @@ import numpy as np
 import sys
 
 from gMLV import *
-# FIXME: this is a hack to stop the errors. Need to fix this properly
-from gMLV.gMLV_ML import predict, compute_prediction_error, ridge_regression_clv
 
 
 class CompositionalLotkaVolterra:
@@ -110,6 +108,7 @@ class CompositionalLotkaVolterra:
         X = construct_alr([p0], self.denom)
         x = X[0]
 
+        # QUESTION: Is this supposed to be a auto-refferenced function? Or is this predict() method supposed to be from another script?
         return predict(x, p0, u, times, self.A, self.g, self.B, self.denom)
 
     def get_params(self):
@@ -222,6 +221,7 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
             Q_inv = np.eye(train_X[0].shape[1])
             A, g, B = elastic_net_clv(
                 train_X, train_P, train_U, train_T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3)
+            # FIXME: #28 where is this defined?
             sqr_err += compute_prediction_error(test_X,
                                                 test_P, test_U, test_T, A, g, B, denom)
 
@@ -313,6 +313,7 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
     uDim = U[0].shape[1]
 
     AgB = np.zeros((xDim, yDim + 1 + uDim))
+    #FIXME: #29 where is this defined?
     A, g, B = ridge_regression_clv(X, P, U, T, np.max(
         (alpha*(1-r_A), 0.01)), np.max((alpha*(1-r_g), 0.01)), np.max((alpha*(1-r_B), 0.01)))
     AgB[:, :yDim] = A
