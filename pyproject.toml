@@ -1,0 +1,24 @@
+[project]
+name = "mimic"
+version = "0.0.1"
+description = "A package for simulation and inference of microbial community models"
+readme = "README.md"
+requires-python = ">=3.6"
+keywords = ["microbiome, microbial community, modeling, simulation, inference"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3"
+]
+dependencies = [
+    "numpy",
+    "scipy"
+]
+[project.optional-dependencies]
+test = ["coverage"]
+[tool.setuptools]
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
