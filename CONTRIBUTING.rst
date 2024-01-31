@@ -19,7 +19,7 @@ Before you begin:
    - Clone your fork to your local machine.
 
 3. **Create a Branch**
-   - Create a new branch for your changes. 
+   - Create a new branch for your changes.
    - Name the branch something descriptive (e.g., `add-comment-feature`).
 
 4. **Make Your Changes**
@@ -65,13 +65,11 @@ Before submitting your Pull Request, ensure:
 - Include detailed instructions on how to reproduce the bug.
 <!-- Add Tags here when implemented -->
 
-
 ## Suggesting Enhancements
 
 - Use GitHub issues to suggest enhancements.
 - Be clear and detailed in your suggestion.
 
 ## Additional Notes
-
 
 Thank you for contributing to MIMIC!
