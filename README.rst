@@ -1,92 +1,118 @@
+========================================
+Modelling and Inference of MICrobiomes Project (MIMIC)
+========================================
 
-# Modelling and Inference of MICrobiomes Project (MIMIC)
-
-## Overview
+Overview
+---------
 
 The MIMIC project utilizes generalized Lotka-Volterra (gLV) models to predict the dynamics of microbial communities. This repository contains Python code developed for modeling, simulating, and analyzing these dynamics.
 
-## Structure
+Structure
+-----------
 
 The repository is organized into the following main directories:
 
-- `.github/`: Contains templates and workflows for GitHub features.
-  - `ISSUE_TEMPLATE/`: Directory for issue templates.
-  - `PULL_REQUEST_TEMPLATE.md`: Markdown file for pull request template.
-  - `workflows/`: Directory for GitHub Actions workflows.
-- `.gitignore`: Specifies intentionally untracked files to ignore.
-- `.vscode/`: Contains configuration files for Visual Studio Code.
-  - `launch.json`: Configures debugger settings.
-  - `settings.json`: Specifies VS Code settings.
-- `CONTRIBUTING.md`: Guidelines for contributing to the project.
-- `data/`: Contains data files and scripts for the project.
-  - CSV files: Data files for the project.
-  - `process.R`: R script for processing data.
-- `data_analysis/`: Contains Python scripts for data analysis.
-  - `load_data.py`: Python script for loading data.
-- `examples/`: Contains Jupyter notebooks with examples.
-  - `*.ipynb`: Jupyter notebooks.
-- `gMLV/`: Contains Python scripts for the project and core code for the gLV model..
-  - `cLV.py`: Python script.
-- `README.md`: Provides an overview of the project.
-- `requirements.txt`: Lists Python dependencies for the project.
-- `run_gMLV_sims.py`: Python script to run simulations.
-- `setup.py`: Python script for setting up the project.
+* `.github/`: Contains templates and workflows for GitHub features.
 
-## Installation
+  * `ISSUE_TEMPLATE/`: Directory for issue templates.
+  * `PULL_REQUEST_TEMPLATE.md`: Markdown file for pull request template.
+  * `workflows/`: Directory for GitHub Actions workflows.
 
-### Prerequisites
+* `.gitignore`: Specifies intentionally untracked files to ignore.
+* `.vscode/`: Contains configuration files for Visual Studio Code.
 
-- Python 3.10
-- Conda package manager
+  * `launch.json`: Configures debugger settings.
+  * `settings.json`: Specifies VS Code settings.
 
-### Steps
+* `CONTRIBUTING.rst`: Guidelines for contributing to the project.
+* `data/`: Contains data files and scripts for the project.
 
-1. Clone the repository.
-2. Create a new conda environment using the `environment.yml` file.
-3. Activate the new environment.
-4. Install required packages using `pip install -r requirements.txt` from the root directory of the repository.
-5. Install the package using `pip install -e .` from the root directory of the repository.
-6. Run the code using the instructions below.
-7. Deactivate the environment when finished.
+  * CSV files: Data files for the project.
+  * `process.R`: R script for processing data.
 
-## Usage
+* `data_analysis/`: Contains Python scripts for data analysis.
 
-### Running gLV Model Simulations
+  * `load_data.py`: Python script for loading data.
 
-```bash
-python3 run_gLV.py <output directory> <number to simulate> <number of species> <number of time points> <number of replicates> <number of time points to fit> <number of replicates to fit> <number of time points to predict> <number of replicates to predict>
-```
+* `examples/`: Contains Jupyter notebooks with examples.
+
+  * `*.ipynb`: Jupyter notebooks.
+
+* `gMLV/`: Contains Python scripts for the project and core code for the gLV model.
+
+  * `cLV.py`: Python script.
+
+* `README.rst`: Provides an overview of the project.
+* `requirements.txt`: Lists Python dependencies for the project.
+* `run_gMLV_sims.py`: Python script to run simulations.
+* `setup.py`: Python script for setting up the project.
+
+Installation
+--------------
+
+Prerequisites
+^^^^^^^^^^^^^
+
+* Python 3.10
+* Conda package manager
+
+Steps
+^^^^^
+
+#. Clone the repository.
+#. Create a new conda environment using the `environment.yml` file.
+#. Activate the new environment.
+#. Install required packages using `pip install -r requirements.txt` from the root directory of the repository.
+#. Install the package using `pip install -e .` from the root directory of the repository.
+#. Run the code using the instructions below.
+#. Deactivate the environment when finished.
+
+Usage
+-------
+
+Running gLV Model Simulations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+    python3 run_gLV.py <output directory> <number to simulate> <number of species> <number of time points> <number of replicates> <number of time points to fit> <number of replicates to fit> <number of time points to predict> <number of replicates to predict>
 
 Example:
 
-```bash
-python run_gLV.py "C:\Users\User\Desktop\test_gLV" 100 10 100 10 50 5 50 5
-```
+.. code-block:: bash
 
-### Generating gLV Simulations
+    python run_gLV.py "C:\Users\User\Desktop\test_gLV" 100 10 100 10 50 5 50 5
 
-```bash
-python3 run_gLV_sims.py <output directory> <number to simulate>
-```
+Generating gLV Simulations
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+    python3 run_gLV_sims.py <output directory> <number to simulate>
 
 Example:
 
-```bash
-python run_gLV_sims.py "C:\Users\User\Desktop\test_gLV" 100
-```
+.. code-block:: bash
 
-## Contributing
+    python run_gLV_sims.py "C:\Users\User\Desktop\test_gLV" 100
 
-We welcome contributions to the MIMIC project. Please refer to our [Contribution Guidelines](CONTRIBUTING.md) for more information.
+Contributing
+-------------
 
-## License
+We welcome contributions to the MIMIC project. Please refer to our `Contribution Guidelines <CONTRIBUTING.rst>`_ for more information.
 
-This project is licensed under the [LICENSE](LICENSE.md).
+License
+--------
 
-## Acknowledgements
+This project is licensed under the `LICENSE <LICENSE>`_.
 
-This project is based on methods proposed in [this paper](https://onlinelibrary.wiley.com/doi/full/10.1002/bies.201600188).
+Acknowledgements
+------------------
 
-## Contact
+This project is based on methods proposed in `this paper <https://onlinelibrary.wiley.com/doi/full/10.1002/bies.201600188>`_.
 
-For questions or feedback, please [contact us](mailto:contact@example.com).
+Contact
+--------
+
+For questions or feedback, please `contact us <mailto:contact@example.com>`_.
+
