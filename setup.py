@@ -1,10 +1,10 @@
 from setuptools import setup
 
-setup(name='gMLV',
+setup(name='MIMIC',
       version='0.1',
       description='',
       author='',
       author_email='',
       license='',
-      packages=['gMLV'],
+      packages=['gMLV', 'VAR'],
       zip_safe=False)

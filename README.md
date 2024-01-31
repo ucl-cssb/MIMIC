@@ -3,8 +3,7 @@
 
 ## Overview
 
-The MIMIC project utilizes generalized Lotka-Volterra (gLV) models to predict the dynamics of microbial communities. This repository contains Python code developed for modeling, simulating, and analyzing these dynamics. 
-
+The MIMIC project utilizes generalized Lotka-Volterra (gLV) models to predict the dynamics of microbial communities. This repository contains Python code developed for modeling, simulating, and analyzing these dynamics.
 
 ## Structure
 
@@ -33,7 +32,6 @@ The repository is organized into the following main directories:
 - `run_gMLV_sims.py`: Python script to run simulations.
 - `setup.py`: Python script for setting up the project.
 
-
 ## Installation
 
 ### Prerequisites
@@ -60,6 +58,7 @@ python3 run_gLV.py <output directory> <number to simulate> <number of species> <
 ```
 
 Example:
+
 ```bash
 python run_gLV.py "C:\Users\User\Desktop\test_gLV" 100 10 100 10 50 5 50 5
 ```
@@ -71,6 +70,7 @@ python3 run_gLV_sims.py <output directory> <number to simulate>
 ```
 
 Example:
+
 ```bash
 python run_gLV_sims.py "C:\Users\User\Desktop\test_gLV" 100
 ```
