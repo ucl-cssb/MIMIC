@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Modelling and Inference of MICrobiomes Project (MIMIC) is a Python package dedicated to simulate, model, and predict microbial communities interactions and dynamics. It is designed to be a flexible and easy-to-use tool for researchers and practitioners in the field of microbial ecology and microbiome research."
 authors = ["Pedro Fontanarrosa <pfontanarrosa@gmail.com>"]
 license = "MIT"
-readme = "README.md"
+readme = "README.rst"
 
 [tool.poetry.dependencies]
 python = "^3.10"
