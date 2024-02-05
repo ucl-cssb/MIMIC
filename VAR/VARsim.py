@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pretty_errors
+from utils import read_parameters
 
 
 class VARSimulator:
@@ -77,15 +77,11 @@ class VARSimulator:
         for t in range(1, self.n_obs):
             # VAR(1) process: X_t = A * X_{t-1} + noise
             noise = np.random.normal(scale=self.noise_stddev, size=nX)
-            # print("A", coefficients.shape)
-            # print("X", data[t - 1, :].shape)
             data[t, :] = np.dot(self.coefficients, data[t - 1, :]) + noise
 
         for t in range(1, self.n_obs):
             # process: S_t = B * X_{t-1} + noise
             noise = np.random.normal(scale=self.noise_stddev, size=(nS))
-            # print("B:", coefficientsM.shape)
-            # print("X", data[t - 1, :].shape)
 
             Xt = data[t - 1, :].reshape((nX, 1))
             # print( "mult:", (coefficientsM @ Xt).shape )
@@ -168,7 +164,7 @@ def make_plot_stacked(dataX, dataS):
 
     This function generates a stacked plot for the X process and a heatmap for the S process. The stacked plot shows the abundance of each variable in the X process over time, and the heatmap shows the values of each variable in the S process over time. The function does not return any value; instead, it saves the plots in a PDF file named "plot-data-XS-stacked.pdf".
     """
-    # add 5.6 to add abundance data
+
     dataX = dataX + 1.0
 
     #  stacked
@@ -185,15 +181,7 @@ def make_plot_stacked(dataX, dataS):
     axs[0].set_title("Abundance, log10 X")
     axs[0].set_ylabel("X")
     axs[0].set_xlim(0, nobs-1)
-    # axs[0].legend(loc='upper left')
 
-    # Stack plot for dataS
-    # axs[1].stackplot(range(len(dataS)), *dataS.T, labels=["S" + str(i) for i in range(nS)])
-    # axs[1].set_title("Metabolites, S")
-    # axs[1].legend(loc='upper left')
-
-    # Heatmap for dataS
-    # sns.heatmap(dataS, annot=False, cmap="YlGnBu", xticklabels=range(1, dataS.shape[0] + 1), yticklabels=["S" + str(i) for i in range(nS)], ax=axs[1])
     sns.heatmap(
         dataS.T,
         annot=False,
@@ -239,6 +227,10 @@ def make_plot(dataX, dataS):
 
 
 if __name__ == "__main__":
-    simulator = VARSimulator(n_obs=100, coefficients=[
-                             [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
+    parameters = read_parameters('parameters.json')
+    simulator = VARSimulator(**parameters)
     simulator.run("VARsim")
+
+    # simulator = VARSimulator(n_obs=100, coefficients=[
+    # [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
+    # simulator.run("VARsim")

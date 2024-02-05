@@ -56,7 +56,7 @@ def simulate_var3(coefs=None, coefs_exog=None, sigma_u=None, steps=100, offset=N
         var_process = VARProcess(
             coefs=coefs, coefs_exog=coefs_exog, sigma_u=sigma_u)
     except LinAlgError as e:
-        raise ValueError(f"Error in initializing VARProcess: {e}")
+        raise ValueError(f"Error in initializing VARProcess: {e}") from e
 
     # Simulate VAR model
     try:
@@ -64,7 +64,8 @@ def simulate_var3(coefs=None, coefs_exog=None, sigma_u=None, steps=100, offset=N
             steps=steps, offset=offset, seed=seed, initial_values=initial_values, nsimulations=nsimulations)
     except Exception as e:
         raise ValueError(
-            f"Error during simulation: {e}. Ensure that the statsmodels library is up-to-date and properly installed.")
+            f"Error during simulation: {e}. Ensure that the statsmodels library is up-to-date and properly installed."
+        ) from e
 
     return simulated_data
 
