@@ -1,10 +1,11 @@
 from setuptools import setup
 
 setup(name='MIMIC',
-      version='0.1',
+      version='0.1.0',
       description='',
       author='',
-      author_email='',
+      author_email='pfontanarrosa@gmail.com',
       license='',
-      packages=['gMLV', 'VAR'],
+      description="Modelling and Inference of MICrobiomes Project (MIMIC) is a Python package dedicated to simulate, model, and predict microbial communities interactions.",
+      packages=['gMLV'],
       zip_safe=False)
