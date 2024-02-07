@@ -1,11 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pymc3 as pm
+import pymc as pm
 import arviz as az
-# import pytensor as pt
-# import aesara.tensor as at
-import theano.tensor as at
-# from scipy.linalg import toeplitz
+import pytensor.tensor as at
 from VARsim import VARSimulator
 from utils import read_parameters
 
@@ -143,7 +140,7 @@ class VARInfer:
             c2 = pm.InverseGamma("c2", 2, 8)
             tau = pm.HalfCauchy("tau", beta=tau0)
             lam = pm.HalfCauchy("lam", beta=1, shape=(ndim, ndim))
-            A = pm.Normal('A', mu=0, sigma=tau * lam*at.tensor.sqrt((c2 /
+            A = pm.Normal('A', mu=0, sigma=tau * lam*at.sqrt((c2 /
                           (c2 + tau**2 * lam**2)), shape=(ndim, ndim)))
 
             # Priors for coefficients with LKJ prior
