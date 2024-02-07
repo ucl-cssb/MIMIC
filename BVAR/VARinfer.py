@@ -6,7 +6,6 @@ import arviz as az
 # import aesara.tensor as at
 import theano.tensor as at
 # from scipy.linalg import toeplitz
-import pretty_errors
 from VARsim import VARSimulator
 from utils import read_parameters
 
