@@ -70,6 +70,8 @@ class VARSimulator:
         data = np.zeros((self.n_obs, nX))
         data[0, :] = self.initial_values[:, 0]
 
+        coefficientsM = np.array(coefficientsM)
+        initial_valuesM = np.array(initial_valuesM)
         nS = len(initial_valuesM)
         dataM = np.zeros((self.n_obs, nS))
         dataM[0, :] = initial_valuesM[:, 0]
@@ -137,7 +139,7 @@ def make_plot_overlay(dataX, dataS=None, output='show'):
         nS = dataS.shape[1]
         for i in range(nS):
             axs[1].plot(dataS[:, i], label=f"S{str(i)}")
-        axs[1].set_title("Metabolites, S")
+        axs[1].set_title("Abundance, S")
 
     # Adjust the layout to ensure that the subplots do not overlap
     plt.tight_layout()
@@ -190,7 +192,7 @@ def make_plot_stacked(dataX, dataS):
         ax=axs[1],
         cbar=False,
     )
-    axs[1].set_title("Metabolites, S")
+    axs[1].set_title("S")
     axs[1].set_ylabel("S")
     axs[1].set_xlabel("time (weeks)")
     axs[1].set_xlim(0, nobs)
@@ -199,7 +201,7 @@ def make_plot_stacked(dataX, dataS):
     plt.savefig("plot-data-XS-stacked.pdf")
 
 
-def make_plot(dataX, dataS):
+def make_plot(dataX, dataS=None, output='show'):
     """
     Creates separate line plots for each variable in the given data.
 
@@ -213,23 +215,44 @@ def make_plot(dataX, dataS):
     This function generates a separate line plot for each variable in the X and S processes. The plots are arranged vertically, with the plots for the X process at the top and the plots for the S process at the bottom. Each plot shows the values of the variable over time. The function does not return any value; instead, it saves the plots in a PDF file named "plot-data-XS.pdf".
     """
     nX = len(dataX[0])  # Number of columns in dataX
-    nS = len(dataS[0])  # Number of columns in dataS
+
+    # Number of columns in dataS if it is provided
+    nS = len(dataS[0]) if dataS is not None else 0
 
     fig, axs = plt.subplots(nX + nS, 1, figsize=(10, 2*(nX+nS)))
+
+    # Adjust the vertical spacing between subplots
+    plt.subplots_adjust(hspace=0.5)
+
     for i, ax in enumerate(axs):
         if i < nX:
             axs[i].plot(dataX[:, i])
             axs[i].set_title(f"X{str(i)}")
-        else:
+        elif dataS is not None:
             axs[i].plot(dataS[:, i-nX])
             axs[i].set_title(f"S{str(i - nX)}")
-    plt.savefig("plot-data-XS.pdf")
+
+        # Set the y-axis label
+        axs[i].set_ylabel('Abundance')
+
+    if output in ['save', 'both']:
+        plt.savefig("plot-data-stacked.pdf")
+    if output in ['show', 'both']:
+        plt.show()
 
 
 if __name__ == "__main__":
-    parameters = read_parameters('parameters.json')
-    simulator = VARSimulator(**parameters)
+    parametersX = read_parameters('parameters2.json')
+    simulator = VARSimulator(**parametersX)
     simulator.run("VARsim")
+
+    make_plot(simulator.data)
+
+    parametersS = read_parameters('parametersS.json')
+
+    simulator.run("MVARsim", **parametersS)
+
+    # make_plot_stacked(simulator.data)
 
     # simulator = VARSimulator(n_obs=100, coefficients=[
     # [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
