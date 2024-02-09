@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Modelling and Inference of MICrobiomes Project (MIMIC) &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Modelling and Inference of MICrobiomes Project (MIMIC)" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="modelling-and-inference-of-microbiomes-project-mimic">
+<h1>Modelling and Inference of MICrobiomes Project (MIMIC)<a class="headerlink" href="#modelling-and-inference-of-microbiomes-project-mimic" title="Link to this heading">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p class="linemarker linemarker-8">The MIMIC project utilizes generalized Lotka-Volterra (gLV) models to predict the dynamics of microbial communities. This repository contains Python code developed for modeling, simulating, and analyzing these dynamics.</p>
+</section>
+<section id="structure">
+<h2>Structure<a class="headerlink" href="#structure" title="Link to this heading">¶</a></h2>
+<p class="linemarker linemarker-13">The repository is organized into the following main directories:</p>
+<ul class="simple">
+<li><p class="linemarker linemarker-15"><cite>.github/</cite>: Contains templates and workflows for GitHub features.</p>
+<ul>
+<li><p class="linemarker linemarker-17"><cite>ISSUE_TEMPLATE/</cite>: Directory for issue templates.</p></li>
+<li><p class="linemarker linemarker-18"><cite>PULL_REQUEST_TEMPLATE.md</cite>: Markdown file for pull request template.</p></li>
+<li><p class="linemarker linemarker-19"><cite>workflows/</cite>: Directory for GitHub Actions workflows.</p></li>
+</ul>
+</li>
+<li><p class="linemarker linemarker-21"><cite>.gitignore</cite>: Specifies intentionally untracked files to ignore.</p></li>
+<li><p class="linemarker linemarker-22"><cite>.vscode/</cite>: Contains configuration files for Visual Studio Code.</p>
+<ul>
+<li><p class="linemarker linemarker-24"><cite>launch.json</cite>: Configures debugger settings.</p></li>
+<li><p class="linemarker linemarker-25"><cite>settings.json</cite>: Specifies VS Code settings.</p></li>
+</ul>
+</li>
+<li><p class="linemarker linemarker-27"><cite>CONTRIBUTING.rst</cite>: Guidelines for contributing to the project.</p></li>
+<li><p class="linemarker linemarker-28"><cite>data/</cite>: Contains data files and scripts for the project.</p>
+<ul>
+<li><p class="linemarker linemarker-30">CSV files: Data files for the project.</p></li>
+<li><p class="linemarker linemarker-31"><cite>process.R</cite>: R script for processing data.</p></li>
+</ul>
+</li>
+<li><p class="linemarker linemarker-33"><cite>data_analysis/</cite>: Contains Python scripts for data analysis.</p>
+<ul>
+<li><p class="linemarker linemarker-35"><cite>load_data.py</cite>: Python script for loading data.</p></li>
+</ul>
+</li>
+<li><p class="linemarker linemarker-37"><cite>examples/</cite>: Contains Jupyter notebooks with examples.</p>
+<ul>
+<li><p class="linemarker linemarker-39"><cite>*.ipynb</cite>: Jupyter notebooks.</p></li>
+</ul>
+</li>
+<li><p class="linemarker linemarker-41"><cite>gMLV/</cite>: Contains Python scripts for the project and core code for the gLV model.</p>
+<ul>
+<li><p class="linemarker linemarker-43"><cite>cLV.py</cite>: Python script.</p></li>
+</ul>
+</li>
+<li><p class="linemarker linemarker-45"><cite>README.rst</cite>: Provides an overview of the project.</p></li>
+<li><p class="linemarker linemarker-46"><cite>requirements.txt</cite>: Lists Python dependencies for the project.</p></li>
+<li><p class="linemarker linemarker-47"><cite>run_gMLV_sims.py</cite>: Python script to run simulations.</p></li>
+<li><p class="linemarker linemarker-48"><cite>setup.py</cite>: Python script for setting up the project.</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p class="linemarker linemarker-56">Python 3.10</p></li>
+<li><p class="linemarker linemarker-57">Conda package manager</p></li>
+</ul>
+</section>
+<section id="steps">
+<h3>Steps<a class="headerlink" href="#steps" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p class="linemarker linemarker-62">Clone the repository.</p></li>
+<li><p class="linemarker linemarker-63">Create a new conda environment using the <cite>environment.yml</cite> file.</p></li>
+<li><p class="linemarker linemarker-64">Activate the new environment.</p></li>
+<li><p class="linemarker linemarker-65">Install required packages using <cite>pip install -r requirements.txt</cite> from the root directory of the repository.</p></li>
+<li><p class="linemarker linemarker-66">Install the package using <cite>pip install -e .</cite> from the root directory of the repository.</p></li>
+<li><p class="linemarker linemarker-67">Run the code using the instructions below.</p></li>
+<li><p class="linemarker linemarker-68">Deactivate the environment when finished.</p></li>
+</ol>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<section id="running-glv-model-simulations">
+<h3>Running gLV Model Simulations<a class="headerlink" href="#running-glv-model-simulations" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>run_gLV.py<span class="w"> </span>&lt;output<span class="w"> </span>directory&gt;<span class="w"> </span>&lt;number<span class="w"> </span>to<span class="w"> </span>simulate&gt;<span class="w"> </span>&lt;number<span class="w"> </span>of<span class="w"> </span>species&gt;<span class="w"> </span>&lt;number<span class="w"> </span>of<span class="w"> </span><span class="nb">time</span><span class="w"> </span>points&gt;<span class="w"> </span>&lt;number<span class="w"> </span>of<span class="w"> </span>replicates&gt;<span class="w"> </span>&lt;number<span class="w"> </span>of<span class="w"> </span><span class="nb">time</span><span class="w"> </span>points<span class="w"> </span>to<span class="w"> </span>fit&gt;<span class="w"> </span>&lt;number<span class="w"> </span>of<span class="w"> </span>replicates<span class="w"> </span>to<span class="w"> </span>fit&gt;<span class="w"> </span>&lt;number<span class="w"> </span>of<span class="w"> </span><span class="nb">time</span><span class="w"> </span>points<span class="w"> </span>to<span class="w"> </span>predict&gt;<span class="w"> </span>&lt;number<span class="w"> </span>of<span class="w"> </span>replicates<span class="w"> </span>to<span class="w"> </span>predict&gt;
+</pre></div>
+</div>
+<p class="linemarker linemarker-80">Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>run_gLV.py<span class="w"> </span><span class="s2">&quot;C:\Users\User\Desktop\test_gLV&quot;</span><span class="w"> </span><span class="m">100</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">100</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">5</span>
+</pre></div>
+</div>
+</section>
+<section id="generating-glv-simulations">
+<h3>Generating gLV Simulations<a class="headerlink" href="#generating-glv-simulations" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>run_gLV_sims.py<span class="w"> </span>&lt;output<span class="w"> </span>directory&gt;<span class="w"> </span>&lt;number<span class="w"> </span>to<span class="w"> </span>simulate&gt;
+</pre></div>
+</div>
+<p class="linemarker linemarker-93">Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>run_gLV_sims.py<span class="w"> </span><span class="s2">&quot;C:\Users\User\Desktop\test_gLV&quot;</span><span class="w"> </span><span class="m">100</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h2>
+<p class="linemarker linemarker-102">We welcome contributions to the MIMIC project. Please refer to our <a class="reference external" href="CONTRIBUTING.rst">Contribution Guidelines</a> for more information.</p>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading">¶</a></h2>
+<p class="linemarker linemarker-107">This project is licensed under the <a class="reference external" href="LICENSE">LICENSE</a>.</p>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading">¶</a></h2>
+<p class="linemarker linemarker-112">This project is based on methods proposed in <a class="reference external" href="https://onlinelibrary.wiley.com/doi/full/10.1002/bies.201600188">this paper</a>.</p>
+</section>
+<section id="contact">
+<h2>Contact<a class="headerlink" href="#contact" title="Link to this heading">¶</a></h2>
+<p class="linemarker linemarker-117">For questions or feedback, please <a class="reference external" href="mailto:contact&#37;&#52;&#48;example&#46;com">contact us</a>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Modelling and Inference of MICrobiomes Project (MIMIC)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#structure">Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#steps">Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running-glv-model-simulations">Running gLV Model Simulations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-glv-simulations">Generating gLV Simulations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contact">Contact</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/readme.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
