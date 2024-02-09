@@ -24,8 +24,10 @@ sys.path.insert(0, os.path.abspath('../..'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',
+    'sphinx.ext.autodoc',  # Include documentation from docstrings
+    # Add a link to the source code for classes, functions, etc.
     'sphinx.ext.viewcode',
+    'nbsphinx',  # This is the extension for Jupyter notebooks
 ]
 
 templates_path = ['_templates']
