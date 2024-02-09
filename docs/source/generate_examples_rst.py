@@ -27,10 +27,14 @@ def generate_rst(notebooks, examples_dir, output_file):
             f.write(f"   ../examples/{corrected_path}\n")
 
 
-if __name__ == "__main__":
+def main():
     # Path to your examples folder, adjusted to be absolute
     examples_dir = os.path.abspath('../../examples')
     notebooks = find_notebooks(examples_dir)
     output_rst = os.path.join(os.path.dirname(__file__), 'examples.rst')
     generate_rst(notebooks, examples_dir, output_rst)
     print(f"Generated {output_rst}")
+
+
+if __name__ == "__main__":
+    main()
