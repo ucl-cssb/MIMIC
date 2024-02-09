@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gMLV.gMLV_sim &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gMLV.gMLV_sim</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">odeint</span>
+
+
+<div class="viewcode-block" id="gMLV_sim">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_sim.gMLV_sim">[docs]</a>
+<span class="k">class</span> <span class="nc">gMLV_sim</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_species</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_metabolites</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_perturbations</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span> <span class="o">=</span> <span class="n">num_species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nm</span> <span class="o">=</span> <span class="n">num_metabolites</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="n">num_perturbations</span>
+
+        <span class="k">if</span> <span class="n">mu</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span>
+
+        <span class="k">if</span> <span class="n">M</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">))</span>
+            <span class="c1"># add self repression on the diagonal</span>
+            <span class="k">for</span> <span class="n">species_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">[</span><span class="n">species_idx</span><span class="p">,</span> <span class="n">species_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+            <span class="c1"># add random interactions</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tau</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">halfcauchy</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+                        <span class="n">lam</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">halfcauchy</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="n">M</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">tau</span><span class="o">*</span><span class="n">lam</span><span class="p">)</span>
+                    <span class="c1"># if i == j:</span>
+                    <span class="c1">#     self.M[i, j] = -abs(M)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span>
+                <span class="c1"># i = random.randint(0, self.nsp-1)</span>
+                <span class="c1"># j = random.randint(0, self.nsp-1)</span>
+                <span class="c1"># self.M[i, j] = random.normalvariate(mu=0, sigma=0.1)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">M</span>
+
+        <span class="k">if</span> <span class="n">beta</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">nm</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nm</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nm</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+
+        <span class="k">if</span> <span class="n">epsilon</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">))</span>
+
+            <span class="c1"># add random interactions</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">):</span>
+                    <span class="n">tau</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">halfcauchy</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">lam</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">halfcauchy</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">epsilon</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">tau</span> <span class="o">*</span> <span class="n">lam</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="nb">abs</span><span class="p">(</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
+
+<div class="viewcode-block" id="gMLV_sim.simulate">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_sim.gMLV_sim.simulate">[docs]</a>
+    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">sy0</span><span class="p">,</span> <span class="n">tp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">syobs</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">gMLV</span><span class="p">,</span> <span class="n">sy0</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">tp</span><span class="p">))</span>
+        <span class="n">yobs</span> <span class="o">=</span> <span class="n">syobs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">]</span>
+        <span class="n">sobs</span> <span class="o">=</span> <span class="n">syobs</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">sobs</span><span class="p">,</span> <span class="n">sy0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span></div>
+
+
+<div class="viewcode-block" id="gMLV_sim.print">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_sim.gMLV_sim.print">[docs]</a>
+    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;number of species: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;specific growth rates: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;interaction matrix: </span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;metabolite production: </span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;perturbation matrix: </span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="gMLV">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_sim.gMLV">[docs]</a>
+<span class="k">def</span> <span class="nf">gMLV</span><span class="p">(</span><span class="n">sy</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">nsp</span><span class="p">,</span> <span class="n">np</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">tp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    generalised Lotka Volterra with metabolite production</span>
+
+<span class="sd">    :param sy: species + metabolites vector</span>
+<span class="sd">    :param t: time</span>
+<span class="sd">    :param nsp: number of species</span>
+<span class="sd">    :param mu: specific growth rates vector</span>
+<span class="sd">    :param M: interaction matrix</span>
+<span class="sd">    :param beta: metabolite production rate matrix</span>
+<span class="sd">    :param p: a tuple containing time-dependent perturbation and perturbation matrix</span>
+<span class="sd">    :return: change in species + metabolites vector</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># separate species and metabolites</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">sy</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">nsp</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">sy</span><span class="p">[</span><span class="n">nsp</span><span class="p">:]</span>
+
+    <span class="k">if</span> <span class="n">np</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">tp</span><span class="p">[</span><span class="n">p_i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">tp</span><span class="p">[</span><span class="n">p_i</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">instantaneous_growth</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">M</span> <span class="o">@</span> <span class="n">y</span> <span class="o">+</span> <span class="n">epsilon</span><span class="p">[:,</span> <span class="n">p_i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">instantaneous_growth</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">M</span> <span class="o">@</span> <span class="n">y</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">instantaneous_growth</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">M</span> <span class="o">@</span> <span class="n">y</span>
+
+    <span class="c1"># if p[0] is None:</span>
+    <span class="c1">#     instantaneous_growth = mu + M @ y</span>
+    <span class="c1">#     # dN = np.multiply(mu, y) + np.multiply(y, M @ y)</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     if p[0] &lt;= t &lt; (p[0] + 1):</span>
+    <span class="c1">#         instantaneous_growth = mu + M @ y + p[1]</span>
+    <span class="c1">#         # dN = np.multiply(mu, y) + np.multiply(y, M @ y) + np.multiply(y, p[1])</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         instantaneous_growth = mu + M @ y</span>
+    <span class="c1">#         # dN = np.multiply(mu, y) + np.multiply(y, M @ y)</span>
+    <span class="n">dN</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">instantaneous_growth</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">beta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dS</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># this is simple production</span>
+        <span class="c1"># dS = beta @ y</span>
+
+        <span class="c1"># metabolite production as in Clark et al., 2021: eqs(4 &amp; 5)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>  <span class="c1"># eq(6)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">beta</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">instantaneous_growth</span><span class="p">)</span>
+        <span class="n">dS</span> <span class="o">=</span> <span class="n">q</span> <span class="o">@</span> <span class="n">y</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">dN</span><span class="p">,</span> <span class="n">dS</span><span class="p">))</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">gMLV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

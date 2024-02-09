@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gMLV.gMLV_ML &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gMLV.gMLV_ML</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">la</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">Ridge</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">Lasso</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">ElasticNet</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">RepeatedKFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">KFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">odeint</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">RegressorMixin</span>
+
+
+<div class="viewcode-block" id="Ridge1">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.Ridge1">[docs]</a>
+<span class="k">class</span> <span class="nc">Ridge1</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">RegressorMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom ridge regression class&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alphas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_species</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">alphas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">alphas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span> <span class="o">=</span> <span class="n">alphas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_species</span> <span class="o">=</span> <span class="n">num_species</span>
+
+<div class="viewcode-block" id="Ridge1.fit">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.Ridge1.fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># print(&quot;calling fit&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">ridge_fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_species</span><span class="p">)</span></div>
+
+        <span class="c1"># return self</span>
+
+<div class="viewcode-block" id="Ridge1.predict">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.Ridge1.predict">[docs]</a>
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">X</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="Ridge1.get_params">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.Ridge1.get_params">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># suppose this estimator has parameters &quot;alpha&quot; and &quot;recursive&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;alphas&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="s2">&quot;num_species&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_species</span><span class="p">}</span></div>
+</div>
+
+
+    <span class="c1"># def set_params(self, **parameters):</span>
+    <span class="c1">#    for parameter, value in parameters.items():</span>
+    <span class="c1">#        setattr(self, parameter, value)</span>
+    <span class="c1">#    return self</span>
+
+
+<div class="viewcode-block" id="Ridge2">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.Ridge2">[docs]</a>
+<span class="k">class</span> <span class="nc">Ridge2</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">RegressorMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom ridge regression class&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alphas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_species</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">num_pert</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">alphas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">alphas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span> <span class="o">=</span> <span class="n">alphas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_species</span> <span class="o">=</span> <span class="n">num_species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_pert</span> <span class="o">=</span> <span class="n">num_pert</span>
+
+<div class="viewcode-block" id="Ridge2.fit">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.Ridge2.fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># print(&quot;calling fit&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">ridge_fit_pert</span><span class="p">(</span>
+            <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_species</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_pert</span><span class="p">)</span></div>
+
+        <span class="c1"># return self</span>
+
+<div class="viewcode-block" id="Ridge2.predict">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.Ridge2.predict">[docs]</a>
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">X</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="Ridge2.get_params">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.Ridge2.get_params">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># suppose this estimator has parameters &quot;alpha&quot; and &quot;recursive&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;alphas&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="s2">&quot;num_species&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_species</span><span class="p">,</span> <span class="s2">&quot;num_pert&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_pert</span><span class="p">}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ridge_fit">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.ridge_fit">[docs]</a>
+<span class="k">def</span> <span class="nf">ridge_fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">num_species</span><span class="p">):</span>
+    <span class="c1"># To do: redo this with transpose X and Y</span>
+
+    <span class="c1"># standard least squares</span>
+    <span class="c1"># beta = np.dot( np.dot(F,np.transpose(X)), la.inv(np.dot(X,np.transpose(X))))</span>
+
+    <span class="c1"># compute ridge estimate</span>
+    <span class="n">penalty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagflat</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">num_species</span><span class="p">),</span> <span class="n">alphas</span><span class="p">[</span><span class="mi">1</span><span class="p">]]))</span>
+
+    <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">F</span> <span class="o">@</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">@</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">penalty</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">beta</span></div>
+
+
+
+<div class="viewcode-block" id="ridge_fit_pert">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.ridge_fit_pert">[docs]</a>
+<span class="k">def</span> <span class="nf">ridge_fit_pert</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">alphas</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">num_pert</span><span class="p">):</span>
+    <span class="c1"># To do: redo this with transposed X and Y</span>
+
+    <span class="c1"># standard least squares</span>
+    <span class="c1"># beta = np.dot( np.dot(F,np.transpose(X)), la.inv(np.dot(X,np.transpose(X))))</span>
+
+    <span class="c1"># compute ridge estimate</span>
+    <span class="n">penalty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagflat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">num_species</span><span class="p">),</span> <span class="n">alphas</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">alphas</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">num_pert</span><span class="p">)]))</span>
+
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">@</span> <span class="n">la</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">penalty</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">beta</span></div>
+
+
+
+<span class="c1"># can use</span>
+<span class="c1"># import importlib</span>
+<span class="c1"># import gLV_ML</span>
+<span class="c1"># importlib.reload(gLV_ML);</span>
+
+
+<div class="viewcode-block" id="ridge_fit_test">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.ridge_fit_test">[docs]</a>
+<span class="k">def</span> <span class="nf">ridge_fit_test</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;default ridge&quot;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Ridge</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tX</span><span class="p">,</span> <span class="n">tF</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">tX</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;custom ridge&quot;</span><span class="p">)</span>
+    <span class="c1"># FIXME: #27 is this `cRidge` defined anywhere? or is it `Ridge`?</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">cRidge</span><span class="p">(</span><span class="n">alphas</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tX</span><span class="p">,</span> <span class="n">tF</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">tX</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="linearize_time_course_16S">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.linearize_time_course_16S">[docs]</a>
+<span class="k">def</span> <span class="nf">linearize_time_course_16S</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">):</span>
+    <span class="n">num_species</span> <span class="o">=</span> <span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+
+    <span class="c1"># F = dlnX/dt</span>
+    <span class="n">DlnX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">yobs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">Dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="p">(</span><span class="n">num_species</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># print(DlnX)</span>
+    <span class="c1"># print(Dt)</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">DlnX</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Dt</span><span class="p">))</span>
+    <span class="c1"># print(F)</span>
+
+    <span class="c1"># X matrix: stacked observed counts</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">yobs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nt</span><span class="p">)])</span>
+    <span class="c1"># print(X)</span>
+
+    <span class="c1"># Get data into correct format for scikit-learn</span>
+    <span class="n">tF</span> <span class="o">=</span> <span class="n">F</span>
+    <span class="c1"># print(&quot;tF:&quot;,np.shape(tF))</span>
+
+    <span class="c1"># remove last column of X and transpose to get design matrix</span>
+    <span class="n">tX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># print(&quot;tX:&quot;,np.shape(tX))</span>
+
+    <span class="c1"># plot data in one variable</span>
+    <span class="c1"># plt.scatter(tX[:,0], tF[:,0]);</span>
+
+    <span class="k">return</span> <span class="n">tX</span><span class="p">,</span> <span class="n">tF</span></div>
+
+
+
+<span class="c1"># here u should be of length timepoints</span>
+<div class="viewcode-block" id="linearize_time_course_16S_u">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.linearize_time_course_16S_u">[docs]</a>
+<span class="k">def</span> <span class="nf">linearize_time_course_16S_u</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="n">num_species</span> <span class="o">=</span> <span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+
+    <span class="c1"># F = dlnX/dt</span>
+    <span class="n">DlnX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">yobs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">Dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="p">(</span><span class="n">num_species</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">DlnX</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Dt</span><span class="p">))</span>
+
+    <span class="c1"># X matrix: stacked observed counts</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">yobs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nt</span><span class="p">),</span> <span class="n">u</span><span class="p">])</span>
+
+    <span class="c1"># remove last column of X and transpose to get design matrix</span>
+    <span class="n">tX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># print(&quot;tX:&quot;,np.shape(tX))</span>
+
+    <span class="k">return</span> <span class="n">tX</span><span class="p">,</span> <span class="n">F</span></div>
+
+
+
+<div class="viewcode-block" id="linearise_time_course_metabolites">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.linearise_time_course_metabolites">[docs]</a>
+<span class="k">def</span> <span class="nf">linearise_time_course_metabolites</span><span class="p">(</span><span class="n">sobs</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">):</span>
+    <span class="n">nm</span> <span class="o">=</span> <span class="n">sobs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">ns</span> <span class="o">=</span> <span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># S = ds/dt</span>
+    <span class="n">DS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">sobs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">Dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="p">(</span><span class="n">nm</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">DS</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Dt</span><span class="p">))</span>
+
+    <span class="c1"># X = dX/dt</span>
+    <span class="n">DX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">Dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">DX</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Dt</span><span class="p">))</span>
+    <span class="c1"># X = yobs[0:-1, :]</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">S</span></div>
+
+
+
+<div class="viewcode-block" id="linearize_time_course">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.linearize_time_course">[docs]</a>
+<span class="k">def</span> <span class="nf">linearize_time_course</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">linearize_time_course_16S</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="plot_coeffs">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.plot_coeffs">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_coeffs</span><span class="p">():</span>
+    <span class="n">n_alphas</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_alphas</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">alphas</span><span class="p">)</span>
+
+    <span class="n">coefs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alphas</span><span class="p">:</span>
+        <span class="n">ridge</span> <span class="o">=</span> <span class="n">Ridge</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ridge</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tX</span><span class="p">,</span> <span class="n">tF</span><span class="p">)</span>
+        <span class="c1"># print( ridge.coef_.flatten() )</span>
+        <span class="n">coefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ridge</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alphas</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># reverse axis</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;alpha&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;weights&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Ridge coefficients as a function of the regularization&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="fit_alpha_Ridge1">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.fit_alpha_Ridge1">[docs]</a>
+<span class="k">def</span> <span class="nf">fit_alpha_Ridge1</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">n_a0</span><span class="p">,</span> <span class="n">n_a1</span><span class="p">):</span>
+    <span class="c1"># use own ridge model</span>
+
+    <span class="n">a0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_a0</span><span class="p">)</span>  <span class="c1"># constraint on Mij matrix elements</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n_a1</span><span class="p">)</span>  <span class="c1"># constraint on mu</span>
+
+    <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+
+    <span class="n">candidate_regressors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_a0</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_a1</span><span class="p">):</span>
+            <span class="c1"># print(i, j, xv[i,j], yv[i,j])</span>
+            <span class="n">candidate_regressors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Ridge1</span><span class="p">(</span><span class="n">alphas</span><span class="o">=</span><span class="p">[</span><span class="n">xv</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">yv</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]],</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">))</span>
+
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">RepeatedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_repeats</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">cv_results</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;neg_root_mean_squared_error&#39;</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+                  <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">candidate_regressors</span><span class="p">]</span>
+
+    <span class="n">cv_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cv_results</span><span class="p">])</span>
+    <span class="n">cv_se</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cv_results</span><span class="p">])</span>
+
+    <span class="n">min_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">cv_means</span><span class="p">)</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">min_i</span><span class="p">,</span> <span class="p">(</span><span class="n">n_a0</span><span class="p">,</span> <span class="n">n_a1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minimum found: a0/a1/error:&quot;</span><span class="p">,</span>
+          <span class="n">a0</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">a1</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">cv_means</span><span class="p">[</span><span class="n">min_i</span><span class="p">])</span>
+
+    <span class="c1"># unconstrained to compare</span>
+    <span class="n">unc_model</span> <span class="o">=</span> <span class="n">Ridge1</span><span class="p">(</span><span class="n">alphas</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">)</span>
+    <span class="n">cv_results</span> <span class="o">=</span> <span class="o">-</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">unc_model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span>
+                                  <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;neg_root_mean_squared_error&#39;</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;unconstrained error        :&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">cv_results</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">a0</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">a1</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></div>
+
+
+
+<div class="viewcode-block" id="fit_alpha_Ridge2">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.fit_alpha_Ridge2">[docs]</a>
+<span class="k">def</span> <span class="nf">fit_alpha_Ridge2</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">num_pert</span><span class="p">,</span> <span class="n">n_a0</span><span class="p">,</span> <span class="n">n_a1</span><span class="p">,</span> <span class="n">n_a2</span><span class="p">):</span>
+    <span class="c1"># use own ridge model</span>
+
+    <span class="n">a0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">n_a0</span><span class="p">)</span>  <span class="c1"># constraint on Mij matrix elements</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">n_a1</span><span class="p">)</span>  <span class="c1"># constraint on mu</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">n_a2</span><span class="p">)</span>  <span class="c1"># constraint on epsilon</span>
+
+    <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span><span class="p">,</span> <span class="n">zv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+
+    <span class="n">candidate_regressors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_a0</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_a1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_a2</span><span class="p">):</span>
+                <span class="c1"># print(i, j, xv[i,j], yv[i,j])</span>
+                <span class="n">candidate_regressors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ridge2</span><span class="p">(</span><span class="n">alphas</span><span class="o">=</span><span class="p">[</span><span class="n">xv</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span> <span class="n">yv</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span> <span class="n">zv</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]],</span>
+                                                   <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                                                   <span class="n">num_pert</span><span class="o">=</span><span class="n">num_pert</span><span class="p">))</span>
+
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">RepeatedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_repeats</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">cv_results</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;neg_root_mean_squared_error&#39;</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+                  <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">candidate_regressors</span><span class="p">]</span>
+
+    <span class="n">cv_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cv_results</span><span class="p">])</span>
+    <span class="n">cv_se</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cv_results</span><span class="p">])</span>
+
+    <span class="n">min_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">cv_means</span><span class="p">)</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">min_i</span><span class="p">,</span> <span class="p">(</span><span class="n">n_a0</span><span class="p">,</span> <span class="n">n_a1</span><span class="p">,</span> <span class="n">n_a2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minimum found: a0/a1/a2/error:&quot;</span><span class="p">,</span>
+          <span class="n">a0</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">a1</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">a2</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">cv_means</span><span class="p">[</span><span class="n">min_i</span><span class="p">])</span>
+
+    <span class="c1"># unconstrained to compare</span>
+    <span class="n">unc_model</span> <span class="o">=</span> <span class="n">Ridge2</span><span class="p">(</span>
+        <span class="n">alphas</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_pert</span><span class="o">=</span><span class="n">num_pert</span><span class="p">)</span>
+    <span class="n">cv_results</span> <span class="o">=</span> <span class="o">-</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">unc_model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span>
+                                  <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;neg_root_mean_squared_error&#39;</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;unconstrained error        :&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">cv_results</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">a0</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">a1</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">a2</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span></div>
+
+
+
+<div class="viewcode-block" id="do_final_fit_Ridge1">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.do_final_fit_Ridge1">[docs]</a>
+<span class="k">def</span> <span class="nf">do_final_fit_Ridge1</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Ridge1</span><span class="p">(</span><span class="n">alphas</span><span class="o">=</span><span class="p">[</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">],</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span>
+    <span class="n">mu_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+    <span class="n">M_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">num_species</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+           <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span></div>
+
+
+
+<div class="viewcode-block" id="do_final_fit_Ridge2">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.do_final_fit_Ridge2">[docs]</a>
+<span class="k">def</span> <span class="nf">do_final_fit_Ridge2</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">num_pert</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Ridge2</span><span class="p">(</span><span class="n">alphas</span><span class="o">=</span><span class="p">[</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">],</span>
+                   <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_pert</span><span class="o">=</span><span class="n">num_pert</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span>
+
+    <span class="n">M_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">num_species</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+           <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+    <span class="n">mu_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">num_species</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+    <span class="n">e_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][(</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">):]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span><span class="p">,</span> <span class="n">e_h</span></div>
+
+
+
+<div class="viewcode-block" id="do_bootstrapping">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.do_bootstrapping">[docs]</a>
+<span class="k">def</span> <span class="nf">do_bootstrapping</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">nboots</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># do some bootstrapping</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Ridge1</span><span class="p">(</span><span class="n">alphas</span><span class="o">=</span><span class="p">[</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">],</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">)</span>
+
+    <span class="n">mus</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nboots</span><span class="p">,</span> <span class="n">num_species</span><span class="p">])</span>
+    <span class="n">mms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nboots</span><span class="p">,</span> <span class="n">num_species</span> <span class="o">*</span> <span class="n">num_species</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nboots</span><span class="p">):</span>
+        <span class="n">sample_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">X_s</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">sample_index</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">F_s</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">sample_index</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_s</span><span class="p">,</span> <span class="n">F_s</span><span class="p">)</span>
+        <span class="n">mu_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+        <span class="n">M_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">num_species</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+               <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+
+        <span class="n">mus</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">mu_h</span>
+        <span class="n">mms</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M_h</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+        <span class="c1"># print(np.array(mu_h))</span>
+        <span class="c1"># print(np.round(np.array(M_h),decimals=2))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;examining mu_i&quot;</span><span class="p">)</span>
+    <span class="n">mus_max</span> <span class="o">=</span> <span class="n">mus</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">mus_min</span> <span class="o">=</span> <span class="n">mus</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">):</span>
+        <span class="n">star</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mus_min</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">mus_max</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">1e-4</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mus_min</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">mus_max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">star</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+            <span class="k">elif</span> <span class="n">mus_min</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">mus_max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">star</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mus_min</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+              <span class="s2">&quot; - &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mus_max</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="n">star</span><span class="p">)</span>
+
+    <span class="n">mms_max</span> <span class="o">=</span> <span class="n">mms</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">mms_min</span> <span class="o">=</span> <span class="n">mms</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">examining Mij&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span> <span class="o">*</span> <span class="n">num_species</span><span class="p">):</span>
+        <span class="n">star</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mms_min</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">mms_max</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">1e-4</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mms_min</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">mms_max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">star</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+            <span class="k">elif</span> <span class="n">mms_min</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">mms_max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">star</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mms_min</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="s2">&quot; - &quot;</span><span class="p">,</span>
+              <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mms_max</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="n">star</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="plot_alpha_lasso">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.plot_alpha_lasso">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_alpha_lasso</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">n_a</span><span class="p">):</span>
+    <span class="n">candidate_alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_a</span><span class="p">)</span>
+    <span class="n">candidate_regressors</span> <span class="o">=</span> <span class="p">[</span><span class="n">Lasso</span><span class="p">(</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">candidate_alpha</span><span class="p">]</span>
+
+    <span class="n">coefs</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">candidate_regressors</span><span class="p">]</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">candidate_alpha</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># reverse axis</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;alpha&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;weights&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Lasso coefficients as a function of the regularization&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="fit_alpha_lasso">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.fit_alpha_lasso">[docs]</a>
+<span class="k">def</span> <span class="nf">fit_alpha_lasso</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">n_a</span><span class="p">):</span>
+    <span class="n">candidate_alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_a</span><span class="p">)</span>
+    <span class="n">candidate_regressors</span> <span class="o">=</span> <span class="p">[</span><span class="n">Lasso</span><span class="p">(</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">candidate_alpha</span><span class="p">]</span>
+
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">RepeatedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_repeats</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">cv_results</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;neg_root_mean_squared_error&#39;</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span>
+                  <span class="n">candidate_regressors</span><span class="p">]</span>
+
+    <span class="n">n_est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cv_results</span><span class="p">])</span>
+    <span class="n">cv_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cv_results</span><span class="p">])</span>
+    <span class="n">cv_se</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cv_results</span><span class="p">])</span>
+
+    <span class="n">min_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">cv_means</span><span class="p">)</span>
+    <span class="n">cutoff</span> <span class="o">=</span> <span class="n">cv_means</span><span class="p">[</span><span class="n">min_i</span><span class="p">]</span> <span class="o">+</span> <span class="n">cv_se</span><span class="p">[</span><span class="n">min_i</span><span class="p">]</span>
+    <span class="n">one_se_rule_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">candidate_alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">cv_means</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minimum found: a/error:&quot;</span><span class="p">,</span> <span class="n">candidate_alpha</span><span class="p">[</span><span class="n">min_i</span><span class="p">],</span> <span class="n">cv_means</span><span class="p">[</span><span class="n">min_i</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;min + se rule: a/error:&quot;</span><span class="p">,</span>
+          <span class="n">candidate_alpha</span><span class="p">[</span><span class="n">one_se_rule_i</span><span class="p">],</span> <span class="n">cv_means</span><span class="p">[</span><span class="n">one_se_rule_i</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">candidate_alpha</span><span class="p">,</span> <span class="n">cv_means</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">candidate_alpha</span><span class="p">,</span> <span class="n">cv_means</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">*</span>
+                     <span class="n">cv_se</span><span class="p">,</span> <span class="n">cv_means</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">cv_se</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dotted&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Best + One SE&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">candidate_alpha</span><span class="p">[</span><span class="n">one_se_rule_i</span><span class="p">]],</span> <span class="p">[</span><span class="n">cv_means</span><span class="p">[</span><span class="n">one_se_rule_i</span><span class="p">]],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s1">&#39;One SE Rule&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">candidate_alpha</span><span class="p">[</span><span class="n">min_i</span><span class="p">]],</span> <span class="p">[</span><span class="n">cv_means</span><span class="p">[</span><span class="n">min_i</span><span class="p">]],</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Minimum rule&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Log alpha&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;MSE&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">candidate_alpha</span><span class="p">[</span><span class="n">min_i</span><span class="p">],</span> <span class="n">candidate_alpha</span><span class="p">[</span><span class="n">one_se_rule_i</span><span class="p">]</span></div>
+
+
+
+<span class="c1">###########################################################</span>
+<span class="c1"># older function using other more standard methods. Might come back to these at some point</span>
+
+
+<div class="viewcode-block" id="fit_alpha_default">
+<a class="viewcode-back" href="../../gMLV.html#gMLV.gMLV_ML.fit_alpha_default">[docs]</a>
+<span class="k">def</span> <span class="nf">fit_alpha_default</span><span class="p">():</span>
+    <span class="c1"># find the optimal penalisation terms</span>
+    <span class="c1"># model = Ridge(fit_intercept=False)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Lasso</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="c1"># model = ElasticNet(fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)</span>
+
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">RepeatedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_repeats</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># five fold</span>
+    <span class="n">n_alphas</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">grid</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n_alphas</span><span class="p">)</span>
+
+    <span class="c1"># define search</span>
+    <span class="n">search</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;neg_mean_squared_error&#39;</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># perform the search</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tX</span><span class="p">,</span> <span class="n">tF</span><span class="p">)</span>
+
+    <span class="c1"># summarize</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MAE: </span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">results</span><span class="o">.</span><span class="n">best_score_</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Config: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">results</span><span class="o">.</span><span class="n">best_params_</span><span class="p">)</span>
+
+    <span class="c1"># fit using optimal alpha</span>
+    <span class="c1"># model = Ridge(alpha=results.best_params_[&#39;alpha&#39;], fit_intercept=False)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Lasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">best_params_</span><span class="p">[</span>
+                  <span class="s1">&#39;alpha&#39;</span><span class="p">],</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="c1"># model = ElasticNet(alpha=results.best_params_[&#39;alpha&#39;], fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)</span>
+
+    <span class="c1"># model = ElasticNet(alpha=0.01, fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tX</span><span class="p">,</span> <span class="n">tF</span><span class="p">)</span>
+    <span class="n">mu_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+    <span class="n">M_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">num_species</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+           <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+
+    <span class="n">modelB</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">modelB</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tX</span><span class="p">,</span> <span class="n">tF</span><span class="p">)</span>
+    <span class="n">mu_l</span> <span class="o">=</span> <span class="p">[</span><span class="n">modelB</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+    <span class="n">M_l</span> <span class="o">=</span> <span class="p">[</span><span class="n">modelB</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">num_species</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+           <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">inferred params:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mu_hat/mu/mu_l:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu_h</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu_l</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">M_hat/M/M_l:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M_h</span><span class="p">),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M_l</span><span class="p">),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="c1"># plot the fit</span>
+    <span class="n">yobs_pred</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">gLV</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">num_species</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">yobs</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">yobs_pred</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">)</span>
+
+    <span class="c1"># plot the params</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">),</span>
+             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu_h</span><span class="p">),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu</span><span class="p">),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span> <span class="o">*</span> <span class="n">num_species</span><span class="p">),</span>
+             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M_h</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span> <span class="o">*</span> <span class="n">num_species</span><span class="p">),</span>
+             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">gMLV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
