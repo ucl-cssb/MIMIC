@@ -6,6 +6,7 @@ from .VARsim import *
 # Import the VAR class from the VAR module
 from .VARinfer import *
 
+from .utils import *
 
 # You can also include some package-level documentation
 __doc__ = """
