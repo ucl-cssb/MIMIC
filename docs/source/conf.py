@@ -18,6 +18,7 @@ import generate_examples_rst
 project = 'MIMIC'
 copyright = '2024, Pedro Fontanarrosa'
 author = 'Pedro Fontanarrosa'
+# FIXME: add an automatic way to get the version from the package
 release = '0.1.0'
 
 # If extensions (or modules to document with autodoc) are in another
