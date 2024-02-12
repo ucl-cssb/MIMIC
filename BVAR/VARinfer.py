@@ -4,7 +4,7 @@ import pymc as pm
 import arviz as az
 import pytensor.tensor as at
 from VARsim import VARSimulator
-from utils import read_parameters
+from .utils import read_parameters
 
 
 class VARInfer:
