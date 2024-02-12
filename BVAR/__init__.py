@@ -3,6 +3,10 @@
 # Import the simulate_var function from the simulation module
 from .VARsim import *
 
+# Import the VAR class from the VAR module
+from .VARinfer import *
+
+
 # You can also include some package-level documentation
 __doc__ = """
 mypackage: A Python package for simulating VAR models.
