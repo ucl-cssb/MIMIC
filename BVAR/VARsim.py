@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from utils import read_parameters
+from .utils import read_parameters
+import os
 
 
 class VARSimulator:
@@ -21,6 +22,18 @@ class VARSimulator:
     def print_parameters(self):
         for attr, value in vars(self).items():
             print(f"{attr}: {value}")
+
+    # Save the data to a file, if the data is not None
+    def save_data(self, filename):
+        if self.data is not None:
+            # Check if the filename ends with .csv, if not, append it
+            if not filename.endswith('.csv'):
+                filename += '.csv'
+
+            # Save the data as a CSV file in the directory containing the script
+            np.savetxt(filename, self.data, delimiter=",")
+        else:
+            print("No data to save.")
 
     def generate_var1_data(self):
         """
@@ -242,6 +255,8 @@ def make_plot(dataX, dataS=None, output='show'):
 
 
 if __name__ == "__main__":
+
+    # FIXME: remember to delete this part before deploying
     parametersX = read_parameters('parameters2.json')
     simulator = VARSimulator(**parametersX)
     simulator.run("VARsim")
