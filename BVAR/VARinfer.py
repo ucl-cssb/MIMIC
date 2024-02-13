@@ -3,13 +3,27 @@ import matplotlib.pyplot as plt
 import pymc as pm
 import arviz as az
 import pytensor.tensor as at
-from VARsim import VARSimulator
+from .VARsim import VARSimulator
 from .utils import read_parameters
 
 
 class VARInfer:
     def __init__(self, data):
         self.data = data  # data to do inference on
+
+    # import data from a .csv file
+    def import_data(self, file_path):
+        """
+        Imports data from a .csv file.
+
+        Args:
+        file_path (str): The path to the .csv file.
+
+        Returns:
+        None
+        """
+        self.data = np.genfromtxt(file_path, delimiter=',')
+        return
 
     def run_inference(self):  # sourcery skip: extract-method
         """
