@@ -7,12 +7,12 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 
-
 import sys
 import os
 # Add the directory containing generate_examples_rst.py to Python's path
 current_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, current_dir)
+sys.path.insert(0, os.path.abspath('../..'))
 import generate_examples_rst
 
 project = 'MIMIC'
@@ -26,7 +26,7 @@ release = '0.1.0'
 # relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
 #
-sys.path.insert(0, os.path.abspath('../..'))
+# 
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
