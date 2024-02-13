@@ -1,5 +1,8 @@
 # Pull Request To-Do List
 
+## Description of the changes
+<!--- Describe your changes in detail -->
+
 ## I have done the following to make this PR ready for review:
 
 - [ ] I have updated the `requirements.txt` file (if appropriate)
