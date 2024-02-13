@@ -80,7 +80,7 @@ Reporting Bugs
 * Use the GitHub issues to report bugs.
 * Before creating a new issue, check if it has already been reported.
 * Include detailed instructions on how to reproduce the bug.
-.. comment:: Add Tags here when implemented
+* Add Tags here when implemented.
 
 Suggesting Enhancements
 -------------------------
