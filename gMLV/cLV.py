@@ -24,6 +24,7 @@ class CompositionalLotkaVolterra:
         U: An optional list of T_x by P numpy arrays of external
                 perturbations for each x.
         denom : integer id for taxa in denominator of log ratio
+
         """
 
         self.P = P
