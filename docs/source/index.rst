@@ -13,8 +13,8 @@ Modelling and Inference of MICrobiomes Project (MIMIC)
    readme
    installation
    usage
-   examples
    modules
+   examples
    contributing
    authors
    history

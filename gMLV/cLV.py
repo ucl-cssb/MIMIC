@@ -5,9 +5,11 @@ from gMLV import *
 
 
 class CompositionalLotkaVolterra:
-    """Inference for compositional Lotka-Volterra.
+    """
+    Inference for compositional Lotka-Volterra.
 
-    \frac{d}{dt} log(\frac{\pi_i(t)}{\pi_D(t)}) = g_i + \sum^D_{j=1} (A_{ij} \pi_j(t)) + \sum^P_{p=1} (B_{ip} u_p(t)
+    .. math::
+        \frac{d}{dt} log(\frac{\pi_i(t)}{\pi_D(t)}) = g_i + \sum^D_{j=1} (A_{ij} \pi_j(t)) + \sum^P_{p=1} (B_{ip} u_p(t)
 
     """
 
@@ -15,14 +17,15 @@ class CompositionalLotkaVolterra:
         """
         Parameters
         ----------
-            P : A list of T_x by D dimensional numpy arrays of
+        P: A list of T_x by D dimensional numpy arrays of
                 estimated relative abundances.
-            T : A list of T_x by 1 dimensional numpy arrays giving
+        T: A list of T_x by 1 dimensional numpy arrays giving
                 the times of each observation x.
-            U : An optional list of T_x by P numpy arrays of external
+        U: An optional list of T_x by P numpy arrays of external
                 perturbations for each x.
-            denom : integer id for taxa in denominator of log ratio
+        denom : integer id for taxa in denominator of log ratio
         """
+
         self.P = P
         self.T = T
 
@@ -64,7 +67,8 @@ class CompositionalLotkaVolterra:
         self.r_B = r_B
 
     def train(self, verbose=False, folds=10):
-        """Estimate regularization parameters and CLV model parameters.
+        """
+        Estimate regularization parameters and CLV model parameters.
         """
         if self.alpha is None or self.r_A is None or self.r_g is None or self.r_B is None:
             if verbose:
@@ -313,7 +317,7 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
     uDim = U[0].shape[1]
 
     AgB = np.zeros((xDim, yDim + 1 + uDim))
-    #FIXME: #29 where is this defined?
+    # FIXME: #29 where is this defined?
     A, g, B = ridge_regression_clv(X, P, U, T, np.max(
         (alpha*(1-r_A), 0.01)), np.max((alpha*(1-r_g), 0.01)), np.max((alpha*(1-r_B), 0.01)))
     AgB[:, :yDim] = A
