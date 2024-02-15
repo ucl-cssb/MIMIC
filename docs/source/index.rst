@@ -15,8 +15,8 @@ Modelling and Inference of MICrobiomes Project (MIMIC)
    usage
    modules
    examples
-   contributing
    authors
+   contributing
    history
 
 Indices and tables
