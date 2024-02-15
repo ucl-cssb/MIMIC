@@ -39,15 +39,8 @@ class VARSimulator:
         """
         Generate simulated data from a VAR(1) process.
 
-        Parameters:
-        - n_obs (int): Number of observations to generate.
-        - coefficients (numpy.ndarray): Coefficient matrix for the VAR(1) process.
-                                        It should be a square matrix of shape (dim, dim).
-        - initial_values (numpy.ndarray): Initial values for the process, a vector of shape (dim,).
-        - noise_stddev (float): Standard deviation of the normally distributed noise term.
-
         Returns:
-        - data (numpy.ndarray): Simulated data matrix of shape (n_obs, dim).
+            numpy.ndarray: A 2D array containing the generated data. Each column represents a different variable, and each row represents a different time point.
         """
         dim = len(self.initial_values)
         data = np.zeros((self.n_obs, dim))
@@ -68,16 +61,8 @@ class VARSimulator:
         """
         Generates synthetic data for a multivariate autoregressive (MVAR) process of order 1.
 
-        Parameters:
-        n_obs (int): The number of observations to generate.
-        coefficients (numpy.ndarray): The coefficients of the VAR process for X. It should be a 2D array of shape (nX, nX).
-        coefficientsM (numpy.ndarray): The coefficients of the process for S. It should be a 2D array of shape (nS, nX).
-        initial_values (numpy.ndarray): The initial values of the X process. It should be a 2D array of shape (nX, 1).
-        initial_valuesM (numpy.ndarray): The initial values of the S process. It should be a 2D array of shape (nS, 1).
-        noise_stddev (float, optional): The standard deviation of the Gaussian noise. Defaults to 1.
-
         Returns:
-        tuple: A tuple containing two numpy.ndarrays. The first array is the generated data for the X process, and the second array is the generated data for the S process. Both arrays have shape (n_obs, nX) and (n_obs, nS) respectively.
+            tuple: A tuple containing two numpy.ndarrays. The first array is the generated data for the X process, and the second array is the generated data for the S process. Both arrays have shape (n_obs, nX) and (n_obs, nS) respectively.
         """
         nX = len(self.initial_values)
         data = np.zeros((self.n_obs, nX))
