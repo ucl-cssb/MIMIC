@@ -1,8 +1,11 @@
 import pathlib
 from setuptools import setup, find_packages
 
-readme = pathlib.Path('README.rst').read_text()
-history = pathlib.Path('HISTORY.rst').read_text()
+# Get the directory where setup.py is located
+here = pathlib.Path(__file__).parent
+
+readme = (here / 'README.rst').read_text()
+history = (here / 'HISTORY.rst').read_text()
 
 
 setup(name='MIMIC',
@@ -13,7 +16,6 @@ setup(name='MIMIC',
       author='Pedro Fontanarrosa',
       author_email='pfontanarrosa@gmail.com',
       license='MIT license',
-      description="Modelling and Inference of MICrobiomes Project (MIMIC) is a Python package dedicated to simulate, model, and predict microbial communities interactions.",
       packages=find_packages(include=['mimic', 'mimic.*']),
       test_suite='tests',
       url='https://github.com/ucl-cssb/MIMIC',
