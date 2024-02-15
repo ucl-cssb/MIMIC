@@ -9,8 +9,3 @@ from .VARinfer import *
 from .utils import *
 
 # You can also include some package-level documentation
-__doc__ = """
-mypackage: A Python package for simulating VAR models.
-
-This package provides tools and functions to simulate Vector Autoregression (VAR) models.
-"""
