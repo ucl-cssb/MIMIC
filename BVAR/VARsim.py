@@ -6,6 +6,44 @@ import os
 
 
 class VARSimulator:
+    """
+    VARSimulator class for simulating VAR models.
+
+    This class provides methods for generating simulated data from VAR models.
+
+    Args:
+        n_obs (int): Number of observations to generate (default: 100).
+        coefficients (ndarray, optional): Coefficients of the VAR model (default: [[0.8, -0.2], [0.3, 0.5]]).
+        initial_values (ndarray, optional): Initial values for the VAR model (default: [[1], [2]]).
+        noise_stddev (float, optional): Standard deviation of the noise in the VAR model (default: 1.0).
+        output (str, optional): Output option for plotting ('show', 'save', or 'both') (default: 'show').
+
+    Methods:
+        print_parameters():
+            Print the parameters of the VARSimulator instance.
+
+        save_data(filename):
+            Save the generated data to a file.
+
+        generate_var1_data():
+            Generate simulated data from a VAR(1) process.
+
+        generate_mvar1_data(coefficientsM, initial_valuesM):
+            Generate simulated data from a multivariate autoregressive (MVAR) process of order 1.
+
+        run(command, coefficientsM=None, initial_valuesM=None):
+            Run the VARSimulator with the specified command.
+
+        make_plot_overlay(dataX, dataS=None, output='show'):
+            Create an overlay plot of the given data.
+
+        make_plot_stacked(dataX, dataS):
+            Create a stacked plot and a heatmap for the given data.
+
+        make_plot(dataX, dataS=None, output='show'):
+            Create separate line plots for each variable in the given data.
+    """
+
     def __init__(self, n_obs=100, coefficients=None, initial_values=None, noise_stddev=1.0, output='show'):
         if coefficients is None:
             coefficients = [[0.8, -0.2], [0.3, 0.5]]

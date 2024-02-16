@@ -8,6 +8,28 @@ from .utils import read_parameters
 
 
 class VARInfer:
+    """
+    VARInfer class for performing inference on VAR models.
+
+    This class provides methods for importing data, running inference on the VAR model, and performing posterior sampling and analysis.
+
+    Args:
+        data (numpy.ndarray): The data to perform inference on.
+
+    Methods:
+        import_data(file_path):
+            Imports data from a .csv file.
+
+        run_inference():
+            Runs the inference process for the VAR model.
+
+        run_inference_large():
+            Runs large-scale inference for VAR model.
+
+    Returns:
+        None
+    """
+
     def __init__(self, data):
         self.data = data  # data to do inference on
 
