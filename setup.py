@@ -1,8 +1,11 @@
 import pathlib
 from setuptools import setup, find_packages
 
-readme = pathlib.Path('README.rst').read_text()
-history = pathlib.Path('HISTORY.rst').read_text()
+# Get the directory where setup.py is located
+here = pathlib.Path(__file__).parent
+
+readme = (here / 'README.rst').read_text()
+history = (here / 'HISTORY.rst').read_text()
 
 
 setup(name='MIMIC',
