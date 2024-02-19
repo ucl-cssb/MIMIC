@@ -102,7 +102,7 @@ class VARInfer:
 
         # Sampling from the posterior
         with var_model:
-            # FIXME: make these arguments specifiable in the parameters.json file file
+            # FIXME: #38 make these arguments specifiable in the parameters.json file file
             trace = pm.sample(2000, tune=1000, cores=2)
 
         # Plotting the posterior distributions
@@ -203,6 +203,7 @@ class VARInfer:
 
 if __name__ == '__main__':
     # Import parameters from JSON file
+    # FIXME: #40 see to delete this before merging
 
     parameters = read_parameters('parameters.json')
     simulator = VARSimulator(**parameters)
