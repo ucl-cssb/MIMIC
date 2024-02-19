@@ -5,9 +5,10 @@ import arviz as az
 import pytensor.tensor as at
 from .VARsim import VARSimulator
 from .utils import read_parameters
+from base_class.base_class import BaseModel
 
 
-class VARInfer:
+class VARInfer(BaseModel):
     """
     VARInfer class for performing inference on VAR models.
 
