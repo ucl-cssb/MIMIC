@@ -1,6 +1,6 @@
 '''
 Simulation script for gMLV model with perturbations and metabolites.
-Usage: python run_gMLV_sims.py <save_path> <num_sims>
+Usage: python run_gMLV_sims.py <save_path> <num_sims> <mode>
 Example: python run_gMLV_sims.py outputs/ 100
 
 The script will create a folder named outputs/ and save the results there.
@@ -8,26 +8,21 @@ The number of simulations is 100 by default, but can be changed by passing
 a different number as the second argument.
 '''
 
-
 import logging
-from time import time
-import math
-from gMLV import *
-from numpy import linalg as la
-import copy
-from scipy.integrate import odeint
-import matplotlib.pyplot as plt
 import random
 import os
 import sys
 
 import numpy as np
-import matplotlib as mpl
-mpl.use('tkagg')
 
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('tkagg')
 
-sys.path.append('../')
-# testing the the linter g;l
+import sys
+sys.path.append("../")
+sys.path.append("../gMLV")
+from gMLV import *
 
 # work around for retracing warning
 logging.disable(logging.WARNING)
@@ -50,9 +45,245 @@ def set_all_seeds(seed):
     np.random.seed(seed)
     random.seed(seed)
 
+
+def generate_params(num_species, num_pert, zero_prop=0, hetergeneous=False):
+    '''
+    generates parameters for GLV simulation according to Cao et al 2017
+     (Inferring human microbial dynamics from temporal metagenomics data: Pitfalls and lessons)
+     Method in the supplimentary
+     num_species: number of microbial strains
+     num_perterbations: number of perterbations
+     zero_prop: proportion of the interaction matrix that should be zeros
+    '''
+
+    N = numpy.random.normal(0, 1, (num_species, num_species))
+
+    if hetergeneous:
+        y = 1.2
+        u = numpy.random.uniform(0, 1, size=(num_species))
+        H = (1-u)**(1/(1-y))
+        H = numpy.diag(H)
+        s = numpy.sum(H)
+    else:
+        H = numpy.eye(num_species)
+        # s = 3 #from the paper
+        s = numpy.sum(H)  # this seems to prevent instability when more species
+
+    a = numpy.random.binomial(1, 1-zero_prop, size=(num_species, num_species))
+    # the interaction matrix
+    A = 1/s*N@H*a
+
+    # set all diagonal elements to -1 to ensure stability
+    numpy.fill_diagonal(A, -1)
+    # generate feasible growth rate
+    r = numpy.random.uniform(0.00001, 1, size=(num_species))
+    ss = -numpy.linalg.inv(A)@r
+
+    while not numpy.all(ss >= 0):
+
+        # changed max from 1 to 0.5 for stability of binary perts with few species
+        r = numpy.random.uniform(0.00001, 1., size=(num_species))
+        ss = -numpy.linalg.inv(A) @ r
+
+    C = numpy.random.uniform(-3, 3, size=(num_species, num_pert)) * 1/s
+
+    # for the binary pert scheme choose ICs to be close to the ss
+    ICs = ss  # this can be changed to start slightly away from ss
+    return r, A, C, ICs
+
+def generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ICs, num_pert, species_prob=1, num_metabolites=0, noise_std=0):
+    ''''
+    Generates data with external perturbations e.g. antibiotics or food.
+
+    simulator: simulator object of the gMLV_sim class above
+    tmax: max time (days)
+    sampling_time: time between different perturbations
+    dt: time between different simulated points
+    num_timecourses:number of time courses to simulate
+    ICs: intial conditions
+    num_pert: number of different perturbations
+    species_prob: probability of each species appearing in each timecourse
+    num_metabolites: number of metabolites
+    noise_std: standard dev of measruement noise
+    '''
+
+    ryobs = []  # species
+    rsobs = []  # metabolites
+    rysim = []
+    rssim = []
+    ry0 = []
+    rs0 = []
+    all_perts = []
+
+    times = numpy.arange(0, tmax, dt)
+
+    num_species = simulator.nsp
+
+    for timecourse_idx in range(num_timecourses):
+
+        pert_matrix = numpy.random.binomial(1, 0.5, size=(tmax//sampling_time, num_pert))
+
+        #print( "perturbations: ")
+        #print(pert_matrix )
+
+        all_perts.append(pert_matrix)
+
+        # initial conditions
+        init_species = numpy.random.uniform(low=0, high=2, size=(
+            num_species,)) * ICs * numpy.random.binomial(1, species_prob, size=(num_species,))
+        init_metabolites = numpy.random.uniform(
+            low=10, high=50, size=num_metabolites)
+
+        ysim, ssim, sy0, mu, M, _ = simulator.simulate(times=times, sy0=numpy.hstack((init_species, init_metabolites)),
+                                                       u=lambda t: binary_step_pert(t, pert_matrix, sampling_time))
+        if numpy.sum(ysim > 10) < 0:  # instability
+            print('unstable')
+        else:
+            yobs = ysim[0:-1:int(sampling_time // dt)]
+            sobs = ssim[0:-1:int(sampling_time // dt)]
+            # add some gaussian noise
+            yobs = yobs + \
+                numpy.random.normal(loc=0, scale=noise_std, size=yobs.shape)
+            sobs = sobs + \
+                numpy.random.normal(loc=0, scale=noise_std, size=sobs.shape)
+
+            # append results
+            ryobs.append(yobs)
+            rsobs.append(sobs)
+            rysim.append(ysim)
+            rssim.append(rssim)
+
+            ry0.append(init_species)
+            rs0.append(init_metabolites)
+        # Xs, Fs = linearize_time_course_16S(yobs,times)
+        # X = numpy.vstack([X, Xs])
+        # F = numpy.vstack([F, Fs])
+
+    ryobs = numpy.array(ryobs)
+    rysim = numpy.array(rysim)
+    all_perts = numpy.array(all_perts)
+
+    return ryobs, rysim, all_perts
+
+
+def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, ICs, species_prob=1, num_metabolites=0, noise_std=0):
+    ''''
+        Generates data with transplant perturbations
+
+        simulator: simulator object of the gMLV_sim class above
+        tmax: max time (days)
+        sampling_time: time between different perturbations
+        dt: time between different simulated points
+        num_timecourses:number of time courses to simulate
+        ICs: intial conditions
+        species_prob: probability of each species appearing in each timecourse
+        num_metabolites: number of metabolites
+        noise_std: standard dev of measruement noise
+    '''
+
+    ryobs = []  # species
+    rsobs = []  # metabolites
+    rysim = []
+    rssim = []
+    ry0 = []
+    rs0 = []
+    all_perts = []
+
+    times = numpy.arange(0, sampling_time, dt)
+
+    num_species = simulator.nsp
+
+    for timecourse_idx in range(num_timecourses):
+        
+        # initial conditions
+        init_species = numpy.random.uniform(low=0, high=2, size=(
+            1, num_species)) * ICs * numpy.random.binomial(1, species_prob, size=(1, num_species))
+        init_metabolites = numpy.random.uniform(
+            low=10, high=50, size=(1, num_metabolites))
+
+        ysim = []
+        ssim = []
+
+        p_matrix = []
+        ys = init_species
+        ss = init_metabolites
+        yobs = [
+            ys[0] + numpy.random.normal(loc=0, scale=noise_std, size=ys[0].shape)]
+        sobs = [
+            ss[0] + numpy.random.normal(loc=0, scale=noise_std, size=ss[0].shape)]
+
+        p = numpy.zeros((num_species,))
+
+        perturbed = False
+        for i in range(int(tmax//sampling_time)):
+
+            # print(yo.shape, ss.shape)
+
+            ys, ss, sy0, mu, M, _ = simulator.simulate(
+                times=times, sy0=numpy.hstack((ys[-1, :], ss[-1, :])))
+
+            if numpy.random.uniform() < 0.1 and not perturbed and i < int(tmax//sampling_time)-1:
+                perturbed = True
+
+                p_rem = numpy.random.uniform(low=0, high=1, size=(num_species,)) * numpy.random.binomial(1, species_prob,
+                                                                                                   size=(
+                                                                                                       num_species,))
+
+                p_add = numpy.random.uniform(low=0, high=1, size=(num_species,)) * numpy.random.binomial(1, species_prob,
+                                                                                                   size=(
+                                                                                                       num_species,))
+                p = p_add - 2*p_rem
+            else:
+                p = numpy.zeros((num_species,))
+            p_matrix.append(p)
+
+            ys[-1, :] += p
+            ys[ys < 0] = 0
+
+            # print(yo.shape, ss.shape)
+            yo = ys[-1]
+            so = ss[-1]
+            # add some gaussian noise
+
+            yo = yo + numpy.random.normal(loc=0, scale=noise_std, size=yo.shape)
+            so = so + numpy.random.normal(loc=0, scale=noise_std, size=so.shape)
+
+            ysim.extend(ys)
+            ssim.extend(ss)
+
+            if i < int(tmax//sampling_time)-1:
+
+                yobs.append(yo)
+                sobs.append(so)
+
+        all_perts.append(p_matrix)
+        # append results
+        ryobs.append(yobs)
+        rsobs.append(sobs)
+        rysim.append(ysim)
+        rssim.append(rssim)
+
+        ry0.append(init_species)
+        rs0.append(init_metabolites)
+        # Xs, Fs = linearize_time_course_16S(yobs,times)
+        # X = numpy.vstack([X, Xs])
+        # F = numpy.vstack([F, Fs])
+
+    ryobs = numpy.array(ryobs)
+    rysim = numpy.array(rysim)
+    all_perts = numpy.array(all_perts)
+
+    return ryobs, rysim, all_perts
+
+def binary_step_pert(t, pert_matrix, dt):
+    # solver sometimes goes slightly past end of time interval
+    i = min(int(t//dt), len(pert_matrix)-1)
+
+    p = pert_matrix[i]
+    return p
+
+
 # some plotting functions
-
-
 def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, times):
     # plot the fit
     fig, axs = plt.subplots(1, 2, figsize=(16., 6.))
@@ -106,7 +337,7 @@ def plot_fit_gMLV_pert(yobs, yobs_h, perts, sobs, sobs_h, sampling_times, ysim, 
 
 if __name__ == '__main__':
 
-    if len(sys.argv) == 3:
+    if len(sys.argv) == 4:
         # check if the third argument is a number, and if the second one is a path
         if not sys.argv[2].isdigit():
             print("Please enter a valid number of simulations")
@@ -117,18 +348,19 @@ if __name__ == '__main__':
 
         num_sims = int(sys.argv[2])
         save_path = sys.argv[1] + '/'
+        mode = int(sys.argv[3])
         os.makedirs(save_path, exist_ok=True)
     else:
         print("Using default values for number of simulations and save path")
-        print("Usage: python run_gMLV_sims.py <save_path> <num_sims>")
+        print("Usage: python run_gMLV_sims.py <save_path> <num_sims> <mode: perturbation=0, transplant=1>")
         num_sims = 100
         save_path = 'outputs/'
+        mode = 0
         os.makedirs(save_path, exist_ok=True)
 
     # set_all_seeds(0)
 
     # total number of time courses will be num_sims  x num_timecourses (per timecourse)
-
     num_timecourses = 1  # 9*100
 
     num_species = 3
@@ -156,22 +388,24 @@ if __name__ == '__main__':
 
     all_ryobs = np.zeros([num_sims, sampling_times.shape[0], num_species])
     all_rysim = np.zeros([num_sims, times.shape[0], num_species])
-    all_perts = np.zeros([num_sims, sampling_times.shape[0], num_pert])
-    all_parms = np.zeros(
-        [num_sims, num_species + num_species*num_species + num_species])
+    all_parms = np.zeros([num_sims, num_species + num_species*num_species + num_species])
+
+    if mode == 0:
+        # This is parameter perturbations
+        all_perts = np.zeros([num_sims, sampling_times.shape[0], num_pert])
+    else:
+        # This is transplant perturbations
+        all_perts = np.zeros([num_sims, sampling_times.shape[0], num_species])
 
     for nsim in range(num_sims):
         # print("nsim",nsim)
 
-        # QUESTION: what is the purpose of this if loop?
-        if nsim % 100 == 0:
+        if nsim % 10 == 0:
             print('percent data generated:', nsim/num_sims * 100)
 
         # generate params according to paper approach
-        #  C is perturbation interaction vector/m
-        # TODO: #25 generate_params is not defined anywhere
-        mu, M, C, ss = generate_params(
-            num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
+        #  C is perturbation interaction vector/m (also called epsilon)
+        mu, M, C, ss = generate_params(num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
 
         # print("mu: ", mu)
         # print("M: ", M)
@@ -186,11 +420,13 @@ if __name__ == '__main__':
                              num_metabolites=num_metabolites,
                              M=M,
                              mu=mu,
-                             C=C)
+                             epsilon=C)
 
-        # FIXME: #26 generate_data_perts is not defined anywhere
-        ryobs, rysim, perts = generate_data_perts(
-            simulator, tmax, sampling_time, dt, num_timecourses, ss, num_pert, species_prob=species_prob, noise_std=0.00)
+        if mode == 0:
+            ryobs, rysim, perts = generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ss, num_pert, species_prob=species_prob, noise_std=0.00)
+
+        else:
+            ryobs, rysim, perts = generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, ss, species_prob=1, num_metabolites=0, noise_std=0.00)
 
         # print(ryobs.shape, rysim.shape, all_perts.shape)
 
