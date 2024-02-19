@@ -61,8 +61,8 @@ class gMLV_sim:
         else:
             self.epsilon = epsilon
 
-    def simulate(self, times, sy0, tp=None):
-        syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.np, self.mu, self.M, self.beta, self.epsilon, tp))
+    def simulate(self, times, sy0, u=None):
+        syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.np, self.mu, self.M, self.beta, self.epsilon, u))
         yobs = syobs[:, 0:self.nsp]
         sobs = syobs[:, self.nsp:]
         return yobs, sobs, sy0, self.mu, self.M, self.beta
@@ -75,7 +75,7 @@ class gMLV_sim:
         print(f'perturbation matrix: \n{self.epsilon}')
 
 
-def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, tp):
+def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, u):
     """
     generalised Lotka Volterra with metabolite production
 
@@ -85,7 +85,7 @@ def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, tp):
     :param mu: specific growth rates vector
     :param M: interaction matrix
     :param beta: metabolite production rate matrix
-    :param p: a tuple containing time-dependent perturbation and perturbation matrix
+    :param u: a function that returns the perturbation signal at time t
     :return: change in species + metabolites vector
     """
     
@@ -93,25 +93,20 @@ def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, tp):
     y = sy[0:nsp]
     s = sy[nsp:]
 
-    if np > 0:
-        for p_i in range(np):
-            if tp[p_i][0] <= t < tp[p_i][1]:
-                instantaneous_growth = mu + M @ y + epsilon[:, p_i]
-            else:
-                instantaneous_growth = mu + M @ y
-    else:
-        instantaneous_growth = mu + M @ y
+    #if np > 0:
+    #    for p_i in range(np):
+    #        if tp[p_i][0] <= t < tp[p_i][1]:
+    #            instantaneous_growth = mu + M @ y + epsilon[:, p_i]
+    #       else:
+    #            instantaneous_growth = mu + M @ y
+    #else:
+    #    instantaneous_growth = mu + M @ y
 
-    # if p[0] is None:
-    #     instantaneous_growth = mu + M @ y
-    #     # dN = np.multiply(mu, y) + np.multiply(y, M @ y)
-    # else:
-    #     if p[0] <= t < (p[0] + 1):
-    #         instantaneous_growth = mu + M @ y + p[1]
-    #         # dN = np.multiply(mu, y) + np.multiply(y, M @ y) + np.multiply(y, p[1])
-    #     else:
-    #         instantaneous_growth = mu + M @ y
-    #         # dN = np.multiply(mu, y) + np.multiply(y, M @ y)
+    if u is None:
+        instantaneous_growth = mu + M @ y
+    else:
+        instantaneous_growth = mu + M @ y + epsilon @ u(t)
+
     dN = numpy.multiply(y, instantaneous_growth)
 
     if beta is None:
@@ -129,3 +124,4 @@ def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, tp):
         dS = q @ y
 
     return numpy.hstack((dN, dS))
+
