@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 import json
 import numpy as np
-from BVAR.VARsim import *
+from model_simulate.VARsim import *
 from BVAR.VARinfer import *
-from gMLV.gMLV_sim import *
+from model_simulate.gMLV_sim import *
 from gMLV.gMLV_ML import *
 
 
