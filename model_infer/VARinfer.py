@@ -3,11 +3,31 @@ import matplotlib.pyplot as plt
 import pymc as pm
 import arviz as az
 import pytensor.tensor as at
-from .VARsim import VARSimulator
-from .utils import read_parameters
 
 
 class VARInfer:
+    """
+    VARInfer class for performing inference on VAR models.
+
+    This class provides methods for importing data, running inference on the VAR model, and performing posterior sampling and analysis.
+
+    Args:
+        data (numpy.ndarray): The data to perform inference on.
+
+    Methods:
+        import_data(file_path):
+            Imports data from a .csv file.
+
+        run_inference():
+            Runs the inference process for the VAR model.
+
+        run_inference_large():
+            Runs large-scale inference for VAR model.
+
+    Returns:
+        None
+    """
+
     def __init__(self, data):
         self.data = data  # data to do inference on
 
@@ -80,7 +100,7 @@ class VARInfer:
 
         # Sampling from the posterior
         with var_model:
-            # FIXME: make these arguments specifiable in the parameters.json file file
+            # FIXME: #38 make these arguments specifiable in the parameters.json file file
             trace = pm.sample(2000, tune=1000, cores=2)
 
         # Plotting the posterior distributions
@@ -179,12 +199,12 @@ class VARInfer:
         plt.savefig("plot-posterior.pdf")
 
 
-if __name__ == '__main__':
-    # Import parameters from JSON file
+# if __name__ == '__main__':
+#     # Import parameters from JSON file
 
-    parameters = read_parameters('parameters.json')
-    simulator = VARSimulator(**parameters)
-    simulator.run("VARsim")
+#     parameters = read_parameters('parameters.json')
+#     simulator = VARSimulator(**parameters)
+#     simulator.run("VARsim")
 
-    infer = VARInfer(simulator.data)
-    infer.run_inference()
+#     infer = VARInfer(simulator.data)
+#     infer.run_inference()

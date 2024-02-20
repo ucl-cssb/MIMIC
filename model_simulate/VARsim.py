@@ -2,10 +2,47 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from .utils import read_parameters
-import os
 
 
 class VARSimulator:
+    """
+    VARSimulator class for simulating VAR models.
+
+    This class provides methods for generating simulated data from VAR models.
+
+    Args:
+        n_obs (int): Number of observations to generate (default: 100).
+        coefficients (ndarray, optional): Coefficients of the VAR model (default: [[0.8, -0.2], [0.3, 0.5]]).
+        initial_values (ndarray, optional): Initial values for the VAR model (default: [[1], [2]]).
+        noise_stddev (float, optional): Standard deviation of the noise in the VAR model (default: 1.0).
+        output (str, optional): Output option for plotting ('show', 'save', or 'both') (default: 'show').
+
+    Methods:
+        print_parameters():
+            Print the parameters of the VARSimulator instance.
+
+        save_data(filename):
+            Save the generated data to a file.
+
+        generate_var1_data():
+            Generate simulated data from a VAR(1) process.
+
+        generate_mvar1_data(coefficientsM, initial_valuesM):
+            Generate simulated data from a multivariate autoregressive (MVAR) process of order 1.
+
+        run(command, coefficientsM=None, initial_valuesM=None):
+            Run the VARSimulator with the specified command.
+
+        make_plot_overlay(dataX, dataS=None, output='show'):
+            Create an overlay plot of the given data.
+
+        make_plot_stacked(dataX, dataS):
+            Create a stacked plot and a heatmap for the given data.
+
+        make_plot(dataX, dataS=None, output='show'):
+            Create separate line plots for each variable in the given data.
+    """
+
     def __init__(self, n_obs=100, coefficients=None, initial_values=None, noise_stddev=1.0, output='show'):
         if coefficients is None:
             coefficients = [[0.8, -0.2], [0.3, 0.5]]
@@ -39,15 +76,8 @@ class VARSimulator:
         """
         Generate simulated data from a VAR(1) process.
 
-        Parameters:
-        - n_obs (int): Number of observations to generate.
-        - coefficients (numpy.ndarray): Coefficient matrix for the VAR(1) process.
-                                        It should be a square matrix of shape (dim, dim).
-        - initial_values (numpy.ndarray): Initial values for the process, a vector of shape (dim,).
-        - noise_stddev (float): Standard deviation of the normally distributed noise term.
-
         Returns:
-        - data (numpy.ndarray): Simulated data matrix of shape (n_obs, dim).
+            numpy.ndarray: A 2D array containing the generated data. Each column represents a different variable, and each row represents a different time point.
         """
         dim = len(self.initial_values)
         data = np.zeros((self.n_obs, dim))
@@ -68,16 +98,8 @@ class VARSimulator:
         """
         Generates synthetic data for a multivariate autoregressive (MVAR) process of order 1.
 
-        Parameters:
-        n_obs (int): The number of observations to generate.
-        coefficients (numpy.ndarray): The coefficients of the VAR process for X. It should be a 2D array of shape (nX, nX).
-        coefficientsM (numpy.ndarray): The coefficients of the process for S. It should be a 2D array of shape (nS, nX).
-        initial_values (numpy.ndarray): The initial values of the X process. It should be a 2D array of shape (nX, 1).
-        initial_valuesM (numpy.ndarray): The initial values of the S process. It should be a 2D array of shape (nS, 1).
-        noise_stddev (float, optional): The standard deviation of the Gaussian noise. Defaults to 1.
-
         Returns:
-        tuple: A tuple containing two numpy.ndarrays. The first array is the generated data for the X process, and the second array is the generated data for the S process. Both arrays have shape (n_obs, nX) and (n_obs, nS) respectively.
+            tuple: A tuple containing two numpy.ndarrays. The first array is the generated data for the X process, and the second array is the generated data for the S process. Both arrays have shape (n_obs, nX) and (n_obs, nS) respectively.
         """
         nX = len(self.initial_values)
         data = np.zeros((self.n_obs, nX))
@@ -254,21 +276,20 @@ def make_plot(dataX, dataS=None, output='show'):
         plt.show()
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # FIXME: remember to delete this part before deploying
-    parametersX = read_parameters('parameters2.json')
-    simulator = VARSimulator(**parametersX)
-    simulator.run("VARsim")
+#     parametersX = read_parameters('parameters2.json')
+#     simulator = VARSimulator(**parametersX)
+#     simulator.run("VARsim")
 
-    make_plot(simulator.data)
+#     make_plot(simulator.data)
 
-    parametersS = read_parameters('parametersS.json')
+#     parametersS = read_parameters('parametersS.json')
 
-    simulator.run("MVARsim", **parametersS)
+#     simulator.run("MVARsim", **parametersS)
 
-    # make_plot_stacked(simulator.data)
+#     # make_plot_stacked(simulator.data)
 
-    # simulator = VARSimulator(n_obs=100, coefficients=[
-    # [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
-    # simulator.run("VARsim")
+#     # simulator = VARSimulator(n_obs=100, coefficients=[
+#     # [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
+#     # simulator.run("VARsim")
