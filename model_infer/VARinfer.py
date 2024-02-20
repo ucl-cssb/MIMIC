@@ -3,12 +3,9 @@ import matplotlib.pyplot as plt
 import pymc as pm
 import arviz as az
 import pytensor.tensor as at
-from ..model_simulate.VARsim import VARSimulator
-from .utils import read_parameters
-from base_model.base_model import BaseModel
 
 
-class VARInfer(BaseModel):
+class VARInfer:
     """
     VARInfer class for performing inference on VAR models.
 
@@ -203,11 +200,11 @@ class VARInfer(BaseModel):
 
 
 # if __name__ == '__main__':
-    # Import parameters from JSON file
-    # parameters = read_parameters('parameters.json')
-    # simulator = VARSimulator(**parameters)
-    # simulator.run("VARsim")
+#     # Import parameters from JSON file
 
-    # infer = VARInfer(simulator.data)
-    # infer.run_inference()
-    # infer.run_inference_large()
+#     parameters = read_parameters('parameters.json')
+#     simulator = VARSimulator(**parameters)
+#     simulator.run("VARsim")
+
+#     infer = VARInfer(simulator.data)
+#     infer.run_inference()

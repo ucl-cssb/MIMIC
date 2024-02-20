@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 
-from gMLV import *
+from . import *
 
 
 class CompositionalLotkaVolterra:
@@ -17,13 +17,11 @@ class CompositionalLotkaVolterra:
         """
         Parameters
         ----------
-        P: A list of T_x by D dimensional numpy arrays of
-                estimated relative abundances.
-        T: A list of T_x by 1 dimensional numpy arrays giving
-                the times of each observation x.
-        U: An optional list of T_x by P numpy arrays of external
-                perturbations for each x.
-        denom : integer id for taxa in denominator of log ratio
+        P : A list of T_x by D dimensional numpy arrays of estimated relative abundances.
+        T : A list of T_x by 1 dimensional numpy arrays giving the times of each observation x.
+        U : An optional list of T_x by P numpy arrays of external perturbations for each x.
+        denom : integer, id for taxa in denominator of log ratio
+        pseudo_count : float, default=1e-3, a small number to replace zero counts
 
         """
 
