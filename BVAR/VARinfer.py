@@ -201,13 +201,13 @@ class VARInfer:
         plt.savefig("plot-posterior.pdf")
 
 
-if __name__ == '__main__':
-    # Import parameters from JSON file
-    # FIXME: #40 see to delete this before merging
+# if __name__ == '__main__':
+#     # Import parameters from JSON file
+#     # FIXME: #40 see to delete this before merging
 
-    parameters = read_parameters('parameters.json')
-    simulator = VARSimulator(**parameters)
-    simulator.run("VARsim")
+#     parameters = read_parameters('parameters.json')
+#     simulator = VARSimulator(**parameters)
+#     simulator.run("VARsim")
 
-    infer = VARInfer(simulator.data)
-    infer.run_inference()
+#     infer = VARInfer(simulator.data)
+#     infer.run_inference()
