@@ -7,6 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 
+
 import sys
 import os
 # Add the directory containing generate_examples_rst.py to Python's path
@@ -26,7 +27,7 @@ release = '0.1.0'
 # relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
 #
-# 
+#
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -39,7 +40,7 @@ extensions = [
 ]
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['setup.py']
 
 
 # -- Options for HTML output -------------------------------------------------
