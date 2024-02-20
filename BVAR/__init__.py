@@ -1,7 +1,7 @@
 # mypackage/__init__.py
 
 # Import the simulate_var function from the simulation module
-from .VARsim import *
+from ..model_simulate.VARsim import *
 
 # Import the VAR class from the VAR module
 from .VARinfer import *
