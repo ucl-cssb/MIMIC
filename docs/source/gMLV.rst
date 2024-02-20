@@ -20,22 +20,6 @@ gMLV.gMLV\_ML module
    :undoc-members:
    :show-inheritance:
 
-gMLV.gMLV\_sim module
----------------------
-
-.. automodule:: gMLV.gMLV_sim
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-gMLV.gMLV\_sim\_merged module
------------------------------
-
-.. automodule:: gMLV.gMLV_sim_merged
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 gMLV.multi\_penalty\_lasso module
 ---------------------------------
 
