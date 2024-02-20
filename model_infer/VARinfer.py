@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 import pymc as pm
 import arviz as az
 import pytensor.tensor as at
-from .VARsim import VARSimulator
-from .utils import read_parameters
 
 
 class VARInfer:
@@ -203,7 +201,6 @@ class VARInfer:
 
 # if __name__ == '__main__':
 #     # Import parameters from JSON file
-#     # FIXME: #40 see to delete this before merging
 
 #     parameters = read_parameters('parameters.json')
 #     simulator = VARSimulator(**parameters)
