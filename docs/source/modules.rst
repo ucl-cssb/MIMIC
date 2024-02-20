@@ -4,5 +4,6 @@ MIMIC
 .. toctree::
    :maxdepth: 4
 
-   BVAR
    gMLV
+   model_infer
+   model_simulate
