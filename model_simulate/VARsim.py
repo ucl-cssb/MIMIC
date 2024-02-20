@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from .utils import read_parameters
+from ..BVAR.utils import read_parameters
 import os
 
 
@@ -277,21 +277,20 @@ def make_plot(dataX, dataS=None, output='show'):
         plt.show()
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # FIXME: remember to delete this part before deploying
-    parametersX = read_parameters('parameters2.json')
-    simulator = VARSimulator(**parametersX)
-    simulator.run("VARsim")
+#     parametersX = read_parameters('parameters2.json')
+#     simulator = VARSimulator(**parametersX)
+#     simulator.run("VARsim")
 
-    make_plot(simulator.data)
+#     make_plot(simulator.data)
 
-    parametersS = read_parameters('parametersS.json')
+#     parametersS = read_parameters('parametersS.json')
 
-    simulator.run("MVARsim", **parametersS)
+#     simulator.run("MVARsim", **parametersS)
 
-    # make_plot_stacked(simulator.data)
+#     # make_plot_stacked(simulator.data)
 
-    # simulator = VARSimulator(n_obs=100, coefficients=[
-    # [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
-    # simulator.run("VARsim")
+#     # simulator = VARSimulator(n_obs=100, coefficients=[
+#     # [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
+#     # simulator.run("VARsim")
