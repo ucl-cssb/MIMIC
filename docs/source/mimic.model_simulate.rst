@@ -4,10 +4,10 @@ mimic.model\_simulate package
 Submodules
 ----------
 
-mimic.model\_simulate.VARsim module
------------------------------------
+mimic.model\_simulate.VAR\_sim module
+-------------------------------------
 
-.. automodule:: mimic.model_simulate.VARsim
+.. automodule:: mimic.model_simulate.VAR_sim
    :members:
    :undoc-members:
    :show-inheritance:
