@@ -62,12 +62,9 @@ def generate_params(num_species, num_pert, zero_prop=0, hetergeneous=False):
         u = np.random.uniform(0, 1, size=(num_species))
         H = (1-u)**(1/(1-y))
         H = np.diag(H)
-        s = np.sum(H)
     else:
         H = np.eye(num_species)
-        # s = 3 #from the paper
-        s = np.sum(H)  # this seems to prevent instability when more species
-
+    s = np.sum(H)
     a = np.random.binomial(1, 1-zero_prop, size=(num_species, num_species))
     # the interaction matrix
     A = 1/s*N@H*a
@@ -281,8 +278,7 @@ def binary_step_pert(t, pert_matrix, dt):
     # solver sometimes goes slightly past end of time interval
     i = min(int(t//dt), len(pert_matrix)-1)
 
-    p = pert_matrix[i]
-    return p
+    return pert_matrix[i]
 
 
 # some plotting functions
@@ -349,17 +345,15 @@ if __name__ == '__main__':
             sys.exit(1)
 
         num_sims = int(sys.argv[2])
-        save_path = sys.argv[1] + '/'
+        save_path = f'{sys.argv[1]}/'
         mode = int(sys.argv[3])
-        os.makedirs(save_path, exist_ok=True)
     else:
         print("Using default values for number of simulations and save path")
         print("Usage: python run_gMLV_sims.py <save_path> <num_sims> <mode: perturbation=0, transplant=1>")
         num_sims = 100
         save_path = 'outputs/'
         mode = 0
-        os.makedirs(save_path, exist_ok=True)
-
+    os.makedirs(save_path, exist_ok=True)
     # set_all_seeds(0)
 
     # total number of time courses will be num_sims  x num_timecourses (per timecourse)
@@ -391,7 +385,7 @@ if __name__ == '__main__':
     all_ryobs = np.zeros([num_sims, sampling_times.shape[0], num_species])
     all_rysim = np.zeros([num_sims, times.shape[0], num_species])
     all_parms = np.zeros(
-        [num_sims, num_species + num_species*num_species + num_species])
+        [num_sims, num_species + num_species**2 + num_species])
 
     if mode == 0:
         # This is parameter perturbations
@@ -443,17 +437,20 @@ if __name__ == '__main__':
         # create a np array concatenating the time points and the simulated data
         data_export = np.concatenate(
             (times.reshape(-1, 1), rysim[0, :, :]), axis=1)
-        np.savetxt(save_path + '/simulations' + str(nsim) +
-                   '.csv', data_export, delimiter=',')
+        np.savetxt(
+            f'{save_path}/simulations{str(nsim)}.csv',
+            data_export,
+            delimiter=',',
+        )
 
         # np.savetxt(save_path + '/simulations' + str(nsim) + '.csv', rysim, delimiter=',')
         # np.savetxt(save_path + '/simulations.csv', rysim[0,:,:], delimiter=',')
         all_perts[nsim, :, :] = perts.astype(np.float32)
 
-    np.save(save_path + '/abundances_sampled.npy', all_ryobs)
-    np.save(save_path + '/abundances.npy', all_rysim)
-    np.save(save_path + '/perts.npy', all_perts)
-    np.save(save_path + '/parms.npy', all_parms)
+    np.save(f'{save_path}/abundances_sampled.npy', all_ryobs)
+    np.save(f'{save_path}/abundances.npy', all_rysim)
+    np.save(f'{save_path}/perts.npy', all_perts)
+    np.save(f'{save_path}/parms.npy', all_parms)
 
     # plot some of the results
     for i in range(10):
@@ -464,4 +461,4 @@ if __name__ == '__main__':
         # print( all_ryobs[i] )
         # print( all_perts[i, 0:-1, :] )
 
-        plt.savefig(save_path + '/test_plot_' + str(i) + '.pdf')
+        plt.savefig(f'{save_path}/test_plot_{str(i)}.pdf')
