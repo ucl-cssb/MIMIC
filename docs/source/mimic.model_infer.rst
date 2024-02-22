@@ -4,10 +4,10 @@ mimic.model\_infer package
 Submodules
 ----------
 
-mimic.model\_infer.VARinfer module
-----------------------------------
+mimic.model\_infer.VAR\_infer module
+------------------------------------
 
-.. automodule:: mimic.model_infer.VARinfer
+.. automodule:: mimic.model_infer.VAR_infer
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,10 +20,10 @@ mimic.model\_infer.cLV module
    :undoc-members:
    :show-inheritance:
 
-mimic.model\_infer.gMLV\_ML module
-----------------------------------
+mimic.model\_infer.gMLV\_infer module
+-------------------------------------
 
-.. automodule:: mimic.model_infer.gMLV_ML
+.. automodule:: mimic.model_infer.gMLV_infer
    :members:
    :undoc-members:
    :show-inheritance:
