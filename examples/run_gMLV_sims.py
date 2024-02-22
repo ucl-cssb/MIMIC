@@ -8,6 +8,8 @@ The number of simulations is 100 by default, but can be changed by passing
 a different number as the second argument.
 '''
 
+from mimic.model_infer import *
+from mimic.model_simulate import *
 import logging
 import random
 import os
@@ -19,10 +21,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('tkagg')
 
-import sys
 sys.path.append("../")
-sys.path.append("../gMLV")
-from gMLV import *
 
 # work around for retracing warning
 logging.disable(logging.WARNING)
@@ -56,40 +55,41 @@ def generate_params(num_species, num_pert, zero_prop=0, hetergeneous=False):
      zero_prop: proportion of the interaction matrix that should be zeros
     '''
 
-    N = numpy.random.normal(0, 1, (num_species, num_species))
+    N = np.random.normal(0, 1, (num_species, num_species))
 
     if hetergeneous:
         y = 1.2
-        u = numpy.random.uniform(0, 1, size=(num_species))
+        u = np.random.uniform(0, 1, size=(num_species))
         H = (1-u)**(1/(1-y))
-        H = numpy.diag(H)
-        s = numpy.sum(H)
+        H = np.diag(H)
+        s = np.sum(H)
     else:
-        H = numpy.eye(num_species)
+        H = np.eye(num_species)
         # s = 3 #from the paper
-        s = numpy.sum(H)  # this seems to prevent instability when more species
+        s = np.sum(H)  # this seems to prevent instability when more species
 
-    a = numpy.random.binomial(1, 1-zero_prop, size=(num_species, num_species))
+    a = np.random.binomial(1, 1-zero_prop, size=(num_species, num_species))
     # the interaction matrix
     A = 1/s*N@H*a
 
     # set all diagonal elements to -1 to ensure stability
-    numpy.fill_diagonal(A, -1)
+    np.fill_diagonal(A, -1)
     # generate feasible growth rate
-    r = numpy.random.uniform(0.00001, 1, size=(num_species))
-    ss = -numpy.linalg.inv(A)@r
+    r = np.random.uniform(0.00001, 1, size=(num_species))
+    ss = -np.linalg.inv(A)@r
 
-    while not numpy.all(ss >= 0):
+    while not np.all(ss >= 0):
 
         # changed max from 1 to 0.5 for stability of binary perts with few species
-        r = numpy.random.uniform(0.00001, 1., size=(num_species))
-        ss = -numpy.linalg.inv(A) @ r
+        r = np.random.uniform(0.00001, 1., size=(num_species))
+        ss = -np.linalg.inv(A) @ r
 
-    C = numpy.random.uniform(-3, 3, size=(num_species, num_pert)) * 1/s
+    C = np.random.uniform(-3, 3, size=(num_species, num_pert)) * 1/s
 
     # for the binary pert scheme choose ICs to be close to the ss
     ICs = ss  # this can be changed to start slightly away from ss
     return r, A, C, ICs
+
 
 def generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ICs, num_pert, species_prob=1, num_metabolites=0, noise_std=0):
     ''''
@@ -115,37 +115,38 @@ def generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ICs
     rs0 = []
     all_perts = []
 
-    times = numpy.arange(0, tmax, dt)
+    times = np.arange(0, tmax, dt)
 
     num_species = simulator.nsp
 
     for timecourse_idx in range(num_timecourses):
 
-        pert_matrix = numpy.random.binomial(1, 0.5, size=(tmax//sampling_time, num_pert))
+        pert_matrix = np.random.binomial(
+            1, 0.5, size=(tmax//sampling_time, num_pert))
 
-        #print( "perturbations: ")
-        #print(pert_matrix )
+        # print( "perturbations: ")
+        # print(pert_matrix )
 
         all_perts.append(pert_matrix)
 
         # initial conditions
-        init_species = numpy.random.uniform(low=0, high=2, size=(
-            num_species,)) * ICs * numpy.random.binomial(1, species_prob, size=(num_species,))
-        init_metabolites = numpy.random.uniform(
+        init_species = np.random.uniform(low=0, high=2, size=(
+            num_species,)) * ICs * np.random.binomial(1, species_prob, size=(num_species,))
+        init_metabolites = np.random.uniform(
             low=10, high=50, size=num_metabolites)
 
-        ysim, ssim, sy0, mu, M, _ = simulator.simulate(times=times, sy0=numpy.hstack((init_species, init_metabolites)),
+        ysim, ssim, sy0, mu, M, _ = simulator.simulate(times=times, sy0=np.hstack((init_species, init_metabolites)),
                                                        u=lambda t: binary_step_pert(t, pert_matrix, sampling_time))
-        if numpy.sum(ysim > 10) < 0:  # instability
+        if np.sum(ysim > 10) < 0:  # instability
             print('unstable')
         else:
             yobs = ysim[0:-1:int(sampling_time // dt)]
             sobs = ssim[0:-1:int(sampling_time // dt)]
             # add some gaussian noise
             yobs = yobs + \
-                numpy.random.normal(loc=0, scale=noise_std, size=yobs.shape)
+                np.random.normal(loc=0, scale=noise_std, size=yobs.shape)
             sobs = sobs + \
-                numpy.random.normal(loc=0, scale=noise_std, size=sobs.shape)
+                np.random.normal(loc=0, scale=noise_std, size=sobs.shape)
 
             # append results
             ryobs.append(yobs)
@@ -156,12 +157,12 @@ def generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ICs
             ry0.append(init_species)
             rs0.append(init_metabolites)
         # Xs, Fs = linearize_time_course_16S(yobs,times)
-        # X = numpy.vstack([X, Xs])
-        # F = numpy.vstack([F, Fs])
+        # X = np.vstack([X, Xs])
+        # F = np.vstack([F, Fs])
 
-    ryobs = numpy.array(ryobs)
-    rysim = numpy.array(rysim)
-    all_perts = numpy.array(all_perts)
+    ryobs = np.array(ryobs)
+    rysim = np.array(rysim)
+    all_perts = np.array(all_perts)
 
     return ryobs, rysim, all_perts
 
@@ -189,16 +190,16 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
     rs0 = []
     all_perts = []
 
-    times = numpy.arange(0, sampling_time, dt)
+    times = np.arange(0, sampling_time, dt)
 
     num_species = simulator.nsp
 
     for timecourse_idx in range(num_timecourses):
-        
+
         # initial conditions
-        init_species = numpy.random.uniform(low=0, high=2, size=(
-            1, num_species)) * ICs * numpy.random.binomial(1, species_prob, size=(1, num_species))
-        init_metabolites = numpy.random.uniform(
+        init_species = np.random.uniform(low=0, high=2, size=(
+            1, num_species)) * ICs * np.random.binomial(1, species_prob, size=(1, num_species))
+        init_metabolites = np.random.uniform(
             low=10, high=50, size=(1, num_metabolites))
 
         ysim = []
@@ -208,11 +209,11 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
         ys = init_species
         ss = init_metabolites
         yobs = [
-            ys[0] + numpy.random.normal(loc=0, scale=noise_std, size=ys[0].shape)]
+            ys[0] + np.random.normal(loc=0, scale=noise_std, size=ys[0].shape)]
         sobs = [
-            ss[0] + numpy.random.normal(loc=0, scale=noise_std, size=ss[0].shape)]
+            ss[0] + np.random.normal(loc=0, scale=noise_std, size=ss[0].shape)]
 
-        p = numpy.zeros((num_species,))
+        p = np.zeros((num_species,))
 
         perturbed = False
         for i in range(int(tmax//sampling_time)):
@@ -220,21 +221,21 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
             # print(yo.shape, ss.shape)
 
             ys, ss, sy0, mu, M, _ = simulator.simulate(
-                times=times, sy0=numpy.hstack((ys[-1, :], ss[-1, :])))
+                times=times, sy0=np.hstack((ys[-1, :], ss[-1, :])))
 
-            if numpy.random.uniform() < 0.1 and not perturbed and i < int(tmax//sampling_time)-1:
+            if np.random.uniform() < 0.1 and not perturbed and i < int(tmax//sampling_time)-1:
                 perturbed = True
 
-                p_rem = numpy.random.uniform(low=0, high=1, size=(num_species,)) * numpy.random.binomial(1, species_prob,
+                p_rem = np.random.uniform(low=0, high=1, size=(num_species,)) * np.random.binomial(1, species_prob,
                                                                                                    size=(
                                                                                                        num_species,))
 
-                p_add = numpy.random.uniform(low=0, high=1, size=(num_species,)) * numpy.random.binomial(1, species_prob,
+                p_add = np.random.uniform(low=0, high=1, size=(num_species,)) * np.random.binomial(1, species_prob,
                                                                                                    size=(
                                                                                                        num_species,))
                 p = p_add - 2*p_rem
             else:
-                p = numpy.zeros((num_species,))
+                p = np.zeros((num_species,))
             p_matrix.append(p)
 
             ys[-1, :] += p
@@ -245,8 +246,8 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
             so = ss[-1]
             # add some gaussian noise
 
-            yo = yo + numpy.random.normal(loc=0, scale=noise_std, size=yo.shape)
-            so = so + numpy.random.normal(loc=0, scale=noise_std, size=so.shape)
+            yo = yo + np.random.normal(loc=0, scale=noise_std, size=yo.shape)
+            so = so + np.random.normal(loc=0, scale=noise_std, size=so.shape)
 
             ysim.extend(ys)
             ssim.extend(ss)
@@ -266,14 +267,15 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
         ry0.append(init_species)
         rs0.append(init_metabolites)
         # Xs, Fs = linearize_time_course_16S(yobs,times)
-        # X = numpy.vstack([X, Xs])
-        # F = numpy.vstack([F, Fs])
+        # X = np.vstack([X, Xs])
+        # F = np.vstack([F, Fs])
 
-    ryobs = numpy.array(ryobs)
-    rysim = numpy.array(rysim)
-    all_perts = numpy.array(all_perts)
+    ryobs = np.array(ryobs)
+    rysim = np.array(rysim)
+    all_perts = np.array(all_perts)
 
     return ryobs, rysim, all_perts
+
 
 def binary_step_pert(t, pert_matrix, dt):
     # solver sometimes goes slightly past end of time interval
@@ -388,7 +390,8 @@ if __name__ == '__main__':
 
     all_ryobs = np.zeros([num_sims, sampling_times.shape[0], num_species])
     all_rysim = np.zeros([num_sims, times.shape[0], num_species])
-    all_parms = np.zeros([num_sims, num_species + num_species*num_species + num_species])
+    all_parms = np.zeros(
+        [num_sims, num_species + num_species*num_species + num_species])
 
     if mode == 0:
         # This is parameter perturbations
@@ -405,7 +408,8 @@ if __name__ == '__main__':
 
         # generate params according to paper approach
         #  C is perturbation interaction vector/m (also called epsilon)
-        mu, M, C, ss = generate_params(num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
+        mu, M, C, ss = generate_params(
+            num_species, num_pert, zero_prop=zero_prop, hetergeneous=False)
 
         # print("mu: ", mu)
         # print("M: ", M)
@@ -423,10 +427,12 @@ if __name__ == '__main__':
                              epsilon=C)
 
         if mode == 0:
-            ryobs, rysim, perts = generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ss, num_pert, species_prob=species_prob, noise_std=0.00)
+            ryobs, rysim, perts = generate_data_perts(
+                simulator, tmax, sampling_time, dt, num_timecourses, ss, num_pert, species_prob=species_prob, noise_std=0.00)
 
         else:
-            ryobs, rysim, perts = generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses, ss, species_prob=1, num_metabolites=0, noise_std=0.00)
+            ryobs, rysim, perts = generate_data_transplant(
+                simulator, tmax, sampling_time, dt, num_timecourses, ss, species_prob=1, num_metabolites=0, noise_std=0.00)
 
         # print(ryobs.shape, rysim.shape, all_perts.shape)
 
@@ -434,7 +440,7 @@ if __name__ == '__main__':
         all_ryobs[nsim, :, :] = ryobs.astype(np.float32)
         all_rysim[nsim, :, :] = rysim.astype(np.float32)
         # export each simulation as csv
-        # create a numpy array concatenating the time points and the simulated data
+        # create a np array concatenating the time points and the simulated data
         data_export = np.concatenate(
             (times.reshape(-1, 1), rysim[0, :, :]), axis=1)
         np.savetxt(save_path + '/simulations' + str(nsim) +
