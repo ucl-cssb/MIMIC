@@ -2,10 +2,8 @@ from abc import ABC, abstractmethod
 import json
 import numpy as np
 import os
-from model_simulate.VARsim import *
-from model_infer.VARinfer import *
-from model_simulate.gMLV_sim import *
-from gMLV.gMLV_ML import *
+from model_simulate import *
+from model_infer import *
 
 
 class BaseModel(ABC):
