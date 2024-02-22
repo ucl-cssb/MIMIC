@@ -8,7 +8,7 @@ The number of simulations is 100 by default, but can be changed by passing
 a different number as the second argument.
 '''
 
-from mimic.gMLV import *
+from mimic.model_infer import *
 from mimic.model_simulate import *
 import logging
 import random
