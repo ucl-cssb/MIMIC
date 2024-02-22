@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 
-from . import *
+from ..gMLV import *
 
 
 class CompositionalLotkaVolterra:
