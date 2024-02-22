@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from .utils import read_parameters
+from ..utilities.utilities import read_parameters
 
 
 class VARSimulator:
