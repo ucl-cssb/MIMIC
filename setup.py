@@ -16,7 +16,7 @@ setup(name='MIMIC',
       author='Pedro Fontanarrosa',
       author_email='pfontanarrosa@gmail.com',
       license='MIT license',
-      packages=find_packages(),
+      packages=find_packages(include=['mimic', 'mimic.*']),
       test_suite='tests',
       url='https://github.com/ucl-cssb/MIMIC',
       zip_safe=False)
