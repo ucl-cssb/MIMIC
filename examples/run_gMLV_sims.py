@@ -22,7 +22,6 @@ import matplotlib.pyplot as plt
 matplotlib.use('tkagg')
 
 sys.path.append("../")
-sys.path.append("../gMLV")
 
 # work around for retracing warning
 logging.disable(logging.WARNING)
