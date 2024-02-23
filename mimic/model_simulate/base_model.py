@@ -15,23 +15,39 @@ class BaseModel(ABC):
         self.inference = None
         self.parameters = None
 
+    # check if params are set, else print a warning and use the default values for each simulation type
+    def check_params(self, params, sim_type):
+        if params is None:
+            print(
+                f"Warning: No parameters provided for {sim_type} simulation. Using default values.")
+            if sim_type == "VAR":
+                params = {"n_obs": 100, "coefficients": 2,
+                          "initial_values": 2, "noise_stddev": 1, "output": "show"}
+            elif sim_type == "gMLV":
+                params = {"n": 100, "p": 2, "k": 2, "sigma": 1}
+        print(
+            f"Using the following parameters for {sim_type} simulation: {params}")
+        # IDEA: See if all expected parameters are set, else use default and show a message either here or inside each funciton.
+        return params
+
     @abstractmethod
-    def simulate(self, sim_type, *args, **kwargs):
+    def simulate(self, sim_type, params):
+        params = self.check_params(params, sim_type)
         if sim_type == "VAR":
-            return VARSimulator(*args, **kwargs)
+            return VARSimulator(**params)
         elif sim_type == "gMLV":
-            return gMLV_sim(*args, **kwargs)
+            return gMLV_sim(**params)
         else:
             raise ValueError("Unknown model type")
 
-    @abstractmethod
-    def infer(self, infer_type, *args, **kwargs):
-        if infer_type == "VAR":
-            return VARInfer(*args, **kwargs)
-        elif infer_type == "gMLV":
-            return gMLV_sim(*args, **kwargs)  # FIXME: change to gMLV_ML class
-        else:
-            raise ValueError("Unknown inference type")
+    # @abstractmethod #NOTE: This is not needed here, since we are going to use it in the infer base class
+    # def infer(self, infer_type, *args, **kwargs):
+    #     if infer_type == "VAR":
+    #         return VARInfer(*args, **kwargs)
+    #     elif infer_type == "gMLV":
+    #         return gMLV_sim(*args, **kwargs)
+    #     else:
+    #         raise ValueError("Unknown inference type")
 
     @abstractmethod
     def read_parameters(self, filepath):
