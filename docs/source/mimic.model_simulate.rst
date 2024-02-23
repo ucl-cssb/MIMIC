@@ -12,6 +12,14 @@ mimic.model\_simulate.VAR\_sim module
    :undoc-members:
    :show-inheritance:
 
+mimic.model\_simulate.base\_model module
+----------------------------------------
+
+.. automodule:: mimic.model_simulate.base_model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 mimic.model\_simulate.gMLV\_sim module
 --------------------------------------
 
