@@ -2,19 +2,17 @@ import random
 from scipy import stats
 import numpy
 from scipy.integrate import odeint
+from mimic.model_simulate.base_model import BaseModel
 
 
-class gMLV_sim:
+class gMLV_sim(BaseModel):
     def __init__(self, num_species=2, num_metabolites=0, num_perturbations=0, mu=None, M=None, beta=None, epsilon=None):
         self.nsp = num_species
         self.nm = num_metabolites
         self.np = num_perturbations
 
-        if mu is None:
-            self.mu = numpy.random.lognormal(0.01, 0.5, self.nsp)
-        else:
-            self.mu = mu
-
+        self.mu = numpy.random.lognormal(
+            0.01, 0.5, self.nsp) if mu is None else mu
         if M is None:
             self.M = numpy.zeros((self.nsp, self.nsp))
             # add self repression on the diagonal
@@ -62,7 +60,8 @@ class gMLV_sim:
             self.epsilon = epsilon
 
     def simulate(self, times, sy0, u=None):
-        syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.np, self.mu, self.M, self.beta, self.epsilon, u))
+        syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.np,
+                       self.mu, self.M, self.beta, self.epsilon, u))
         yobs = syobs[:, 0:self.nsp]
         sobs = syobs[:, self.nsp:]
         return yobs, sobs, sy0, self.mu, self.M, self.beta
@@ -88,25 +87,22 @@ def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, u):
     :param u: a function that returns the perturbation signal at time t
     :return: change in species + metabolites vector
     """
-    
+
     # separate species and metabolites
-    y = sy[0:nsp]
+    y = sy[:nsp]
     s = sy[nsp:]
 
-    #if np > 0:
+    # if np > 0:
     #    for p_i in range(np):
     #        if tp[p_i][0] <= t < tp[p_i][1]:
     #            instantaneous_growth = mu + M @ y + epsilon[:, p_i]
     #       else:
     #            instantaneous_growth = mu + M @ y
-    #else:
+    # else:
     #    instantaneous_growth = mu + M @ y
 
-    if u is None:
-        instantaneous_growth = mu + M @ y
-    else:
-        instantaneous_growth = mu + M @ y + epsilon @ u(t)
-
+    instantaneous_growth = mu + \
+        M @ y if u is None else mu + M @ y + epsilon @ u(t)
     dN = numpy.multiply(y, instantaneous_growth)
 
     if beta is None:
@@ -116,12 +112,8 @@ def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, u):
         # dS = beta @ y
 
         # metabolite production as in Clark et al., 2021: eqs(4 & 5)
-        if len(beta.shape) == 3:
-            rho = numpy.dot(beta, y)  # eq(6)
-        else:
-            rho = beta
+        rho = numpy.dot(beta, y) if len(beta.shape) == 3 else beta
         q = numpy.multiply(rho, instantaneous_growth)
         dS = q @ y
 
     return numpy.hstack((dN, dS))
-
