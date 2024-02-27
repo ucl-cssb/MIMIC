@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
-import json
-import numpy as np
 import os
-from model_simulate.VAR_sim import *
-from model_simulate.gMLV_sim import *
-from model_infer.gMLV_infer import *
-from model_infer.VAR_infer import *
+import json
+import pandas as pd
+from mimic.model_simulate.VAR_sim import VARSimulator
+from mimic.model_simulate.gMLV_sim import gMLV_sim
 
 
 class BaseModel(ABC):
@@ -26,7 +24,11 @@ class BaseModel(ABC):
         save_data: Saves data to a CSV file.
         load_data: Loads data from a CSV file.
     """
+
     def __init__(self):
+        """
+        Initialize a new instance of the BaseModel class.
+        """
         self.data = None
         self.model = None
         # self.inference = None #NOTE: This is not needed here, since we are going to use it in the infer base class
@@ -94,7 +96,6 @@ class BaseModel(ABC):
     #     else:
     #         raise ValueError("Unknown inference type")
 
-    @abstractmethod
     def read_parameters(self, filepath):
         """
         Read parameters from a JSON file.
@@ -104,16 +105,17 @@ class BaseModel(ABC):
 
         Raises:
         ValueError: If `filepath` does not point to a .json file.
+        FileNotFoundError: If `filepath` does not exist.
         """
         # Check if the filepath ends with .json
         if not filepath.lower().endswith('.json'):
-            raise ValueError("Filepath must point to a .json file")
+            raise ValueError("Filepath must point to a .json file.")
+        if not os.path.exists(filepath):
+            raise FileNotFoundError(f"No file found at {filepath}")
 
         with open(filepath, 'r') as file:
-            parameters = json.load(file)
-            self.parameters = parameters
+            self.parameters = json.load(file)
 
-    @abstractmethod
     def save_parameters(self, filepath, parameters=None):
         """
         Save parameters to a JSON file.
@@ -124,19 +126,21 @@ class BaseModel(ABC):
 
         Raises:
         ValueError: If `filepath` does not point to a .json file.
+        FileNotFoundError: If the directory to save the file does not exist.
         """
-        if parameters is None:
-            parameters = self.parameters
-        if parameters is not None:
-            # Check if the filename ends with .json, if not append .json
-            if not filepath.endswith('.json'):
-                filepath += '.json'
-            with open(filepath, 'w') as file:
-                json.dump(parameters, file)
-        else:
-            print("No parameters to save.")
+        if not filepath.endswith('.json'):
+            raise ValueError("Filepath must point to a .json file.")
+        if not os.path.exists(os.path.dirname(filepath)):
+            raise FileNotFoundError(
+                f"No directory found at {os.path.dirname(filepath)}")
 
-    @abstractmethod
+        parameters = parameters if parameters is not None else self.parameters
+        if parameters is None:
+            print("No parameters to save.")
+            return
+        with open(filepath, 'w') as file:
+            json.dump(parameters, file)
+
     def print_parameters(self):
         """
         Print parameters to the console.
@@ -148,7 +152,6 @@ class BaseModel(ABC):
         else:
             print("No parameters to print.")
 
-    @abstractmethod
     def save_data(self, filename, data=None):
         """
         Save data to a CSV file.
@@ -159,18 +162,21 @@ class BaseModel(ABC):
 
         Raises:
         ValueError: If `filename` does not end with .csv.
+        FileNotFoundError: If the directory to save the file does not exist.
         """
-        if data is None:
-            data = self.data
-        if data is not None:
-            # Check if the filename ends with .csv, if not append .csv
-            if not filename.endswith('.csv'):
-                filename += '.csv'
-            np.savetxt(filename, data, delimiter=",")
-        else:
-            print("No data to save.")
+        if not filename.endswith('.csv'):
+            raise ValueError("Filename must end with .csv.")
+        if not os.path.exists(os.path.dirname(filename)):
+            raise FileNotFoundError(
+                f"No directory found at {os.path.dirname(filename)}")
 
-    @abstractmethod
+        data = data if data is not None else self.data
+        if data is None:
+            print("No data to save.")
+            return
+
+        pd.DataFrame(data).to_csv(filename, index=False)
+
     def load_data(self, filename):
         """
         Load data from a CSV file.
@@ -180,8 +186,11 @@ class BaseModel(ABC):
 
         Raises:
         ValueError: If `filename` does not point to a .csv file.
+        FileNotFoundError: If `filename` does not exist.
         """
-        file_extension = os.path.splitext(filename)[1]
-        if file_extension.lower() != ".csv":
-            raise ValueError("File is not a CSV file.")
-        self.data = np.loadtxt(filename, delimiter=",")
+        if not filename.endswith('.csv'):
+            raise ValueError("Filename must point to a .csv file.")
+        if not os.path.exists(filename):
+            raise FileNotFoundError(f"No file found at {filename}")
+
+        self.data = pd.read_csv(filename)
