@@ -2,9 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from ..utilities.utilities import read_parameters
+from mimic.model_simulate.base_model import BaseModel
 
 
-class VARSimulator:
+class VARSimulator(BaseModel):
     """
     VARSimulator class for simulating VAR models.
 
@@ -30,7 +31,7 @@ class VARSimulator:
         generate_mvar1_data(coefficientsM, initial_valuesM):
             Generate simulated data from a multivariate autoregressive (MVAR) process of order 1.
 
-        run(command, coefficientsM=None, initial_valuesM=None):
+        simulate(command, coefficientsM=None, initial_valuesM=None):
             Run the VARSimulator with the specified command.
 
         make_plot_overlay(dataX, dataS=None, output='show'):
@@ -44,6 +45,7 @@ class VARSimulator:
     """
 
     def __init__(self, n_obs=100, coefficients=None, initial_values=None, noise_stddev=1.0, output='show'):
+        super().__init__()
         if coefficients is None:
             coefficients = [[0.8, -0.2], [0.3, 0.5]]
         if initial_values is None:
@@ -53,7 +55,7 @@ class VARSimulator:
         self.initial_values = np.array(initial_values)
         self.noise_stddev = noise_stddev
         self.output = output
-        self.data = None
+        # self.data = None #This is no longer used, since it is imported from the base class
         self.dataM = None
 
     def print_parameters(self):
@@ -92,7 +94,7 @@ class VARSimulator:
             make_plot_overlay(data, None, self.output)
 
         self.data = data  # the generated data
-        return data
+        return
 
     def generate_mvar1_data(self, coefficientsM, initial_valuesM):
         """
@@ -131,7 +133,7 @@ class VARSimulator:
         self.data, self.dataM = data, dataM  # the generated data
         return data, dataM
 
-    def run(self, command, coefficientsM=None, initial_valuesM=None):
+    def simulate(self, command, coefficientsM=None, initial_valuesM=None):
         if command == "VARsim":
             self.generate_var1_data()
         elif command == "MVARsim":
@@ -280,16 +282,16 @@ def make_plot(dataX, dataS=None, output='show'):
 
 #     parametersX = read_parameters('parameters2.json')
 #     simulator = VARSimulator(**parametersX)
-#     simulator.run("VARsim")
+#     simulator.simulate("VARsim")
 
 #     make_plot(simulator.data)
 
 #     parametersS = read_parameters('parametersS.json')
 
-#     simulator.run("MVARsim", **parametersS)
+#     simulator.simulate("MVARsim", **parametersS)
 
 #     # make_plot_stacked(simulator.data)
 
 #     # simulator = VARSimulator(n_obs=100, coefficients=[
 #     # [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
-#     # simulator.run("VARsim")
+#     # simulator.simulate("VARsim")

@@ -55,8 +55,8 @@ class BaseModel(ABC):
             print(
                 f"Warning: No parameters provided for {sim_type} simulation. Using default values.")
             if sim_type == "VAR":
-                params = {"n_obs": 100, "coefficients": 2,
-                          "initial_values": 2, "noise_stddev": 1, "output": "show"}
+                params = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]],
+                          "initial_values": [[1], [2]], "noise_stddev": 1, "output": "show"}
             elif sim_type == "gMLV":
                 params = {"n": 100, "p": 2, "k": 2, "sigma": 1}
         print(
