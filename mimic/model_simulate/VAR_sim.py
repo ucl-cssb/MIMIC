@@ -91,7 +91,7 @@ class VARSimulator(BaseModel):
             data[t, :] = np.dot(self.coefficients, data[t - 1, :]) + noise
 
         if self.output != 'none':
-            make_plot_overlay(data, None, self.output)
+            self.make_plot_overlay(data, None, self.output)
 
         self.data = data  # the generated data
         return
@@ -128,7 +128,7 @@ class VARSimulator(BaseModel):
             dataM[t, :] = product[:, 0] + noise
 
         if self.output != 'none':
-            make_plot_overlay(data, dataM, self.output)
+            self.make_plot_overlay(data, dataM, self.output)
 
         self.data, self.dataM = data, dataM  # the generated data
         return data, dataM
@@ -144,138 +144,135 @@ class VARSimulator(BaseModel):
         else:
             raise ValueError("Invalid command. Must be 'VARsim' or 'MVARsim'")
 
+    def make_plot_overlay(self, dataX, dataS=None, output='show'):
+        """
+        Creates an overlay plot of the given data.
 
-def make_plot_overlay(dataX, dataS=None, output='show'):
-    """
-    Creates an overlay plot of the given data.
+        Parameters:
+        dataX (numpy.ndarray): A 2D array containing the data for the X process. Each column represents a different variable, and each row represents a different time point.
+        dataS (numpy.ndarray): A 2D array containing the data for the S process. Each column represents a different variable, and each row represents a different time point.
 
-    Parameters:
-    dataX (numpy.ndarray): A 2D array containing the data for the X process. Each column represents a different variable, and each row represents a different time point.
-    dataS (numpy.ndarray): A 2D array containing the data for the S process. Each column represents a different variable, and each row represents a different time point.
+        Returns:
+        None
 
-    Returns:
-    None
+        This function generates two overlay plots: one for the X process and one for the S process. Each variable in the process is plotted with a different color. The plots are saved in a PDF file named "plot-data-XS-overlay.pdf".
+        """
+        # Number of variables in dataX
+        nX = dataX.shape[1]
 
-    This function generates two overlay plots: one for the X process and one for the S process. Each variable in the process is plotted with a different color. The plots are saved in a PDF file named "plot-data-XS-overlay.pdf".
-    """
-    # Number of variables in dataX
-    nX = dataX.shape[1]
+        # Create a figure with two subplots
+        fig, axs = plt.subplots(2, 1, figsize=(
+            10, 4)) if dataS is not None else plt.subplots(1, 1, figsize=(10, 4))
+        axs = np.atleast_1d(axs)  # Ensure axs is always a list
 
-    # Create a figure with two subplots
-    fig, axs = plt.subplots(2, 1, figsize=(
-        10, 4)) if dataS is not None else plt.subplots(1, 1, figsize=(10, 4))
-    axs = np.atleast_1d(axs)  # Ensure axs is always a list
+        # Plot each variable in dataX on the first subplot
+        for i in range(nX):
+            axs[0].plot(dataX[:, i], label=f"X{str(i)}")
+        axs[0].set_title("Abundance, X")
 
-    # Plot each variable in dataX on the first subplot
-    for i in range(nX):
-        axs[0].plot(dataX[:, i], label=f"X{str(i)}")
-    axs[0].set_title("Abundance, X")
+        # Plot each variable in dataS on the second subplot, if available
+        if dataS is not None:
+            nS = dataS.shape[1]
+            for i in range(nS):
+                axs[1].plot(dataS[:, i], label=f"S{str(i)}")
+            axs[1].set_title("Abundance, S")
 
-    # Plot each variable in dataS on the second subplot, if available
-    if dataS is not None:
-        nS = dataS.shape[1]
-        for i in range(nS):
-            axs[1].plot(dataS[:, i], label=f"S{str(i)}")
-        axs[1].set_title("Abundance, S")
+        # Adjust the layout to ensure that the subplots do not overlap
+        plt.tight_layout()
 
-    # Adjust the layout to ensure that the subplots do not overlap
-    plt.tight_layout()
+        # If the output option is 'save' or 'both', save the figure as a PDF
+        if output in ['save', 'both']:
+            plt.savefig("plot-data-overlay.pdf")
 
-    # If the output option is 'save' or 'both', save the figure as a PDF
-    if output in ['save', 'both']:
-        plt.savefig("plot-data-overlay.pdf")
+        # If the output option is 'show' or 'both', show the figure in a new window
+        if output in ['show', 'both']:
+            plt.show()
 
-    # If the output option is 'show' or 'both', show the figure in a new window
-    if output in ['show', 'both']:
-        plt.show()
+    def make_plot_stacked(self, dataX, dataS):
+        """
+        Creates a stacked plot and a heatmap for the given data.
 
+        Parameters:
+        dataX (numpy.ndarray): A 2D array containing the data for the X process. Each column represents a different variable, and each row represents a different time point.
+        dataS (numpy.ndarray): A 2D array containing the data for the S process. Each column represents a different variable, and each row represents a different time point.
 
-def make_plot_stacked(dataX, dataS):
-    """
-    Creates a stacked plot and a heatmap for the given data.
+        Returns:
+        None
 
-    Parameters:
-    dataX (numpy.ndarray): A 2D array containing the data for the X process. Each column represents a different variable, and each row represents a different time point.
-    dataS (numpy.ndarray): A 2D array containing the data for the S process. Each column represents a different variable, and each row represents a different time point.
+        This function generates a stacked plot for the X process and a heatmap for the S process. The stacked plot shows the abundance of each variable in the X process over time, and the heatmap shows the values of each variable in the S process over time. The function does not return any value; instead, it saves the plots in a PDF file named "plot-data-XS-stacked.pdf".
+        """
 
-    Returns:
-    None
+        dataX = dataX + 1.0
 
-    This function generates a stacked plot for the X process and a heatmap for the S process. The stacked plot shows the abundance of each variable in the X process over time, and the heatmap shows the values of each variable in the S process over time. The function does not return any value; instead, it saves the plots in a PDF file named "plot-data-XS-stacked.pdf".
-    """
+        #  stacked
+        nX = len(dataX[0])  # Number of columns in dataX
+        nS = len(dataS[0])  # Number of columns in dataS
+        nobs = dataS.shape[0]
 
-    dataX = dataX + 1.0
+        # Create a figure with two subplots
+        fig, axs = plt.subplots(2, 1, figsize=(10, 4))
+        # Stack plot for dataX
+        axs[0].stackplot(
+            range(len(dataX)), *dataX.T, labels=[f"X{str(i)}" for i in range(nX)]
+        )
+        axs[0].set_title("Abundance, log10 X")
+        axs[0].set_ylabel("X")
+        axs[0].set_xlim(0, nobs-1)
 
-    #  stacked
-    nX = len(dataX[0])  # Number of columns in dataX
-    nS = len(dataS[0])  # Number of columns in dataS
-    nobs = dataS.shape[0]
+        sns.heatmap(
+            dataS.T,
+            annot=False,
+            cmap="YlGnBu",
+            yticklabels=[f"S{str(i)}" for i in range(nS)],
+            ax=axs[1],
+            cbar=False,
+        )
+        axs[1].set_title("S")
+        axs[1].set_ylabel("S")
+        axs[1].set_xlabel("time (weeks)")
+        axs[1].set_xlim(0, nobs)
 
-    # Create a figure with two subplots
-    fig, axs = plt.subplots(2, 1, figsize=(10, 4))
-    # Stack plot for dataX
-    axs[0].stackplot(
-        range(len(dataX)), *dataX.T, labels=[f"X{str(i)}" for i in range(nX)]
-    )
-    axs[0].set_title("Abundance, log10 X")
-    axs[0].set_ylabel("X")
-    axs[0].set_xlim(0, nobs-1)
+        plt.tight_layout()  # Adjust the layout
+        plt.savefig("plot-data-XS-stacked.pdf")
 
-    sns.heatmap(
-        dataS.T,
-        annot=False,
-        cmap="YlGnBu",
-        yticklabels=[f"S{str(i)}" for i in range(nS)],
-        ax=axs[1],
-        cbar=False,
-    )
-    axs[1].set_title("S")
-    axs[1].set_ylabel("S")
-    axs[1].set_xlabel("time (weeks)")
-    axs[1].set_xlim(0, nobs)
+    def make_plot(self, dataX, dataS=None, output='show'):
+        """
+        Creates separate line plots for each variable in the given data.
 
-    plt.tight_layout()  # Adjust the layout
-    plt.savefig("plot-data-XS-stacked.pdf")
+        Parameters:
+        dataX (numpy.ndarray): A 2D array containing the data for the X process. Each column represents a different variable, and each row represents a different time point.
+        dataS (numpy.ndarray): A 2D array containing the data for the S process. Each column represents a different variable, and each row represents a different time point.
 
+        Returns:
+        None
 
-def make_plot(dataX, dataS=None, output='show'):
-    """
-    Creates separate line plots for each variable in the given data.
+        This function generates a separate line plot for each variable in the X and S processes. The plots are arranged vertically, with the plots for the X process at the top and the plots for the S process at the bottom. Each plot shows the values of the variable over time. The function does not return any value; instead, it saves the plots in a PDF file named "plot-data-XS.pdf".
+        """
+        nX = len(dataX[0])  # Number of columns in dataX
 
-    Parameters:
-    dataX (numpy.ndarray): A 2D array containing the data for the X process. Each column represents a different variable, and each row represents a different time point.
-    dataS (numpy.ndarray): A 2D array containing the data for the S process. Each column represents a different variable, and each row represents a different time point.
+        # Number of columns in dataS if it is provided
+        nS = len(dataS[0]) if dataS is not None else 0
 
-    Returns:
-    None
+        fig, axs = plt.subplots(nX + nS, 1, figsize=(10, 2*(nX+nS)))
 
-    This function generates a separate line plot for each variable in the X and S processes. The plots are arranged vertically, with the plots for the X process at the top and the plots for the S process at the bottom. Each plot shows the values of the variable over time. The function does not return any value; instead, it saves the plots in a PDF file named "plot-data-XS.pdf".
-    """
-    nX = len(dataX[0])  # Number of columns in dataX
+        # Adjust the vertical spacing between subplots
+        plt.subplots_adjust(hspace=0.5)
 
-    # Number of columns in dataS if it is provided
-    nS = len(dataS[0]) if dataS is not None else 0
+        for i, ax in enumerate(axs):
+            if i < nX:
+                axs[i].plot(dataX[:, i])
+                axs[i].set_title(f"X{str(i)}")
+            elif dataS is not None:
+                axs[i].plot(dataS[:, i-nX])
+                axs[i].set_title(f"S{str(i - nX)}")
 
-    fig, axs = plt.subplots(nX + nS, 1, figsize=(10, 2*(nX+nS)))
+            # Set the y-axis label
+            axs[i].set_ylabel('Abundance')
 
-    # Adjust the vertical spacing between subplots
-    plt.subplots_adjust(hspace=0.5)
-
-    for i, ax in enumerate(axs):
-        if i < nX:
-            axs[i].plot(dataX[:, i])
-            axs[i].set_title(f"X{str(i)}")
-        elif dataS is not None:
-            axs[i].plot(dataS[:, i-nX])
-            axs[i].set_title(f"S{str(i - nX)}")
-
-        # Set the y-axis label
-        axs[i].set_ylabel('Abundance')
-
-    if output in ['save', 'both']:
-        plt.savefig("plot-data-stacked.pdf")
-    if output in ['show', 'both']:
-        plt.show()
+        if output in ['save', 'both']:
+            plt.savefig("plot-data-stacked.pdf")
+        if output in ['show', 'both']:
+            plt.show()
 
 
 # if __name__ == "__main__":
