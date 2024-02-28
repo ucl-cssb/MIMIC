@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 import os
 import json
 import pandas as pd
-from mimic.model_simulate.VAR_sim import VARSimulator
-from mimic.model_simulate.gMLV_sim import gMLV_sim
 
 
 class BaseModel(ABC):
@@ -36,7 +34,6 @@ class BaseModel(ABC):
 
     # check if params are set, else print a warning and use the default values for each simulation type
 
-
     def check_params(self, params, sim_type):
         """
         Check and update simulation parameters.
@@ -61,7 +58,7 @@ class BaseModel(ABC):
         # sourcery skip: use-named-expression
         # Define default parameters for each simulation type
         default_params_VAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]],
-                            "initial_values": [[1], [2]], "noise_stddev": 1, "output": "show"}
+                              "initial_values": [[1], [2]], "noise_stddev": 1, "output": "show"}
         default_params_gMLV = {"n": 100, "p": 2, "k": 2, "sigma": 1}
 
         # Determine default parameters based on simulation type
@@ -74,16 +71,20 @@ class BaseModel(ABC):
 
         # Check if no parameters were provided and warn the user
         if params is None:
-            print(f"Warning: No parameters provided for {sim_type} simulation. Using default values.")
+            print(
+                f"Warning: No parameters provided for {sim_type} simulation. Using default values.")
         else:
             # Identify missing parameters
-            missing_params = [key for key in default_params if key not in params]
+            missing_params = [
+                key for key in default_params if key not in params]
             if missing_params:
-                print(f"Warning: Missing parameters for {sim_type} simulation. Using default values for: {missing_params}")
+                print(
+                    f"Warning: Missing parameters for {sim_type} simulation. Using default values for: {missing_params}")
             # Update the default parameters with the provided ones
             default_params.update(params)
 
-        print(f"Using the following parameters for {sim_type} simulation: {default_params}")
+        print(
+            f"Using the following parameters for {sim_type} simulation: {default_params}")
         return default_params
 
     @abstractmethod
@@ -103,10 +104,14 @@ class BaseModel(ABC):
         """
         params = self.check_params(params, sim_type)
         if sim_type == "VAR":
+            # This is a lazy import, it will only import the class when it is needed to avoid circular imports
+            from mimic.model_simulate.VAR_sim import VARSimulator
             self.model = VARSimulator(**params)  # create the class instance
             VARSimulator.simulate()  # call the simulate method, this will store data in self.data
             return self.data
         elif sim_type == "gMLV":
+            # This is a lazy import, it will only import the class when it is needed to avoid circular imports
+            from mimic.model_simulate.gMLV_sim import gMLV_sim
             self.model = gMLV_sim(**params)  # create the class instance
             # call the simulate method, this will store data in self.data
             return self.model.simulate()
