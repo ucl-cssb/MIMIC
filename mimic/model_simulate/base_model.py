@@ -38,6 +38,26 @@ class BaseModel(ABC):
 
 
     def check_params(self, params, sim_type):
+        """
+        Check and update simulation parameters.
+
+        Args:
+            params (dict): The parameters provided for the simulation.
+            sim_type (str): The type of simulation.
+
+        Returns:
+            dict: The updated simulation parameters.
+
+        Raises:
+            ValueError: If sim_type is not 'VAR' or 'gMLV'.
+
+        Examples:
+            >>> params = {"n_obs": 200, "coefficients": [[0.5, -0.5], [0.2, 0.8]], "output": "save"}
+            >>> sim_type = "VAR"
+            >>> check_params(params, sim_type)
+            Using the following parameters for VAR simulation: {'n_obs': 200, 'coefficients': [[0.5, -0.5], [0.2, 0.8]], 'initial_values': [[1], [2]], 'noise_stddev': 1, 'output': 'save'}
+        """
+
         # sourcery skip: use-named-expression
         # Define default parameters for each simulation type
         default_params_VAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]],
