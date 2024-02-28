@@ -81,9 +81,13 @@ class BaseModel(ABC):
         """
         params = self.check_params(params, sim_type)
         if sim_type == "VAR":
-            return VARSimulator(**params)
+            self.model = VARSimulator(**params)  # create the class instance
+            VARSimulator.simulate()  # call the simulate method, this will store data in self.data
+            return self.data
         elif sim_type == "gMLV":
-            return gMLV_sim(**params)
+            self.model = gMLV_sim(**params)  # create the class instance
+            # call the simulate method, this will store data in self.data
+            return self.model.simulate()
         else:
             raise ValueError("Unknown model type")
 
@@ -113,8 +117,12 @@ class BaseModel(ABC):
         if not os.path.exists(filepath):
             raise FileNotFoundError(f"No file found at {filepath}")
 
-        with open(filepath, 'r') as file:
-            self.parameters = json.load(file)
+        try:
+            with open(filepath, 'r') as file:
+                self.parameters = json.load(file)
+        except Exception as e:
+            print(f"Error reading parameters from {filepath}: {e}")
+            return False
 
     def save_parameters(self, filepath, parameters=None):
         """
@@ -138,8 +146,13 @@ class BaseModel(ABC):
         if parameters is None:
             print("No parameters to save.")
             return
-        with open(filepath, 'w') as file:
-            json.dump(parameters, file)
+
+        try:
+            with open(filepath, 'w') as file:
+                json.dump(parameters, file)
+        except Exception as e:
+            print(f"Error saving parameters to {filepath}: {e}")
+            return False
 
     def print_parameters(self):
         """
@@ -175,7 +188,11 @@ class BaseModel(ABC):
             print("No data to save.")
             return
 
-        pd.DataFrame(data).to_csv(filename, index=False)
+        try:
+            pd.DataFrame(data).to_csv(filename, index=False)
+        except Exception as e:
+            print(f"Error saving data to {filename}: {e}")
+            return False
 
     def load_data(self, filename):
         """
@@ -193,4 +210,8 @@ class BaseModel(ABC):
         if not os.path.exists(filename):
             raise FileNotFoundError(f"No file found at {filename}")
 
-        self.data = pd.read_csv(filename)
+        try:
+            self.data = pd.read_csv(filename)
+        except Exception as e:
+            print(f"Error reading data from {filename}: {e}")
+            return False
