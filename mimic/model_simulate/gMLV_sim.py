@@ -24,16 +24,15 @@ class gMLV_sim(BaseModel):
                 for j in range(self.nsp):
                     if i == j:
                         continue
-                    else:
-                        tau = stats.halfcauchy.rvs(loc=0, scale=0.001)
-                        lam = stats.halfcauchy.rvs(loc=0, scale=1)
-                        M = stats.norm.rvs(loc=0, scale=tau*lam)
+                    tau = stats.halfcauchy.rvs(loc=0, scale=0.001)
+                    lam = stats.halfcauchy.rvs(loc=0, scale=1)
+                    M = stats.norm.rvs(loc=0, scale=tau*lam)
                     # if i == j:
                     #     self.M[i, j] = -abs(M)
-                        self.M[i, j] = M
-                # i = random.randint(0, self.nsp-1)
-                # j = random.randint(0, self.nsp-1)
-                # self.M[i, j] = random.normalvariate(mu=0, sigma=0.1)
+                    self.M[i, j] = M
+                    # i = random.randint(0, self.nsp-1)
+                    # j = random.randint(0, self.nsp-1)
+                    # self.M[i, j] = random.normalvariate(mu=0, sigma=0.1)
         else:
             self.M = M
 
