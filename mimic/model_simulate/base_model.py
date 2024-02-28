@@ -35,34 +35,36 @@ class BaseModel(ABC):
         self.parameters = None
 
     # check if params are set, else print a warning and use the default values for each simulation type
+
+
     def check_params(self, params, sim_type):
-        """
-        Check if parameters are provided for the simulation. If not, use default values.
+        # sourcery skip: use-named-expression
+        # Define default parameters for each simulation type
+        default_params_VAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]],
+                            "initial_values": [[1], [2]], "noise_stddev": 1, "output": "show"}
+        default_params_gMLV = {"n": 100, "p": 2, "k": 2, "sigma": 1}
 
-        This method checks if the `params` dictionary is provided. If not, it prints a warning and sets default values based on the simulation type (`sim_type`). The default values for "VAR" are {"n_obs": 100, "coefficients": 2, "initial_values": 2, "noise_stddev": 1, "output": "show"} and for "gMLV" are {"n": 100, "p": 2, "k": 2, "sigma": 1}.
+        # Determine default parameters based on simulation type
+        if sim_type == "VAR":
+            default_params = default_params_VAR
+        elif sim_type == "gMLV":
+            default_params = default_params_gMLV
+        else:
+            raise ValueError("sim_type must be 'VAR' or 'gMLV'.")
 
-        Parameters:
-        params (dict): The parameters for the simulation. If None, default values are used.
-        sim_type (str): The type of simulation. Must be either "VAR" or "gMLV".
-
-        Returns:
-        dict: The parameters to be used for the simulation.
-
-        Raises:
-        ValueError: If `sim_type` is not "VAR" or "gMLV".
-        """
+        # Check if no parameters were provided and warn the user
         if params is None:
-            print(
-                f"Warning: No parameters provided for {sim_type} simulation. Using default values.")
-            if sim_type == "VAR":
-                params = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]],
-                          "initial_values": [[1], [2]], "noise_stddev": 1, "output": "show"}
-            elif sim_type == "gMLV":
-                params = {"n": 100, "p": 2, "k": 2, "sigma": 1}
-        print(
-            f"Using the following parameters for {sim_type} simulation: {params}")
-        # IDEA: See if all expected parameters are set, else use default and show a message either here or inside each funciton.
-        return params
+            print(f"Warning: No parameters provided for {sim_type} simulation. Using default values.")
+        else:
+            # Identify missing parameters
+            missing_params = [key for key in default_params if key not in params]
+            if missing_params:
+                print(f"Warning: Missing parameters for {sim_type} simulation. Using default values for: {missing_params}")
+            # Update the default parameters with the provided ones
+            default_params.update(params)
+
+        print(f"Using the following parameters for {sim_type} simulation: {default_params}")
+        return default_params
 
     @abstractmethod
     def simulate(self, sim_type, params):
