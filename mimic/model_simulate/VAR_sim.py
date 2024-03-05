@@ -44,35 +44,38 @@ class VARSimulator(BaseModel):
             Create separate line plots for each variable in the given data.
     """
 
-    def __init__(self, n_obs=100, coefficients=None, initial_values=None, noise_stddev=1.0, output='show'):
+    def __init__(self):
         super().__init__()
-        if coefficients is None:
-            coefficients = [[0.8, -0.2], [0.3, 0.5]]
-        if initial_values is None:
-            initial_values = [[1], [2]]
-        self.n_obs = n_obs
-        self.coefficients = np.array(coefficients)
-        self.initial_values = np.array(initial_values)
-        self.noise_stddev = noise_stddev
-        self.output = output
+
+        self.model = "VAR"
+        self.parameters = {"n_obs": None, "coefficients": None,
+                           "initial_values": None, "noise_stddev": None, "output": None}
+
+        self.n_obs = self.parameters["n_obs"]
+        self.coefficients = np.array(self.parameters["coefficients"])
+        self.initial_values = np.array(self.parameters["initial_values"])
+        self.noise_stddev = self.parameters["noise_stddev"]
+        self.output = self.parameters["output"]
         # self.data = None #This is no longer used, since it is imported from the base class
         self.dataM = None
 
-    def print_parameters(self):
-        for attr, value in vars(self).items():
-            print(f"{attr}: {value}")
-
-    # Save the data to a file, if the data is not None
-    def save_data(self, filename):
-        if self.data is not None:
-            # Check if the filename ends with .csv, if not, append it
-            if not filename.endswith('.csv'):
-                filename += '.csv'
-
-            # Save the data as a CSV file in the directory containing the script
-            np.savetxt(filename, self.data, delimiter=",")
-        else:
-            print("No data to save.")
+    def set_parameters(self, n_obs=None, coefficients=None, initial_values=None, noise_stddev=None, output=None):
+        """
+        Set the parameters of the VARSimulator instance.
+        In this code, each parameter is checked to see if it's None before it's set. 
+        If a parameter is None, it's not set, so the existing value in self.parameters is preserved. 
+        If a parameter is not None, it's set, so the existing value in self.parameters is replaced.
+        """
+        if n_obs is not None:
+            self.parameters["n_obs"] = n_obs
+        if coefficients is not None:
+            self.parameters["coefficients"] = coefficients
+        if initial_values is not None:
+            self.parameters["initial_values"] = initial_values
+        if noise_stddev is not None:
+            self.parameters["noise_stddev"] = noise_stddev
+        if output is not None:
+            self.parameters["output"] = output
 
     def generate_var1_data(self):
         """
@@ -81,6 +84,12 @@ class VARSimulator(BaseModel):
         Returns:
             numpy.ndarray: A 2D array containing the generated data. Each column represents a different variable, and each row represents a different time point.
         """
+        self.n_obs = self.parameters["n_obs"]
+        self.coefficients = np.array(self.parameters["coefficients"])
+        self.initial_values = np.array(self.parameters["initial_values"])
+        self.noise_stddev = self.parameters["noise_stddev"]
+        self.output = self.parameters["output"]
+
         dim = len(self.initial_values)
         data = np.zeros((self.n_obs, dim))
         data[0, :] = self.initial_values[:, 0]
@@ -103,6 +112,12 @@ class VARSimulator(BaseModel):
         Returns:
             tuple: A tuple containing two numpy.ndarrays. The first array is the generated data for the X process, and the second array is the generated data for the S process. Both arrays have shape (n_obs, nX) and (n_obs, nS) respectively.
         """
+        self.n_obs = self.parameters["n_obs"]
+        self.coefficients = np.array(self.parameters["coefficients"])
+        self.initial_values = np.array(self.parameters["initial_values"])
+        self.noise_stddev = self.parameters["noise_stddev"]
+        self.output = self.parameters["output"]
+
         nX = len(self.initial_values)
         data = np.zeros((self.n_obs, nX))
         data[0, :] = self.initial_values[:, 0]
@@ -135,11 +150,13 @@ class VARSimulator(BaseModel):
 
     def simulate(self, command, coefficientsM=None, initial_valuesM=None):
         if command == "VARsim":
+            self.parameters = self.check_params(self.parameters, "VAR")
             self.generate_var1_data()
         elif command == "MVARsim":
             if coefficientsM is None or initial_valuesM is None:
                 raise ValueError(
                     "coefficientsM and initial_valuesM must be provided for MVARsim")
+            self.parameters = self.check_params(self.parameters, "VAR")
             self.generate_mvar1_data(coefficientsM, initial_valuesM)
         else:
             raise ValueError("Invalid command. Must be 'VARsim' or 'MVARsim'")
