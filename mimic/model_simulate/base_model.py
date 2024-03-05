@@ -29,10 +29,41 @@ class BaseModel(ABC):
         """
         self.data = None
         self.model = None
-        # self.inference = None #NOTE: This is not needed here, since we are going to use it in the infer base class
         self.parameters = None
 
     # check if params are set, else print a warning and use the default values for each simulation type
+
+    @abstractmethod
+    def set_parameters(self):
+        """
+        Set parameters for the model.
+        This method is implemented in the derived classes.
+        """
+        pass
+
+    def read_parameters(self, filepath):
+        """
+        Read parameters from a JSON file.
+
+        Parameters:
+        filepath (str): The path to the JSON file.
+
+        Raises:
+        ValueError: If `filepath` does not point to a .json file.
+        FileNotFoundError: If `filepath` does not exist.
+        """
+        # Check if the filepath ends with .json
+        if not filepath.lower().endswith('.json'):
+            raise ValueError("Filepath must point to a .json file.")
+        if not os.path.exists(filepath):
+            raise FileNotFoundError(f"No file found at {filepath}")
+
+        try:
+            with open(filepath, 'r') as file:
+                self.parameters = json.load(file)
+        except Exception as e:
+            print(f"Error reading parameters from {filepath}: {e}")
+            return False
 
     def check_params(self, params, sim_type):
         """
@@ -74,82 +105,32 @@ class BaseModel(ABC):
             print(
                 f"Warning: No parameters provided for {sim_type} simulation. Using default values.")
         else:
-            # Identify missing parameters
+            # Identify missing or None parameters
             missing_params = [
-                key for key in default_params if key not in params]
+                key for key in default_params if key not in params or params[key] is None]
             if missing_params:
                 print(
-                    f"Warning: Missing parameters for {sim_type} simulation. Using default values for: {missing_params}")
+                    f"Warning: Missing or None parameters for {sim_type} simulation. Using default values for: {missing_params}")
             # Update the default parameters with the provided ones
-            default_params.update(params)
+            for key, value in params.items():
+                if value is not None:
+                    default_params[key] = value
 
         print(
             f"Using the following parameters for {sim_type} simulation: {default_params}")
         return default_params
 
-    @abstractmethod
-    def simulate(self, sim_type, params):
+    def print_parameters(self):
         """
-        Simulate data using the specified model and parameters.
+        Print parameters to the console.
 
-        Parameters:
-        sim_type (str): The type of simulation. Must be either "VAR" or "gMLV".
-        params (dict): The parameters for the simulation.
-
-        Returns:
-        The result of the simulation.
-
-        Raises:
-        ValueError: If `sim_type` is not "VAR" or "gMLV".
+        If the instance's parameters are None, prints "No parameters to print."
         """
-        params = self.check_params(params, sim_type)
-        if sim_type == "VAR":
-            # This is a lazy import, it will only import the class when it is needed to avoid circular imports
-            from mimic.model_simulate.VAR_sim import VARSimulator
-            self.model = VARSimulator(**params)  # create the class instance
-            VARSimulator.simulate()  # call the simulate method, this will store data in self.data
-            return self.data
-        elif sim_type == "gMLV":
-            # This is a lazy import, it will only import the class when it is needed to avoid circular imports
-            from mimic.model_simulate.gMLV_sim import gMLV_sim
-            self.model = gMLV_sim(**params)  # create the class instance
-            # call the simulate method, this will store data in self.data
-            return self.model.simulate()
+        print(f"Model: {self.model}")
+        if self.parameters is not None:
+            print(json.dumps(self.parameters, indent=4))
         else:
-            raise ValueError("Unknown model type")
-
-    # @abstractmethod #NOTE: This is not needed here, since we are going to use it in the infer base class
-    # def infer(self, infer_type, *args, **kwargs):
-    #     if infer_type == "VAR":
-    #         return VARInfer(*args, **kwargs)
-    #     elif infer_type == "gMLV":
-    #         return gMLV_sim(*args, **kwargs)
-    #     else:
-    #         raise ValueError("Unknown inference type")
-
-    def read_parameters(self, filepath):
-        """
-        Read parameters from a JSON file.
-
-        Parameters:
-        filepath (str): The path to the JSON file.
-
-        Raises:
-        ValueError: If `filepath` does not point to a .json file.
-        FileNotFoundError: If `filepath` does not exist.
-        """
-        # Check if the filepath ends with .json
-        if not filepath.lower().endswith('.json'):
-            raise ValueError("Filepath must point to a .json file.")
-        if not os.path.exists(filepath):
-            raise FileNotFoundError(f"No file found at {filepath}")
-
-        try:
-            with open(filepath, 'r') as file:
-                self.parameters = json.load(file)
-        except Exception as e:
-            print(f"Error reading parameters from {filepath}: {e}")
-            return False
+            print("No parameters to print.")
 
     def save_parameters(self, filepath, parameters=None):
         """
@@ -180,17 +161,6 @@ class BaseModel(ABC):
         except Exception as e:
             print(f"Error saving parameters to {filepath}: {e}")
             return False
-
-    def print_parameters(self):
-        """
-        Print parameters to the console.
-
-        If the instance's parameters are None, prints "No parameters to print."
-        """
-        if self.parameters is not None:
-            print(json.dumps(self.parameters, indent=4))
-        else:
-            print("No parameters to print.")
 
     def save_data(self, filename, data=None):
         """
@@ -242,3 +212,11 @@ class BaseModel(ABC):
         except Exception as e:
             print(f"Error reading data from {filename}: {e}")
             return False
+
+    @abstractmethod
+    def simulate(self):
+        """
+        Simulate data based on the specified simulation type and parameters.
+        This method is implemented in the derived classes.
+        """
+        pass
