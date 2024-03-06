@@ -85,7 +85,7 @@ class BaseModel(ABC):
             >>> check_params(params, sim_type)
             Using the following parameters for VAR simulation: {'n_obs': 200, 'coefficients': [[0.5, -0.5], [0.2, 0.8]], 'initial_values': [[1], [2]], 'noise_stddev': 1, 'output': 'save'}
         """
-
+        # NOTE: This method is here instead of being implemented by each derived class to avoid code repetition. It is used to check if parameters are set and use default values if not.
         # sourcery skip: use-named-expression
         # Define default parameters for each simulation type
         default_params_VAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]],
