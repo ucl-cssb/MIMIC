@@ -88,6 +88,7 @@ class BaseModel(ABC):
         # NOTE: This method is here instead of being implemented by each derived class to avoid code repetition. It is used to check if parameters are set and use default values if not.
         # sourcery skip: use-named-expression
         # Define default parameters for each simulation type
+        #FIXME: #46 Change the default parameter generation to whatever dimension the user wants. Right now it's hardcoded to 2.
         default_params_VAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]],
                               "initial_values": [[1], [2]], "noise_stddev": 1, "output": "show"}
         default_params_gMLV = {"n": 100, "p": 2, "k": 2, "sigma": 1}
