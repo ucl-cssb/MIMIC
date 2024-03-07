@@ -11,5 +11,4 @@ Examples
    notebooks/examples-sim-gMLV/examples-sim-gMLV
    notebooks/examples-sim-VAR/MVARsim
    notebooks/examples-sim-VAR/VARsim
-   notebooks/examples-sim-VAR/VARsim2
    notebooks/examples-stein-gLV/examples-Stein
