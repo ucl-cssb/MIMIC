@@ -1,8 +1,12 @@
-import numpy as np
+from typing import List, Optional, Union
+
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
-from ..utilities.utilities import read_parameters
+
 from mimic.model_simulate.base_model import BaseModel
+
+from ..utilities.utilities import read_parameters
 
 
 class VARSimulator(BaseModel):
@@ -59,7 +63,12 @@ class VARSimulator(BaseModel):
         # self.data = None #This is no longer used, since it is imported from the base class
         self.dataM = None
 
-    def set_parameters(self, n_obs=None, coefficients=None, initial_values=None, noise_stddev=None, output=None):
+    def set_parameters(self,
+                       n_obs: Optional[int] = None,
+                       coefficients: Optional[List[List[Union[int, float]]]] = None,
+                       initial_values: Optional[List[List[int]]] = None,
+                       noise_stddev: Optional[Union[int, float]] = None,
+                       output: Optional[str] = None):
         """
         Set the parameters of the VARSimulator instance.
         In this code, each parameter is checked to see if it's None before it's set. 
@@ -103,7 +112,7 @@ class VARSimulator(BaseModel):
             self.make_plot_overlay(data, None, self.output)
 
         self.data = data  # the generated data
-        return
+        return data
 
     def generate_mvar1_data(self, coefficientsM, initial_valuesM):
         """
