@@ -186,7 +186,7 @@ class BaseModel(ABC):
             return
 
         try:
-            pd.DataFrame(data).to_csv(filename, index=False)
+            pd.DataFrame(data).to_csv(filename, index=False, header=False)
         except Exception as e:
             print(f"Error saving data to {filename}: {e}")
             return False
@@ -208,7 +208,7 @@ class BaseModel(ABC):
             raise FileNotFoundError(f"No file found at {filename}")
 
         try:
-            self.data = pd.read_csv(filename)
+            self.data = pd.read_csv(filename, header=None).values.tolist()
         except Exception as e:
             print(f"Error reading data from {filename}: {e}")
             return False
