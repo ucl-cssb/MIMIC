@@ -62,13 +62,17 @@ class VARSimulator(BaseModel):
         self.output = self.parameters["output"]
         # self.data = None #This is no longer used, since it is imported from the base class
         self.dataM = None
+        self.coefficientsM = None
+        self.initial_valuesM = None
 
     def set_parameters(self,
                        n_obs: Optional[int] = None,
                        coefficients: Optional[List[List[Union[int, float]]]] = None,
                        initial_values: Optional[List[List[int]]] = None,
                        noise_stddev: Optional[Union[int, float]] = None,
-                       output: Optional[str] = None):
+                       output: Optional[str] = None,
+                       coefficientsM: Optional[List[List[Union[int, float]]]] = None,
+                       initial_valuesM: Optional[List[List[int]]] = None):
         """
         Set the parameters of the VARSimulator instance.
         In this code, each parameter is checked to see if it's None before it's set. 
@@ -85,6 +89,10 @@ class VARSimulator(BaseModel):
             self.parameters["noise_stddev"] = noise_stddev
         if output is not None:
             self.parameters["output"] = output
+        if coefficientsM is not None:
+            self.coefficientsM = coefficientsM
+        if initial_valuesM is not None:
+            self.initial_valuesM = initial_valuesM
 
     def generate_var1_data(self):
         """
@@ -157,16 +165,18 @@ class VARSimulator(BaseModel):
         self.data, self.dataM = data, dataM  # the generated data
         return data, dataM
 
-    def simulate(self, command, coefficientsM=None, initial_valuesM=None):
+    def simulate(self, command):
         if command == "VARsim":
             self.parameters = self.check_params(self.parameters, "VAR")
             self.generate_var1_data()
-        elif command == "MVARsim":
-            if coefficientsM is None or initial_valuesM is None:
+        elif command == "sVARsim":
+            self.parameters = self.check_params(self.parameters, "VAR")
+            self.coefficientsM = self.parameters["coefficientsM"]
+            self.initial_valuesM = self.parameters["initial_valuesM"]
+            if self.coefficientsM is None or self.initial_valuesM is None:
                 raise ValueError(
                     "coefficientsM and initial_valuesM must be provided for MVARsim")
-            self.parameters = self.check_params(self.parameters, "VAR")
-            self.generate_mvar1_data(coefficientsM, initial_valuesM)
+            self.generate_mvar1_data(self.coefficientsM, self.initial_valuesM)
         else:
             raise ValueError("Invalid command. Must be 'VARsim' or 'MVARsim'")
 
