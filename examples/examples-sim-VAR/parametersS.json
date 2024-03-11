@@ -1,4 +1,35 @@
 {
+    "n_obs": 97,
+    "coefficients": [
+        [
+            0.8,
+            -0.2,
+            0.3
+        ],
+        [
+            0.3,
+            0.5,
+            -1.0
+        ],
+        [
+            0.2,
+            -0.1,
+            0.4
+        ]
+    ],
+    "initial_values": [
+        [
+            1
+        ],
+        [
+            2
+        ],
+        [
+            0
+        ]
+    ],
+    "noise_stddev": 1.2,
+    "output": "show",
     "coefficientsM": [
         [
             0.0,
