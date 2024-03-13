@@ -5,9 +5,9 @@ import arviz as az
 import pytensor.tensor as at
 
 
-class VARInfer:
+class infer_VAR:
     """
-    VARInfer class for performing inference on VAR models.
+    infer_VAR class for performing inference on VAR models.
 
     This class provides methods for importing data, running inference on the VAR model, and performing posterior sampling and analysis.
 
@@ -206,5 +206,5 @@ class VARInfer:
 #     simulator = sim_VAR(**parameters)
 #     simulator.run("VARsim")
 
-#     infer = VARInfer(simulator.data)
+#     infer = infer_VAR(simulator.data)
 #     infer.run_inference()
