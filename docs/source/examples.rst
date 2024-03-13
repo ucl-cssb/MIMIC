@@ -4,7 +4,7 @@ Examples
 .. toctree::
    :maxdepth: 2
 
-   notebooks/examples-inf-VAR/BVARinfer
+   notebooks/examples-inf-VAR/Binfer_VAR
    notebooks/examples-sim-gLV/examples-ml-gLV
    notebooks/examples-sim-gLV/examples-sim-gLV
    notebooks/examples-sim-gMLV/examples-ml-gMLV
