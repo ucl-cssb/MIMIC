@@ -5,7 +5,7 @@ from scipy.integrate import odeint
 from mimic.model_simulate.base_model import BaseModel
 
 
-class gMLV_sim(BaseModel):
+class sim_gMLV(BaseModel):
     def __init__(self, num_species=2, num_metabolites=0, num_perturbations=0, mu=None, M=None, beta=None, epsilon=None):
         self.nsp = num_species
         self.nm = num_metabolites

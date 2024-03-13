@@ -9,9 +9,9 @@ from mimic.model_simulate.base_model import BaseModel
 from ..utilities.utilities import read_parameters
 
 
-class VARSimulator(BaseModel):
+class sim_VAR(BaseModel):
     """
-    VARSimulator class for simulating VAR models.
+    sim_VAR class for simulating VAR models.
 
     This class provides methods for generating simulated data from VAR models.
 
@@ -24,7 +24,7 @@ class VARSimulator(BaseModel):
 
     Methods:
         print_parameters():
-            Print the parameters of the VARSimulator instance.
+            Print the parameters of the sim_VAR instance.
 
         save_data(filename):
             Save the generated data to a file.
@@ -36,7 +36,7 @@ class VARSimulator(BaseModel):
             Generate simulated data from a multivariate autoregressive (MVAR) process of order 1.
 
         simulate(command, coefficientsM=None, initial_valuesM=None):
-            Run the VARSimulator with the specified command.
+            Run the sim_VAR with the specified command.
 
         make_plot_overlay(dataX, dataS=None, output='show'):
             Create an overlay plot of the given data.
@@ -74,7 +74,7 @@ class VARSimulator(BaseModel):
                        coefficientsM: Optional[List[List[Union[int, float]]]] = None,
                        initial_valuesM: Optional[List[List[int]]] = None):
         """
-        Set the parameters of the VARSimulator instance.
+        Set the parameters of the sim_VAR instance.
         In this code, each parameter is checked to see if it's None before it's set. 
         If a parameter is None, it's not set, so the existing value in self.parameters is preserved. 
         If a parameter is not None, it's set, so the existing value in self.parameters is replaced.
@@ -314,7 +314,7 @@ class VARSimulator(BaseModel):
 # if __name__ == "__main__":
 
 #     parametersX = read_parameters('parameters2.json')
-#     simulator = VARSimulator(**parametersX)
+#     simulator = sim_VAR(**parametersX)
 #     simulator.simulate("VARsim")
 
 #     make_plot(simulator.data)
@@ -325,6 +325,6 @@ class VARSimulator(BaseModel):
 
 #     # make_plot_stacked(simulator.data)
 
-#     # simulator = VARSimulator(n_obs=100, coefficients=[
+#     # simulator = sim_VAR(n_obs=100, coefficients=[
 #     # [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
 #     # simulator.simulate("VARsim")
