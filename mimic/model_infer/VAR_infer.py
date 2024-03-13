@@ -203,7 +203,7 @@ class VARInfer:
 #     # Import parameters from JSON file
 
 #     parameters = read_parameters('parameters.json')
-#     simulator = VARSimulator(**parameters)
+#     simulator = sim_VAR(**parameters)
 #     simulator.run("VARsim")
 
 #     infer = VARInfer(simulator.data)

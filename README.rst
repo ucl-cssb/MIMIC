@@ -44,7 +44,7 @@ The repository is organized into the following main directories:
 
 * `README.rst`: Provides an overview of the project.
 * `requirements.txt`: Lists Python dependencies for the project.
-* `run_gMLV_sims.py`: Python script to run simulations.
+* `run_sim_gMLVs.py`: Python script to run simulations.
 * `setup.py`: Python script for setting up the project.
 
 Installation

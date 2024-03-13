@@ -7,7 +7,7 @@ Submodules
 mimic.model\_simulate.VAR\_sim module
 -------------------------------------
 
-.. automodule:: mimic.model_simulate.VAR_sim
+.. automodule:: mimic.model_simulate.sim_VAR
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ mimic.model\_simulate.base\_model module
 mimic.model\_simulate.gMLV\_sim module
 --------------------------------------
 
-.. automodule:: mimic.model_simulate.gMLV_sim
+.. automodule:: mimic.model_simulate.sim_gMLV
    :members:
    :undoc-members:
    :show-inheritance:
