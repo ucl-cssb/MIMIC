@@ -91,7 +91,8 @@ class BaseModel(ABC):
         # FIXME: #46 Change the default parameter generation to whatever dimension the user wants. Right now it's hardcoded to 2.
         default_params_VAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]],
                               "initial_values": [[1], [2]], "noise_stddev": 1, "output": "show"}
-        default_params_gMLV = {"n": 100, "p": 2, "k": 2, "sigma": 1}
+        default_params_gMLV = {"num_species": 2, "num_metabolites": 0,
+                               "num_perturbations": 0, "mu": None, "M": None, "beta": None, "epsilon": None}
 
         default_params_sVAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]], "initial_values": [[1], [2]], "noise_stddev": 1.0,
                                "output": "show", "coefficientsM": [[0.0, -0.5, 0.0], [0.1, 0.1, -0.1], [-0.2, 0.1, 0.3]], "initial_valuesM": [[2], [0], [0]]}
