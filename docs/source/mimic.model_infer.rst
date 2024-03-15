@@ -7,7 +7,7 @@ Submodules
 mimic.model\_infer.VAR\_infer module
 ------------------------------------
 
-.. automodule:: mimic.model_infer.VAR_infer
+.. automodule:: mimic.model_infer.infer_VAR
    :members:
    :undoc-members:
    :show-inheritance:
