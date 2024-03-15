@@ -43,6 +43,12 @@ class BaseModel(ABC):
         """
         pass
 
+    def update_attributes(self):
+        """Updates class attributes based on the parameters dictionary."""
+        for key, value in self.parameters.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
     def read_parameters(self, filepath):
         """
         Enhanced to handle numpy arrays alongside native JSON types.
@@ -56,12 +62,12 @@ class BaseModel(ABC):
             with open(filepath, 'r') as file:
                 loaded_params = json.load(file)
             # Convert lists back to numpy arrays where appropriate
-            # This example assumes all lists should be numpy arrays,
-            # but you might implement more sophisticated logic.
             self.parameters = {
                 k: np.array(v) if isinstance(v, list) else v
                 for k, v in loaded_params.items()
             }
+            # Update class attributes based on the newly loaded parameters
+            self.update_attributes()
         except Exception as e:
             print(f"Error reading parameters from {filepath}: {e}")
 
