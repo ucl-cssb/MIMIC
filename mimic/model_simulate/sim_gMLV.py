@@ -1,12 +1,18 @@
 import random
+from typing import List, Optional, Union
+
+import numpy  # do not change this to np, it will break the code
 from scipy import stats
-import numpy
 from scipy.integrate import odeint
+
 from mimic.model_simulate.base_model import BaseModel
 
 
 class sim_gMLV(BaseModel):
     def __init__(self, num_species=2, num_metabolites=0, num_perturbations=0, mu=None, M=None, beta=None, epsilon=None):
+        super().__init__()
+        self.model = "gMLV"
+
         self.nsp = num_species
         self.nm = num_metabolites
         self.np = num_perturbations
@@ -58,19 +64,49 @@ class sim_gMLV(BaseModel):
         else:
             self.epsilon = epsilon
 
+        self.parameters = {"num_species": self.nsp, "num_metabolites": self.nm, "num_perturbations": self.np,
+                           "mu": self.mu, "M": self.M, "beta": self.beta, "epsilon": self.epsilon}
+
+    def set_parameters(self, num_species: Optional[int] = None, num_metabolites: Optional[int] = None, num_perturbations: Optional[int] = None,
+                       mu: Optional[Union[List[float], numpy.ndarray]] = None, M: Optional[Union[List[List[float]], numpy.ndarray]] = None,
+                       beta: Optional[Union[List[List[float]], numpy.ndarray]] = None, epsilon: Optional[Union[List[List[float]], numpy.ndarray]] = None):
+        """
+        Set the parameters for the simulation.
+
+        Parameters:
+        num_species (int, optional): The number of species.
+        num_metabolites (int, optional): The number of metabolites.
+        num_perturbations (int, optional): The number of perturbations.
+        mu (list, numpy.ndarray, optional): The specific growth rates.
+        M (list, numpy.ndarray, optional): The interaction matrix.
+        beta (list, numpy.ndarray, optional): The metabolite production rate matrix.
+        epsilon (list, numpy.ndarray, optional): The perturbation matrix.
+        """
+        if num_species is not None:
+            self.nsp = num_species
+        if num_metabolites is not None:
+            self.nm = num_metabolites
+        if num_perturbations is not None:
+            self.np = num_perturbations
+        if mu is not None:
+            self.mu = mu
+        if M is not None:
+            self.M = M
+        if beta is not None:
+            self.beta = beta
+        if epsilon is not None:
+            self.epsilon = epsilon
+
+        self.parameters = {"num_species": self.nsp, "num_metabolites": self.nm, "num_perturbations": self.np,
+                           "mu": self.mu, "M": self.M, "beta": self.beta, "epsilon": self.epsilon}
+
     def simulate(self, times, sy0, u=None):
         syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.np,
                        self.mu, self.M, self.beta, self.epsilon, u))
         yobs = syobs[:, 0:self.nsp]
         sobs = syobs[:, self.nsp:]
+        self.data = yobs
         return yobs, sobs, sy0, self.mu, self.M, self.beta
-
-    def print(self):
-        print(f'number of species: {self.nsp}')
-        print(f'specific growth rates: {self.mu}')
-        print(f'interaction matrix: \n{self.M}')
-        print(f'metabolite production: \n{self.beta}')
-        print(f'perturbation matrix: \n{self.epsilon}')
 
 
 def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, u):

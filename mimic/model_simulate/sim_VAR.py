@@ -52,18 +52,17 @@ class sim_VAR(BaseModel):
         super().__init__()
 
         self.model = "VAR"
-        self.parameters = {"n_obs": None, "coefficients": None,
-                           "initial_values": None, "noise_stddev": None, "output": None}
-
-        self.n_obs = self.parameters["n_obs"]
-        self.coefficients = np.array(self.parameters["coefficients"])
-        self.initial_values = np.array(self.parameters["initial_values"])
-        self.noise_stddev = self.parameters["noise_stddev"]
-        self.output = self.parameters["output"]
-        # self.data = None #This is no longer used, since it is imported from the base class
+        self.n_obs = None
+        self.coefficients = None
+        self.initial_values = None
+        self.noise_stddev = None
+        self.output = None
         self.dataM = None
         self.coefficientsM = None
         self.initial_valuesM = None
+
+        self.parameters = {"n_obs": self.n_obs, "coefficients": self.coefficients,
+                           "initial_values": self.initial_values, "noise_stddev": self.noise_stddev, "output": self.output}
 
     def set_parameters(self,
                        n_obs: Optional[int] = None,
@@ -80,19 +79,23 @@ class sim_VAR(BaseModel):
         If a parameter is not None, it's set, so the existing value in self.parameters is replaced.
         """
         if n_obs is not None:
-            self.parameters["n_obs"] = n_obs
+            self.n_obs = n_obs
         if coefficients is not None:
-            self.parameters["coefficients"] = coefficients
+            self.coefficients = np.array(coefficients)
         if initial_values is not None:
-            self.parameters["initial_values"] = initial_values
+            self.initial_values = np.array(initial_values)
         if noise_stddev is not None:
-            self.parameters["noise_stddev"] = noise_stddev
+            self.noise_stddev = noise_stddev
         if output is not None:
-            self.parameters["output"] = output
+            self.output = output
         if coefficientsM is not None:
-            self.coefficientsM = coefficientsM
+            self.coefficientsM = np.array(coefficientsM)
         if initial_valuesM is not None:
-            self.initial_valuesM = initial_valuesM
+            self.initial_valuesM = np.array(initial_valuesM)
+
+        self.parameters = {"n_obs": self.n_obs, "coefficients": self.coefficients,
+                           "initial_values": self.initial_values, "noise_stddev": self.noise_stddev, "output": self.output,
+                           "coefficientsM": self.coefficientsM, "initial_valuesM": self.initial_valuesM}
 
     def generate_var1_data(self):
         """
