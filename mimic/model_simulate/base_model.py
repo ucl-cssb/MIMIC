@@ -3,6 +3,7 @@ import os
 from abc import ABC, abstractmethod
 
 import pandas as pd
+import numpy as np
 
 
 class BaseModel(ABC):
@@ -44,16 +45,8 @@ class BaseModel(ABC):
 
     def read_parameters(self, filepath):
         """
-        Read parameters from a JSON file.
-
-        Parameters:
-        filepath (str): The path to the JSON file.
-
-        Raises:
-        ValueError: If `filepath` does not point to a .json file.
-        FileNotFoundError: If `filepath` does not exist.
+        Enhanced to handle numpy arrays alongside native JSON types.
         """
-        # Check if the filepath ends with .json
         if not filepath.lower().endswith('.json'):
             raise ValueError("Filepath must point to a .json file.")
         if not os.path.exists(filepath):
@@ -61,10 +54,16 @@ class BaseModel(ABC):
 
         try:
             with open(filepath, 'r') as file:
-                self.parameters = json.load(file)
+                loaded_params = json.load(file)
+            # Convert lists back to numpy arrays where appropriate
+            # This example assumes all lists should be numpy arrays,
+            # but you might implement more sophisticated logic.
+            self.parameters = {
+                k: np.array(v) if isinstance(v, list) else v
+                for k, v in loaded_params.items()
+            }
         except Exception as e:
             print(f"Error reading parameters from {filepath}: {e}")
-            return False
 
     def check_params(self, params, sim_type):
         """
@@ -128,33 +127,35 @@ class BaseModel(ABC):
             f"Using the following parameters for {sim_type} simulation: {default_params}")
         return default_params
 
-    def print_parameters(self):
+    def custom_array_to_string(self, array, precision=2):
         """
-        Print parameters to the console.
+        Convert a numpy array to a string with compact formatting.
+        Allows specifying the precision of floating-point representations.
+        """
+        with np.printoptions(precision=precision, suppress=True):
+            return np.array2string(array, separator=' ')
 
-        If the instance's parameters are None, prints "No parameters to print."
+    def print_parameters(self, precision=2):
+        """
+        Print parameters to the console with improved numpy array formatting.
+        Allows specifying the precision for numpy array representations.
         """
         print(f"Model: {self.model}")
         if self.parameters is not None:
-            print(json.dumps(self.parameters, indent=4))
+            parameters = {k: self.custom_array_to_string(v, precision) if isinstance(v, np.ndarray) else v
+                          for k, v in self.parameters.items()}
+            for param, value in parameters.items():
+                print(f"{param}: {value}")
         else:
             print("No parameters to print.")
 
     def save_parameters(self, filepath, parameters=None):
         """
-        Save parameters to a JSON file.
-
-        Parameters:
-        filepath (str): The path to the JSON file.
-        parameters (dict, optional): The parameters to save. If None, the instance's parameters are used.
-
-        Raises:
-        ValueError: If `filepath` does not point to a .json file.
-        FileNotFoundError: If the directory to save the file does not exist.
+        Enhanced to handle numpy arrays alongside native JSON types.
         """
         if not filepath.endswith('.json'):
             raise ValueError("Filepath must point to a .json file.")
-        if not os.path.exists(os.path.dirname(filepath)):
+        if not os.path.exists(os.path.dirname(filepath)) and os.path.dirname(filepath) != '':
             raise FileNotFoundError(
                 f"No directory found at {os.path.dirname(filepath)}")
 
@@ -163,12 +164,18 @@ class BaseModel(ABC):
             print("No parameters to save.")
             return
 
+        # Prepare parameters for JSON serialization
+        # Convert numpy arrays to lists
+        serializable_params = {
+            k: v.tolist() if isinstance(v, np.ndarray) else v
+            for k, v in parameters.items()
+        }
+
         try:
             with open(filepath, 'w') as file:
-                json.dump(parameters, file)
+                json.dump(serializable_params, file)
         except Exception as e:
             print(f"Error saving parameters to {filepath}: {e}")
-            return False
 
     def save_data(self, filename, data=None):
         """
