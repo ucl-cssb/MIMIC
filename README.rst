@@ -5,9 +5,28 @@ Modelling and Inference of MICrobiomes Project (MIMIC)
 Overview
 ---------
 
-MIMIC: A Comprehensive Python Package for Simulating, Inferring, and Predicting Microbial Community Interactions
+MIMIC: A Comprehensive Python Package for Simulating, Inferring, and Predicting 
+Microbial Community Interactions
 
-The study of microbial communities is vital for understanding their impact on environmental, health, and technological domains. The *Modelling and Inference of MICrobiomes Project* (MIMIC) introduces a Python package designed to advance the simulation, inference, and prediction of microbial community interactions and dynamics. Addressing the complex nature of microbial ecosystems, MIMIC integrates a suite of mathematical models, including previously used approaches such as *Generalized Lotka-Volterra* (gLV), *Gaussian Processes* (GP), and *Vector Autoregression* (VAR) plus newly developed models for integrating multiomic data, to offer a comprehensive framework for analysing microbial dynamics. By leveraging Bayesian inference and machine learning techniques, MIMIC accurately infers the dynamics of microbial communities from empirical data, facilitating a deeper understanding of their complex biological processes, unveiling possible unknown ecological interactions, and enabling the design of microbial communities. Such insights could help to advance microbial ecology research, optimizing biotechnological applications, and contributing to environmental sustainability and public health strategies. MIMIC is designed for flexibility and ease of use, aiming to support researchers and practitioners in microbial ecology and microbiome research. This software package contributes to microbial ecology research and supports ecological predictions and applications, benefiting the scientific and applied microbiology communities.
+The study of microbial communities is vital for understanding their impact on 
+environmental, health, and technological domains. The *Modelling and Inference of 
+MICrobiomes Project* (MIMIC) introduces a Python package designed to advance the 
+simulation, inference, and prediction of microbial community interactions and dynamics. 
+Addressing the complex nature of microbial ecosystems, MIMIC integrates a suite of 
+mathematical models, including previously used approaches such as *Generalized Lotka-
+Volterra* (gLV), *Gaussian Processes* (GP), and *Vector Autoregression* (VAR) plus 
+newly developed models for integrating multiomic data, to offer a comprehensive 
+framework for analysing microbial dynamics. By leveraging Bayesian inference and 
+machine learning techniques, MIMIC accurately infers the dynamics of microbial 
+communities from empirical data, facilitating a deeper understanding of their complex 
+biological processes, unveiling possible unknown ecological interactions, and enabling 
+the design of microbial communities. Such insights could help to advance microbial 
+ecology research, optimizing biotechnological applications, and contributing to 
+environmental sustainability and public health strategies. MIMIC is designed for 
+flexibility and ease of use, aiming to support researchers and practitioners in 
+microbial ecology and microbiome research. This software package contributes to 
+microbial ecology research and supports ecological predictions and applications, 
+benefiting the scientific and applied microbiology communities.
 
 
 Structure
