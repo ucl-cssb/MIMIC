@@ -131,7 +131,8 @@ class BaseModel(ABC):
 
         print(
             f"Using the following parameters for {sim_type} simulation: {default_params}")
-        return default_params
+        self.parameters = default_params
+        self.update_attributes()
 
     def custom_array_to_string(self, array, precision=2):
         """
