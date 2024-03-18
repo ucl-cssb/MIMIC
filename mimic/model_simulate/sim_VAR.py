@@ -104,12 +104,6 @@ class sim_VAR(BaseModel):
         Returns:
             numpy.ndarray: A 2D array containing the generated data. Each column represents a different variable, and each row represents a different time point.
         """
-        self.n_obs = self.parameters["n_obs"]
-        self.coefficients = np.array(self.parameters["coefficients"])
-        self.initial_values = np.array(self.parameters["initial_values"])
-        self.noise_stddev = self.parameters["noise_stddev"]
-        self.output = self.parameters["output"]
-
         dim = len(self.initial_values)
         data = np.zeros((self.n_obs, dim))
         data[0, :] = self.initial_values[:, 0]
@@ -132,12 +126,6 @@ class sim_VAR(BaseModel):
         Returns:
             tuple: A tuple containing two numpy.ndarrays. The first array is the generated data for the X process, and the second array is the generated data for the S process. Both arrays have shape (n_obs, nX) and (n_obs, nS) respectively.
         """
-        self.n_obs = self.parameters["n_obs"]
-        self.coefficients = np.array(self.parameters["coefficients"])
-        self.initial_values = np.array(self.parameters["initial_values"])
-        self.noise_stddev = self.parameters["noise_stddev"]
-        self.output = self.parameters["output"]
-
         nX = len(self.initial_values)
         data = np.zeros((self.n_obs, nX))
         data[0, :] = self.initial_values[:, 0]
@@ -170,10 +158,10 @@ class sim_VAR(BaseModel):
 
     def simulate(self, command):
         if command == "VARsim":
-            self.parameters = self.check_params(self.parameters, "VAR")
+            self.check_params(self.parameters, "VAR")
             self.generate_var1_data()
         elif command == "sVARsim":
-            self.parameters = self.check_params(self.parameters, "VAR")
+            self.check_params(self.parameters, "VAR")
             self.coefficientsM = self.parameters["coefficientsM"]
             self.initial_valuesM = self.parameters["initial_valuesM"]
             if self.coefficientsM is None or self.initial_valuesM is None:
