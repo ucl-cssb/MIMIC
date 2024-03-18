@@ -9,6 +9,6 @@ Examples
    notebooks/examples-sim-gLV/examples-sim-gLV
    notebooks/examples-sim-gMLV/examples-ml-gMLV
    notebooks/examples-sim-gMLV/examples-sim-gMLV
-   notebooks/examples-sim-VAR/MVARsim
-   notebooks/examples-sim-VAR/VARsim
+   notebooks/examples-sim-VAR/examples-sim-sVAR
+   notebooks/examples-sim-VAR/examples-sim-VAR
    notebooks/examples-stein-gLV/examples-Stein
