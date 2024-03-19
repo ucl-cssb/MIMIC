@@ -100,6 +100,7 @@ class BaseModel(ABC):
         default_params_gMLV = {"num_species": 2, "num_metabolites": 0,
                                "num_perturbations": 0, "mu": None, "M": None, "beta": None, "epsilon": None}
 
+        # TODO: #48 Do this programmatically (see how the class is initiated and use the same logic to generate the default parameters for the simulation type.)
         default_params_sVAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]], "initial_values": [[1], [2]], "noise_stddev": 1.0,
                                "output": "show", "coefficientsM": [[0.0, -0.5, 0.0], [0.1, 0.1, -0.1], [-0.2, 0.1, 0.3]], "initial_valuesM": [[2], [0], [0]]}
 
