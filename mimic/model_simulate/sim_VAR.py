@@ -11,44 +11,58 @@ from ..utilities.utilities import read_parameters
 
 class sim_VAR(BaseModel):
     """
-    sim_VAR class for simulating VAR models.
+    A class for simulating Vector Autoregression (VAR) models.
 
-    This class provides methods for generating simulated data from VAR models.
+    Inherits from BaseModel and adds specific functionalities for VAR model simulation,
+    including data generation for both univariate and multivariate autoregressive processes.
+    
+    This class allows users to simulate data from VAR models, specify model parameters, generate
+    simulated data, visualize the results through various plotting methods, and save the generated
+    data for further analysis. It supports both single and multi-variable autoregressive models,
+    making it versatile for different simulation scenarios.
 
-    Args:
-        n_obs (int): Number of observations to generate (default: 100).
-        coefficients (ndarray, optional): Coefficients of the VAR model (default: [[0.8, -0.2], [0.3, 0.5]]).
-        initial_values (ndarray, optional): Initial values for the VAR model (default: [[1], [2]]).
-        noise_stddev (float, optional): Standard deviation of the noise in the VAR model (default: 1.0).
-        output (str, optional): Output option for plotting ('show', 'save', or 'both') (default: 'show').
+    Attributes:
+        n_obs (int): Number of observations to generate.
+        coefficients (np.ndarray): Coefficients of the VAR model.
+        initial_values (np.ndarray): Initial values for the VAR model simulation.
+        noise_stddev (float): Standard deviation of the noise in the VAR model.
+        output (str): Specifies the output action for plots ('show', 'save', or 'both').
+        dataM (np.ndarray): Holds the generated data for multivariate simulations.
+        coefficientsM (np.ndarray): Coefficients for the multivariate VAR model.
+        initial_valuesM (np.ndarray): Initial values for the multivariate VAR model simulation.
 
     Methods:
-        print_parameters():
-            Print the parameters of the sim_VAR instance.
-
-        save_data(filename):
-            Save the generated data to a file.
-
-        generate_var1_data():
-            Generate simulated data from a VAR(1) process.
-
-        generate_mvar1_data(coefficientsM, initial_valuesM):
-            Generate simulated data from a multivariate autoregressive (MVAR) process of order 1.
-
-        simulate(command, coefficientsM=None, initial_valuesM=None):
-            Run the sim_VAR with the specified command.
-
-        make_plot_overlay(dataX, dataS=None, output='show'):
-            Create an overlay plot of the given data.
-
-        make_plot_stacked(dataX, dataS):
-            Create a stacked plot and a heatmap for the given data.
-
-        make_plot(dataX, dataS=None, output='show'):
-            Create separate line plots for each variable in the given data.
+        set_parameters: Allows setting or updating model parameters like number of observations,
+                        model coefficients, initial values, and noise standard deviation. It supports
+                        both univariate and multivariate VAR models.
+                        
+        generate_var1_data: Simulates data from a VAR(1) process using the specified model parameters
+                            and saves the generated data. It can also generate and overlay plots based
+                            on the 'output' attribute.
+                            
+        generate_mvar1_data: Generates data from a multivariate autoregressive process. It can work
+                             with complex interactions between multiple variables and supports overlay
+                             plotting based on the 'output' attribute.
+                             
+        simulate: Acts as a controller to execute the simulation based on the specified command. It
+                  supports commands for simulating univariate VAR, multivariate VAR, and generating
+                  plots as specified.
+                  
+        make_plot_overlay: Creates overlay plots for visual comparison of simulated data across
+                           different variables or processes.
+                           
+        make_plot_stacked: Generates a stacked plot and heatmap for the given data, offering a
+                           detailed visualization of the simulation results.
+                           
+        make_plot: Produces separate line plots for each variable in the given data, facilitating
+                   an in-depth analysis of each variable's behavior over time.
     """
 
+
     def __init__(self):
+        """
+        Initializes the sim_VAR instance with default parameter values.
+        """
         super().__init__()
 
         self.model = "VAR"
@@ -73,10 +87,18 @@ class sim_VAR(BaseModel):
                        coefficientsM: Optional[List[List[Union[int, float]]]] = None,
                        initial_valuesM: Optional[List[List[int]]] = None):
         """
-        Set the parameters of the sim_VAR instance.
-        In this code, each parameter is checked to see if it's None before it's set. 
-        If a parameter is None, it's not set, so the existing value in self.parameters is preserved. 
-        If a parameter is not None, it's set, so the existing value in self.parameters is replaced.
+        Sets the parameters for the sim_VAR instance.
+
+        Allows optional specification of all model parameters. Parameters not provided (None) are left unchanged.
+
+        Parameters:
+            n_obs (Optional[int]): Number of observations to generate.
+            coefficients (Optional[List[List[Union[int, float]]]]): Coefficients of the VAR model.
+            initial_values (Optional[List[List[int]]]): Initial values for the VAR model simulation.
+            noise_stddev (Optional[Union[int, float]]): Standard deviation of the noise.
+            output (Optional[str]): Output action for plots ('show', 'save', or 'both').
+            coefficientsM (Optional[List[List[Union[int, float]]]]): Coefficients for the multivariate VAR model.
+            initial_valuesM (Optional[List[List[int]]]): Initial values for the multivariate VAR model simulation.
         """
         if n_obs is not None:
             self.n_obs = n_obs
@@ -101,8 +123,11 @@ class sim_VAR(BaseModel):
         """
         Generate simulated data from a VAR(1) process.
 
+        Simulates a univariate or multivariate VAR(1) process based on the set parameters. 
+        This method populates the `data` attribute with the generated data.
+
         Returns:
-            numpy.ndarray: A 2D array containing the generated data. Each column represents a different variable, and each row represents a different time point.
+            np.ndarray: The generated data as a numpy array with shape (n_obs, number of variables).
         """
         dim = len(self.initial_values)
         data = np.zeros((self.n_obs, dim))
@@ -123,8 +148,17 @@ class sim_VAR(BaseModel):
         """
         Generates synthetic data for a multivariate autoregressive (MVAR) process of order 1.
 
+        Specifically tailored for generating data from complex MVAR processes where interactions
+        between multiple variables are considered.
+
+        Parameters:
+            coefficientsM (np.ndarray): Coefficients for the MVAR model.
+            initial_valuesM (np.ndarray): Initial values for the MVAR model simulation.
+
         Returns:
-            tuple: A tuple containing two numpy.ndarrays. The first array is the generated data for the X process, and the second array is the generated data for the S process. Both arrays have shape (n_obs, nX) and (n_obs, nS) respectively.
+            tuple: A tuple containing two numpy.ndarrays. The first array is the generated data
+                   for the X process, and the second array is the generated data for the S process.
+                   Both arrays have shapes (n_obs, number of X variables) and (n_obs, number of S variables), respectively.
         """
         nX = len(self.initial_values)
         data = np.zeros((self.n_obs, nX))
@@ -157,6 +191,18 @@ class sim_VAR(BaseModel):
         return data, dataM
 
     def simulate(self, command):
+        """
+        Simulates data based on the specified command.
+
+        Supports commands for simulating VAR and multivariate VAR (MVAR) processes.
+        Adjusts internal state based on simulation results.
+
+        Parameters:
+            command (str): The simulation command ('VARsim' for VAR simulation, 'MVARsim' for multivariate VAR simulation).
+
+        Raises:
+            ValueError: If an invalid command is provided.
+        """
         if command == "VARsim":
             self.check_params(self.parameters, "VAR")
             self.generate_var1_data()
@@ -173,16 +219,18 @@ class sim_VAR(BaseModel):
 
     def make_plot_overlay(self, dataX, dataS=None, output='show'):
         """
-        Creates an overlay plot of the given data.
+        Creates an overlay plot of the given data for easy comparison.
+
+        This method visualizes the time series data by overlaying the plots of each variable.
+        It supports both the primary VAR process data and an optional secondary process data for comparison.
 
         Parameters:
-        dataX (numpy.ndarray): A 2D array containing the data for the X process. Each column represents a different variable, and each row represents a different time point.
-        dataS (numpy.ndarray): A 2D array containing the data for the S process. Each column represents a different variable, and each row represents a different time point.
+            dataX (np.ndarray): The primary data series for the VAR process. Shape: (n_obs, num_variables).
+            dataS (np.ndarray, optional): The secondary data series for comparison. Shape: (n_obs, num_variables).
+            output (str): Controls the output of the plot ('show', 'save', or 'both').
 
-        Returns:
-        None
-
-        This function generates two overlay plots: one for the X process and one for the S process. Each variable in the process is plotted with a different color. The plots are saved in a PDF file named "plot-data-XS-overlay.pdf".
+        Note:
+            Saves the plot as "plot-data-overlay.pdf" if 'save' or 'both' is selected as output.
         """
         # Number of variables in dataX
         nX = dataX.shape[1]
@@ -217,16 +265,18 @@ class sim_VAR(BaseModel):
 
     def make_plot_stacked(self, dataX, dataS):
         """
-        Creates a stacked plot and a heatmap for the given data.
+        Creates a stacked plot and a heatmap for the given data, providing a comprehensive view of the data dynamics.
+
+        This method visualizes the time series data from the VAR process in a stacked plot for a clear overview
+        of each variable's contribution over time. Additionally, it generates a heatmap for secondary data,
+        offering an intuitive representation of data intensity across variables and time points.
 
         Parameters:
-        dataX (numpy.ndarray): A 2D array containing the data for the X process. Each column represents a different variable, and each row represents a different time point.
-        dataS (numpy.ndarray): A 2D array containing the data for the S process. Each column represents a different variable, and each row represents a different time point.
+            dataX (np.ndarray): The primary data series from the VAR process. Shape: (n_obs, num_variables).
+            dataS (np.ndarray): The secondary data series for heatmap visualization. Shape: (n_obs, num_variables).
 
-        Returns:
-        None
-
-        This function generates a stacked plot for the X process and a heatmap for the S process. The stacked plot shows the abundance of each variable in the X process over time, and the heatmap shows the values of each variable in the S process over time. The function does not return any value; instead, it saves the plots in a PDF file named "plot-data-XS-stacked.pdf".
+        Note:
+            Saves the plots as "plot-data-XS-stacked.pdf".
         """
 
         dataX = dataX + 1.0
@@ -264,16 +314,19 @@ class sim_VAR(BaseModel):
 
     def make_plot(self, dataX, dataS=None, output='show'):
         """
-        Creates separate line plots for each variable in the given data.
+        Generates separate line plots for each variable in the given data, facilitating detailed analysis.
+
+        This method creates individual line plots for each variable in the primary and, optionally,
+        secondary data series. This detailed visualization allows for in-depth analysis of each variable's
+        behavior over time.
 
         Parameters:
-        dataX (numpy.ndarray): A 2D array containing the data for the X process. Each column represents a different variable, and each row represents a different time point.
-        dataS (numpy.ndarray): A 2D array containing the data for the S process. Each column represents a different variable, and each row represents a different time point.
+            dataX (np.ndarray): The primary data series for the VAR process. Shape: (n_obs, num_variables).
+            dataS (np.ndarray, optional): The secondary data series for comparison. Shape: (n_obs, num_variables).
+            output (str): Controls the output of the plot ('show', 'save', or 'both').
 
-        Returns:
-        None
-
-        This function generates a separate line plot for each variable in the X and S processes. The plots are arranged vertically, with the plots for the X process at the top and the plots for the S process at the bottom. Each plot shows the values of the variable over time. The function does not return any value; instead, it saves the plots in a PDF file named "plot-data-XS.pdf".
+        Note:
+            Saves the individual plots as "plot-data-XS.pdf" if 'save' or 'both' is selected as output.
         """
         nX = len(dataX[0])  # Number of columns in dataX
 
