@@ -9,7 +9,40 @@ from mimic.model_simulate.base_model import BaseModel
 
 
 class sim_gMLV(BaseModel):
+    """
+    Simulation class for generalized Lotka-Volterra (gMLV) models with metabolite production.
+
+    This class extends the BaseModel to support simulations of ecological systems or microbial communities
+    described by the gMLV model, which can include interactions between species, production of metabolites,
+    and responses to external perturbations.
+
+    Attributes:
+        num_species (int): The number of species in the simulation.
+        num_metabolites (int): The number of metabolites produced by the species.
+        num_perturbations (int): The number of external perturbations applied to the system.
+        mu (numpy.ndarray): Vector of intrinsic growth rates of the species.
+        M (numpy.ndarray): Interaction matrix describing the effects of species on each other.
+        beta (numpy.ndarray): Metabolite production matrix describing the production rates of metabolites by species.
+        epsilon (numpy.ndarray): Perturbation matrix describing the effects of external perturbations on species.
+
+    Methods:
+        set_parameters: Sets or updates the parameters for the simulation.
+        simulate: Runs the gMLV simulation over a specified time course and initial conditions.
+    """
+
     def __init__(self, num_species=2, num_metabolites=0, num_perturbations=0, mu=None, M=None, beta=None, epsilon=None):
+        """
+        Initializes the gMLV simulation with given parameters or defaults.
+
+        Parameters:
+            num_species (int, optional): The number of species. Defaults to 2.
+            num_metabolites (int, optional): The number of metabolites. Defaults to 0.
+            num_perturbations (int, optional): The number of perturbations. Defaults to 0.
+            mu (numpy.ndarray, optional): Intrinsic growth rates. Random lognormal values by default.
+            M (numpy.ndarray, optional): Interaction matrix. Random values with self-repression on diagonal by default.
+            beta (numpy.ndarray, optional): Metabolite production rates. Zeros by default or random values if num_metabolites > 0.
+            epsilon (numpy.ndarray, optional): Perturbation effects. Zeros by default.
+        """
         super().__init__()
         self.model = "gMLV"
 
@@ -71,16 +104,16 @@ class sim_gMLV(BaseModel):
                        mu: Optional[Union[List[float], numpy.ndarray]] = None, M: Optional[Union[List[List[float]], numpy.ndarray]] = None,
                        beta: Optional[Union[List[List[float]], numpy.ndarray]] = None, epsilon: Optional[Union[List[List[float]], numpy.ndarray]] = None):
         """
-        Set the parameters for the simulation.
+        Updates the simulation parameters. Only provided values are updated; others remain unchanged.
 
         Parameters:
-        num_species (int, optional): The number of species.
-        num_metabolites (int, optional): The number of metabolites.
-        num_perturbations (int, optional): The number of perturbations.
-        mu (list, numpy.ndarray, optional): The specific growth rates.
-        M (list, numpy.ndarray, optional): The interaction matrix.
-        beta (list, numpy.ndarray, optional): The metabolite production rate matrix.
-        epsilon (list, numpy.ndarray, optional): The perturbation matrix.
+            num_species (Optional[int]): Number of species.
+            num_metabolites (Optional[int]): Number of metabolites.
+            num_perturbations (Optional[int]): Number of perturbations.
+            mu (Optional[Union[List[float], numpy.ndarray]]): Growth rates.
+            M (Optional[Union[List[List[float]], numpy.ndarray]]): Interaction matrix.
+            beta (Optional[Union[List[List[float]], numpy.ndarray]]): Metabolite production rates.
+            epsilon (Optional[Union[List[List[float]], numpy.ndarray]]): Perturbation effects.
         """
         if num_species is not None:
             self.nsp = num_species
@@ -101,6 +134,18 @@ class sim_gMLV(BaseModel):
                            "mu": self.mu, "M": self.M, "beta": self.beta, "epsilon": self.epsilon}
 
     def simulate(self, times, sy0, u=None):
+        """
+        Runs the gMLV simulation over the specified time course with given initial conditions and optional perturbations.
+
+        Parameters:
+            times (numpy.ndarray): Array of time points at which to simulate.
+            sy0 (numpy.ndarray): Initial conditions for species and metabolites.
+            u (callable, optional): Function representing the external perturbation signal over time.
+
+        Returns:
+            tuple: Tuple containing the simulation results for species (yobs), metabolites (sobs), 
+            initial conditions (sy0), growth rates (mu), interaction matrix (M), and metabolite production rates (beta).
+        """
         self.check_params(self.parameters, 'gMLV')
         syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.np,
                        self.mu, self.M, self.beta, self.epsilon, u))
@@ -112,16 +157,21 @@ class sim_gMLV(BaseModel):
 
 def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, u):
     """
-    generalised Lotka Volterra with metabolite production
+    Differential equations for the generalized Lotka-Volterra model with metabolite production.
 
-    :param sy: species + metabolites vector
-    :param t: time
-    :param nsp: number of species
-    :param mu: specific growth rates vector
-    :param M: interaction matrix
-    :param beta: metabolite production rate matrix
-    :param u: a function that returns the perturbation signal at time t
-    :return: change in species + metabolites vector
+    Parameters:
+        sy (numpy.ndarray): Combined vector of species and metabolites at the current time.
+        t (float): Current time point.
+        nsp (int): Number of species.
+        np (int): Number of perturbations.
+        mu (numpy.ndarray): Specific growth rates vector.
+        M (numpy.ndarray): Interaction matrix.
+        beta (numpy.ndarray): Metabolite production rate matrix.
+        epsilon (numpy.ndarray): Perturbation matrix.
+        u (callable): Function to compute the perturbation signal at time t.
+
+    Returns:
+        numpy.ndarray: The derivative of the combined species and metabolites vector.
     """
 
     # separate species and metabolites
