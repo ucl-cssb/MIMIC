@@ -101,6 +101,7 @@ class sim_gMLV(BaseModel):
                            "mu": self.mu, "M": self.M, "beta": self.beta, "epsilon": self.epsilon}
 
     def simulate(self, times, sy0, u=None):
+        self.check_params(self.parameters, 'gMLV')
         syobs = odeint(gMLV, sy0, times, args=(self.nsp, self.np,
                        self.mu, self.M, self.beta, self.epsilon, u))
         yobs = syobs[:, 0:self.nsp]
