@@ -1,7 +1,7 @@
 '''
 Simulation script for gMLV model with perturbations and metabolites.
-Usage: python run_gMLV_sims.py <save_path> <num_sims> <mode>
-Example: python run_gMLV_sims.py outputs/ 100
+Usage: python run_sim_gMLVs.py <save_path> <num_sims> <mode>
+Example: python run_sim_gMLVs.py outputs/ 100
 
 The script will create a folder named outputs/ and save the results there.
 The number of simulations is 100 by default, but can be changed by passing
@@ -92,7 +92,7 @@ def generate_data_perts(simulator, tmax, sampling_time, dt, num_timecourses, ICs
     ''''
     Generates data with external perturbations e.g. antibiotics or food.
 
-    simulator: simulator object of the gMLV_sim class above
+    simulator: simulator object of the sim_gMLV class above
     tmax: max time (days)
     sampling_time: time between different perturbations
     dt: time between different simulated points
@@ -168,7 +168,7 @@ def generate_data_transplant(simulator, tmax, sampling_time, dt, num_timecourses
     ''''
         Generates data with transplant perturbations
 
-        simulator: simulator object of the gMLV_sim class above
+        simulator: simulator object of the sim_gMLV class above
         tmax: max time (days)
         sampling_time: time between different perturbations
         dt: time between different simulated points
@@ -349,7 +349,7 @@ if __name__ == '__main__':
         mode = int(sys.argv[3])
     else:
         print("Using default values for number of simulations and save path")
-        print("Usage: python run_gMLV_sims.py <save_path> <num_sims> <mode: perturbation=0, transplant=1>")
+        print("Usage: python run_sim_gMLVs.py <save_path> <num_sims> <mode: perturbation=0, transplant=1>")
         num_sims = 100
         save_path = 'outputs/'
         mode = 0
@@ -414,7 +414,7 @@ if __name__ == '__main__':
         # print("p:", all_parms[nsim,:] )
 
         # instantiate simulator
-        simulator = gMLV_sim(num_species=num_species,
+        simulator = sim_gMLV(num_species=num_species,
                              num_metabolites=num_metabolites,
                              M=M,
                              mu=mu,

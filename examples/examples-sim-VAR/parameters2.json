@@ -29,5 +29,5 @@
         ]
     ],
     "noise_stddev": 1.2,
-    "output": "both"
+    "output": "show"
 }

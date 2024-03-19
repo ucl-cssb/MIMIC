@@ -4,14 +4,6 @@ mimic.model\_infer package
 Submodules
 ----------
 
-mimic.model\_infer.VAR\_infer module
-------------------------------------
-
-.. automodule:: mimic.model_infer.VAR_infer
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 mimic.model\_infer.cLV module
 -----------------------------
 
@@ -24,6 +16,14 @@ mimic.model\_infer.gMLV\_infer module
 -------------------------------------
 
 .. automodule:: mimic.model_infer.gMLV_infer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mimic.model\_infer.infer\_VAR module
+------------------------------------
+
+.. automodule:: mimic.model_infer.infer_VAR
    :members:
    :undoc-members:
    :show-inheritance:
