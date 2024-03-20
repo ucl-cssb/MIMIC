@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 cols = ["red", "green", "blue", "royalblue", "orange", "black"]
 
 
-def plot_gLV(yobs, sobs, timepoints):
+def plot_gLV(yobs, timepoints):
     # fig, axs = plt.subplots(1, 2, layout='constrained')
     fig, axs = plt.subplots(1, 1)
     for species_idx in range(yobs.shape[1]):
