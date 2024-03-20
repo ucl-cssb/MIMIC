@@ -151,7 +151,7 @@ class sim_gMLV(BaseModel):
                        self.mu, self.M, self.beta, self.epsilon, u))
         yobs = syobs[:, 0:self.nsp]
         sobs = syobs[:, self.nsp:]
-        self.data = yobs
+        self.data = yobs  # QUESTION: should this be yobs or sobs?
         return yobs, sobs, sy0, self.mu, self.M, self.beta
 
 
