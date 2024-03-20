@@ -1,5 +1,9 @@
 import numpy as np
 import sys
+from scipy.special import logsumexp
+from scipy.stats import linregress
+from scipy.integrate import RK45, solve_ivp
+from mimic.model_infer.timeout import *
 
 from . import *
 
@@ -111,7 +115,6 @@ class CompositionalLotkaVolterra:
         X = construct_alr([p0], self.denom)
         x = X[0]
 
-        # QUESTION: Is this supposed to be a auto-refferenced function? Or is this predict() method supposed to be from another script?
         return predict(x, p0, u, times, self.A, self.g, self.B, self.denom)
 
     def get_params(self):
@@ -224,7 +227,6 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
             Q_inv = np.eye(train_X[0].shape[1])
             A, g, B = elastic_net_clv(
                 train_X, train_P, train_U, train_T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3)
-            # FIXME: #28 where is this defined?
             sqr_err += compute_prediction_error(test_X,
                                                 test_P, test_U, test_T, A, g, B, denom)
 
@@ -316,7 +318,6 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
     uDim = U[0].shape[1]
 
     AgB = np.zeros((xDim, yDim + 1 + uDim))
-    # FIXME: #29 where is this defined?
     A, g, B = ridge_regression_clv(X, P, U, T, np.max(
         (alpha*(1-r_A), 0.01)), np.max((alpha*(1-r_g), 0.01)), np.max((alpha*(1-r_B), 0.01)))
     AgB[:, :yDim] = A
@@ -368,3 +369,250 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
     B = AgB[:, (yDim+1):]
 
     return A, g, B
+
+
+def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0, r_B=0):
+    """Computes estimates of A, g, and B using least squares. 
+
+    Parameters
+    ----------
+        X : a list of T x yDim-1 numpy arrays
+        U : a list of T x uDim numpy arrays
+        T   : a list of T x 1 numpy arrays with the time of each observation
+
+    Returns
+    -------
+    """
+    xDim = X[0].shape[1]
+    yDim = xDim + 1
+    uDim = U[0].shape[1]
+    AgB_term1 = np.zeros((xDim, yDim + 1 + uDim))
+    AgB_term2 = np.zeros((yDim + 1 + uDim, yDim + 1 + uDim))
+
+    for idx, (xi, pi, ui) in enumerate(zip(X, P, U)):
+        for t in range(1, xi.shape[0]):
+            pt = pi[t]
+            pt0 = pi[t-1]
+
+            xt = xi[t]
+            xt0 = xi[t-1]
+
+            gt0 = np.ones(1)
+            ut0 = ui[t-1]
+
+            pgu = np.concatenate((pt0, gt0, ut0))
+
+            delT = T[idx][t] - T[idx][t-1]
+            AgB_term1 += np.outer((xt - xt0) / delT, pgu)
+            AgB_term2 += np.outer(pgu, pgu)
+
+    reg = np.array([r_A for i in range(yDim)] +
+                   [r_g] + [r_B for i in range(uDim)])
+    reg = np.diag(reg)
+    AgB = AgB_term1.dot(np.linalg.pinv(AgB_term2 + reg))
+    A = AgB[:, :yDim]
+    g = AgB[:, yDim:(yDim+1)].flatten()
+    B = AgB[:, (yDim+1):]
+
+    return A, g, B
+
+
+def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False):
+    if len(X) == 1:
+        print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
+        exit(1)
+    elif len(X) < folds:
+        folds = len(X)
+
+    rs = [0.1, 0.5, 0.7, 0.9, 1]
+    alphas = [0.1, 1, 10]
+
+    alpha_rA_rg_rB = []
+    for alpha in alphas:
+        for r_A in rs:
+            for r_g in rs:
+                if no_effects:
+                    alpha_rA_rg_rB.append((alpha, r_A, r_g, 0))
+                else:
+                    for r_B in rs:
+                        alpha_rA_rg_rB.append((alpha, r_A, r_g, r_B))
+
+    np.set_printoptions(suppress=True)
+    best_r = 0
+    best_sqr_err = np.inf
+    for i, (alpha, r_A, r_g, r_B) in enumerate(alpha_rA_rg_rB):
+        # print("\tTesting regularization parameter set", i+1, "of", len(alpha_rA_rg_rB), file=sys.stderr)
+        sqr_err = 0
+        for fold in range(folds):
+            train_X = []
+            train_P = []
+            train_U = []
+            train_T = []
+
+            test_X = []
+            test_P = []
+            test_U = []
+            test_T = []
+            for i in range(len(X)):
+                if i % folds == fold:
+                    test_X.append(X[i])
+                    test_P.append(P[i])
+                    test_U.append(U[i])
+                    test_T.append(T[i])
+
+                else:
+                    train_X.append(X[i])
+                    train_P.append(P[i])
+                    train_U.append(U[i])
+                    train_T.append(T[i])
+
+            Q_inv = np.eye(train_X[0].shape[1])
+            A, g, B = elastic_net_clv(
+                train_X, train_P, train_U, train_T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3)
+            sqr_err += compute_prediction_error(test_X,
+                                                test_P, test_U, test_T, A, g, B, denom)
+
+        if sqr_err < best_sqr_err:
+            best_r = (alpha, r_A, r_g, r_B)
+            best_sqr_err = sqr_err
+            print("\tr", (alpha, r_A, r_g, r_B), "sqr error", sqr_err)
+    np.set_printoptions(suppress=False)
+    return best_r
+
+
+def estimate_ridge_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False):
+    if len(X) == 1:
+        print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
+        exit(1)
+    elif len(X) < folds:
+        folds = len(X)
+
+    rs = [0.125, 0.25, 0.5, 1, 2, 4]
+    rA_rg_rB = []
+    for r_A in rs:
+        for r_g in rs:
+            if no_effects:
+                rA_rg_rB.append((r_A, r_g, 0))
+            else:
+                for r_B in rs:
+                    rA_rg_rB.append((r_A, r_g, r_B))
+
+    np.set_printoptions(suppress=True)
+    best_r = 0
+    best_sqr_err = np.inf
+    for i, (r_A, r_g, r_B) in enumerate(rA_rg_rB):
+        # print("\tTesting regularization parameter set", i+1, "of", len(rA_rg_rB), file=sys.stderr)
+        sqr_err = 0
+        for fold in range(folds):
+            train_X = []
+            train_P = []
+            train_U = []
+            train_T = []
+
+            test_X = []
+            test_P = []
+            test_U = []
+            test_T = []
+            for i in range(len(X)):
+                if i % folds == fold:
+                    test_X.append(X[i])
+                    test_P.append(P[i])
+                    test_U.append(U[i])
+                    test_T.append(T[i])
+
+                else:
+                    train_X.append(X[i])
+                    train_P.append(P[i])
+                    train_U.append(U[i])
+                    train_T.append(T[i])
+
+            Q_inv = np.eye(train_X[0].shape[1])
+            A, g, B = ridge_regression_clv(
+                train_X, train_P, train_U, train_T, r_A, r_g, r_B)
+            sqr_err += compute_prediction_error(test_X,
+                                                test_P, test_U, test_T, A, g, B, denom)
+
+        if sqr_err < best_sqr_err:
+            best_r = (r_A, r_g, r_B)
+            best_sqr_err = sqr_err
+            print("\tr", (r_A, r_g, r_B), "sqr error", sqr_err)
+    np.set_printoptions(suppress=False)
+    return best_r
+
+
+def compute_rel_abun(x, denom):
+    if x.ndim == 1:
+        x = np.expand_dims(x, axis=0)
+    z = np.hstack((x, np.zeros((x.shape[0], 1))))
+    p = np.exp(z - logsumexp(z, axis=1, keepdims=True))
+    p /= p.sum(axis=1, keepdims=True)
+    for i in range(p.shape[1]-1, denom, -1):
+        tmp = np.copy(p[:, i-1])
+        p[:, i-1] = np.copy(p[:, i])
+        p[:, i] = tmp
+    return p
+
+
+@timeout(5)
+def predict(x, p, u, times, A, g, B, denom):
+    """Make predictions from initial conditions
+    """
+    def grad_fn(A, g, B, u, denom):
+        def fn(t, x):
+            p = compute_rel_abun(x, denom).flatten()
+            return g + A.dot(p) + B.dot(u)
+        return fn
+
+    p_pred = np.zeros((times.shape[0], x[0].size+1))
+    pt = p[0]
+    xt = x[0]
+
+    for i in range(1, times.shape[0]):
+        grad = grad_fn(A, g, B, u[i-1], denom)
+        dt = times[i] - times[i-1]
+        ivp = solve_ivp(grad, (0, 0+dt), xt, method="RK45")
+        xt = ivp.y[:, -1]
+        pt = compute_rel_abun(xt, denom).flatten()
+        p_pred[i] = pt
+    return p_pred
+
+
+def compute_prediction_error(X, P, U, T, A, g, B, denom_ids):
+    def compute_err(p, p_pred):
+        err = 0
+        ntaxa = p.shape[1]
+        err += np.square(p[1:] - p_pred[1:]).sum()
+        return err/ntaxa
+    err = 0
+    for x, p, u, t in zip(X, P, U, T):
+        try:
+            p_pred = predict(x, p, u, t, A, g, B, denom_ids)
+            err += compute_err(p, p_pred)
+        except TimeoutError:
+            err += np.inf
+    return err/len(X)
+
+
+def estimate_relative_abundances(Y, pseudo_count=1e-3):
+    """Adds pseudo counts to avoid zeros and compute relative abundances
+
+    Parameters
+    ----------
+        Y : a list sequencing counts or observed concentrations
+            per sequence
+        pseudo_count : pseudo count, specific in relation to
+                       the relative proportions of each taxon.
+
+    Returns
+    -------
+        P : relative abundances with pseudo counts
+    """
+    P = []
+    for y in Y:
+        p = np.zeros(y.shape)
+        for t in range(y.shape[0]):
+            pt = y[t] / y[t].sum()
+            pt = (pt + pseudo_count) / (pt + pseudo_count).sum()
+            p[t] = pt
+        P.append(p)
+    return P
