@@ -22,12 +22,8 @@ class GlvSim:
 
         self.nsp = num_species
 
-        if mu is None:
-            # randomly generate specific growth rates
-            self.mu = numpy.random.lognormal(0.01, 0.5, self.nsp)
-        else:
-            self.mu = mu
-
+        self.mu = numpy.random.lognormal(
+            0.01, 0.5, self.nsp) if mu is None else mu
         if M is None:
             self.M = numpy.zeros((self.nsp, self.nsp))
             # add self repression on the diagonal
@@ -39,11 +35,10 @@ class GlvSim:
                 for j in range(self.nsp):
                     if i == j:
                         continue
-                    else:
-                        tau = stats.halfcauchy.rvs(loc=0, scale=0.001)
-                        lam = stats.halfcauchy.rvs(loc=0, scale=1)
-                        M = stats.norm.rvs(loc=0, scale=tau*lam)
-                        self.M[i, j] = M
+                    tau = stats.halfcauchy.rvs(loc=0, scale=0.001)
+                    lam = stats.halfcauchy.rvs(loc=0, scale=1)
+                    M = stats.norm.rvs(loc=0, scale=tau*lam)
+                    self.M[i, j] = M
         else:
             self.M = M
 
@@ -80,6 +75,4 @@ def glv(N, t, mu, M):
     :return: dy/dt
     """
 
-    # dN/dt = mu * N + N * M * N
-    dN = numpy.multiply(mu, N) + numpy.multiply(N, M @ N)
-    return dN
+    return numpy.multiply(mu, N) + numpy.multiply(N, M @ N)
