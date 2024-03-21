@@ -1,3 +1,4 @@
+import itertools
 import numpy as np
 import sys
 from scipy.special import logsumexp
@@ -35,7 +36,7 @@ class CompositionalLotkaVolterra:
         if P is not None and denom is None:
             self.denom = choose_denom(P)
             self.X = construct_alr(P, self.denom, pseudo_count)
-        elif P is not None and denom is not None:
+        elif P is not None:
             self.denom = denom
             self.X = construct_alr(P, denom, pseudo_count)
         else:
@@ -134,10 +135,8 @@ def choose_denom(P):
         s[s == 0] = 1
         # calculate the log change between timepoints
         deltas = np.log((p/s)[1:]) - np.log((p/s)[:-1])
-        if log_change is None:
-            log_change = deltas
-        else:
-            log_change = np.vstack((log_change, deltas))
+        log_change = deltas if log_change is None else np.vstack(
+            (log_change, deltas))
     np.seterr(divide="warn", invalid="warn")
     # pick taxon with smallest variance in log proportion
     min_idx = -1
@@ -186,15 +185,12 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
     alphas = [0.1, 1, 10]
 
     alpha_rA_rg_rB = []
-    for alpha in alphas:
-        for r_A in rs:
-            for r_g in rs:
-                if no_effects:
-                    alpha_rA_rg_rB.append((alpha, r_A, r_g, 0))
-                else:
-                    for r_B in rs:
-                        alpha_rA_rg_rB.append((alpha, r_A, r_g, r_B))
-
+    for alpha, r_A in itertools.product(alphas, rs):
+        for r_g in rs:
+            if no_effects:
+                alpha_rA_rg_rB.append((alpha, r_A, r_g, 0))
+            else:
+                alpha_rA_rg_rB.extend((alpha, r_A, r_g, r_B) for r_B in rs)
     np.set_printoptions(suppress=True)
     best_r = 0
     best_sqr_err = np.inf
@@ -233,7 +229,7 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
         if sqr_err < best_sqr_err:
             best_r = (alpha, r_A, r_g, r_B)
             best_sqr_err = sqr_err
-            print("\tr", (alpha, r_A, r_g, r_B), "sqr error", sqr_err)
+            print("\tr", (alpha, r_A, r_g, r_B), "sqr error", best_sqr_err)
     np.set_printoptions(suppress=False)
     return best_r
 
@@ -406,8 +402,9 @@ def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0, r_B=0):
             AgB_term1 += np.outer((xt - xt0) / delT, pgu)
             AgB_term2 += np.outer(pgu, pgu)
 
-    reg = np.array([r_A for i in range(yDim)] +
-                   [r_g] + [r_B for i in range(uDim)])
+    reg = np.array(
+        (([r_A for _ in range(yDim)] + [r_g]) + [r_B for _ in range(uDim)])
+    )
     reg = np.diag(reg)
     AgB = AgB_term1.dot(np.linalg.pinv(AgB_term2 + reg))
     A = AgB[:, :yDim]
@@ -428,15 +425,12 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
     alphas = [0.1, 1, 10]
 
     alpha_rA_rg_rB = []
-    for alpha in alphas:
-        for r_A in rs:
-            for r_g in rs:
-                if no_effects:
-                    alpha_rA_rg_rB.append((alpha, r_A, r_g, 0))
-                else:
-                    for r_B in rs:
-                        alpha_rA_rg_rB.append((alpha, r_A, r_g, r_B))
-
+    for alpha, r_A in itertools.product(alphas, rs):
+        for r_g in rs:
+            if no_effects:
+                alpha_rA_rg_rB.append((alpha, r_A, r_g, 0))
+            else:
+                alpha_rA_rg_rB.extend((alpha, r_A, r_g, r_B) for r_B in rs)
     np.set_printoptions(suppress=True)
     best_r = 0
     best_sqr_err = np.inf
@@ -475,7 +469,7 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
         if sqr_err < best_sqr_err:
             best_r = (alpha, r_A, r_g, r_B)
             best_sqr_err = sqr_err
-            print("\tr", (alpha, r_A, r_g, r_B), "sqr error", sqr_err)
+            print("\tr", (alpha, r_A, r_g, r_B), "sqr error", best_sqr_err)
     np.set_printoptions(suppress=False)
     return best_r
 
@@ -494,9 +488,7 @@ def estimate_ridge_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, v
             if no_effects:
                 rA_rg_rB.append((r_A, r_g, 0))
             else:
-                for r_B in rs:
-                    rA_rg_rB.append((r_A, r_g, r_B))
-
+                rA_rg_rB.extend((r_A, r_g, r_B) for r_B in rs)
     np.set_printoptions(suppress=True)
     best_r = 0
     best_sqr_err = np.inf
@@ -535,7 +527,7 @@ def estimate_ridge_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, v
         if sqr_err < best_sqr_err:
             best_r = (r_A, r_g, r_B)
             best_sqr_err = sqr_err
-            print("\tr", (r_A, r_g, r_B), "sqr error", sqr_err)
+            print("\tr", (r_A, r_g, r_B), "sqr error", best_sqr_err)
     np.set_printoptions(suppress=False)
     return best_r
 
