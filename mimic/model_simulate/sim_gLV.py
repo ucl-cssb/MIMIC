@@ -23,6 +23,7 @@ class sim_gLV(BaseModel):
         :param mu: specific growth rates vector
         :param M: interaction matrix
         """
+        # QUESTION: is this not supposed to have num_metabolites?
         super().__init__()
         self.model = "gLV"
         self.nsp = num_species
