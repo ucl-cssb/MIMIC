@@ -81,9 +81,7 @@ def ridge_fit(X, F, alphas, num_species):
     penalty = np.diagflat(
         np.hstack([np.repeat(alphas[0], num_species), alphas[1]]))
 
-    beta = (F @ X.T) @ la.inv(X @ X.T + penalty)
-
-    return beta
+    return (F @ X.T) @ la.inv(X @ X.T + penalty)
 
 
 def ridge_fit_pert(X, F, alphas, num_species, num_pert):
@@ -96,9 +94,7 @@ def ridge_fit_pert(X, F, alphas, num_species, num_pert):
     penalty = np.diagflat(np.hstack(
         [np.repeat(alphas[0], num_species), alphas[1], np.repeat(alphas[2], num_pert)]))
 
-    beta = np.dot(F, X.T) @ la.inv(X @ X.T + penalty)
-
-    return beta
+    return np.dot(F, X.T) @ la.inv(X @ X.T + penalty)
 
 
 # can use
