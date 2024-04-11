@@ -1,18 +1,18 @@
 import numpy
-from mimic.model_simulate import sim_gLV
+from mimic.model_simulate.sim_gLV import *
 
 
 def test_glv_1_species_random():
-    glv = sim_gLV.GlvSim(num_species=1)
-    glv.print()
+    glv = sim_gLV(num_species=1)
+    glv.print_parameters()
     assert glv.nsp == 1
     assert len(glv.mu) == 1
     assert glv.M.shape == (1, 1)
 
 
 def test_glv_1_species():
-    glv = sim_gLV.GlvSim(num_species=1, mu=[1], M=numpy.array([[-1]]))
-    glv.print()
+    glv = sim_gLV(num_species=1, mu=[1], M=numpy.array([[-1]]))
+    glv.print_parameters()
     assert glv.nsp == 1
     assert len(glv.mu) == 1
     assert glv.M.shape == (1, 1)
@@ -21,8 +21,8 @@ def test_glv_1_species():
 
 
 def test_glv_1_stationary_species_sim():
-    glv = sim_gLV.GlvSim(num_species=1, mu=[0], M=numpy.array([[0]]))
-    glv.print()
+    glv = sim_gLV(num_species=1, mu=[0], M=numpy.array([[0]]))
+    glv.print_parameters()
     assert glv.nsp == 1
     assert len(glv.mu) == 1
     assert glv.M.shape == (1, 1)
@@ -44,8 +44,8 @@ def test_glv_1_stationary_species_sim():
     for s in s_obs:
         assert s[0] == 1
 
-    glv = sim_gLV.GlvSim(num_species=1, mu=[1], M=numpy.array([[-1]]))
-    glv.print()
+    glv = sim_gLV(num_species=1, mu=[1], M=numpy.array([[-1]]))
+    glv.print_parameters()
     times = numpy.linspace(0, 10, 11)
     init_species = [1]
     s_obs, init_species, mu, M = glv.simulate(times, init_species)
@@ -54,8 +54,8 @@ def test_glv_1_stationary_species_sim():
 
 
 def test_glv_1_exponential_species_sim():
-    glv = sim_gLV.GlvSim(num_species=1, mu=[1], M=numpy.array([[0]]))
-    glv.print()
+    glv = sim_gLV(num_species=1, mu=[1], M=numpy.array([[0]]))
+    glv.print_parameters()
     assert glv.nsp == 1
     assert len(glv.mu) == 1
     assert glv.M.shape == (1, 1)
@@ -79,17 +79,17 @@ def test_glv_1_exponential_species_sim():
 
 
 def test_glv_2_species_random():
-    glv = sim_gLV.GlvSim(num_species=2)
-    glv.print()
+    glv = sim_gLV(num_species=2)
+    glv.print_parameters()
     assert glv.nsp == 2
     assert len(glv.mu) == 2
     assert glv.M.shape == (2, 2)
 
 
 def test_glv_2_species():
-    glv = sim_gLV.GlvSim(num_species=2, mu=[
-                         1, 2], M=numpy.array([[-1, 0.5], [0, -2]]))
-    glv.print()
+    glv = sim_gLV(num_species=2, mu=[
+        1, 2], M=numpy.array([[-1, 0.5], [0, -2]]))
+    glv.print_parameters()
     assert glv.nsp == 2
     assert len(glv.mu) == 2
     assert glv.M.shape == (2, 2)
@@ -102,9 +102,9 @@ def test_glv_2_species():
 
 
 def test_glv_2_no_interaction_species_sim():
-    glv = sim_gLV.GlvSim(num_species=2, mu=[
-                         1, 2], M=numpy.array([[-1, 0], [0, -1]]))
-    glv.print()
+    glv = sim_gLV(num_species=2, mu=[
+        1, 2], M=numpy.array([[-1, 0], [0, -1]]))
+    glv.print_parameters()
     times = numpy.linspace(0, 100, 11)
     init_species = [1, 1]
     s_obs, init_species, mu, M = glv.simulate(times, init_species)
