@@ -1,0 +1,90 @@
+# mimic/data_imputation/gp_impute.py
+
+import gpflow
+import numpy as np
+import pandas as pd
+from typing import Tuple, List
+
+
+class GPImputer:
+    """
+    Gaussian Process Imputer using GPFlow for imputing missing data points in datasets.
+    Automatically selects an optimal kernel based on the provided dataset.
+    """
+
+    def __init__(self):
+        """
+        Initializes the GPImputer without a pre-defined kernel.
+        The optimal kernel is selected based on the dataset.
+        """
+        self.model = None
+
+    def _select_kernel(self, X_train: np.ndarray, Y_train: np.ndarray) -> gpflow.kernels.Kernel:
+        """
+        Automatically selects an optimal kernel for the Gaussian Process based on the provided data.
+
+        :param X_train: Training data features.
+        :param Y_train: Training data targets.
+        :return: An optimal GPFlow kernel instance.
+        """
+
+        kernels = [gpflow.kernels.SquaredExponential, gpflow.kernels.Matern32, gpflow.kernels.RationalQuadratic, gpflow.kernels.Exponential, gpflow.kernels.Linear,
+                   gpflow.kernels.Cosine, gpflow.kernels.Polynomial, gpflow.kernels.Matern12, gpflow.kernels.Matern52, gpflow.kernels.White]
+        log_marginal_likelihoods = []
+
+        for kernel in kernels:
+            model = gpflow.models.GPR(data=(X_train, Y_train), kernel=kernel)
+            gpflow.optimizers.Scipy().minimize(model.training_loss,
+                                               variables=model.trainable_variables)
+            log_marginal_likelihoods.append(
+                model.log_marginal_likelihood().numpy())
+
+        return kernels[np.argmax(log_marginal_likelihoods)]
+
+    def fit(self, X_train: np.ndarray, Y_train: np.ndarray) -> None:
+        """
+        Fits the GPR model using the optimal kernel to the training data.
+
+        :param X_train: Training data features.
+        :param Y_train: Training data targets.
+        """
+        optimal_kernel = self._select_kernel(X_train, Y_train)
+        self.model = gpflow.models.GPR(
+            data=(X_train, Y_train), kernel=optimal_kernel)
+        gpflow.optimizers.Scipy().minimize(self.model.training_loss,
+                                           variables=self.model.trainable_variables)
+
+    def predict(self, X_new: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Predicts values for new data using the fitted GPR model.
+
+        :param X_new: New data features.
+        :return: A tuple of predicted means and variances.
+        """
+        mean, var = self.model.predict_y(X_new)
+        return mean.numpy(), var.numpy()
+
+    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, target_column: str) -> pd.DataFrame:
+        """
+        Imputes missing values in the dataset for the specified target column using the GPR model.
+
+        :param dataset: The dataset with missing values.
+        :param feature_columns: List of feature column names.
+        :param target_column: The target column name for imputation.
+        :return: Dataset with imputed values in the target column.
+        """
+        missing_mask = dataset[target_column].isnull()
+        train_data = dataset[~missing_mask]
+        missing_data = dataset[missing_mask]
+
+        X_train = train_data[feature_columns].values
+        Y_train = train_data[[target_column]].values
+        self.fit(X_train, Y_train)
+
+        if not missing_data.empty:
+            X_missing = missing_data[feature_columns].values
+            predicted_means, _ = self.predict(X_missing)
+            dataset.loc[missing_mask,
+                        target_column] = predicted_means.flatten()
+
+        return dataset
