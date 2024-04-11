@@ -1,9 +1,11 @@
 # mimic/data_imputation/gp_impute.py
 
+from re import X
 import gpflow
 import numpy as np
 import pandas as pd
 from typing import Tuple, List
+import matplotlib.pyplot as plt
 
 
 class GPImputer:
@@ -33,13 +35,13 @@ class GPImputer:
         log_marginal_likelihoods = []
 
         for kernel in kernels:
-            model = gpflow.models.GPR(data=(X_train, Y_train), kernel=kernel)
+            model = gpflow.models.GPR(data=(X_train, Y_train), kernel=kernel())
             gpflow.optimizers.Scipy().minimize(model.training_loss,
                                                variables=model.trainable_variables)
             log_marginal_likelihoods.append(
                 model.log_marginal_likelihood().numpy())
 
-        return kernels[np.argmax(log_marginal_likelihoods)]
+        return kernels[np.argmax(log_marginal_likelihoods)]()
 
     def fit(self, X_train: np.ndarray, Y_train: np.ndarray) -> None:
         """
@@ -87,4 +89,41 @@ class GPImputer:
             dataset.loc[missing_mask,
                         target_column] = predicted_means.flatten()
 
+        # make full predicted means and variances available for plotting
+
+        predicted_means_new, predicted_variances_new = self.predict(
+            dataset.iloc[:, 0].values.reshape(-1, 1))
+
+        self.plot_imputed_data(X_train, Y_train, X_missing, dataset.iloc[:, 0].values, dataset.iloc[:, 1].values,
+                               predicted_means_new, predicted_variances_new)
+
         return dataset
+
+    # plot the original and imputed data
+    def plot_imputed_data(self, X_train: np.ndarray, Y_train: np.ndarray, X_missing, X_new: np.ndarray, Y_new: np.ndarray, predicted_means: np.ndarray, predicted_variances: np.ndarray) -> None:
+        """
+        Plots the original and imputed data points.
+
+        :param X_train: Training data features.
+        :param Y_train: Training data targets.
+        :param X_new: New data features.
+        :param Y_new: New data targets.
+        :param predicted_means: Predicted means for the new data.
+        :param predicted_variances: Predicted variances for the new data.
+        """
+
+        plt.figure(figsize=(12, 6))
+        plt.plot(X_missing, np.zeros_like(
+            X_missing), 'bo', label='Missing Data')
+
+        plt.plot(X_missing, Y_new[X_missing.astype(
+            int)], 'bx', label='Imputed Data')
+        plt.plot(X_new, predicted_means, 'g-', label='Predicted Function')
+        plt.fill_between(X_new.flatten(), predicted_means.flatten() -
+                         1.96 * np.sqrt(predicted_variances.flatten()), predicted_means.flatten() + 1.96 * np.sqrt(predicted_variances.flatten()), color='g', alpha=0.1, label='95% Confidence Interval')
+
+        plt.plot(X_train, Y_train, 'ro', label='Training Data')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.legend()
+        plt.show()
