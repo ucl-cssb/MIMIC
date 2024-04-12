@@ -1,10 +1,9 @@
 # mimic/data_imputation/gp_impute.py
 
-from re import X
 import gpflow
 import numpy as np
 import pandas as pd
-from typing import Tuple, List
+from typing import Tuple
 import matplotlib.pyplot as plt
 
 
@@ -92,12 +91,31 @@ class GPImputer:
         # make full predicted means and variances available for plotting
 
         predicted_means_new, predicted_variances_new = self.predict(
-            dataset.iloc[:, 0].values.reshape(-1, 1))
+            self.predict_extended_range(dataset))
 
         self.plot_imputed_data(X_train, Y_train, X_missing, dataset.iloc[:, 0].values, dataset.iloc[:, 1].values,
                                predicted_means_new, predicted_variances_new)
 
         return dataset
+
+    # Extend the data points to be predicted further than the original data points
+    # to make the plot look better
+
+    def predict_extended_range(self, dataset):
+        # Get the original data
+        original_data = dataset.iloc[:, 0].values.reshape(-1, 1)
+
+        # Calculate the range of the data
+        data_range = original_data.max() - original_data.min()
+
+        # Calculate the extension
+        extension = data_range * 0.1
+
+        return np.linspace(
+            original_data.min() - extension,
+            original_data.max() + extension,
+            len(original_data),
+        ).reshape(-1, 1)
 
     # plot the original and imputed data
     def plot_imputed_data(self, X_train: np.ndarray, Y_train: np.ndarray, X_missing, X_new: np.ndarray, Y_new: np.ndarray, predicted_means: np.ndarray, predicted_variances: np.ndarray) -> None:
@@ -114,12 +132,16 @@ class GPImputer:
 
         plt.figure(figsize=(12, 6))
         plt.plot(X_missing, np.zeros_like(
-            X_missing), 'bo', label='Missing Data')
+            X_missing), 'bo', label='Missing Data Points')
 
         plt.plot(X_missing, Y_new[X_missing.astype(
             int)], 'bx', label='Imputed Data')
-        plt.plot(X_new, predicted_means, 'g-', label='Predicted Function')
-        plt.fill_between(X_new.flatten(), predicted_means.flatten() -
+
+        # extension = (X_new.max() - X_new.min()) * 0.1
+
+        plt.plot(X_new, predicted_means,
+                 'g-', label='Predicted Function')
+        plt.fill_between((X_new).flatten(), predicted_means.flatten() -
                          1.96 * np.sqrt(predicted_variances.flatten()), predicted_means.flatten() + 1.96 * np.sqrt(predicted_variances.flatten()), color='g', alpha=0.1, label='95% Confidence Interval')
 
         plt.plot(X_train, Y_train, 'ro', label='Training Data')
