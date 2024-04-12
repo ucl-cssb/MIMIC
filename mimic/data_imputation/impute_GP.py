@@ -150,13 +150,11 @@ class GPImputer:
         """
 
         plt.figure(figsize=(12, 6))
-        plt.plot(X_missing, np.zeros_like(
-            X_missing), 'bo', label='Missing Data Points')
+        # plt.plot(X_missing, np.zeros_like(
+        #     X_missing), 'bo', label='Missing Data Points')
 
         plt.plot(X_missing, Y_new[X_missing.astype(
             int)], 'bx', label='Imputed Data')
-
-        # extension = (X_new.max() - X_new.min()) * 0.1
 
         plt.plot(X_new, predicted_means,
                  'g-', label='Predicted Function')
