@@ -90,10 +90,12 @@ class GPImputer:
 
         # make full predicted means and variances available for plotting
 
-        predicted_means_new, predicted_variances_new = self.predict(
-            self.predict_extended_range(dataset))
+        extended_dataset = self.predict_extended_range(dataset)
 
-        self.plot_imputed_data(X_train, Y_train, X_missing, dataset.iloc[:, 0].values, dataset.iloc[:, 1].values,
+        predicted_means_new, predicted_variances_new = self.predict(
+            extended_dataset)
+
+        self.plot_imputed_data(X_train, Y_train, X_missing, extended_dataset, dataset.iloc[:, 1].values,
                                predicted_means_new, predicted_variances_new)
 
         return dataset
@@ -101,23 +103,40 @@ class GPImputer:
     # Extend the data points to be predicted further than the original data points
     # to make the plot look better
 
-    def predict_extended_range(self, dataset):
-        # Get the original data
-        original_data = dataset.iloc[:, 0].values.reshape(-1, 1)
+    def predict_extended_range(self, dataset, extend_percent=0.1):
+        """
+        Extends the data points to be predicted further than the original data points
+        to make the plot look better. Extends the range by a given percentage.
+
+        :param dataset: The dataset containing the original X values.
+        :param extend_percent: The percentage of the range to extend on both ends.
+        :return: An array of X values extended beyond the original range.
+        """
+        # Get the original X values
+        original_data = dataset.iloc[:, 0].values
 
         # Calculate the range of the data
         data_range = original_data.max() - original_data.min()
 
-        # Calculate the extension
-        extension = data_range * 0.1
+        # Calculate the extensions
+        lower_extension = original_data.min() - (data_range * extend_percent)
+        upper_extension = original_data.max() + (data_range * extend_percent)
 
-        return np.linspace(
-            original_data.min() - extension,
-            original_data.max() + extension,
-            len(original_data),
-        ).reshape(-1, 1)
+        # Number of points to add on each side
+        num_points = len(original_data)
+        extended_lower = np.linspace(
+            lower_extension, original_data.min(), num=num_points // 10, endpoint=False)
+        extended_upper = np.linspace(
+            original_data.max(), upper_extension, num=num_points // 10, endpoint=False)
+
+        # Combine original and extended points
+        extended_range = np.concatenate(
+            (extended_lower, original_data, extended_upper))
+
+        return extended_range.reshape(-1, 1)
 
     # plot the original and imputed data
+
     def plot_imputed_data(self, X_train: np.ndarray, Y_train: np.ndarray, X_missing, X_new: np.ndarray, Y_new: np.ndarray, predicted_means: np.ndarray, predicted_variances: np.ndarray) -> None:
         """
         Plots the original and imputed data points.
