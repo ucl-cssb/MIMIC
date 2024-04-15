@@ -325,13 +325,14 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
 
         model.fit(X_s, F_s)
         mu_h = [model.coef_[i][-1] for i in range(num_species)]
-        M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
+        M_h = [model.coef_[i][:num_species].tolist()
+               for i in range(num_species)]
 
         mus[i, :] = mu_h
         mms[i, :] = np.array(M_h).flatten()
 
-            # print(np.array(mu_h))
-            # print(np.round(np.array(M_h),decimals=2))
+        # print(np.array(mu_h))
+        # print(np.round(np.array(M_h),decimals=2))
 
     print("examining mu_i")
     mus_max = mus.max(axis=0)
@@ -425,65 +426,65 @@ def fit_alpha_lasso(X, S, n_a):
 # older function using other more standard methods. Might come back to these at some point
 
 
-def fit_alpha_default():
-    # find the optimal penalisation terms
-    # model = Ridge(fit_intercept=False)
-    model = Lasso(fit_intercept=False, max_iter=10000)
-    # model = ElasticNet(fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)
+# def fit_alpha_default():
+#     # find the optimal penalisation terms
+#     # model = Ridge(fit_intercept=False)
+#     model = Lasso(fit_intercept=False, max_iter=10000)
+#     # model = ElasticNet(fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)
 
-    cv = RepeatedKFold(n_splits=5, n_repeats=3, random_state=1)  # five fold
-    n_alphas = 100
-    grid = {'alpha': np.logspace(-6, 0, n_alphas)}
-    # define search
-    search = GridSearchCV(
-        model, grid, scoring='neg_mean_squared_error', cv=cv, n_jobs=-1)
-    # perform the search
-    results = search.fit(tX, tF)
+#     cv = RepeatedKFold(n_splits=5, n_repeats=3, random_state=1)  # five fold
+#     n_alphas = 100
+#     grid = {'alpha': np.logspace(-6, 0, n_alphas)}
+#     # define search
+#     search = GridSearchCV(
+#         model, grid, scoring='neg_mean_squared_error', cv=cv, n_jobs=-1)
+#     # perform the search
+#     results = search.fit(tX, tF)
 
-    # summarize
-    print('MAE: %.3f' % results.best_score_)
-    print(f'Config: {results.best_params_}')
+#     # summarize
+#     print('MAE: %.3f' % results.best_score_)
+#     print(f'Config: {results.best_params_}')
 
-    # fit using optimal alpha
-    # model = Ridge(alpha=results.best_params_['alpha'], fit_intercept=False)
-    model = Lasso(alpha=results.best_params_[
-                  'alpha'], fit_intercept=False, max_iter=10000)
-    # model = ElasticNet(alpha=results.best_params_['alpha'], fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)
+#     # fit using optimal alpha
+#     # model = Ridge(alpha=results.best_params_['alpha'], fit_intercept=False)
+#     model = Lasso(alpha=results.best_params_[
+#                   'alpha'], fit_intercept=False, max_iter=10000)
+#     # model = ElasticNet(alpha=results.best_params_['alpha'], fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)
 
-    # model = ElasticNet(alpha=0.01, fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)
+#     # model = ElasticNet(alpha=0.01, fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)
 
-    model.fit(tX, tF)
-    mu_h = [model.coef_[i][-1] for i in range(num_species)]
-    M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
+#     model.fit(tX, tF)
+#     mu_h = [model.coef_[i][-1] for i in range(num_species)]
+#     M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
 
-    modelB = LinearRegression(fit_intercept=False)
-    modelB.fit(tX, tF)
-    mu_l = [modelB.coef_[i][-1] for i in range(num_species)]
-    M_l = [modelB.coef_[i][:num_species].tolist() for i in range(num_species)]
+#     modelB = LinearRegression(fit_intercept=False)
+#     modelB.fit(tX, tF)
+#     mu_l = [modelB.coef_[i][-1] for i in range(num_species)]
+#     M_l = [modelB.coef_[i][:num_species].tolist() for i in range(num_species)]
 
-    print("\ninferred params:")
-    print("mu_hat/mu/mu_l:")
-    print(np.array(mu_h))
-    print(np.array(mu))
-    print(np.array(mu_l))
-    print("\nM_hat/M/M_l:")
-    print(np.round(np.array(M_h), decimals=2))
-    print("\n", np.array(M))
-    print("\n", np.round(np.array(M_l), decimals=2))
+#     print("\ninferred params:")
+#     print("mu_hat/mu/mu_l:")
+#     print(np.array(mu_h))
+#     print(np.array(mu))
+#     print(np.array(mu_l))
+#     print("\nM_hat/M/M_l:")
+#     print(np.round(np.array(M_h), decimals=2))
+#     print("\n", np.array(M))
+#     print("\n", np.round(np.array(M_l), decimals=2))
 
-    # plot the fit
-    yobs_pred = odeint(gLV, y0, times, args=(num_species, mu_h, M_h))
-    plt.plot(times, yobs)
-    plt.plot(times, yobs_pred, '--')
+#     # plot the fit
+#     yobs_pred = odeint(gLV, y0, times, args=(num_species, mu_h, M_h))
+#     plt.plot(times, yobs)
+#     plt.plot(times, yobs_pred, '--')
 
-    # plot the params
-    plt.figure()
-    plt.stem(np.arange(0, len(mu), dtype="int32"),
-             np.array(mu_h), markerfmt="D")
-    plt.stem(np.arange(0, len(mu), dtype="int32"), np.array(mu), markerfmt="X")
+#     # plot the params
+#     plt.figure()
+#     plt.stem(np.arange(0, len(mu), dtype="int32"),
+#              np.array(mu_h), markerfmt="D")
+#     plt.stem(np.arange(0, len(mu), dtype="int32"), np.array(mu), markerfmt="X")
 
-    plt.figure()
-    plt.stem(np.arange(0, num_species * num_species),
-             np.array(M_h).flatten(), markerfmt="D")
-    plt.stem(np.arange(0, num_species * num_species),
-             np.array(M).flatten(), markerfmt="X")
+#     plt.figure()
+#     plt.stem(np.arange(0, num_species * num_species),
+#              np.array(M_h).flatten(), markerfmt="D")
+#     plt.stem(np.arange(0, num_species * num_species),
+#              np.array(M).flatten(), markerfmt="X")
