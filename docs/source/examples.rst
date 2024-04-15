@@ -4,6 +4,7 @@ Examples
 .. toctree::
    :maxdepth: 2
 
+   notebooks/examples-data-imputation/impute_GP
    notebooks/examples-inf-VAR/BVARinfer
    notebooks/examples-sim-gLV/examples-ml-gLV
    notebooks/examples-sim-gLV/examples-sim-gLV
