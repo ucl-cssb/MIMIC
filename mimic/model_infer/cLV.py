@@ -1,9 +1,11 @@
 import itertools
-import numpy as np
 import sys
+
+import numpy as np
+from scipy.integrate import RK45, solve_ivp
 from scipy.special import logsumexp
 from scipy.stats import linregress
-from scipy.integrate import RK45, solve_ivp
+
 from mimic.model_infer.timeout import *
 
 from . import *
@@ -61,7 +63,7 @@ class CompositionalLotkaVolterra:
         self.r_g = None
         self.r_B = None
 
-    def get_regularizers(self):
+    def get_regularizers(self) -> tuple[float, float, float, float]:
         return self.alpha, self.r_A, self.r_g, self.r_B
 
     def set_regularizers(self, alpha, r_A, r_g, r_B):
@@ -70,7 +72,7 @@ class CompositionalLotkaVolterra:
         self.r_g = r_g
         self.r_B = r_B
 
-    def train(self, verbose=False, folds=10):
+    def train(self, verbose=False, folds=10) -> None:
         """
         Estimate regularization parameters and CLV model parameters.
         """
@@ -91,7 +93,7 @@ class CompositionalLotkaVolterra:
         if verbose:
             print()
 
-    def predict(self, p0, times, u=None):
+    def predict(self, p0, times, u=None) -> np.ndarray:
         """Predict relative abundances from initial conditions.
 
         Parameters
@@ -118,14 +120,14 @@ class CompositionalLotkaVolterra:
 
         return predict(x, p0, u, times, self.A, self.g, self.B, self.denom)
 
-    def get_params(self):
+    def get_params(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         A = np.copy(self.A)
         g = np.copy(self.g)
         B = np.copy(self.B)
         return A, g, B
 
 
-def choose_denom(P):
+def choose_denom(P) -> int:
     """Pick a denominator for additive log-ratio transformation.
     """
     np.seterr(divide="ignore", invalid="ignore")
@@ -157,7 +159,7 @@ def choose_denom(P):
     return min_idx
 
 
-def construct_alr(P, denom, pseudo_count=1e-3):
+def construct_alr(P, denom, pseudo_count=1e-3) -> list[np.ndarray]:
     """Compute the additive log ratio transformation with a given
     choice of denominator. Assumes zeros have been replaced with
     nonzero values.
@@ -174,7 +176,7 @@ def construct_alr(P, denom, pseudo_count=1e-3):
     return ALR
 
 
-def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False):
+def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> tuple[float, float, float, float]:
     if len(X) == 1:
         print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
         exit(1)
@@ -234,8 +236,8 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
     return best_r
 
 
-def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=False, max_iter=10000):
-    def gradient(AgB, x_stacked, pgu_stacked):
+def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=False, max_iter=10000) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def gradient(AgB, x_stacked, pgu_stacked) -> np.ndarray:
         f = x_stacked - AgB.dot(pgu_stacked.T).T
         grad = Q_inv.dot(f.T.dot(pgu_stacked))
 
@@ -249,7 +251,7 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
         grad[:, (yDim+1):] += -2*alpha*(1-r_B)*B
         return -grad
 
-    def generalized_gradient(AgB, grad, step):
+    def generalized_gradient(AgB, grad, step) -> np.ndarray:
         nxt_AgB = prv_AgB - step*grad
 
         # threshold A
@@ -280,13 +282,13 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
 
         return (AgB - AgB_proximal)/step
 
-    def objective(AgB, x_stacked, pgu_stacked):
+    def objective(AgB, x_stacked, pgu_stacked) -> float:
         f = x_stacked - AgB.dot(pgu_stacked.T).T
         obj = -0.5*(f.dot(Q_inv)*f).sum()
 
         return -obj
 
-    def stack_observations(X, P, U, T):
+    def stack_observations(X, P, U, T) -> tuple[np.ndarray, np.ndarray]:
         # number of observations by xDim
         x_stacked = None
         # number of observations by yDim + 1 + uDim
@@ -367,7 +369,7 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
     return A, g, B
 
 
-def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0, r_B=0):
+def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0, r_B=0) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Computes estimates of A, g, and B using least squares. 
 
     Parameters
@@ -414,7 +416,7 @@ def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0, r_B=0):
     return A, g, B
 
 
-def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False):
+def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> tuple[float, float, float, float]:
     if len(X) == 1:
         print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
         exit(1)
@@ -474,7 +476,7 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
     return best_r
 
 
-def estimate_ridge_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False):
+def estimate_ridge_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> tuple[float, float, float]:
     if len(X) == 1:
         print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
         exit(1)
@@ -532,7 +534,7 @@ def estimate_ridge_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, v
     return best_r
 
 
-def compute_rel_abun(x, denom):
+def compute_rel_abun(x, denom) -> np.ndarray:
     if x.ndim == 1:
         x = np.expand_dims(x, axis=0)
     z = np.hstack((x, np.zeros((x.shape[0], 1))))
@@ -546,7 +548,7 @@ def compute_rel_abun(x, denom):
 
 
 # @timeout(5)
-def predict(x, p, u, times, A, g, B, denom):
+def predict(x, p, u, times, A, g, B, denom) -> np.ndarray:
     """Make predictions from initial conditions
     """
     def grad_fn(A, g, B, u, denom):
@@ -569,7 +571,7 @@ def predict(x, p, u, times, A, g, B, denom):
     return p_pred
 
 
-def compute_prediction_error(X, P, U, T, A, g, B, denom_ids):
+def compute_prediction_error(X, P, U, T, A, g, B, denom_ids) -> float:
     def compute_err(p, p_pred):
         err = 0
         ntaxa = p.shape[1]
@@ -585,7 +587,7 @@ def compute_prediction_error(X, P, U, T, A, g, B, denom_ids):
     return err/len(X)
 
 
-def estimate_relative_abundances(Y, pseudo_count=1e-3):
+def estimate_relative_abundances(Y, pseudo_count=1e-3) -> list[np.ndarray]:
     """Adds pseudo counts to avoid zeros and compute relative abundances
 
     Parameters

@@ -1,16 +1,16 @@
 # From https://stackoverflow.com/a/2282656
 
-from functools import wraps
 import errno
 import os
 import signal
+from functools import wraps
 
 
 class TimeoutError(Exception):
     pass
 
 
-def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
+def timeout(seconds=10, error_message=os.strerror(errno.ETIME)) -> callable:
     def decorator(func):
         def _handle_timeout(signum, frame):
             raise TimeoutError(error_message)
