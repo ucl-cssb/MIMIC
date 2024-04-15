@@ -15,7 +15,7 @@ class sim_VAR(BaseModel):
 
     Inherits from BaseModel and adds specific functionalities for VAR model simulation,
     including data generation for both univariate and multivariate autoregressive processes.
-    
+
     This class allows users to simulate data from VAR models, specify model parameters, generate
     simulated data, visualize the results through various plotting methods, and save the generated
     data for further analysis. It supports both single and multi-variable autoregressive models,
@@ -35,29 +35,28 @@ class sim_VAR(BaseModel):
         set_parameters: Allows setting or updating model parameters like number of observations,
                         model coefficients, initial values, and noise standard deviation. It supports
                         both univariate and multivariate VAR models.
-                        
+
         generate_var1_data: Simulates data from a VAR(1) process using the specified model parameters
                             and saves the generated data. It can also generate and overlay plots based
                             on the 'output' attribute.
-                            
+
         generate_mvar1_data: Generates data from a multivariate autoregressive process. It can work
                              with complex interactions between multiple variables and supports overlay
                              plotting based on the 'output' attribute.
-                             
+
         simulate: Acts as a controller to execute the simulation based on the specified command. It
                   supports commands for simulating univariate VAR, multivariate VAR, and generating
                   plots as specified.
-                  
+
         make_plot_overlay: Creates overlay plots for visual comparison of simulated data across
                            different variables or processes.
-                           
+
         make_plot_stacked: Generates a stacked plot and heatmap for the given data, offering a
                            detailed visualization of the simulation results.
-                           
+
         make_plot: Produces separate line plots for each variable in the given data, facilitating
                    an in-depth analysis of each variable's behavior over time.
     """
-
 
     def __init__(self):
         """
@@ -85,7 +84,7 @@ class sim_VAR(BaseModel):
                        noise_stddev: Optional[Union[int, float]] = None,
                        output: Optional[str] = None,
                        coefficientsM: Optional[List[List[Union[int, float]]]] = None,
-                       initial_valuesM: Optional[List[List[int]]] = None):
+                       initial_valuesM: Optional[List[List[int]]] = None) -> None:
         """
         Sets the parameters for the sim_VAR instance.
 
@@ -119,7 +118,7 @@ class sim_VAR(BaseModel):
                            "initial_values": self.initial_values, "noise_stddev": self.noise_stddev, "output": self.output,
                            "coefficientsM": self.coefficientsM, "initial_valuesM": self.initial_valuesM}
 
-    def generate_var1_data(self):
+    def generate_var1_data(self) -> np.ndarray:
         """
         Generate simulated data from a VAR(1) process.
 
@@ -144,7 +143,7 @@ class sim_VAR(BaseModel):
         self.data = data  # the generated data
         return data
 
-    def generate_mvar1_data(self, coefficientsM, initial_valuesM):
+    def generate_mvar1_data(self, coefficientsM, initial_valuesM) -> tuple[np.ndarray, np.ndarray]:
         """
         Generates synthetic data for a multivariate autoregressive (MVAR) process of order 1.
 
@@ -190,7 +189,7 @@ class sim_VAR(BaseModel):
         self.data, self.dataM = data, dataM  # the generated data
         return data, dataM
 
-    def simulate(self, command):
+    def simulate(self, command) -> None:
         """
         Simulates data based on the specified command.
 
@@ -217,7 +216,7 @@ class sim_VAR(BaseModel):
         else:
             raise ValueError("Invalid command. Must be 'VARsim' or 'MVARsim'")
 
-    def make_plot_overlay(self, dataX, dataS=None, output='show'):
+    def make_plot_overlay(self, dataX, dataS=None, output='show') -> None:
         """
         Creates an overlay plot of the given data for easy comparison.
 
@@ -263,7 +262,7 @@ class sim_VAR(BaseModel):
         if output in ['show', 'both']:
             plt.show()
 
-    def make_plot_stacked(self, dataX, dataS):
+    def make_plot_stacked(self, dataX, dataS) -> None:
         """
         Creates a stacked plot and a heatmap for the given data, providing a comprehensive view of the data dynamics.
 
@@ -312,7 +311,7 @@ class sim_VAR(BaseModel):
         plt.tight_layout()  # Adjust the layout
         plt.savefig("plot-data-XS-stacked.pdf")
 
-    def make_plot(self, dataX, dataS=None, output='show'):
+    def make_plot(self, dataX, dataS=None, output='show') -> None:
         """
         Generates separate line plots for each variable in the given data, facilitating detailed analysis.
 
