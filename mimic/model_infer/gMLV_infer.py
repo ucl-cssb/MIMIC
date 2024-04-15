@@ -318,16 +318,16 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
 
     mus = np.zeros([nboots, num_species])
     mms = np.zeros([nboots, num_species * num_species])
-    for i in range(0, nboots):
+    for i in range(nboots):
         sample_index = np.random.choice(range(0, nt - 1), nt - 1)
 
         X_s = X[sample_index, :]
         F_s = F[sample_index, :]
 
         model.fit(X_s, F_s)
-        mu_h = [model.coef_[i][-1] for i in range(0, num_species)]
+        mu_h = [model.coef_[i][-1] for i in range(num_species)]
         M_h = [model.coef_[i][0:num_species].tolist()
-               for i in range(0, num_species)]
+               for i in range(num_species)]
 
         mus[i, :] = mu_h
         mms[i, :] = np.array(M_h).flatten()
@@ -338,7 +338,7 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
     print("examining mu_i")
     mus_max = mus.max(axis=0)
     mus_min = mus.min(axis=0)
-    for i in range(0, num_species):
+    for i in range(num_species):
         star = ""
         if np.abs(mus_min[i] - mus_max[i]) > 1e-4:
             if mus_min[i] > 0 and mus_max[i] > 0:
@@ -352,7 +352,7 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
     mms_max = mms.max(axis=0)
     mms_min = mms.min(axis=0)
     print("\nexamining Mij")
-    for i in range(0, num_species * num_species):
+    for i in range(num_species * num_species):
         star = ""
         if np.abs(mms_min[i] - mms_max[i]) > 1e-4:
             if mms_min[i] > 0 and mms_max[i] > 0:
@@ -435,9 +435,7 @@ def fit_alpha_default():
 
     cv = RepeatedKFold(n_splits=5, n_repeats=3, random_state=1)  # five fold
     n_alphas = 100
-    grid = dict()
-    grid['alpha'] = np.logspace(-6, 0, n_alphas)
-
+    grid = {'alpha': np.logspace(-6, 0, n_alphas)}
     # define search
     search = GridSearchCV(
         model, grid, scoring='neg_mean_squared_error', cv=cv, n_jobs=-1)
@@ -446,7 +444,7 @@ def fit_alpha_default():
 
     # summarize
     print('MAE: %.3f' % results.best_score_)
-    print('Config: %s' % results.best_params_)
+    print(f'Config: {results.best_params_}')
 
     # fit using optimal alpha
     # model = Ridge(alpha=results.best_params_['alpha'], fit_intercept=False)
@@ -457,15 +455,13 @@ def fit_alpha_default():
     # model = ElasticNet(alpha=0.01, fit_intercept=False, max_iter=100000, l1_ratio=0.9, tol=1e-2)
 
     model.fit(tX, tF)
-    mu_h = [model.coef_[i][-1] for i in range(0, num_species)]
-    M_h = [model.coef_[i][0:num_species].tolist()
-           for i in range(0, num_species)]
+    mu_h = [model.coef_[i][-1] for i in range(num_species)]
+    M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
 
     modelB = LinearRegression(fit_intercept=False)
     modelB.fit(tX, tF)
-    mu_l = [modelB.coef_[i][-1] for i in range(0, num_species)]
-    M_l = [modelB.coef_[i][0:num_species].tolist()
-           for i in range(0, num_species)]
+    mu_l = [modelB.coef_[i][-1] for i in range(num_species)]
+    M_l = [modelB.coef_[i][:num_species].tolist() for i in range(num_species)]
 
     print("\ninferred params:")
     print("mu_hat/mu/mu_l:")
