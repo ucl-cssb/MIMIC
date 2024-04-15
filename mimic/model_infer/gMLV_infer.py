@@ -1,21 +1,11 @@
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 from numpy import linalg as la
-
-from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import Ridge
-from sklearn.linear_model import Lasso
-from sklearn.linear_model import ElasticNet
-from sklearn.model_selection import RepeatedKFold
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import KFold
-from sklearn.model_selection import GridSearchCV
-
 from scipy.integrate import odeint
-
-from sklearn.base import BaseEstimator
-from sklearn.base import RegressorMixin
+from sklearn.base import BaseEstimator, RegressorMixin
+from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
+from sklearn.model_selection import (GridSearchCV, KFold, RepeatedKFold,
+                                     cross_val_score)
 
 
 class Ridge1(BaseEstimator, RegressorMixin):
@@ -28,15 +18,15 @@ class Ridge1(BaseEstimator, RegressorMixin):
         self.alphas = alphas
         self.num_species = num_species
 
-    def fit(self, X, y):
+    def fit(self, X, y) -> None:
         # print("calling fit")
         self.coef_ = ridge_fit(X.T, y.T, self.alphas, self.num_species)
         # return self
 
-    def predict(self, X):
+    def predict(self, X) -> np.ndarray:
         return X @ self.coef_.T
 
-    def get_params(self, deep=True):
+    def get_params(self, deep=True) -> dict:
         # suppose this estimator has parameters "alpha" and "recursive"
         return {"alphas": self.alphas, "num_species": self.num_species}
 
@@ -57,21 +47,21 @@ class Ridge2(BaseEstimator, RegressorMixin):
         self.num_species = num_species
         self.num_pert = num_pert
 
-    def fit(self, X, y):
+    def fit(self, X, y) -> None:
         # print("calling fit")
         self.coef_ = ridge_fit_pert(
             X.T, y.T, self.alphas, self.num_species, self.num_pert)
         # return self
 
-    def predict(self, X):
+    def predict(self, X) -> np.ndarray:
         return X @ self.coef_.T
 
-    def get_params(self, deep=True):
+    def get_params(self, deep=True) -> dict:
         # suppose this estimator has parameters "alpha" and "recursive"
         return {"alphas": self.alphas, "num_species": self.num_species, "num_pert": self.num_pert}
 
 
-def ridge_fit(X, F, alphas, num_species):
+def ridge_fit(X, F, alphas, num_species) -> np.ndarray:
     # To do: redo this with transpose X and Y
 
     # standard least squares
@@ -84,7 +74,7 @@ def ridge_fit(X, F, alphas, num_species):
     return (F @ X.T) @ la.inv(X @ X.T + penalty)
 
 
-def ridge_fit_pert(X, F, alphas, num_species, num_pert):
+def ridge_fit_pert(X, F, alphas, num_species, num_pert) -> np.ndarray:
     # To do: redo this with transposed X and Y
 
     # standard least squares
@@ -103,7 +93,7 @@ def ridge_fit_pert(X, F, alphas, num_species, num_pert):
 # importlib.reload(gLV_ML);
 
 
-def ridge_fit_test(tX, tF, num_species, cRidge=Ridge1):
+def ridge_fit_test(tX, tF, num_species, cRidge=Ridge1) -> None:
     # sourcery skip: extract-duplicate-method
     # NOTE: `cRidge` is not defined in this file, so I temporarily replaced it with `Ridge1`
     print("default ridge")
@@ -122,7 +112,7 @@ def ridge_fit_test(tX, tF, num_species, cRidge=Ridge1):
     print(model.predict(tX))
 
 
-def linearize_time_course_16S(yobs, times):
+def linearize_time_course_16S(yobs, times) -> tuple[np.ndarray, np.ndarray]:
     num_species = yobs.shape[1]
     nt = len(times)
 
@@ -153,7 +143,7 @@ def linearize_time_course_16S(yobs, times):
 
 
 # here u should be of length timepoints
-def linearize_time_course_16S_u(yobs, times, u):
+def linearize_time_course_16S_u(yobs, times, u) -> tuple[np.ndarray, np.ndarray]:
     num_species = yobs.shape[1]
     nt = len(times)
 
@@ -172,7 +162,7 @@ def linearize_time_course_16S_u(yobs, times, u):
     return tX, F
 
 
-def linearise_time_course_metabolites(sobs, yobs, times):
+def linearise_time_course_metabolites(sobs, yobs, times) -> tuple[np.ndarray, np.ndarray]:
     nm = sobs.shape[1]
     ns = yobs.shape[1]
 
@@ -189,11 +179,11 @@ def linearise_time_course_metabolites(sobs, yobs, times):
     return X, S
 
 
-def linearize_time_course(yobs, times):
+def linearize_time_course(yobs, times) -> tuple[np.ndarray, np.ndarray]:
     return linearize_time_course_16S(yobs, times)
 
 
-def plot_coeffs(tX, tF):
+def plot_coeffs(tX, tF) -> None:
     n_alphas = 10
     alphas = np.logspace(-5, 2, n_alphas)
     print(alphas)
@@ -216,7 +206,7 @@ def plot_coeffs(tX, tF):
     plt.show()
 
 
-def fit_alpha_Ridge1(X, F, num_species, n_a0, n_a1):
+def fit_alpha_Ridge1(X, F, num_species, n_a0, n_a1) -> tuple[float, float]:
     # use own ridge model
 
     a0 = np.logspace(-2, 2, n_a0)  # constraint on Mij matrix elements
@@ -251,7 +241,7 @@ def fit_alpha_Ridge1(X, F, num_species, n_a0, n_a1):
     return a0[inds[0]], a1[inds[1]]
 
 
-def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2):
+def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2) -> tuple[float, float, float]:
     # use own ridge model
 
     a0 = np.logspace(-6, 3, n_a0)  # constraint on Mij matrix elements
@@ -293,7 +283,7 @@ def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2):
     return a0[inds[0]], a1[inds[1]], a2[inds[2]]
 
 
-def do_final_fit_Ridge1(X, F, num_species, a0, a1):
+def do_final_fit_Ridge1(X, F, num_species, a0, a1) -> tuple[list[float], list[list[float]]]:
     model = Ridge1(alphas=[a0, a1], num_species=num_species)
     model.fit(X, F)
     mu_h = [model.coef_[i][-1] for i in range(num_species)]
@@ -301,7 +291,7 @@ def do_final_fit_Ridge1(X, F, num_species, a0, a1):
     return mu_h, M_h
 
 
-def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2):
+def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2) -> tuple[list[float], list[list[float]], list[list[float]]]:
     model = Ridge2(alphas=[a0, a1, a2],
                    num_species=num_species, num_pert=num_pert)
     model.fit(X, F)
@@ -313,7 +303,7 @@ def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2):
     return mu_h, M_h, e_h
 
 
-def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
+def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100) -> None:
     # do some bootstrapping
     model = Ridge1(alphas=[a0, a1], num_species=num_species)
 
@@ -365,7 +355,7 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
               np.round(mms_max[i], decimals=3), star)
 
 
-def plot_alpha_lasso(X, S, n_a):
+def plot_alpha_lasso(X, S, n_a) -> None:
     candidate_alpha = np.logspace(-1, 2, n_a)
     candidate_regressors = [Lasso(
         alpha=a, fit_intercept=False, max_iter=10000, tol=1e-1) for a in candidate_alpha]
@@ -385,7 +375,7 @@ def plot_alpha_lasso(X, S, n_a):
     plt.show()
 
 
-def fit_alpha_lasso(X, S, n_a):
+def fit_alpha_lasso(X, S, n_a) -> tuple[float, float]:
     candidate_alpha = np.logspace(-1, 2, n_a)
     candidate_regressors = [Lasso(
         alpha=a, fit_intercept=False, max_iter=10000, tol=1e-1) for a in candidate_alpha]
