@@ -103,7 +103,9 @@ def ridge_fit_pert(X, F, alphas, num_species, num_pert):
 # importlib.reload(gLV_ML);
 
 
-def ridge_fit_test(X, Y):
+def ridge_fit_test(tX, tF, num_species, cRidge=Ridge1):
+    # sourcery skip: extract-duplicate-method
+    # NOTE: `cRidge` is not defined in this file, so I temporarily replaced it with `Ridge1`
     print("default ridge")
     model = Ridge(alpha=0.01, fit_intercept=False)
     model.fit(tX, tF)
@@ -191,7 +193,7 @@ def linearize_time_course(yobs, times):
     return linearize_time_course_16S(yobs, times)
 
 
-def plot_coeffs():
+def plot_coeffs(tX, tF):
     n_alphas = 10
     alphas = np.logspace(-5, 2, n_alphas)
     print(alphas)
