@@ -224,11 +224,10 @@ def fit_alpha_Ridge1(X, F, num_species, n_a0, n_a1):
 
     candidate_regressors = []
     for i in range(n_a0):
-        for j in range(n_a1):
-            # print(i, j, xv[i,j], yv[i,j])
-            candidate_regressors.append(
-                Ridge1(alphas=[xv[i, j], yv[i, j]], num_species=num_species))
-
+        candidate_regressors.extend(
+            Ridge1(alphas=[xv[i, j], yv[i, j]], num_species=num_species)
+            for j in range(n_a1)
+        )
     cv = RepeatedKFold(n_splits=10, n_repeats=10)
     cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv)
                   for r in candidate_regressors]
@@ -262,12 +261,14 @@ def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2):
     candidate_regressors = []
     for i in range(n_a0):
         for j in range(n_a1):
-            for k in range(n_a2):
-                # print(i, j, xv[i,j], yv[i,j])
-                candidate_regressors.append(Ridge2(alphas=[xv[i, j, k], yv[i, j, k], zv[i, j, k]],
-                                                   num_species=num_species,
-                                                   num_pert=num_pert))
-
+            candidate_regressors.extend(
+                Ridge2(
+                    alphas=[xv[i, j, k], yv[i, j, k], zv[i, j, k]],
+                    num_species=num_species,
+                    num_pert=num_pert,
+                )
+                for k in range(n_a2)
+            )
     cv = RepeatedKFold(n_splits=10, n_repeats=10)
     cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv)
                   for r in candidate_regressors]
@@ -293,9 +294,8 @@ def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2):
 def do_final_fit_Ridge1(X, F, num_species, a0, a1):
     model = Ridge1(alphas=[a0, a1], num_species=num_species)
     model.fit(X, F)
-    mu_h = [model.coef_[i][-1] for i in range(0, num_species)]
-    M_h = [model.coef_[i][0:num_species].tolist()
-           for i in range(0, num_species)]
+    mu_h = [model.coef_[i][-1] for i in range(num_species)]
+    M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
     return mu_h, M_h
 
 
@@ -304,10 +304,9 @@ def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2):
                    num_species=num_species, num_pert=num_pert)
     model.fit(X, F)
 
-    M_h = [model.coef_[i][0:num_species].tolist()
-           for i in range(0, num_species)]
-    mu_h = [model.coef_[i][num_species] for i in range(0, num_species)]
-    e_h = [model.coef_[i][(num_species+1):] for i in range(0, num_species)]
+    M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
+    mu_h = [model.coef_[i][num_species] for i in range(num_species)]
+    e_h = [model.coef_[i][(num_species+1):] for i in range(num_species)]
 
     return mu_h, M_h, e_h
 
@@ -319,21 +318,20 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100):
     mus = np.zeros([nboots, num_species])
     mms = np.zeros([nboots, num_species * num_species])
     for i in range(nboots):
-        sample_index = np.random.choice(range(0, nt - 1), nt - 1)
+        sample_index = np.random.choice(range(nt - 1), nt - 1)
 
         X_s = X[sample_index, :]
         F_s = F[sample_index, :]
 
         model.fit(X_s, F_s)
         mu_h = [model.coef_[i][-1] for i in range(num_species)]
-        M_h = [model.coef_[i][0:num_species].tolist()
-               for i in range(num_species)]
+        M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
 
         mus[i, :] = mu_h
         mms[i, :] = np.array(M_h).flatten()
 
-        # print(np.array(mu_h))
-        # print(np.round(np.array(M_h),decimals=2))
+            # print(np.array(mu_h))
+            # print(np.round(np.array(M_h),decimals=2))
 
     print("examining mu_i")
     mus_max = mus.max(axis=0)
