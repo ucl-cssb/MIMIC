@@ -1,7 +1,7 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import pymc as pm
 import arviz as az
+import matplotlib.pyplot as plt
+import numpy as np
+import pymc as pm
 import pytensor.tensor as at
 
 
@@ -32,7 +32,7 @@ class infer_VAR:
         self.data = data  # data to do inference on
 
     # import data from a .csv file
-    def import_data(self, file_path):
+    def import_data(self, file_path) -> None:
         """
         Imports data from a .csv file.
 
@@ -45,7 +45,7 @@ class infer_VAR:
         self.data = np.genfromtxt(file_path, delimiter=',')
         return
 
-    def run_inference(self):  # sourcery skip: extract-method
+    def run_inference(self) -> None:  # sourcery skip: extract-method
         """
         Runs the inference process for the VAR model.
 
@@ -120,7 +120,7 @@ class infer_VAR:
         az.plot_posterior(trace, var_names=["x0", "A"])
         plt.savefig("posterior_plot.pdf")
 
-    def run_inference_large(self):
+    def run_inference_large(self) -> None:
         """
         Run large-scale inference for VAR model.
 

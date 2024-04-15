@@ -52,7 +52,7 @@ class sim_gLV(BaseModel):
 
     def set_parameters(self, num_species: Optional[int] = None,
                        mu: Optional[Union[List[float], numpy.ndarray]] = None,
-                       M: Optional[Union[List[List[float]], numpy.ndarray]] = None):
+                       M: Optional[Union[List[List[float]], numpy.ndarray]] = None) -> None:
         """
         Updates the simulation parameters. Only provided values are updated; others remain unchanged.
 
@@ -70,14 +70,20 @@ class sim_gLV(BaseModel):
 
         self.parameters = {"num_species": self.nsp, "mu": self.mu, "M": self.M}
 
-    def simulate(self, times, init_species):
+    def simulate(self, times, init_species) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
         """
-        Simulate the gLV model
+        Simulate the gLV model.
 
-        :param times: time points
-        :param init_species: initial species vector
-        :return: species and metabolites at each time point, initial species and metabolites, specific growth rates,
-        interaction matrix, metabolite production rate matrix, perturbation matrix
+        Args:
+            times (numpy.ndarray): Time points for the simulation.
+            init_species (numpy.ndarray): Initial species vector.
+
+        Returns:
+            Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]: Tuple containing:
+                - species and metabolites at each time point (numpy.ndarray),
+                - initial species and metabolites (numpy.ndarray),
+                - specific growth rates (numpy.ndarray),
+                - interaction matrix (numpy.ndarray).
         """
         self.check_params(self.parameters, 'gLV')
 
@@ -86,7 +92,7 @@ class sim_gLV(BaseModel):
         return s_obs, init_species, self.mu, self.M
 
 
-def glv(N, t, mu, M):
+def glv(N, t, mu, M) -> numpy.ndarray:
     """
     ODE simulation function for generalised Lotka-Volterra model
 
