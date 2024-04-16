@@ -102,7 +102,7 @@ class sim_gMLV(BaseModel):
 
     def set_parameters(self, num_species: Optional[int] = None, num_metabolites: Optional[int] = None, num_perturbations: Optional[int] = None,
                        mu: Optional[Union[List[float], numpy.ndarray]] = None, M: Optional[Union[List[List[float]], numpy.ndarray]] = None,
-                       beta: Optional[Union[List[List[float]], numpy.ndarray]] = None, epsilon: Optional[Union[List[List[float]], numpy.ndarray]] = None):
+                       beta: Optional[Union[List[List[float]], numpy.ndarray]] = None, epsilon: Optional[Union[List[List[float]], numpy.ndarray]] = None) -> None:
         """
         Updates the simulation parameters. Only provided values are updated; others remain unchanged.
 
@@ -133,7 +133,7 @@ class sim_gMLV(BaseModel):
         self.parameters = {"num_species": self.nsp, "num_metabolites": self.nm, "num_perturbations": self.np,
                            "mu": self.mu, "M": self.M, "beta": self.beta, "epsilon": self.epsilon}
 
-    def simulate(self, times, sy0, u=None):
+    def simulate(self, times, sy0, u=None) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
         """
         Runs the gMLV simulation over the specified time course with given initial conditions and optional perturbations.
 
@@ -155,7 +155,7 @@ class sim_gMLV(BaseModel):
         return yobs, sobs, sy0, self.mu, self.M, self.beta
 
 
-def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, u):
+def gMLV(sy, t, nsp, np, mu, M, beta, epsilon, u) -> numpy.ndarray:
     """
     Differential equations for the generalized Lotka-Volterra model with metabolite production.
 

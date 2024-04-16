@@ -1,8 +1,8 @@
-from sklearn.linear_model import Lasso, LinearRegression
-from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.model_selection import RepeatedKFold, cross_val_score
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.base import BaseEstimator, RegressorMixin
+from sklearn.linear_model import Lasso, LinearRegression
+from sklearn.model_selection import RepeatedKFold, cross_val_score
 
 
 class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
@@ -31,13 +31,13 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
             self.coef_ = self.penalised_lasso(X, y)
         return self
 
-    def predict(self, X):
+    def predict(self, X) -> np.ndarray:
         return X @ self.coef_.T
 
-    def get_params(self, deep=True):
+    def get_params(self, deep=True) -> dict:
         return {"alpha": self.alpha}
 
-    def non_zero_penalties(self, X, y):
+    def non_zero_penalties(self, X, y) -> np.ndarray:
         n_samples, n_features = X.shape
         n_targets = y.shape[1]
         print(
@@ -53,7 +53,7 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
 
         return model.coef_ @ np.linalg.inv(lambda_p)
 
-    def penalised_lasso(self, X, y):
+    def penalised_lasso(self, X, y) -> np.ndarray:
         n_samples, n_features = X.shape
         n_targets = y.shape[1]
         print(
@@ -111,7 +111,7 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
         return coefs
 
 
-def fit_alpha_MPLasso(X, y, n_a):
+def fit_alpha_MPLasso(X, y, n_a) -> np.ndarray:
 
     candidate_alpha_1 = np.logspace(-9, 2, n_a)
     candidate_alpha_2 = np.logspace(-9, 2, n_a)
