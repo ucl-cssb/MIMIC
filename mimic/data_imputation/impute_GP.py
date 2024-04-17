@@ -101,6 +101,7 @@ class GPImputer(BaseImputer):
         self.plot_imputed_data(X_train, Y_train, X_missing, extended_dataset, dataset.iloc[:, 1].values,
                                predicted_means_new, predicted_variances_new)
 
+        self.data = dataset
         return dataset
 
     # Extend the data points to be predicted further than the original data points
