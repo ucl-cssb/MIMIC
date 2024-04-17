@@ -6,8 +6,10 @@ import pandas as pd
 from typing import Tuple
 import matplotlib.pyplot as plt
 
+from mimic.data_imputation.base_imputator import BaseImputer
 
-class GPImputer:
+
+class GPImputer(BaseImputer):
     """
     Gaussian Process Imputer using GPFlow for imputing missing data points in datasets.
     Automatically selects an optimal kernel based on the provided dataset.
@@ -18,6 +20,7 @@ class GPImputer:
         Initializes the GPImputer without a pre-defined kernel.
         The optimal kernel is selected based on the dataset.
         """
+        super().__init__()
         self.model = None
 
     def _select_kernel(self, X_train: np.ndarray, Y_train: np.ndarray) -> gpflow.kernels.Kernel:
