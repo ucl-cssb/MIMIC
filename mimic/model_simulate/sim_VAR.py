@@ -6,8 +6,6 @@ import seaborn as sns
 
 from mimic.model_simulate.base_model import BaseModel
 
-from ..utilities.utilities import read_parameters
-
 
 class sim_VAR(BaseModel):
     """
