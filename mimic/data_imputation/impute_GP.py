@@ -1,12 +1,20 @@
 # mimic/data_imputation/gp_impute.py
 
-import gpflow
-import numpy as np
-import pandas as pd
-from typing import Tuple
-import matplotlib.pyplot as plt
-
+import re
+from bs4 import ResultSet
 from mimic.data_imputation.base_imputator import BaseImputer
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+from typing import Tuple
+
+import gpflow as gpf
+from gpflow.utilities import parameter_dict
+from gpflow.ci_utils import reduce_in_tests
+from gpflow.kernels import Kernel
+gpf.config.set_default_float(np.float64)
+gpf.config.set_default_summary_fmt("notebook")
 
 
 class GPImputer(BaseImputer):
@@ -23,7 +31,7 @@ class GPImputer(BaseImputer):
         super().__init__()
         self.model = None
 
-    def _select_kernel(self, X_train: np.ndarray, Y_train: np.ndarray) -> gpflow.kernels.Kernel:
+    def _select_kernel(self, X_train: np.ndarray, Y_train: np.ndarray) -> gpf.kernels.Kernel:
         """
         Automatically selects an optimal kernel for the Gaussian Process based on the provided data.
 
@@ -32,31 +40,65 @@ class GPImputer(BaseImputer):
         :return: An optimal GPFlow kernel instance.
         """
 
-        kernels = [gpflow.kernels.SquaredExponential, gpflow.kernels.Matern32, gpflow.kernels.RationalQuadratic, gpflow.kernels.Exponential, gpflow.kernels.Linear,
-                   gpflow.kernels.Cosine, gpflow.kernels.Polynomial, gpflow.kernels.Matern12, gpflow.kernels.Matern52, gpflow.kernels.White]
+        kernels = [gpf.kernels.SquaredExponential, gpf.kernels.Matern32, gpf.kernels.RationalQuadratic, gpf.kernels.Exponential, gpf.kernels.Linear,
+                   gpf.kernels.Cosine, gpf.kernels.Polynomial, gpf.kernels.Matern12, gpf.kernels.Matern52, gpf.kernels.White]
         log_marginal_likelihoods = []
 
+        results = []
         for kernel in kernels:
-            model = gpflow.models.GPR(data=(X_train, Y_train), kernel=kernel())
-            gpflow.optimizers.Scipy().minimize(model.training_loss,
-                                               variables=model.trainable_variables)
+            model = gpf.models.GPR(data=(X_train, Y_train), kernel=kernel())
+            gpf.optimizers.Scipy().minimize(model.training_loss,
+                                            variables=model.trainable_variables)
             log_marginal_likelihoods.append(
                 model.log_marginal_likelihood().numpy())
 
         return kernels[np.argmax(log_marginal_likelihoods)]()
 
-    def fit(self, X_train: np.ndarray, Y_train: np.ndarray) -> None:
+    def count_params(self, m):
+        p_dict = parameter_dict(m.trainable_parameters)
+        # p_dict = parameter_dict(m)
+        p_count = 0
+        for val in p_dict.values():
+            if len(val.shape) == 0:
+                p_count = p_count + 1
+            else:
+                p_count = p_count + math.prod(val.shape)
+
+        return p_count
+
+    # This is for model selection: the higher the BIC the better the model
+    def get_BIC(self, m, F, n):
+        k = self.count_params(m)
+        return -2 * F + k * np.log(n)
+
+    # This function is used to optimize the model with scipy
+    # QUESTION: Should we use lmfit instead of scipy?
+    def optimize_model_with_scipy(self, model, X, Y):
+        optimizer = gpf.optimizers.Scipy()
+        MAXITER = 5000  # FIXME change this to be user-defined
+        return optimizer.minimize(
+            model.training_loss_closure(),
+            variables=model.trainable_variables,
+            method="l-bfgs-b",
+            # options={"disp": 50, "maxiter": MAXITER},
+            options={"maxiter": MAXITER},
+        )
+
+    def fit(self, X_train: np.ndarray, Y_train: np.ndarray, kernel) -> None:
         """
         Fits the GPR model using the optimal kernel to the training data.
 
         :param X_train: Training data features.
         :param Y_train: Training data targets.
         """
-        optimal_kernel = self._select_kernel(X_train, Y_train)
-        self.model = gpflow.models.GPR(
-            data=(X_train, Y_train), kernel=optimal_kernel)
-        gpflow.optimizers.Scipy().minimize(self.model.training_loss,
-                                           variables=self.model.trainable_variables)
+        # optimal_kernel = self._select_kernel(X_train, Y_train)
+        m = gpf.models.GPR(
+            data=(X_train, Y_train), kernel=kernel(active_dims=[0]))
+        res = self.optimize_model_with_scipy(m, X_train, Y_train)
+
+        bic = self.get_BIC(m, res.fun, X_train.shape[0])
+
+        return m, bic
 
     def predict(self, X_new: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -68,7 +110,12 @@ class GPImputer(BaseImputer):
         mean, var = self.model.predict_y(X_new)
         return mean.numpy(), var.numpy()
 
-    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, target_column: str) -> pd.DataFrame:
+    def generate_kernel_library(self):
+        kernels = [gpf.kernels.SquaredExponential, gpf.kernels.Matern32, gpf.kernels.RationalQuadratic, gpf.kernels.Exponential, gpf.kernels.Linear,
+                   gpf.kernels.Cosine, gpf.kernels.Polynomial, gpf.kernels.Matern12, gpf.kernels.Matern52, gpf.kernels.White]
+        return kernels
+
+    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, target_column: str, kernel: str = None) -> pd.DataFrame:
         """
         Imputes missing values in the dataset for the specified target column using the GPR model.
 
@@ -77,13 +124,62 @@ class GPImputer(BaseImputer):
         :param target_column: The target column name for imputation.
         :return: Dataset with imputed values in the target column.
         """
+        # make a copy of the dataset
+        dataset = dataset.copy()
         missing_mask = dataset[target_column].isnull()
+        if missing_mask.sum() == 0:
+            print("No missing values found in the target column.")
+            return dataset
         train_data = dataset[~missing_mask]
         missing_data = dataset[missing_mask]
 
         X_train = train_data[feature_columns].values
         Y_train = train_data[[target_column]].values
-        self.fit(X_train, Y_train)
+
+        if kernel is None:
+            kernels = self.generate_kernel_library()
+        elif isinstance(kernel, Kernel):
+            kernels = [kernel]
+        elif isinstance(kernel, str):
+            kernel_map = {
+                'RBF': "SquaredExponential",
+                'M32': "Matern32",
+                'RQ': "RationalQuadratic",
+                'Exp': "Exponential",
+                'Lin': "Linear",
+                'Cos': "Cosine",
+                'Poly': "Polynomial",
+                'M12': "Matern12",
+                'M52': "Matern52",
+                'White': "White"
+            }
+            kernel_library = {
+                k.__name__: k for k in self.generate_kernel_library()}
+            if kernel in kernel_map:
+                kernel_name = kernel_map[kernel]
+                if kernel_name in kernel_library:
+                    kernels = [kernel_library[kernel_name]]
+                else:
+                    raise ValueError(
+                        f"Unknown kernel '{kernel}'. Available options: {list(self.kernel_map.keys())}")
+        else:
+            raise ValueError("Invalid kernel provided.")
+
+        results = []
+        for kernel in kernels:
+            m, bic = self.fit(X_train, Y_train, kernel)
+            # QUESTION: add mean here? Or always assume the mean is 0?
+            results.append([m, bic, kernel])
+
+        # Find the best fitted model
+        # by finding the model with the highest BIC
+        bestModel = max(results, key=lambda x: x[1])
+        self.model = bestModel[0]
+        bic = bestModel[1]
+        k_L = bestModel[2]
+
+        print(f"Best kernel: {k_L}")
+        print(f"BIC: {bic}")
 
         if not missing_data.empty:
             X_missing = missing_data[feature_columns].values
