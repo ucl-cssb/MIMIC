@@ -183,9 +183,9 @@ class GPImputer(BaseImputer):
 
         if not missing_data.empty:
             X_missing = missing_data[feature_columns].values
-            predicted_means, _ = self.predict(X_missing)
+            predicted_means_missing, _ = self.predict(X_missing)
             dataset.loc[missing_mask,
-                        target_column] = predicted_means.flatten()
+                        target_column] = predicted_means_missing.flatten()
 
         # make full predicted means and variances available for plotting
 
@@ -194,7 +194,7 @@ class GPImputer(BaseImputer):
         predicted_means_new, predicted_variances_new = self.predict(
             extended_dataset)
 
-        self.plot_imputed_data(X_train, Y_train, X_missing, extended_dataset, dataset.iloc[:, 1].values,
+        self.plot_imputed_data(X_train, Y_train, X_missing, predicted_means_missing, extended_dataset,
                                predicted_means_new, predicted_variances_new)
 
         self.data = dataset
@@ -237,7 +237,7 @@ class GPImputer(BaseImputer):
 
     # plot the original and imputed data
 
-    def plot_imputed_data(self, X_train: np.ndarray, Y_train: np.ndarray, X_missing, X_new: np.ndarray, Y_new: np.ndarray, predicted_means: np.ndarray, predicted_variances: np.ndarray) -> None:
+    def plot_imputed_data(self, X_train: np.ndarray, Y_train: np.ndarray, X_missing, predicted_means_missing, X_new: np.ndarray, predicted_means: np.ndarray, predicted_variances: np.ndarray) -> None:
         """
         Plots the original and imputed data points.
 
@@ -252,9 +252,10 @@ class GPImputer(BaseImputer):
         plt.figure(figsize=(12, 6))
         # plt.plot(X_missing, np.zeros_like(
         #     X_missing), 'bo', label='Missing Data Points')
-
-        plt.plot(X_missing, Y_new[X_missing.astype(
-            int)], 'bx', label='Imputed Data')
+        plt.plot(X_missing, predicted_means_missing,
+                 'bx', label='Imputed Data')
+        # plt.plot(X_missing, Y_new[X_missing.astype(
+        #    int)], 'bx', label='Imputed Data')
 
         plt.plot(X_new, predicted_means,
                  'g-', label='Predicted Function')
