@@ -71,30 +71,102 @@ class GPImputer(BaseImputer):
         k = self.count_params(m)
         return -2 * F + k * np.log(n)
 
+    # Define the function that will augment the data for the multi-output Gaussian Process model
+
+    def augmentData(self, x, y, p):
+        """
+        Augments the input data x and y by adding p additional columns to them.
+
+        Parameters:
+        x (numpy.ndarray): The input data to be augmented.
+        y (numpy.ndarray): The output data to be augmented.
+        p (int): The number of additional columns to add.
+
+        Returns:
+        numpy.ndarray, numpy.ndarray: The augmented input and output data.
+        """
+        # Initialize the augmented data
+        X_aug = np.hstack((x, np.zeros((x.shape[0], 1))))
+        Y_aug = np.hstack((y[:, 0].reshape(-1, 1), np.zeros((y.shape[0], 1))))
+
+        # Add p additional columns
+        for i in range(1, p):
+            X_aug = np.vstack(
+                (X_aug, np.hstack((x, i*np.ones((x.shape[0], 1))))))
+            Y_aug = np.vstack(
+                (Y_aug, np.hstack((y[:, i].reshape(-1, 1), i*np.ones((y.shape[0], 1))))))
+
+        return X_aug, Y_aug
+
     # This function is used to optimize the model with scipy
     # QUESTION: Should we use lmfit instead of scipy?
     def optimize_model_with_scipy(self, model, X, Y):
+
         optimizer = gpf.optimizers.Scipy()
         MAXITER = 5000  # FIXME change this to be user-defined
-        return optimizer.minimize(
-            model.training_loss_closure(),
-            variables=model.trainable_variables,
-            method="l-bfgs-b",
-            # options={"disp": 50, "maxiter": MAXITER},
-            options={"maxiter": MAXITER},
-        )
+        if X is not None and Y is not None:
+            return optimizer.minimize(
+                # QUESTION: Should this be compile=True?
+                model.training_loss_closure((X, Y)),
+                variables=model.trainable_variables,
+                method="l-bfgs-b",
+                # options={"disp": 50, "maxiter": MAXITER},
+                options={"maxiter": MAXITER},
+            )
+        else:
+            return optimizer.minimize(
+                model.training_loss,
+                variables=model.trainable_variables,
+                method="l-bfgs-b",
+                # options={"disp": 50, "maxiter": MAXITER},
+                options={"maxiter": MAXITER},
+            )
 
-    def fit(self, X_train: np.ndarray, Y_train: np.ndarray, kernel) -> None:
+    def fit(self, X_train: np.ndarray, Y_train: np.ndarray, kernel, p: int) -> None:
         """
         Fits the GPR model using the optimal kernel to the training data.
 
         :param X_train: Training data features.
         :param Y_train: Training data targets.
         """
-        # optimal_kernel = self._select_kernel(X_train, Y_train)
-        m = gpf.models.GPR(
-            data=(X_train, Y_train), kernel=kernel(active_dims=[0]))
-        res = self.optimize_model_with_scipy(m, X_train, Y_train)
+        # p is the dimension of the output(s)
+        p = Y_train.shape[1]
+
+        if p > 1:
+            # x = X_train.reshape(-1, 1)
+            # y = Y_train.T
+            X_train_aug, Y_train_aug = self.augmentData(X_train, Y_train, p)
+
+            # Here do coregionalization to estimate f(x) = W g(x)
+            # https://gpflow.github.io/GPflow/2.8.0/notebooks/advanced/multioutput.html
+            # https://gpflow.github.io/GPflow/develop/notebooks/getting_started/mean_functions.html
+            # https://towardsdatascience.com/sparse-and-variational-gaussian-process-what-to-do-when-data-is-large-2d3959f430e7
+            # https://gpflow.readthedocs.io/en/v1.5.1-docs/notebooks/advanced/coregionalisation.html
+            # https://gpflow.github.io/GPflow/2.4.0/notebooks/advanced/coregionalisation.html
+            # This uses SVGP
+
+            # Coregionalization kernel
+            L = 1  # rank of the coregionalization matrix FIXME: change this to be user-defined
+            # coreg = gpf.kernels.Coregion(input_dim=1, output_dim=p, rank=p)
+            coreg = gpf.kernels.Coregion(output_dim=p, rank=L, active_dims=[1])
+
+            kernel = kernel(active_dims=[0]) * coreg
+
+            # multi-output Gaussian Process model
+            # m = gpf.models.SVGP(data=(X_train, Y_train),
+            # m = gpf.models.SVGP(kernel=kernel, likelihood=gpf.likelihoods.Gaussian(
+            # ), inducing_variable=X_train_aug, num_latent_gps=p)
+            m = gpf.models.VGP((X_train_aug, Y_train_aug),
+                               kernel=kernel, likelihood=gpf.likelihoods.Gaussian())
+
+            # Or should this be x_aug, y_aug?
+            res = self.optimize_model_with_scipy(m, None, None)
+
+        else:
+            # single-output Gaussian Process model
+            m = gpf.models.GPR(data=(X_train, Y_train),
+                               kernel=kernel(active_dims=[0]))
+            res = self.optimize_model_with_scipy(m, None, None)
 
         bic = self.get_BIC(m, res.fun, X_train.shape[0])
 
@@ -115,7 +187,7 @@ class GPImputer(BaseImputer):
                    gpf.kernels.Cosine, gpf.kernels.Polynomial, gpf.kernels.Matern12, gpf.kernels.Matern52, gpf.kernels.White]
         return kernels
 
-    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, target_column: str, kernel: str = None) -> pd.DataFrame:
+    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, output_columns: list, target_column: str, kernel: str = None) -> pd.DataFrame:
         """
         Imputes missing values in the dataset for the specified target column using the GPR model.
 
@@ -126,15 +198,25 @@ class GPImputer(BaseImputer):
         """
         # make a copy of the dataset
         dataset = dataset.copy()
+
+        # Check if the target column has missing values
         missing_mask = dataset[target_column].isnull()
         if missing_mask.sum() == 0:
             print("No missing values found in the target column.")
             return dataset
+
+        # FIXME: change this for when we have multiple output columns
         train_data = dataset[~missing_mask]
         missing_data = dataset[missing_mask]
 
         X_train = train_data[feature_columns].values
-        Y_train = train_data[[target_column]].values
+        # Y_train = train_data[[target_column]].values
+        Y_train = train_data[output_columns].values
+
+        # p is the dimension of the output(s)
+        p = Y_train.shape[1]
+        if p > 1:
+            X_train_aug, Y_train_aug = self.augmentData(X_train, Y_train, p)
 
         if kernel is None:
             kernels = self.generate_kernel_library()
@@ -167,7 +249,7 @@ class GPImputer(BaseImputer):
 
         results = []
         for kernel in kernels:
-            m, bic = self.fit(X_train, Y_train, kernel)
+            m, bic = self.fit(X_train, Y_train, kernel, p)
             # QUESTION: add mean here? Or always assume the mean is 0?
             results.append([m, bic, kernel])
 
@@ -178,6 +260,7 @@ class GPImputer(BaseImputer):
         bic = bestModel[1]
         k_L = bestModel[2]
 
+        print(f"Model: {self.model.__class__.__name__}")
         print(f"Best kernel: {k_L}")
         print(f"BIC: {bic}")
 
@@ -190,6 +273,12 @@ class GPImputer(BaseImputer):
         # make full predicted means and variances available for plotting
 
         extended_dataset = self.predict_extended_range(dataset)
+
+        if p > 1:
+            X_new = extended_dataset
+            X_new_aug, _ = self.augmentData(X_new, Y_train, p)
+            predicted_means_new, predicted_variances_new = self.predict(
+                X_new_aug)
 
         predicted_means_new, predicted_variances_new = self.predict(
             extended_dataset)
