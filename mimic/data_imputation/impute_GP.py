@@ -129,14 +129,8 @@ class GPImputer(BaseImputer):
         :param X_train: Training data features.
         :param Y_train: Training data targets.
         """
-        # p is the dimension of the output(s)
-        p = Y_train.shape[1]
 
         if p > 1:
-            # x = X_train.reshape(-1, 1)
-            # y = Y_train.T
-            X_train_aug, Y_train_aug = self.augmentData(X_train, Y_train, p)
-
             # Here do coregionalization to estimate f(x) = W g(x)
             # https://gpflow.github.io/GPflow/2.8.0/notebooks/advanced/multioutput.html
             # https://gpflow.github.io/GPflow/develop/notebooks/getting_started/mean_functions.html
@@ -156,7 +150,7 @@ class GPImputer(BaseImputer):
             # m = gpf.models.SVGP(data=(X_train, Y_train),
             # m = gpf.models.SVGP(kernel=kernel, likelihood=gpf.likelihoods.Gaussian(
             # ), inducing_variable=X_train_aug, num_latent_gps=p)
-            m = gpf.models.VGP((X_train_aug, Y_train_aug),
+            m = gpf.models.VGP((X_train, Y_train),
                                kernel=kernel, likelihood=gpf.likelihoods.Gaussian())
 
             # Or should this be x_aug, y_aug?
@@ -216,7 +210,7 @@ class GPImputer(BaseImputer):
         # p is the dimension of the output(s)
         p = Y_train.shape[1]
         if p > 1:
-            X_train_aug, Y_train_aug = self.augmentData(X_train, Y_train, p)
+            X_train, Y_train = self.augmentData(X_train, Y_train, p)
 
         if kernel is None:
             kernels = self.generate_kernel_library()
