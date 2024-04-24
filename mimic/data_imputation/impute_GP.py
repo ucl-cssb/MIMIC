@@ -260,7 +260,14 @@ class GPImputer(BaseImputer):
 
         if not missing_data.empty:
             X_missing = missing_data[feature_columns].values
-            predicted_means_missing, _ = self.predict(X_missing)
+            if p > 1:
+                X_missing, _ = self.augmentData(
+                    X_missing, Y_train, 1)  # FIXME change 1 to p
+                predicted_means_missing, _ = self.predict(X_missing)
+                predicted_means_missing = predicted_means_missing[:, 0]
+            else:
+                predicted_means_missing, _ = self.predict(X_missing)
+            print(predicted_means_missing)
             dataset.loc[missing_mask,
                         target_column] = predicted_means_missing.flatten()
 
@@ -270,12 +277,14 @@ class GPImputer(BaseImputer):
 
         if p > 1:
             X_new = extended_dataset
-            X_new_aug, _ = self.augmentData(X_new, Y_train, p)
+            X_new_aug, _ = self.augmentData(X_new, Y_train, 1)
             predicted_means_new, predicted_variances_new = self.predict(
                 X_new_aug)
-
-        predicted_means_new, predicted_variances_new = self.predict(
-            extended_dataset)
+            predicted_means_new = predicted_means_new[:, 0]
+            predicted_variances_new = predicted_variances_new[:, 0]
+        else:
+            predicted_means_new, predicted_variances_new = self.predict(
+                extended_dataset)
 
         self.plot_imputed_data(X_train, Y_train, X_missing, predicted_means_missing, extended_dataset,
                                predicted_means_new, predicted_variances_new)
