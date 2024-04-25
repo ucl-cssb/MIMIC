@@ -262,7 +262,7 @@ class GPImputer(BaseImputer):
             X_missing = missing_data[feature_columns].values
             if p > 1:
                 X_missing, _ = self.augmentData(
-                    X_missing, Y_train, 1)  # FIXME change 1 to p
+                    X_missing, Y_train, 1)  # FIXME change 1 to p or target_column
                 predicted_means_missing, _ = self.predict(X_missing)
                 predicted_means_missing = predicted_means_missing[:, 0]
             else:
