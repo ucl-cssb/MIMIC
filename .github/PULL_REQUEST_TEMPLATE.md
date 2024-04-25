@@ -1,7 +1,7 @@
 # Pull Request To-Do List
 
-## Description of the changes
-<!--- Describe your changes in detail -->
+## Description of the changes:
+<!--- Provide a detailed summary of your changes, including the motivation behind these changes -->
 
 ## I have done the following to make this PR ready for review:
 
