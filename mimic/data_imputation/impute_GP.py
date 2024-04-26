@@ -31,29 +31,6 @@ class GPImputer(BaseImputer):
         super().__init__()
         self.model = None
 
-    def _select_kernel(self, X_train: np.ndarray, Y_train: np.ndarray) -> gpf.kernels.Kernel:
-        """
-        Automatically selects an optimal kernel for the Gaussian Process based on the provided data.
-
-        :param X_train: Training data features.
-        :param Y_train: Training data targets.
-        :return: An optimal GPFlow kernel instance.
-        """
-
-        kernels = [gpf.kernels.SquaredExponential, gpf.kernels.Matern32, gpf.kernels.RationalQuadratic, gpf.kernels.Exponential, gpf.kernels.Linear,
-                   gpf.kernels.Cosine, gpf.kernels.Polynomial, gpf.kernels.Matern12, gpf.kernels.Matern52, gpf.kernels.White]
-        log_marginal_likelihoods = []
-
-        results = []
-        for kernel in kernels:
-            model = gpf.models.GPR(data=(X_train, Y_train), kernel=kernel())
-            gpf.optimizers.Scipy().minimize(model.training_loss,
-                                            variables=model.trainable_variables)
-            log_marginal_likelihoods.append(
-                model.log_marginal_likelihood().numpy())
-
-        return kernels[np.argmax(log_marginal_likelihoods)]()
-
     def count_params(self, m):
         p_dict = parameter_dict(m.trainable_parameters)
         # p_dict = parameter_dict(m)
