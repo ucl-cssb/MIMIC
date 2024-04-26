@@ -67,9 +67,20 @@ class GPImputer(BaseImputer):
         return p_count
 
     # This is for model selection: the higher the BIC the better the model
+    # This is the Bayesian Information Criterion (BIC) (Schwarz, 1978) which is a penalized version of the log marginal likelihood (F)
+    # This is also shown in lloyd_2014_AutomaticConstructionNaturalLanguage.
     def get_BIC(self, m, F, n):
+        # Calculate the Bayesian Information Criterion (BIC)
+        # `F` represents the likelihood of the model.
+        # `k` is the number of parameters in the model.
+        # `n` is the number of data points (sample size).
+        # `-2 * np.log(F)` penalizes the negative log likelihood, enhancing the effect of model fit.
+        # `k * np.log(n)` adds a penalty that grows with more parameters and larger data size,
+        # discouraging overfitting by complex models.
         k = self.count_params(m)
-        return -2 * F + k * np.log(n)
+        # QUESTION: Should we use -2 * F + k * np.log(n) or -2 * np.log(F) + k * np.log(n)?
+        # return -2 * F + k * np.log(n)
+        return -2 * np.log(F) + k * np.log(n)
 
     # Define the function that will augment the data for the multi-output Gaussian Process model
 
@@ -153,14 +164,15 @@ class GPImputer(BaseImputer):
             m = gpf.models.VGP((X_train, Y_train),
                                kernel=kernel, likelihood=gpf.likelihoods.Gaussian())
 
-            # Or should this be x_aug, y_aug?
-            res = self.optimize_model_with_scipy(m, None, None)
-
         else:
             # single-output Gaussian Process model
             m = gpf.models.GPR(data=(X_train, Y_train),
                                kernel=kernel(active_dims=[0]))
-            res = self.optimize_model_with_scipy(m, None, None)
+
+        # NOTE: Since this code is using VGP, we use the same optimizer as in the original code
+        # However, when we implement the SVGP model, we should use the optimizer and data from the original code
+        # reference: https://gpflow.github.io/GPflow/2.9.1/notebooks/advanced/multioutput.html
+        res = self.optimize_model_with_scipy(m, None, None)
 
         bic = self.get_BIC(m, res.fun, X_train.shape[0])
 
