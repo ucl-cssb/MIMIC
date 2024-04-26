@@ -32,6 +32,19 @@ class GPImputer(BaseImputer):
         self.model = None
 
     def count_params(self, m):
+        """
+        Count the number of parameters in the model.
+
+        Args:
+            m: The model for which the number of parameters is counted.
+
+        Returns:
+            int: The total count of parameters in the model.
+
+        Raises:
+            This function does not raise any exceptions.
+        """
+
         p_dict = parameter_dict(m.trainable_parameters)
         # p_dict = parameter_dict(m)
         p_count = 0
@@ -47,6 +60,21 @@ class GPImputer(BaseImputer):
     # This is the Bayesian Information Criterion (BIC) (Schwarz, 1978) which is a penalized version of the log marginal likelihood (F)
     # This is also shown in lloyd_2014_AutomaticConstructionNaturalLanguage.
     def get_BIC(self, m, F, n):
+        """
+        Calculate the Bayesian Information Criterion (BIC).
+
+        Args:
+            m: The model for which BIC is calculated.
+            F: The likelihood of the model.
+            n: The number of data points (sample size).
+
+        Returns:
+            float: The calculated Bayesian Information Criterion (BIC).
+
+        Raises:
+            This function does not raise any exceptions.
+        """
+
         # Calculate the Bayesian Information Criterion (BIC)
         # `F` represents the likelihood of the model.
         # `k` is the number of parameters in the model.
@@ -89,6 +117,20 @@ class GPImputer(BaseImputer):
     # This function is used to optimize the model with scipy
     # QUESTION: Should we use lmfit instead of scipy?
     def optimize_model_with_scipy(self, model, X, Y):
+        """
+        Optimizes the model using the Scipy optimizer.
+
+        Args:
+            model: The model to be optimized.
+            X: The input data.
+            Y: The output data.
+
+        Returns:
+            scipy.optimize.OptimizeResult: The result of the optimization.
+
+        Raises:
+            This function does not raise any exceptions.
+        """
 
         optimizer = gpf.optimizers.Scipy()
         MAXITER = 5000  # FIXME change this to be user-defined
@@ -112,11 +154,19 @@ class GPImputer(BaseImputer):
 
     def fit(self, X_train: np.ndarray, Y_train: np.ndarray, kernel, p: int) -> None:
         """
-        Fits the GPR model using the optimal kernel to the training data.
+        Fits a Gaussian Process Regression (GPR) model to the training data.
 
         :param X_train: Training data features.
         :param Y_train: Training data targets.
+        :param kernel: The kernel to use for the GPR model.
+        :param p: The number of output dimensions.
+        :return: The fitted GPR model.
         """
+
+        # NOTE: We should update the likelihood, especially between Gaussian and student-t
+        # This likelihood switches between Gaussian noise with different variances for each f_i:
+        # lik = gpf.likelihoods.SwitchedLikelihood(
+        #     [gpf.likelihoods.Gaussian() for _ in range(p)])
 
         if p > 1:
             # Here do coregionalization to estimate f(x) = W g(x)
@@ -129,7 +179,7 @@ class GPImputer(BaseImputer):
 
             # Coregionalization kernel
             L = 1  # rank of the coregionalization matrix FIXME: change this to be user-defined
-            # coreg = gpf.kernels.Coregion(input_dim=1, output_dim=p, rank=p)
+
             coreg = gpf.kernels.Coregion(output_dim=p, rank=L, active_dims=[1])
 
             kernel = kernel(active_dims=[0]) * coreg
@@ -172,13 +222,16 @@ class GPImputer(BaseImputer):
 
     def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, output_columns: list, target_column: str, kernel: str = None) -> pd.DataFrame:
         """
-        Imputes missing values in the dataset for the specified target column using the GPR model.
+        Imputes missing values in the target column of the dataset using Gaussian Process Regression (GPR).
 
-        :param dataset: The dataset with missing values.
-        :param feature_columns: List of feature column names.
-        :param target_column: The target column name for imputation.
-        :return: Dataset with imputed values in the target column.
+        :param dataset: The dataset containing the missing values.
+        :param feature_columns: The columns to use as features for imputation.
+        :param output_columns: The columns to use as outputs for imputation.
+        :param target_column: The column containing the target values to impute.
+        :param kernel: The kernel to use for the GPR model. If None, the optimal kernel is selected.
+        :return: The dataset with imputed values in the target column.
         """
+
         # make a copy of the dataset
         dataset = dataset.copy()
 
