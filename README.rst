@@ -52,9 +52,16 @@ Installation
 
 Prerequisites
 ^^^^^^^^^^^^^
+Conda package manager is recommended due to dependencies on PyMC
 
-* Python 3.10
-* Conda package manager
+* Sckit-learn
+* Numpy
+* Pandas
+* Matplotlib
+* Seaborn
+* Scipy
+* PyMC
+
 
 Steps
 ^^^^^
