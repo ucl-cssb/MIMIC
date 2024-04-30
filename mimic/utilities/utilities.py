@@ -53,7 +53,7 @@ def plot_fit_gMLV(yobs, yobs_h, sobs, sobs_h, timepoints):
     axs[1].set_ylabel('[metabolite]')
 
 
-def plot_fit_gLV(yobs, yobs_h, sobs, sobs_h, timepoints):
+def plot_fit_gLV(yobs, yobs_h, timepoints):
     # plot the fit
     # fig, axs = plt.subplots(1, 2, layout='constrained')
     fig, axs = plt.subplots(1, 1)
