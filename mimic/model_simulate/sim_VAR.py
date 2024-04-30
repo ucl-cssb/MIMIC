@@ -203,7 +203,7 @@ class sim_VAR(BaseModel):
         if command == "VARsim":
             self.check_params(self.parameters, "VAR")
             self.generate_var1_data()
-        elif command == "sVARsim":
+        elif command == "MVARsim":
             self.check_params(self.parameters, "VAR")
             self.coefficientsM = self.parameters["coefficientsM"]
             self.initial_valuesM = self.parameters["initial_valuesM"]
