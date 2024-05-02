@@ -1,5 +1,4 @@
 arviz==0.18.0
-beautifulsoup4==4.12.3
 gpflow==2.9.1
 matplotlib==3.8.4
 mimic==2.2.0
