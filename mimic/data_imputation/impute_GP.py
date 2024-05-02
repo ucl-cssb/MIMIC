@@ -216,6 +216,16 @@ class GPImputer(BaseImputer):
         return mean.numpy(), var.numpy()
 
     def generate_kernel_library(self):
+        """
+        Generate a list of Gaussian Process kernels.
+
+        This method generates a list of Gaussian Process kernels from the GPflow library. 
+        These kernels can be used in the construction of Gaussian Process models.
+
+        Returns:
+            list: A list of GPflow kernel classes. The list includes SquaredExponential, Matern32, 
+            RationalQuadratic, Exponential, Linear, Cosine, Polynomial, Matern12, Matern52, and White kernels.
+        """
         kernels = [gpf.kernels.SquaredExponential, gpf.kernels.Matern32, gpf.kernels.RationalQuadratic, gpf.kernels.Exponential, gpf.kernels.Linear,
                    gpf.kernels.Cosine, gpf.kernels.Polynomial, gpf.kernels.Matern12, gpf.kernels.Matern52, gpf.kernels.White]
         return kernels

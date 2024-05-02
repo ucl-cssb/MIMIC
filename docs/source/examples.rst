@@ -4,14 +4,16 @@ Examples
 .. toctree::
    :maxdepth: 2
 
-   notebooks/examples-data-imputation/impute_GP
-   notebooks/examples-data-imputation/impute_GP_Herold
-   notebooks/examples-data-imputation/impute_GP_Stein
-   notebooks/examples-inf-VAR/BVARinfer
-   notebooks/examples-sim-gLV/examples-ml-gLV
-   notebooks/examples-sim-gLV/examples-sim-gLV
-   notebooks/examples-sim-gMLV/examples-ml-gMLV
-   notebooks/examples-sim-gMLV/examples-sim-gMLV
-   notebooks/examples-sim-VAR/examples-sim-sVAR
-   notebooks/examples-sim-VAR/examples-sim-VAR
-   notebooks/examples-stein-gLV/examples-Stein
+   notebooks/gLV/examples-bayes-gLV
+   notebooks/gLV/examples-lasso-gLV
+   notebooks/gLV/examples-ridge-gLV
+   notebooks/gLV/examples-sim-gLV
+   notebooks/gLV/examples-Stein
+   notebooks/gMLV/examples-ridge-lasso-gMLV
+   notebooks/gMLV/examples-sim-gMLV
+   notebooks/GP/examples-impute-GP
+   notebooks/GP/examples-impute-GP_Herold
+   notebooks/GP/examples-impute-GP_Stein
+   notebooks/MVAR/examples-sim-MVAR
+   notebooks/VAR/examples-bayes-VAR
+   notebooks/VAR/examples-sim-VAR
