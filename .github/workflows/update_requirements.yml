@@ -1,11 +1,14 @@
+name: Integration Test
 on: [push]
-
 jobs:
-    build-and-publish:
-      runs-on: ubuntu-latest
-      name: My workflow
-      steps:
-        - name: Execute Action Graph
-          uses: actionforge/action@5636645834e4a75cbc8c6c204e872ddc27632738 # v0.9.52
-          with:
-            graph_file: update_requirements.yml
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Automatic requirements.txt for Python Project
+        uses: ryan-rozario/pipreqs-action@master
+
+        # Put an example of mandatory inputs here
+        with:
+          PROJECT_PATH: mimic/   #default is the root of the repository
+          REQUIREMENT_PATH: requirements.txt  #default is requirement.txt in the root of your repository 
