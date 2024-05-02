@@ -3,11 +3,16 @@ name: Python package CI
 on:
   [push]
 
+permissions:
+  contents: write
+
 jobs:
   update-requirements:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Automatic requirements.txt for Python Project
         uses: ryan-rozario/pipreqs-action@v3.0.0
@@ -35,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]  # Removed macos-latest to avoid conflict with pipreqs-action
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.10"]
 
     steps:
