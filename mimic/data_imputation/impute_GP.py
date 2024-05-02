@@ -1,7 +1,5 @@
 # mimic/data_imputation/gp_impute.py
 
-import re
-from bs4 import ResultSet
 from mimic.data_imputation.base_imputator import BaseImputer
 import pandas as pd
 import numpy as np
