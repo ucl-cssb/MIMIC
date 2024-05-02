@@ -5,6 +5,7 @@ Examples
    :maxdepth: 2
 
    notebooks/examples-data-imputation/impute_GP
+   notebooks/examples-data-imputation/impute_GP_Herold
    notebooks/examples-data-imputation/impute_GP_Stein
    notebooks/examples-inf-VAR/BVARinfer
    notebooks/examples-sim-gLV/examples-ml-gLV
