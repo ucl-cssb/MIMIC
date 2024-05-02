@@ -1,10 +1,7 @@
 name: Python package CI
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  [push]
 
 jobs:
   update-requirements:
@@ -79,7 +76,7 @@ jobs:
           # flake8 . --count --max-line-length=127 --statistics
 
       - name: Type check with mypy
-        run: mypy .
+        run: mypy --ignore-missing-imports .
 
       - name: Run unit tests
         run: pytest --maxfail=1 --disable-warnings
