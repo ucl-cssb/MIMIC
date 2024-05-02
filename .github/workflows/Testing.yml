@@ -1,0 +1,58 @@
+name: Python package CI
+
+on:
+  [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-13, windows-latest]
+        python-version: ["3.9", "3.10"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Run pipreqs to generate/update requirements.txt
+      - name: Automatic requirements.txt for Python Project
+        uses: ryan-rozario/pipreqs-action@v3.0.0
+        with:
+          PROJECT_PATH: mimic/
+          REQUIREMENT_PATH: requirements.txt  
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install autopep8 flake8 mypy pytest
+          python -m pip install -r requirements.txt || echo "No requirements.txt found"
+
+      - name: Format code with autopep8
+        run: autopep8 --in-place --aggressive --aggressive --recursive .
+
+      - name: Lint with flake8
+        run: |
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # You can also enforce a max line length if desired
+          # flake8 . --count --max-line-length=127 --statistics
+
+      - name: Type check with mypy
+        run: mypy .
+
+      - name: Run unit tests
+        run: pytest --maxfail=1 --disable-warnings
