@@ -1,10 +1,39 @@
 name: Python package CI
 
 on:
-  [push]
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
+  update-requirements:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Automatic requirements.txt for Python Project
+        uses: ryan-rozario/pipreqs-action@v3.0.0
+        with:
+          PROJECT_PATH: mimic/
+          REQUIREMENT_PATH: requirements.txt
+
+      - name: Commit updated requirements.txt
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add requirements.txt
+          git commit -m "Update requirements.txt"
+        continue-on-error: true # In case there are no changes
+
+      - name: Upload updated requirements.txt
+        uses: actions/upload-artifact@v3
+        with:
+          name: requirements
+          path: requirements.txt
+
   build:
+    needs: update-requirements
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -15,12 +44,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Run pipreqs to generate/update requirements.txt
-      - name: Automatic requirements.txt for Python Project
-        uses: ryan-rozario/pipreqs-action@v3.0.0
+      - name: Download updated requirements.txt
+        uses: actions/download-artifact@v3
         with:
-          PROJECT_PATH: mimic/
-          REQUIREMENT_PATH: requirements.txt  
+          name: requirements
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -31,7 +58,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
