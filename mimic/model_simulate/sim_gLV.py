@@ -13,7 +13,7 @@ class sim_gLV(BaseModel):
     Class for a generalised Lotka-Volterra model
     """
 
-    def __init__(self, num_species=2, mu=None, M=None):
+    def __init__(self, num_species=2, num_perturbations=0, mu=None, M=None, epsilon=None):
         """
         Constructor for the gLV model
 
@@ -27,6 +27,7 @@ class sim_gLV(BaseModel):
         super().__init__()
         self.model = "gLV"
         self.nsp = num_species
+        self.np = num_perturbations
 
         self.mu = numpy.random.lognormal(
             0.01, 0.5, self.nsp) if mu is None else mu
@@ -48,11 +49,25 @@ class sim_gLV(BaseModel):
         else:
             self.M = M
 
-        self.parameters = {"num_species": self.nsp, "mu": self.mu, "M": self.M}
+        if epsilon is None:
+            self.epsilon = numpy.zeros((self.nsp, self.np))
+
+            # add random interactions
+            for i in range(self.nsp):
+                for j in range(self.np):
+                    tau = stats.halfcauchy.rvs(loc=0, scale=1)
+                    lam = stats.halfcauchy.rvs(loc=0, scale=1)
+                    epsilon = stats.norm.rvs(loc=0, scale=tau * lam)
+                    self.epsilon[i, j] = -abs(epsilon)
+        else:
+            self.epsilon = epsilon
+
+        self.parameters = {"num_species": self.nsp, "mu": self.mu, "M": self.M, "epsilon": self.epsilon}
 
     def set_parameters(self, num_species: Optional[int] = None,
                        mu: Optional[Union[List[float], numpy.ndarray]] = None,
-                       M: Optional[Union[List[List[float]], numpy.ndarray]] = None) -> None:
+                       M: Optional[Union[List[List[float]], numpy.ndarray]] = None,
+                       epsilon: Optional[Union[List[List[float]], numpy.ndarray]] = None) -> None:
         """
         Updates the simulation parameters. Only provided values are updated; others remain unchanged.
 
@@ -67,10 +82,12 @@ class sim_gLV(BaseModel):
             self.mu = mu
         if M is not None:
             self.M = M
+        if epsilon is not None:
+            self.epsilon = epsilon
 
-        self.parameters = {"num_species": self.nsp, "mu": self.mu, "M": self.M}
+        self.parameters = {"num_species": self.nsp, "mu": self.mu, "M": self.M, "epsilon": self.epsilon}
 
-    def simulate(self, times, init_species) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    def simulate(self, times, init_species, u=None) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
         """
         Simulate the gLV model.
 
@@ -87,12 +104,12 @@ class sim_gLV(BaseModel):
         """
         self.check_params(self.parameters, 'gLV')
 
-        s_obs = odeint(glv, init_species, times, args=(self.mu, self.M))
+        s_obs = odeint(glv, init_species, times, args=(self.mu, self.M, self.epsilon, u))
         self.data = s_obs
-        return s_obs, init_species, self.mu, self.M
+        return s_obs, init_species, self.mu, self.M, self.epsilon
 
 
-def glv(N, t, mu, M) -> numpy.ndarray:
+def glv(N, t, mu, M, epsilon, u) -> numpy.ndarray:
     """
     ODE simulation function for generalised Lotka-Volterra model
 
@@ -101,5 +118,10 @@ def glv(N, t, mu, M) -> numpy.ndarray:
     :param M: interaction matrix
     :return: dy/dt
     """
+    if u is None: 
+        instantaneous_growth = mu + M @ N
+    else:
+        instantaneous_growth = mu + M @ N + epsilon @ u(t)
+    dN = numpy.multiply(N, instantaneous_growth)
 
-    return numpy.multiply(mu, N) + numpy.multiply(N, M @ N)
+    return dN
