@@ -25,7 +25,7 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
           git add requirements.txt
-          git commit -m "Update requirements.txt"
+          git commit -m "Update requirements.txt" || true
         continue-on-error: true # In case there are no changes
 
       - name: Upload updated requirements.txt
