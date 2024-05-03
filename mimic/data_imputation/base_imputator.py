@@ -2,9 +2,8 @@
 
 import os
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Tuple, Union
+from typing import Optional
 
-import numpy as np
 import pandas as pd
 
 
@@ -28,7 +27,7 @@ class BaseImputer(ABC):
         :param target_column: The target column where missing values are imputed.
         :return: Dataset with imputed values in the target column.
         """
-        pass
+        raise NotImplementedError("Subclasses must implement this method")
 
     def save_data(self, filename: str) -> None:
         """
