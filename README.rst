@@ -52,15 +52,25 @@ Installation
 
 Prerequisites
 ^^^^^^^^^^^^^
-Conda package manager is recommended due to dependencies on PyMC
+Conda package manager is recommended due to dependencies on PyMC.
 
-* Sckit-learn
-* Numpy
-* Pandas
-* Matplotlib
-* Seaborn
-* Scipy
-* PyMC
+Python Packages
+""""""""""""""""
+The Python packages needed to run this package are listed in the requirements.txt file in the same workspace. To install them, run:
+
+.. code-block:: bash
+
+   pip install -r requirements.txt
+
+Compilers
+""""""""""
+* g++ compiler is needed for the PyMC3 package.
+
+Solvers
+""""""""
+* Solver 1
+* Solver 2
+* ...
 
 
 Steps
@@ -121,5 +131,5 @@ This project is based on methods proposed in `this paper <https://onlinelibrary.
 Contact
 --------
 
-For questions or feedback, please `contact us <mailto:contact@example.com>`_.
+For questions or feedback, please `contact us <mailto:christopher.barnes@ucl.ac.uk>`_.
 
