@@ -1,9 +1,11 @@
 # mimic/data_imputation/base_imputer.py
 
-from abc import ABC, abstractmethod
-import pandas as pd
-import numpy as np
 import os
+from abc import ABC, abstractmethod
+from typing import Any, Optional, Tuple, Union
+
+import numpy as np
+import pandas as pd
 
 
 class BaseImputer(ABC):
@@ -16,7 +18,7 @@ class BaseImputer(ABC):
         self.data = None
 
     @abstractmethod
-    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, target_column: str) -> pd.DataFrame:
+    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, output_columns: list, target_column: str, kernel: Optional[str] = None) -> pd.DataFrame:
         """
         Abstract method to impute missing values in the dataset.
         Subclasses must implement this method to provide specific imputation functionality.

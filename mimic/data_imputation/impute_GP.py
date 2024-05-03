@@ -5,8 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from typing import Tuple
-
+from typing import Tuple, Union, Any, Optional
 import gpflow as gpf
 from gpflow.utilities import parameter_dict
 from gpflow.ci_utils import reduce_in_tests
@@ -27,7 +26,7 @@ class GPImputer(BaseImputer):
         The optimal kernel is selected based on the dataset.
         """
         super().__init__()
-        self.model = None
+        self.model: Optional[Union[gpf.models.GPR, gpf.models.VGP]] = None
 
     def count_params(self, m):
         """
@@ -57,7 +56,7 @@ class GPImputer(BaseImputer):
     # This is for model selection: the higher the BIC the better the model
     # This is the Bayesian Information Criterion (BIC) (Schwarz, 1978) which is a penalized version of the log marginal likelihood (F)
     # This is also shown in lloyd_2014_AutomaticConstructionNaturalLanguage.
-    def get_BIC(self, m, F, n):
+    def get_BIC(self, m, F, n) -> float:
         """
         Calculate the Bayesian Information Criterion (BIC).
 
@@ -82,8 +81,8 @@ class GPImputer(BaseImputer):
         # discouraging overfitting by complex models.
         k = self.count_params(m)
         # QUESTION: Should we use -2 * F + k * np.log(n) or -2 * np.log(F) + k * np.log(n)?
-        # return -2 * F + k * np.log(n)
-        return -2 * np.log(F) + k * np.log(n)
+        return -2 * F + k * np.log(n)
+        # return -2 * np.log(F) + k * np.log(n)
 
     # Define the function that will augment the data for the multi-output Gaussian Process model
 
@@ -150,7 +149,7 @@ class GPImputer(BaseImputer):
                 options={"maxiter": MAXITER},
             )
 
-    def fit(self, X_train: np.ndarray, Y_train: np.ndarray, kernel, p: int) -> None:
+    def fit(self, X_train: np.ndarray, Y_train: np.ndarray, kernel, p: int) -> Tuple[Any, float]:
         """
         Fits a Gaussian Process Regression (GPR) model to the training data.
 
@@ -194,6 +193,9 @@ class GPImputer(BaseImputer):
             m = gpf.models.GPR(data=(X_train, Y_train),
                                kernel=kernel(active_dims=[0]))
 
+        if not isinstance(m, (gpf.models.GPR, gpf.models.VGP)):
+            raise ValueError("Fitting failed to produce a valid model.")
+
         # NOTE: Since this code is using VGP, we use the same optimizer as in the original code
         # However, when we implement the SVGP model, we should use the optimizer and data from the original code
         # reference: https://gpflow.github.io/GPflow/2.9.1/notebooks/advanced/multioutput.html
@@ -210,7 +212,13 @@ class GPImputer(BaseImputer):
         :param X_new: New data features.
         :return: A tuple of predicted means and variances.
         """
+        if self.model is None:
+            raise ValueError(
+                "The model is not initialized. Please fit the model first.")
+
         mean, var = self.model.predict_y(X_new)
+        if mean is None or var is None:
+            raise ValueError("Prediction failed.")
         return mean.numpy(), var.numpy()
 
     def generate_kernel_library(self):
@@ -228,7 +236,7 @@ class GPImputer(BaseImputer):
                    gpf.kernels.Cosine, gpf.kernels.Polynomial, gpf.kernels.Matern12, gpf.kernels.Matern52, gpf.kernels.White]
         return kernels
 
-    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, output_columns: list, target_column: str, kernel: str = None) -> pd.DataFrame:
+    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, output_columns: list, target_column: str, kernel: Optional[str] = None) -> pd.DataFrame:
         """
         Imputes missing values in the target column of the dataset using Gaussian Process Regression (GPR).
 
@@ -287,7 +295,7 @@ class GPImputer(BaseImputer):
                     kernels = [kernel_library[kernel_name]]
                 else:
                     raise ValueError(
-                        f"Unknown kernel '{kernel}'. Available options: {list(self.kernel_map.keys())}")
+                        f"Unknown kernel '{kernel}'. Available options: {list(kernel_map.keys())}")
         else:
             raise ValueError("Invalid kernel provided.")
 
@@ -301,6 +309,9 @@ class GPImputer(BaseImputer):
         # by finding the model with the highest BIC
         bestModel = max(results, key=lambda x: x[1])
         self.model = bestModel[0]
+        if self.model is None:
+            raise ValueError("Model not fitted.")
+
         bic = bestModel[1]
         k_L = bestModel[2]
 
