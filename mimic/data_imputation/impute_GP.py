@@ -8,7 +8,7 @@ import math
 from typing import Tuple, Union, Any, Optional
 import gpflow as gpf
 from gpflow.utilities import parameter_dict
-from gpflow.ci_utils import reduce_in_tests
+# from gpflow.ci_utils import reduce_in_tests
 from gpflow.kernels import Kernel
 gpf.config.set_default_float(np.float64)
 gpf.config.set_default_summary_fmt("notebook")
