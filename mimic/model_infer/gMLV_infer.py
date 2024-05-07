@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import linalg as la
+from numpy.typing import NDArray
+from typing import Any, List, Optional
 from scipy.integrate import odeint
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
@@ -12,7 +14,7 @@ class Ridge1(BaseEstimator, RegressorMixin):
     """Custom ridge regression class"""
 
     def __init__(self, alphas=None, num_species=3):
-        self.coef_ = None
+        self.coef_: Optional[NDArray[Any]] = None
         if alphas is None:
             alphas = [0.1, 0.1]
         self.alphas = alphas
@@ -24,6 +26,8 @@ class Ridge1(BaseEstimator, RegressorMixin):
         # return self
 
     def predict(self, X) -> np.ndarray:
+        if self.coef_ is None:
+            raise ValueError("Model is not fitted yet.")
         return X @ self.coef_.T
 
     def get_params(self, deep=True) -> dict:
@@ -54,6 +58,8 @@ class Ridge2(BaseEstimator, RegressorMixin):
         # return self
 
     def predict(self, X) -> np.ndarray:
+        if self.coef_ is None:
+            raise ValueError("Model is not fitted yet.")
         return X @ self.coef_.T
 
     def get_params(self, deep=True) -> dict:
@@ -214,7 +220,7 @@ def fit_alpha_Ridge1(X, F, num_species, n_a0, n_a1) -> tuple[float, float]:
 
     xv, yv = np.meshgrid(a0, a1, indexing='ij')
 
-    candidate_regressors = []
+    candidate_regressors: List[Any] = []
     for i in range(n_a0):
         candidate_regressors.extend(
             Ridge1(alphas=[xv[i, j], yv[i, j]], num_species=num_species)
@@ -250,7 +256,7 @@ def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2) -> tuple[flo
 
     xv, yv, zv = np.meshgrid(a0, a1, a2, indexing='ij')
 
-    candidate_regressors = []
+    candidate_regressors: List[Any] = []
     for i in range(n_a0):
         for j in range(n_a1):
             candidate_regressors.extend(
@@ -286,6 +292,8 @@ def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2) -> tuple[flo
 def do_final_fit_Ridge1(X, F, num_species, a0, a1) -> tuple[list[float], list[list[float]]]:
     model = Ridge1(alphas=[a0, a1], num_species=num_species)
     model.fit(X, F)
+    if model.coef_ is None:
+        raise ValueError("Model coefficients are not set.")
     mu_h = [model.coef_[i][-1] for i in range(num_species)]
     M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
     return mu_h, M_h
@@ -295,7 +303,8 @@ def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2) -> tuple[list[f
     model = Ridge2(alphas=[a0, a1, a2],
                    num_species=num_species, num_pert=num_pert)
     model.fit(X, F)
-
+    if model.coef_ is None:
+        raise ValueError("Model coefficients are not set.")
     M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
     mu_h = [model.coef_[i][num_species] for i in range(num_species)]
     e_h = [model.coef_[i][(num_species+1):] for i in range(num_species)]
@@ -316,6 +325,8 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100) -> None:
         F_s = F[sample_index, :]
 
         model.fit(X_s, F_s)
+        if model.coef_ is None:
+            raise ValueError("Model coefficients are not set.")
         mu_h = [model.coef_[i][-1] for i in range(num_species)]
         M_h = [model.coef_[i][:num_species].tolist()
                for i in range(num_species)]
