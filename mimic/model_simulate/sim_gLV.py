@@ -2,6 +2,7 @@ import random
 from typing import List, Optional, Union
 
 import numpy
+from numpy.typing import NDArray
 from scipy import stats
 from scipy.integrate import odeint
 
@@ -62,12 +63,16 @@ class sim_gLV(BaseModel):
         else:
             self.epsilon = epsilon
 
-        self.parameters = {"num_species": self.nsp, "mu": self.mu, "M": self.M, "epsilon": self.epsilon}
+        self.parameters = {"num_species": self.nsp,
+                           "mu": self.mu, "M": self.M, "epsilon": self.epsilon}
 
     def set_parameters(self, num_species: Optional[int] = None,
-                       mu: Optional[Union[List[float], numpy.ndarray]] = None,
-                       M: Optional[Union[List[List[float]], numpy.ndarray]] = None,
-                       epsilon: Optional[Union[List[List[float]], numpy.ndarray]] = None) -> None:
+                       mu: Optional[Union[List[float],
+                                          NDArray[numpy.float64]]] = None,
+                       M: Optional[Union[List[List[float]],
+                                         NDArray[numpy.float64]]] = None,
+                       epsilon: Optional[Union[List[List[float]], NDArray[numpy
+                                                                          .float64]]] = None) -> None:
         """
         Updates the simulation parameters. Only provided values are updated; others remain unchanged.
 
@@ -75,18 +80,22 @@ class sim_gLV(BaseModel):
             num_species (Optional[int]): Number of species.
             mu (Optional[Union[List[float], numpy.ndarray]]): Growth rates.
             M (Optional[Union[List[List[float]], numpy.ndarray]]): Interaction matrix.
+            epsilon (Optional[Union[List[List[float]], numpy.ndarray]]): Perturbation matrix.
         """
         if num_species is not None:
             self.nsp = num_species
         if mu is not None:
             self.mu = mu
         if M is not None:
-            self.M = M
+            self.M = numpy.asarray(M, dtype=numpy.float64)
         if epsilon is not None:
-            self.epsilon = epsilon
+            self.epsilon = numpy.asarray(epsilon, dtype=numpy.float64)
 
-        self.parameters = {"num_species": self.nsp, "mu": self.mu, "M": self.M, "epsilon": self.epsilon}
+        self.parameters = {"num_species": self.nsp,
+                           "mu": self.mu, "M": self.M, "epsilon": self.epsilon}
 
+    # HACK: this is a hack to avoid PyLint's arguments-differ error, but maybe we should change it so that the simulate method in the base class has the same signature as this one
+    # pylint: disable=arguments-differ
     def simulate(self, times, init_species, u=None) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
         """
         Simulate the gLV model.
@@ -104,7 +113,8 @@ class sim_gLV(BaseModel):
         """
         self.check_params(self.parameters, 'gLV')
 
-        s_obs = odeint(glv, init_species, times, args=(self.mu, self.M, self.epsilon, u))
+        s_obs = odeint(glv, init_species, times, args=(
+            self.mu, self.M, self.epsilon, u))
         self.data = s_obs
         return s_obs, init_species, self.mu, self.M, self.epsilon
 
@@ -118,10 +128,7 @@ def glv(N, t, mu, M, epsilon, u) -> numpy.ndarray:
     :param M: interaction matrix
     :return: dy/dt
     """
-    if u is None: 
-        instantaneous_growth = mu + M @ N
-    else:
-        instantaneous_growth = mu + M @ N + epsilon @ u(t)
-    dN = numpy.multiply(N, instantaneous_growth)
-
-    return dN
+    instantaneous_growth = mu + \
+        M @ N if u is None else mu + M @ N + epsilon @ u(t)
+    # dN = numpy.multiply(N, instantaneous_growth)
+    return numpy.multiply(N, instantaneous_growth)
