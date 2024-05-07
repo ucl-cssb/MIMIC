@@ -124,14 +124,17 @@ class sim_gMLV(BaseModel):
         if mu is not None:
             self.mu = mu
         if M is not None:
-            self.M = M
+            self.M = numpy.asarray(M, dtype=numpy.float64)
         if beta is not None:
-            self.beta = beta
+            self.beta = numpy.asarray(beta, dtype=numpy.float64)
         if epsilon is not None:
-            self.epsilon = epsilon
+            self.epsilon = numpy.asarray(epsilon, dtype=numpy.float64)
 
         self.parameters = {"num_species": self.nsp, "num_metabolites": self.nm, "num_perturbations": self.np,
                            "mu": self.mu, "M": self.M, "beta": self.beta, "epsilon": self.epsilon}
+
+    # HACK: this is a hack to avoid PyLint's arguments-differ error, but maybe we should change it so that the simulate method in the base class has the same signature as this one
+    # pylint: disable=arguments-differ
 
     def simulate(self, times, sy0, u=None) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
         """
