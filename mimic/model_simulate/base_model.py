@@ -1,6 +1,7 @@
 import json
 import os
 from abc import ABC, abstractmethod
+from typing import Dict, Optional, Union, Any
 
 import numpy as np
 import pandas as pd
@@ -64,9 +65,10 @@ class BaseModel(ABC):
         """
         Initializes the BaseModel with default values.
         """
-        self.data = None
-        self.model = None
-        self.parameters = None
+        self.data: Optional[np.ndarray] = None
+        self.model: Optional[object] = None
+        self.parameters: Optional[Dict[str, Union[int,
+                                                  float, None, np.ndarray, str, Any]]] = None
 
     # check if params are set, else print a warning and use the default values for each simulation type
 
@@ -77,7 +79,7 @@ class BaseModel(ABC):
 
         Subclasses should implement this method to customize parameter handling.
         """
-        pass
+        raise NotImplementedError("Subclasses must implement this method")
 
     def update_attributes(self) -> None:
         """
@@ -86,11 +88,12 @@ class BaseModel(ABC):
         This method iterates through the `parameters` dictionary and updates
         the class attributes with corresponding keys to match the parameter values.
         """
-        for key, value in self.parameters.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
+        if self.parameters:
+            for key, value in self.parameters.items():
+                if hasattr(self, key):
+                    setattr(self, key, value)
 
-    def read_parameters(self, filepath) -> None:
+    def read_parameters(self, filepath: str) -> None:
         """
         Reads parameters from a JSON file and updates the model's parameters.
 
@@ -109,7 +112,7 @@ class BaseModel(ABC):
             raise FileNotFoundError(f"No file found at {filepath}")
 
         try:
-            with open(filepath, 'r') as file:
+            with open(filepath, 'r', encoding='utf-8') as file:
                 loaded_params = json.load(file)
             # Convert lists back to numpy arrays where appropriate
             self.parameters = {
@@ -121,7 +124,7 @@ class BaseModel(ABC):
         except Exception as e:
             print(f"Error reading parameters from {filepath}: {e}")
 
-    def check_params(self, params, sim_type) -> None:
+    def check_params(self, params: Optional[Dict[str, Any]], sim_type: str) -> None:
         """
         Checks and updates simulation parameters with defaults if necessary.
 
@@ -141,9 +144,10 @@ class BaseModel(ABC):
         # FIXME: #46 Change the default parameter generation to whatever dimension the user wants. Right now it's hardcoded to 2.
         default_params_VAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]],
                               "initial_values": [[1], [2]], "noise_stddev": 1, "output": "show"}
-        default_params_gMLV = {"num_species": 2, "num_metabolites": 0,
-                               "num_perturbations": 0, "mu": None, "M": None, "beta": None, "epsilon": None}
-        default_params_gLV = {"num_species": 2, "mu": None, "M": None}
+        default_params_gMLV: dict[str, object] = {"num_species": 2, "num_metabolites": 0,
+                                                  "num_perturbations": 0, "mu": None, "M": None, "beta": None, "epsilon": None}
+        default_params_gLV: dict[str, object] = {
+            "num_species": 2, "mu": None, "M": None}
 
         # TODO: #48 Do this programmatically (see how the class is initiated and use the same logic to generate the default parameters for the simulation type.)
         default_params_sVAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]], "initial_values": [[1], [2]], "noise_stddev": 1.0,
@@ -182,7 +186,7 @@ class BaseModel(ABC):
         self.parameters = default_params
         self.update_attributes()
 
-    def _custom_array_to_string(self, array, precision=2) -> str:
+    def _custom_array_to_string(self, array: np.ndarray, precision: int = 2) -> str:
         """
         Converts a numpy array to a string representation with specified precision.
 
@@ -196,7 +200,7 @@ class BaseModel(ABC):
         with np.printoptions(precision=precision, suppress=True):
             return np.array2string(array, separator=' ')
 
-    def print_parameters(self, precision=2) -> None:
+    def print_parameters(self, precision: int = 2) -> None:
         """
         Prints the model's parameters to the console with formatted numpy arrays.
 
@@ -216,7 +220,7 @@ class BaseModel(ABC):
         else:
             print("No parameters to print.")
 
-    def save_parameters(self, filepath, parameters=None) -> None:
+    def save_parameters(self, filepath: str, parameters: Optional[Dict[str, Union[int, float, np.ndarray, str, Any]]] = None) -> None:
         """
         Saves the model's parameters to a JSON file.
 
@@ -245,17 +249,16 @@ class BaseModel(ABC):
         # Prepare parameters for JSON serialization
         # Convert numpy arrays to lists
         serializable_params = {
-            k: v.tolist() if isinstance(v, np.ndarray) else v
+            k: v.tolist() if isinstance(v, np.ndarray) else v  # pylint: disable=E1101
             for k, v in parameters.items()
         }
-
         try:
-            with open(filepath, 'w') as file:
+            with open(filepath, 'w', encoding='utf-8') as file:
                 json.dump(serializable_params, file)
         except Exception as e:
             print(f"Error saving parameters to {filepath}: {e}")
 
-    def save_data(self, filename, data=None) -> None:
+    def save_data(self, filename: str, data: Optional[np.ndarray] = None) -> None:
         """
         Saves data to a CSV file.
 
@@ -285,9 +288,8 @@ class BaseModel(ABC):
             pd.DataFrame(data).to_csv(filename, index=False, header=False)
         except Exception as e:
             print(f"Error saving data to {filename}: {e}")
-            return False
 
-    def load_data(self, filename) -> None:
+    def load_data(self, filename: str) -> None:
         """
         Loads data from a CSV file into the model's data attribute.
 
@@ -307,13 +309,12 @@ class BaseModel(ABC):
             self.data = pd.read_csv(filename, header=None).values.tolist()
         except Exception as e:
             print(f"Error reading data from {filename}: {e}")
-            return False
 
     @abstractmethod
-    def simulate(self) -> None:
+    def simulate(self, command: str) -> None:
         """
         Abstract method to simulate data based on the model's parameters.
 
         Subclasses must implement this method to provide specific simulation functionality.
         """
-        pass
+        raise NotImplementedError("Subclasses must implement this method")
