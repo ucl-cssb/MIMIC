@@ -224,25 +224,27 @@ class sim_VAR(BaseModel):
         Raises:
             ValueError: If an invalid command is provided.
         """
-        if command == "VARsim":
-            self.check_params(self.parameters, "VAR")
-            self.generate_var1_data()
-        elif command == "MVARsim":
+        if command == "MVARsim":
             self.check_params(self.parameters, "sVAR")
-            if isinstance(self.parameters["coefficientsM"], (int, float, str)):
-                self.coefficientsM = np.array(
-                    [self.parameters["coefficientsM"]])
-            else:
-                self.coefficientsM = self.parameters["coefficientsM"]
-            if isinstance(self.parameters["initial_valuesM"], (int, float, str)):
-                self.initial_valuesM = np.array(
-                    [self.parameters["initial_valuesM"]])
-            else:
-                self.initial_valuesM = self.parameters["initial_valuesM"]
+            self.coefficientsM = (
+                np.array([self.parameters["coefficientsM"]])
+                if isinstance(self.parameters["coefficientsM"], (int, float, str))
+                else self.parameters["coefficientsM"]
+            )
+            self.initial_valuesM = (
+                np.array([self.parameters["initial_valuesM"]])
+                if isinstance(
+                    self.parameters["initial_valuesM"], (int, float, str)
+                )
+                else self.parameters["initial_valuesM"]
+            )
             if self.coefficientsM is None or self.initial_valuesM is None:
                 raise ValueError(
                     "coefficientsM and initial_valuesM must be provided for MVARsim")
             self.generate_mvar1_data(self.coefficientsM, self.initial_valuesM)
+        elif command == "VARsim":
+            self.check_params(self.parameters, "VAR")
+            self.generate_var1_data()
         else:
             raise ValueError("Invalid command. Must be 'VARsim' or 'MVARsim'")
 
