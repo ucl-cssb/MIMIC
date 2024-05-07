@@ -147,7 +147,7 @@ class BaseModel(ABC):
         default_params_gMLV: dict[str, object] = {"num_species": 2, "num_metabolites": 0,
                                                   "num_perturbations": 0, "mu": None, "M": None, "beta": None, "epsilon": None}
         default_params_gLV: dict[str, object] = {
-            "num_species": 2, "mu": None, "M": None}
+            "num_species": 2, "mu": None, "M": None, "epsilon": None}
 
         # TODO: #48 Do this programmatically (see how the class is initiated and use the same logic to generate the default parameters for the simulation type.)
         default_params_sVAR = {"n_obs": 100, "coefficients": [[0.8, -0.2], [0.3, 0.5]], "initial_values": [[1], [2]], "noise_stddev": 1.0,
@@ -311,7 +311,7 @@ class BaseModel(ABC):
             print(f"Error reading data from {filename}: {e}")
 
     @abstractmethod
-    def simulate(self, command: str) -> None:
+    def simulate(self,  *args, **kwargs):
         """
         Abstract method to simulate data based on the model's parameters.
 
