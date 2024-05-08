@@ -63,8 +63,6 @@ jobs:
             which python
             python --version
             echo "PYTHONPATH: $PYTHONPATH"
-            pwd
-            ls -alh
 
       - name: Cache Python dependencies
         uses: actions/cache@v2
