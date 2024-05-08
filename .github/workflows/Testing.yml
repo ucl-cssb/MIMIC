@@ -56,14 +56,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       
-      - name: Install project and debug info
-        run: |
-            python -m pip install --upgrade pip
-            pip install .
-            which python
-            python --version
-            echo "PYTHONPATH: $PYTHONPATH"
-
       - name: Cache Python dependencies
         uses: actions/cache@v2
         with:
@@ -91,5 +83,5 @@ jobs:
       - name: Type check with mypy
         run: mypy --ignore-missing-imports --check-untyped-defs .
 
-      - name: Run unit tests
-        run: pytest --maxfail=1 --disable-warnings
+      - name: Run tests
+        run: pytest tests/ --maxfail=1 --disable-warnings
