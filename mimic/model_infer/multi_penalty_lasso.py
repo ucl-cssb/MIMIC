@@ -32,6 +32,8 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
         return self
 
     def predict(self, X) -> np.ndarray:
+        if self.coef_ is None:
+            raise ValueError("Model not fitted")
         return X @ self.coef_.T
 
     def get_params(self, deep=True) -> dict:
@@ -40,7 +42,7 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
     def non_zero_penalties(self, X, y) -> np.ndarray:
         n_samples, n_features = X.shape
         n_targets = y.shape[1]
-        #print(
+        # print(
         #    f'n_samples: {n_samples}, n_features: {n_features}, n_targets: {n_targets}')
 
         lambda_p = np.diag(self.alpha)
@@ -56,7 +58,7 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
     def penalised_lasso(self, X, y) -> np.ndarray:
         n_samples, n_features = X.shape
         n_targets = y.shape[1]
-        #print(
+        # print(
         #    f'n_samples: {n_samples}, n_features: {n_features}, n_targets: {n_targets}')
 
         alpha_zeros_idx = np.nonzero(self.alpha == 0)[0]
@@ -124,7 +126,7 @@ def fit_alpha_MPLasso(X, y, n_a) -> np.ndarray:
         lambda_p = np.append(np.ones(y.shape[1])*a[0], a[1])
         candidate_regressors.append(MultiPenaltyLasso(alpha=lambda_p))
 
-    #cv = RepeatedKFold(n_splits=5, n_repeats=10)
+    # cv = RepeatedKFold(n_splits=5, n_repeats=10)
     cv = KFold(n_splits=5, shuffle=True)
 
     cv_results = [-cross_val_score(r, X, y, scoring='neg_root_mean_squared_error',
