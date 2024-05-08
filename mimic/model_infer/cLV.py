@@ -1,14 +1,13 @@
+from . import *
+from mimic.model_infer.timeout import *
+from scipy.stats import linregress
+from scipy.special import logsumexp
+from scipy.integrate import RK45, solve_ivp
 import itertools
 import sys
-
+from typing import Tuple, List, Union, Any, Optional
 import numpy as np
-from scipy.integrate import RK45, solve_ivp
-from scipy.special import logsumexp
-from scipy.stats import linregress
-
-from mimic.model_infer.timeout import *
-
-from . import *
+from numpy.typing import NDArray
 
 
 class CompositionalLotkaVolterra:
@@ -37,7 +36,8 @@ class CompositionalLotkaVolterra:
 
         if P is not None and denom is None:
             self.denom = choose_denom(P)
-            self.X = construct_alr(P, self.denom, pseudo_count)
+            self.X: Optional[List[np.ndarray]] = construct_alr(
+                P, self.denom, pseudo_count)
         elif P is not None:
             self.denom = denom
             self.X = construct_alr(P, denom, pseudo_count)
@@ -52,18 +52,18 @@ class CompositionalLotkaVolterra:
             self.no_effects = False
 
         # Parameter estimates
-        self.A = None
-        self.g = None
-        self.B = None
+        self.A: Optional[NDArray] = None
+        self.g: Optional[NDArray] = None
+        self.B: Optional[NDArray] = None
         self.Q_inv = np.eye(self.P[0].shape[1] - 1) if P is not None else None
 
         # Regularization parameters
-        self.alpha = None
-        self.r_A = None
-        self.r_g = None
-        self.r_B = None
+        self.alpha: Optional[float] = None
+        self.r_A: Optional[float] = None
+        self.r_g: Optional[float] = None
+        self.r_B: Optional[float] = None
 
-    def get_regularizers(self) -> tuple[float, float, float, float]:
+    def get_regularizers(self) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
         return self.alpha, self.r_A, self.r_g, self.r_B
 
     def set_regularizers(self, alpha, r_A, r_g, r_B):
@@ -79,16 +79,25 @@ class CompositionalLotkaVolterra:
         if self.alpha is None or self.r_A is None or self.r_g is None or self.r_B is None:
             if verbose:
                 print("Estimating regularizers...")
-            self.alpha, self.r_A, self.r_g, self.r_B = estimate_elastic_net_regularizers_cv(self.X, self.P, self.U,
-                                                                                            self.T, self.denom,
-                                                                                            folds=folds,
-                                                                                            no_effects=self.no_effects,
-                                                                                            verbose=verbose)
+            regularizers = estimate_elastic_net_regularizers_cv(
+                self.X, self.P, self.U, self.T, self.denom,
+                folds=folds, no_effects=self.no_effects, verbose=verbose
+            )
+
+            if regularizers is None:
+                if verbose:
+                    print(
+                        "Failed to estimate regularization parameters. Aborting training.")
+                return  # or raise an Exception if that's more appropriate for your use case
+
+            self.alpha, self.r_A, self.r_g, self.r_B = regularizers
 
         if verbose:
             print("Estimating model parameters...")
-        self.A, self.g, self.B = elastic_net_clv(self.X, self.P, self.U, self.T, self.Q_inv, self.alpha, self.r_A,
-                                                 self.r_g, self.r_B, verbose=verbose)
+        self.A, self.g, self.B = elastic_net_clv(
+            self.X, self.P, self.U, self.T, self.Q_inv, self.alpha,
+            self.r_A, self.r_g, self.r_B, verbose=verbose
+        )
 
         if verbose:
             print()
@@ -121,6 +130,9 @@ class CompositionalLotkaVolterra:
         return predict(x, p0, u, times, self.A, self.g, self.B, self.denom)
 
     def get_params(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        if self.A is None or self.g is None or self.B is None:
+            print("Error: model has not been trained", file=sys.stderr)
+            exit(1)
         A = np.copy(self.A)
         g = np.copy(self.g)
         B = np.copy(self.B)
@@ -131,7 +143,7 @@ def choose_denom(P) -> int:
     """Pick a denominator for additive log-ratio transformation.
     """
     np.seterr(divide="ignore", invalid="ignore")
-    log_change = None
+    log_change: Optional[NDArray] = None
     for p in P:  # for each subject
         s = p.sum(axis=1, keepdims=True)  # sum each taxon across time
         s[s == 0] = 1
@@ -143,6 +155,9 @@ def choose_denom(P) -> int:
     # pick taxon with smallest variance in log proportion
     min_idx = -1
     min_var = np.inf
+    if log_change is None:
+        print("Error: no valid denominator found", file=sys.stderr)
+        exit(1)
     n_taxa = log_change.shape[1]
     for i in range(n_taxa):
         if not np.all(np.isfinite(log_change[:, i])):
@@ -176,29 +191,29 @@ def construct_alr(P, denom, pseudo_count=1e-3) -> list[np.ndarray]:
     return ALR
 
 
-def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> tuple[float, float, float, float]:
+def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> Union[Tuple[float, float, float, float], None]:
     if len(X) == 1:
         print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
         exit(1)
     elif len(X) < folds:
         folds = len(X)
 
-    rs = [0.1, 0.5, 0.7, 0.9, 1]
-    alphas = [0.1, 1, 10]
+    rs = [0.1, 0.5, 0.7, 0.9, 1.0]
+    alphas = [0.1, 1.0, 10.0]
 
     alpha_rA_rg_rB = []
     for alpha, r_A in itertools.product(alphas, rs):
         for r_g in rs:
             if no_effects:
-                alpha_rA_rg_rB.append((alpha, r_A, r_g, 0))
+                alpha_rA_rg_rB.append((alpha, r_A, r_g, 0.0))
             else:
                 alpha_rA_rg_rB.extend((alpha, r_A, r_g, r_B) for r_B in rs)
     np.set_printoptions(suppress=True)
-    best_r = 0
+    best_r: Optional[Tuple[float, float, float, float]] = None
     best_sqr_err = np.inf
     for i, (alpha, r_A, r_g, r_B) in enumerate(alpha_rA_rg_rB):
         # print("\tTesting regularization parameter set", i+1, "of", len(alpha_rA_rg_rB), file=sys.stderr)
-        sqr_err = 0
+        sqr_err = 0.0
         for fold in range(folds):
             train_X = []
             train_P = []
@@ -288,7 +303,7 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
 
         return -obj
 
-    def stack_observations(X, P, U, T) -> tuple[np.ndarray, np.ndarray]:
+    def stack_observations(X, P, U, T) -> tuple[Any | None, Any | None]:
         # number of observations by xDim
         x_stacked = None
         # number of observations by yDim + 1 + uDim
@@ -416,87 +431,27 @@ def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0, r_B=0) -> tuple[np.ndarray, n
     return A, g, B
 
 
-def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> tuple[float, float, float, float]:
+def estimate_ridge_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> Union[tuple[float, float, float], None]:
     if len(X) == 1:
         print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
         exit(1)
     elif len(X) < folds:
         folds = len(X)
 
-    rs = [0.1, 0.5, 0.7, 0.9, 1]
-    alphas = [0.1, 1, 10]
-
-    alpha_rA_rg_rB = []
-    for alpha, r_A in itertools.product(alphas, rs):
-        for r_g in rs:
-            if no_effects:
-                alpha_rA_rg_rB.append((alpha, r_A, r_g, 0))
-            else:
-                alpha_rA_rg_rB.extend((alpha, r_A, r_g, r_B) for r_B in rs)
-    np.set_printoptions(suppress=True)
-    best_r = 0
-    best_sqr_err = np.inf
-    for i, (alpha, r_A, r_g, r_B) in enumerate(alpha_rA_rg_rB):
-        # print("\tTesting regularization parameter set", i+1, "of", len(alpha_rA_rg_rB), file=sys.stderr)
-        sqr_err = 0
-        for fold in range(folds):
-            train_X = []
-            train_P = []
-            train_U = []
-            train_T = []
-
-            test_X = []
-            test_P = []
-            test_U = []
-            test_T = []
-            for i in range(len(X)):
-                if i % folds == fold:
-                    test_X.append(X[i])
-                    test_P.append(P[i])
-                    test_U.append(U[i])
-                    test_T.append(T[i])
-
-                else:
-                    train_X.append(X[i])
-                    train_P.append(P[i])
-                    train_U.append(U[i])
-                    train_T.append(T[i])
-
-            Q_inv = np.eye(train_X[0].shape[1])
-            A, g, B = elastic_net_clv(
-                train_X, train_P, train_U, train_T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3)
-            sqr_err += compute_prediction_error(test_X,
-                                                test_P, test_U, test_T, A, g, B, denom)
-
-        if sqr_err < best_sqr_err:
-            best_r = (alpha, r_A, r_g, r_B)
-            best_sqr_err = sqr_err
-            print("\tr", (alpha, r_A, r_g, r_B), "sqr error", best_sqr_err)
-    np.set_printoptions(suppress=False)
-    return best_r
-
-
-def estimate_ridge_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> tuple[float, float, float]:
-    if len(X) == 1:
-        print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
-        exit(1)
-    elif len(X) < folds:
-        folds = len(X)
-
-    rs = [0.125, 0.25, 0.5, 1, 2, 4]
+    rs = [0.125, 0.25, 0.5, 1.0, 2.0, 4.0]
     rA_rg_rB = []
     for r_A in rs:
         for r_g in rs:
             if no_effects:
-                rA_rg_rB.append((r_A, r_g, 0))
+                rA_rg_rB.append((r_A, r_g, 0.0))
             else:
                 rA_rg_rB.extend((r_A, r_g, r_B) for r_B in rs)
     np.set_printoptions(suppress=True)
-    best_r = 0
+    best_r: Optional[Tuple[float, float, float]] = None
     best_sqr_err = np.inf
     for i, (r_A, r_g, r_B) in enumerate(rA_rg_rB):
         # print("\tTesting regularization parameter set", i+1, "of", len(rA_rg_rB), file=sys.stderr)
-        sqr_err = 0
+        sqr_err = 0.0
         for fold in range(folds):
             train_X = []
             train_P = []
@@ -577,7 +532,7 @@ def compute_prediction_error(X, P, U, T, A, g, B, denom_ids) -> float:
         ntaxa = p.shape[1]
         err += np.square(p[1:] - p_pred[1:]).sum()
         return err/ntaxa
-    err = 0
+    err = 0.0
     for x, p, u, t in zip(X, P, U, T):
         try:
             p_pred = predict(x, p, u, t, A, g, B, denom_ids)
