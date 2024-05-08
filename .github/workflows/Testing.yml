@@ -82,6 +82,7 @@ jobs:
 
       - name: Type check with mypy
         run: mypy --ignore-missing-imports --check-untyped-defs .
-
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Run tests
         run: pytest tests/ --maxfail=1 --disable-warnings
