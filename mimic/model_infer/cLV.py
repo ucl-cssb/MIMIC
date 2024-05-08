@@ -1,5 +1,4 @@
 from . import *
-from mimic.model_infer.timeout import *
 from scipy.stats import linregress
 from scipy.special import logsumexp
 from scipy.integrate import RK45, solve_ivp
