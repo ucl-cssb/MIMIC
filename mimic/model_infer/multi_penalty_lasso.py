@@ -43,7 +43,8 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
         n_samples, n_features = X.shape
         n_targets = y.shape[1]
         # print(
-        #    f'n_samples: {n_samples}, n_features: {n_features}, n_targets: {n_targets}')
+        # f'n_samples: {n_samples}, n_features: {n_features}, n_targets:
+        # {n_targets}')
 
         lambda_p = np.diag(self.alpha)
 
@@ -59,7 +60,8 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
         n_samples, n_features = X.shape
         n_targets = y.shape[1]
         # print(
-        #    f'n_samples: {n_samples}, n_features: {n_features}, n_targets: {n_targets}')
+        # f'n_samples: {n_samples}, n_features: {n_features}, n_targets:
+        # {n_targets}')
 
         alpha_zeros_idx = np.nonzero(self.alpha == 0)[0]
         alpha_nonzeros_idx = np.nonzero(self.alpha != 0)[0]
@@ -87,7 +89,8 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
         projected_X_P = M_NP @ X_P @ np.linalg.inv(lambda_p)
 
         # 3. Apply a lasso: Lasso regress the projected response variable M_NP y on the projected and scaled design
-        # matrix M_NP X_P Λ^−1_P with a regularization penalty λ=1 to obtain estimates for the penalized parameters β̂_P
+        # matrix M_NP X_P Λ^−1_P with a regularization penalty λ=1 to obtain
+        # estimates for the penalized parameters β̂_P
         if len(alpha_nonzeros_idx) > 0:
             model = Lasso(fit_intercept=False, max_iter=int(1e6), alpha=1)
             model.fit(projected_X_P, y_prime)
@@ -96,7 +99,8 @@ class MultiPenaltyLasso(BaseEstimator, RegressorMixin):
             beta_P_hat = []
 
         # 4. Apply an ordinary least squares: Finally, ordinary least squares regress the residuals of the response
-        # variable y − X_P β̂_P on the non-penalized design matrix X_NP to obtain the non-penalized parameters β̂_NP.
+        # variable y − X_P β̂_P on the non-penalized design matrix X_NP to
+        # obtain the non-penalized parameters β̂_NP.
         if len(alpha_zeros_idx) > 0:
             model2 = LinearRegression(fit_intercept=False)
             model2.fit(X_NP, y - X_P @ beta_P_hat)
@@ -122,15 +126,20 @@ def fit_alpha_MPLasso(X, y, n_a) -> np.ndarray:
 
     candidate_regressors = []
     for a in candidate_alphas:
-        # this sets the diag(Lambda) penalties matrix with a[0] penality for M and a[1] penalty for mu
-        lambda_p = np.append(np.ones(y.shape[1])*a[0], a[1])
+        # this sets the diag(Lambda) penalties matrix with a[0] penality for M
+        # and a[1] penalty for mu
+        lambda_p = np.append(np.ones(y.shape[1]) * a[0], a[1])
         candidate_regressors.append(MultiPenaltyLasso(alpha=lambda_p))
 
     # cv = RepeatedKFold(n_splits=5, n_repeats=10)
     cv = KFold(n_splits=5, shuffle=True)
 
-    cv_results = [-cross_val_score(r, X, y, scoring='neg_root_mean_squared_error',
-                                   cv=cv, n_jobs=-1) for r in candidate_regressors]
+    cv_results = [-cross_val_score(r,
+                                   X,
+                                   y,
+                                   scoring='neg_root_mean_squared_error',
+                                   cv=cv,
+                                   n_jobs=-1) for r in candidate_regressors]
 
     n_est = np.array([len(x) for x in cv_results])
     cv_means = np.array([np.mean(x) for x in cv_results])

@@ -17,7 +17,13 @@ class BaseImputer(ABC):
         self.data = None
 
     @abstractmethod
-    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, output_columns: list, target_column: str, kernel: Optional[str] = None) -> pd.DataFrame:
+    def impute_missing_values(
+            self,
+            dataset: pd.DataFrame,
+            feature_columns: list,
+            output_columns: list,
+            target_column: str,
+            kernel: Optional[str] = None) -> pd.DataFrame:
         """
         Abstract method to impute missing values in the dataset.
         Subclasses must implement this method to provide specific imputation functionality.
@@ -43,7 +49,8 @@ class BaseImputer(ABC):
             raise ValueError("No data to save. self.data is None.")
         if not filename.endswith('.csv'):
             raise ValueError("Filename must end with .csv.")
-        if not os.path.exists(os.path.dirname(filename)) and os.path.dirname(filename) != '':
+        if not os.path.exists(os.path.dirname(
+                filename)) and os.path.dirname(filename) != '':
             raise FileNotFoundError(
                 f"No directory found at {os.path.dirname(filename)}")
 

@@ -14,7 +14,7 @@ class CompositionalLotkaVolterra:
     Inference for compositional Lotka-Volterra.
 
     .. math::
-        \frac{d}{dt} log(\frac{\pi_i(t)}{\pi_D(t)}) = g_i + \sum^D_{j=1} (A_{ij} \pi_j(t)) + \sum^P_{p=1} (B_{ip} u_p(t)
+        \frac{d}{dt} log(\frac{\\pi_i(t)}{\\pi_D(t)}) = g_i + \\sum^D_{j=1} (A_{ij} \\pi_j(t)) + \\sum^P_{p=1} (B_{ip} u_p(t)
 
     """
 
@@ -62,7 +62,8 @@ class CompositionalLotkaVolterra:
         self.r_g: Optional[float] = None
         self.r_B: Optional[float] = None
 
-    def get_regularizers(self) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
+    def get_regularizers(
+            self) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
         return self.alpha, self.r_A, self.r_g, self.r_B
 
     def set_regularizers(self, alpha, r_A, r_g, r_B):
@@ -147,7 +148,7 @@ def choose_denom(P) -> int:
         s = p.sum(axis=1, keepdims=True)  # sum each taxon across time
         s[s == 0] = 1
         # calculate the log change between timepoints
-        deltas = np.log((p/s)[1:]) - np.log((p/s)[:-1])
+        deltas = np.log((p / s)[1:]) - np.log((p / s)[:-1])
         log_change = deltas if log_change is None else np.vstack(
             (log_change, deltas))
     np.seterr(divide="warn", invalid="warn")
@@ -190,9 +191,22 @@ def construct_alr(P, denom, pseudo_count=1e-3) -> list[np.ndarray]:
     return ALR
 
 
-def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> Union[Tuple[float, float, float, float], None]:
+def estimate_elastic_net_regularizers_cv(X,
+                                         P,
+                                         U,
+                                         T,
+                                         denom,
+                                         folds,
+                                         no_effects=False,
+                                         verbose=False) -> Union[Tuple[float,
+                                                                       float,
+                                                                       float,
+                                                                       float],
+                                                                 None]:
     if len(X) == 1:
-        print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
+        print(
+            "Error: cannot estimate regularization parameters from single sample",
+            file=sys.stderr)
         exit(1)
     elif len(X) < folds:
         folds = len(X)
@@ -250,55 +264,68 @@ def estimate_elastic_net_regularizers_cv(X, P, U, T, denom, folds, no_effects=Fa
     return best_r
 
 
-def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=False, max_iter=10000) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def elastic_net_clv(X,
+                    P,
+                    U,
+                    T,
+                    Q_inv,
+                    alpha,
+                    r_A,
+                    r_g,
+                    r_B,
+                    tol=1e-3,
+                    verbose=False,
+                    max_iter=10000) -> tuple[np.ndarray,
+                                             np.ndarray,
+                                             np.ndarray]:
     def gradient(AgB, x_stacked, pgu_stacked) -> np.ndarray:
         f = x_stacked - AgB.dot(pgu_stacked.T).T
         grad = Q_inv.dot(f.T.dot(pgu_stacked))
 
         # l2 regularization terms
         A = AgB[:, :yDim]
-        g = AgB[:, yDim:(yDim+1)]
-        B = AgB[:, (yDim+1):]
+        g = AgB[:, yDim:(yDim + 1)]
+        B = AgB[:, (yDim + 1):]
 
-        grad[:, :yDim] += -2*alpha*(1-r_A)*A
-        grad[:, yDim:(yDim+1)] += -2*alpha*(1-r_g)*g
-        grad[:, (yDim+1):] += -2*alpha*(1-r_B)*B
+        grad[:, :yDim] += -2 * alpha * (1 - r_A) * A
+        grad[:, yDim:(yDim + 1)] += -2 * alpha * (1 - r_g) * g
+        grad[:, (yDim + 1):] += -2 * alpha * (1 - r_B) * B
         return -grad
 
     def generalized_gradient(AgB, grad, step) -> np.ndarray:
-        nxt_AgB = prv_AgB - step*grad
+        nxt_AgB = prv_AgB - step * grad
 
         # threshold A
         A_prox = nxt_AgB[:, :yDim]
-        A_prox[A_prox < -step*alpha*r_A] += step*alpha*r_A
-        A_prox[A_prox > step*alpha*r_A] -= step*alpha*r_A
-        A_prox[np.logical_and(A_prox >= -step*alpha*r_A,
-                              A_prox <= step*alpha*r_A)] = 0
+        A_prox[A_prox < -step * alpha * r_A] += step * alpha * r_A
+        A_prox[A_prox > step * alpha * r_A] -= step * alpha * r_A
+        A_prox[np.logical_and(A_prox >= -step * alpha * r_A,
+                              A_prox <= step * alpha * r_A)] = 0
 
         # threshold g
-        g_prox = nxt_AgB[:, yDim:(yDim+1)]
-        g_prox[g_prox < -step*alpha*r_g] += step*alpha*r_g
-        g_prox[g_prox > step*alpha*r_g] -= step*alpha*r_g
-        g_prox[np.logical_and(g_prox >= -step*alpha*r_g,
-                              g_prox <= step*alpha*r_g)] = 0
+        g_prox = nxt_AgB[:, yDim:(yDim + 1)]
+        g_prox[g_prox < -step * alpha * r_g] += step * alpha * r_g
+        g_prox[g_prox > step * alpha * r_g] -= step * alpha * r_g
+        g_prox[np.logical_and(g_prox >= -step * alpha * r_g,
+                              g_prox <= step * alpha * r_g)] = 0
 
         # threshold B
-        B_prox = nxt_AgB[:, (yDim+1):]
-        B_prox[B_prox < -step*alpha*r_B] += step*alpha*r_B
-        B_prox[B_prox > step*alpha*r_B] -= step*alpha*r_B
-        B_prox[np.logical_and(B_prox >= -step*alpha*r_B,
-                              B_prox <= step*alpha*r_B)] = 0
+        B_prox = nxt_AgB[:, (yDim + 1):]
+        B_prox[B_prox < -step * alpha * r_B] += step * alpha * r_B
+        B_prox[B_prox > step * alpha * r_B] -= step * alpha * r_B
+        B_prox[np.logical_and(B_prox >= -step * alpha * r_B,
+                              B_prox <= step * alpha * r_B)] = 0
 
         AgB_proximal = np.zeros(AgB.shape)
         AgB_proximal[:, :yDim] = A_prox
-        AgB_proximal[:, yDim:(yDim+1)] = g_prox
-        AgB_proximal[:, (yDim+1):] = B_prox
+        AgB_proximal[:, yDim:(yDim + 1)] = g_prox
+        AgB_proximal[:, (yDim + 1):] = B_prox
 
-        return (AgB - AgB_proximal)/step
+        return (AgB - AgB_proximal) / step
 
     def objective(AgB, x_stacked, pgu_stacked) -> float:
         f = x_stacked - AgB.dot(pgu_stacked.T).T
-        obj = -0.5*(f.dot(Q_inv)*f).sum()
+        obj = -0.5 * (f.dot(Q_inv) * f).sum()
 
         return -obj
 
@@ -309,19 +336,19 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
         pgu_stacked = None
         for x, p, u, times in zip(X, P, U, T):
             for t in range(1, times.size):
-                dt = times[t] - times[t-1]
-                pt0 = p[t-1]
+                dt = times[t] - times[t - 1]
+                pt0 = p[t - 1]
                 gt0 = np.ones(1)
-                ut0 = u[t-1]
+                ut0 = u[t - 1]
                 pgu = np.concatenate((pt0, gt0, ut0))
 
                 if x_stacked is None:
-                    x_stacked = x[t] - x[t-1]
-                    pgu_stacked = dt*pgu
+                    x_stacked = x[t] - x[t - 1]
+                    pgu_stacked = dt * pgu
 
                 else:
-                    x_stacked = np.vstack((x_stacked, x[t] - x[t-1]))
-                    pgu_stacked = np.vstack((pgu_stacked, dt*pgu))
+                    x_stacked = np.vstack((x_stacked, x[t] - x[t - 1]))
+                    pgu_stacked = np.vstack((pgu_stacked, dt * pgu))
 
         return x_stacked, pgu_stacked
 
@@ -331,10 +358,10 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
 
     AgB = np.zeros((xDim, yDim + 1 + uDim))
     A, g, B = ridge_regression_clv(X, P, U, T, np.max(
-        (alpha*(1-r_A), 0.01)), np.max((alpha*(1-r_g), 0.01)), np.max((alpha*(1-r_B), 0.01)))
+        (alpha * (1 - r_A), 0.01)), np.max((alpha * (1 - r_g), 0.01)), np.max((alpha * (1 - r_B), 0.01)))
     AgB[:, :yDim] = A
-    AgB[:, yDim:(yDim+1)] = np.expand_dims(g, axis=1)
-    AgB[:, (yDim+1):] = B
+    AgB[:, yDim:(yDim + 1)] = np.expand_dims(g, axis=1)
+    AgB[:, (yDim + 1):] = B
 
     x_stacked, pgu_stacked = stack_observations(X, P, U, T)
     prv_obj = np.inf
@@ -350,20 +377,21 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
         step = 0.1
         grad = gradient(prv_AgB, x_stacked, pgu_stacked)
         gen_grad = generalized_gradient(prv_AgB, grad, step)
-        nxt_AgB = prv_AgB - step*gen_grad
+        nxt_AgB = prv_AgB - step * gen_grad
         obj = objective(nxt_AgB, x_stacked, pgu_stacked)
-        while obj > prv_obj - step*(grad*gen_grad).sum() + step*0.5*np.square(gen_grad).sum():
+        while obj > prv_obj - step * \
+                (grad * gen_grad).sum() + step * 0.5 * np.square(gen_grad).sum():
             step /= 2
             gen_grad = generalized_gradient(prv_AgB, grad, step)
-            nxt_AgB = prv_AgB - step*gen_grad
+            nxt_AgB = prv_AgB - step * gen_grad
             obj = objective(nxt_AgB, x_stacked, pgu_stacked)
 
         A = nxt_AgB[:, :yDim]
-        g = nxt_AgB[:, yDim:(yDim+1)]
-        B = nxt_AgB[:, (yDim+1):]
+        g = nxt_AgB[:, yDim:(yDim + 1)]
+        B = nxt_AgB[:, (yDim + 1):]
         AgB[:, :yDim] = A
-        AgB[:, yDim:(yDim+1)] = g
-        AgB[:, (yDim+1):] = B
+        AgB[:, yDim:(yDim + 1)] = g
+        AgB[:, (yDim + 1):] = B
 
         obj = objective(AgB, x_stacked, pgu_stacked)
         it += 1
@@ -377,14 +405,15 @@ def elastic_net_clv(X, P, U, T, Q_inv, alpha, r_A, r_g, r_B, tol=1e-3, verbose=F
             break
 
     A = AgB[:, :yDim]
-    g = AgB[:, yDim:(yDim+1)].flatten()
-    B = AgB[:, (yDim+1):]
+    g = AgB[:, yDim:(yDim + 1)].flatten()
+    B = AgB[:, (yDim + 1):]
 
     return A, g, B
 
 
-def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0, r_B=0) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Computes estimates of A, g, and B using least squares. 
+def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0,
+                         r_B=0) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Computes estimates of A, g, and B using least squares.
 
     Parameters
     ----------
@@ -404,17 +433,17 @@ def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0, r_B=0) -> tuple[np.ndarray, n
     for idx, (xi, pi, ui) in enumerate(zip(X, P, U)):
         for t in range(1, xi.shape[0]):
             pt = pi[t]
-            pt0 = pi[t-1]
+            pt0 = pi[t - 1]
 
             xt = xi[t]
-            xt0 = xi[t-1]
+            xt0 = xi[t - 1]
 
             gt0 = np.ones(1)
-            ut0 = ui[t-1]
+            ut0 = ui[t - 1]
 
             pgu = np.concatenate((pt0, gt0, ut0))
 
-            delT = T[idx][t] - T[idx][t-1]
+            delT = T[idx][t] - T[idx][t - 1]
             AgB_term1 += np.outer((xt - xt0) / delT, pgu)
             AgB_term2 += np.outer(pgu, pgu)
 
@@ -424,15 +453,27 @@ def ridge_regression_clv(X, P, U, T, r_A=0, r_g=0, r_B=0) -> tuple[np.ndarray, n
     reg = np.diag(reg)
     AgB = AgB_term1.dot(np.linalg.pinv(AgB_term2 + reg))
     A = AgB[:, :yDim]
-    g = AgB[:, yDim:(yDim+1)].flatten()
-    B = AgB[:, (yDim+1):]
+    g = AgB[:, yDim:(yDim + 1)].flatten()
+    B = AgB[:, (yDim + 1):]
 
     return A, g, B
 
 
-def estimate_ridge_regularizers_cv(X, P, U, T, denom, folds, no_effects=False, verbose=False) -> Union[tuple[float, float, float], None]:
+def estimate_ridge_regularizers_cv(X,
+                                   P,
+                                   U,
+                                   T,
+                                   denom,
+                                   folds,
+                                   no_effects=False,
+                                   verbose=False) -> Union[tuple[float,
+                                                                 float,
+                                                                 float],
+                                                           None]:
     if len(X) == 1:
-        print("Error: cannot estimate regularization parameters from single sample", file=sys.stderr)
+        print(
+            "Error: cannot estimate regularization parameters from single sample",
+            file=sys.stderr)
         exit(1)
     elif len(X) < folds:
         folds = len(X)
@@ -494,9 +535,9 @@ def compute_rel_abun(x, denom) -> np.ndarray:
     z = np.hstack((x, np.zeros((x.shape[0], 1))))
     p = np.exp(z - logsumexp(z, axis=1, keepdims=True))
     p /= p.sum(axis=1, keepdims=True)
-    for i in range(p.shape[1]-1, denom, -1):
-        tmp = np.copy(p[:, i-1])
-        p[:, i-1] = np.copy(p[:, i])
+    for i in range(p.shape[1] - 1, denom, -1):
+        tmp = np.copy(p[:, i - 1])
+        p[:, i - 1] = np.copy(p[:, i])
         p[:, i] = tmp
     return p
 
@@ -511,14 +552,14 @@ def predict(x, p, u, times, A, g, B, denom) -> np.ndarray:
             return g + A.dot(p) + B.dot(u)
         return fn
 
-    p_pred = np.zeros((times.shape[0], x[0].size+1))
+    p_pred = np.zeros((times.shape[0], x[0].size + 1))
     pt = p[0]
     xt = x[0]
 
     for i in range(1, times.shape[0]):
-        grad = grad_fn(A, g, B, u[i-1], denom)
-        dt = times[i] - times[i-1]
-        ivp = solve_ivp(grad, (0, 0+dt), xt, method="RK45")
+        grad = grad_fn(A, g, B, u[i - 1], denom)
+        dt = times[i] - times[i - 1]
+        ivp = solve_ivp(grad, (0, 0 + dt), xt, method="RK45")
         xt = ivp.y[:, -1]
         pt = compute_rel_abun(xt, denom).flatten()
         p_pred[i] = pt
@@ -530,7 +571,7 @@ def compute_prediction_error(X, P, U, T, A, g, B, denom_ids) -> float:
         err = 0
         ntaxa = p.shape[1]
         err += np.square(p[1:] - p_pred[1:]).sum()
-        return err/ntaxa
+        return err / ntaxa
     err = 0.0
     for x, p, u, t in zip(X, P, U, T):
         try:
@@ -538,7 +579,7 @@ def compute_prediction_error(X, P, U, T, A, g, B, denom_ids) -> float:
             err += compute_err(p, p_pred)
         except TimeoutError:
             err += np.inf
-    return err/len(X)
+    return err / len(X)
 
 
 def estimate_relative_abundances(Y, pseudo_count=1e-3) -> list[np.ndarray]:

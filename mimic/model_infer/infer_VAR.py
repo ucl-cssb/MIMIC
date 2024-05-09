@@ -68,7 +68,8 @@ class infer_VAR:
         # PyMC3 model
         with pm.Model() as var_model:
             # Priors for x0 and sigma
-            # QUESTION: should the sigma be the noise_stddev from the parameters.json file?
+            # QUESTION: should the sigma be the noise_stddev from the
+            # parameters.json file?
             x0 = pm.Normal('x0', mu=0, sigma=1, shape=(dim, 1))
             A = pm.Normal('A', mu=0, sigma=1, shape=(dim, dim))
 
@@ -100,7 +101,8 @@ class infer_VAR:
 
         # Sampling from the posterior
         with var_model:
-            # FIXME: #38 make these arguments specifiable in the parameters.json file file
+            # FIXME: #38 make these arguments specifiable in the
+            # parameters.json file file
             trace = pm.sample(2000, tune=1000, cores=2)
 
         # Plotting the posterior distributions
@@ -155,7 +157,8 @@ class infer_VAR:
 
             # Priors for coefficients with horseshoe -> sparse VAR
             noise_stddev = pm.HalfNormal("noise_stddev", 25)
-            # HACK: mu = 0 was addded by me. It might be wrong and mu = [0,0]*ndim might be better
+            # HACK: mu = 0 was addded by me. It might be wrong and mu =
+            # [0,0]*ndim might be better
             x0 = pm.Normal('x0', mu=0,
                            sigma=0.001, shape=(ndim, 1))
 
@@ -176,7 +179,7 @@ class infer_VAR:
             c2 = pm.InverseGamma("c2", 2, 8)
             tau = pm.HalfCauchy("tau", beta=tau0)
             lam = pm.HalfCauchy("lam", beta=1, shape=(ndim, ndim))
-            A = pm.Normal('A', mu=0, sigma=tau * lam*at.sqrt((c2 /
+            A = pm.Normal('A', mu=0, sigma=tau * lam * at.sqrt((c2 /
                           (c2 + tau**2 * lam**2)), shape=(ndim, ndim)))
 
             # Priors for coefficients with LKJ prior

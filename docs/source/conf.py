@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 
-
+import generate_examples_rst
 import sys
 import os
 # Add the directory containing generate_examples_rst.py to Python's path
@@ -15,7 +15,6 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, current_dir)
 sys.path.insert(0, os.path.abspath('../..'))
 sys.path.insert(0, os.path.abspath('../../mimic'))
-import generate_examples_rst
 
 project = 'MIMIC'
 copyright = '2024, Pedro Fontanarrosa'
@@ -72,5 +71,6 @@ nbsphinx_execute = 'never'
 autoclass_content = 'both'
 
 # Run the script to generate examples.rst
-# This script will generate examples.rst from the jupyter notebooks in the examples directory
+# This script will generate examples.rst from the jupyter notebooks in the
+# examples directory
 generate_examples_rst.main()

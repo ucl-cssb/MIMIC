@@ -80,11 +80,13 @@ class GPImputer(BaseImputer):
         # `k * np.log(n)` adds a penalty that grows with more parameters and larger data size,
         # discouraging overfitting by complex models.
         k = self.count_params(m)
-        # QUESTION: Should we use -2 * F + k * np.log(n) or -2 * np.log(F) + k * np.log(n)?
+        # QUESTION: Should we use -2 * F + k * np.log(n) or -2 * np.log(F) + k
+        # * np.log(n)?
         return -2 * F + k * np.log(n)
         # return -2 * np.log(F) + k * np.log(n)
 
-    # Define the function that will augment the data for the multi-output Gaussian Process model
+    # Define the function that will augment the data for the multi-output
+    # Gaussian Process model
 
     def augmentData(self, x, y, p):
         """
@@ -105,9 +107,9 @@ class GPImputer(BaseImputer):
         # Add p additional columns
         for i in range(1, p):
             X_aug = np.vstack(
-                (X_aug, np.hstack((x, i*np.ones((x.shape[0], 1))))))
+                (X_aug, np.hstack((x, i * np.ones((x.shape[0], 1))))))
             Y_aug = np.vstack(
-                (Y_aug, np.hstack((y[:, i].reshape(-1, 1), i*np.ones((y.shape[0], 1))))))
+                (Y_aug, np.hstack((y[:, i].reshape(-1, 1), i * np.ones((y.shape[0], 1))))))
 
         return X_aug, Y_aug
 
@@ -149,7 +151,8 @@ class GPImputer(BaseImputer):
                 options={"maxiter": MAXITER},
             )
 
-    def fit(self, X_train: np.ndarray, Y_train: np.ndarray, kernel, p: int) -> Tuple[Any, float]:
+    def fit(self, X_train: np.ndarray, Y_train: np.ndarray,
+            kernel, p: int) -> Tuple[Any, float]:
         """
         Fits a Gaussian Process Regression (GPR) model to the training data.
 
@@ -185,8 +188,8 @@ class GPImputer(BaseImputer):
             # m = gpf.models.SVGP(data=(X_train, Y_train),
             # m = gpf.models.SVGP(kernel=kernel, likelihood=gpf.likelihoods.Gaussian(
             # ), inducing_variable=X_train_aug, num_latent_gps=p)
-            m = gpf.models.VGP((X_train, Y_train),
-                               kernel=kernel, likelihood=gpf.likelihoods.Gaussian())
+            m = gpf.models.VGP((X_train, Y_train), kernel=kernel,
+                               likelihood=gpf.likelihoods.Gaussian())
 
         else:
             # single-output Gaussian Process model
@@ -198,7 +201,8 @@ class GPImputer(BaseImputer):
 
         # NOTE: Since this code is using VGP, we use the same optimizer as in the original code
         # However, when we implement the SVGP model, we should use the optimizer and data from the original code
-        # reference: https://gpflow.github.io/GPflow/2.9.1/notebooks/advanced/multioutput.html
+        # reference:
+        # https://gpflow.github.io/GPflow/2.9.1/notebooks/advanced/multioutput.html
         res = self.optimize_model_with_scipy(m, None, None)
 
         bic = self.get_BIC(m, res.fun, X_train.shape[0])
@@ -225,18 +229,33 @@ class GPImputer(BaseImputer):
         """
         Generate a list of Gaussian Process kernels.
 
-        This method generates a list of Gaussian Process kernels from the GPflow library. 
+        This method generates a list of Gaussian Process kernels from the GPflow library.
         These kernels can be used in the construction of Gaussian Process models.
 
         Returns:
-            list: A list of GPflow kernel classes. The list includes SquaredExponential, Matern32, 
+            list: A list of GPflow kernel classes. The list includes SquaredExponential, Matern32,
             RationalQuadratic, Exponential, Linear, Cosine, Polynomial, Matern12, Matern52, and White kernels.
         """
-        kernels = [gpf.kernels.SquaredExponential, gpf.kernels.Matern32, gpf.kernels.RationalQuadratic, gpf.kernels.Exponential, gpf.kernels.Linear,
-                   gpf.kernels.Cosine, gpf.kernels.Polynomial, gpf.kernels.Matern12, gpf.kernels.Matern52, gpf.kernels.White]
+        kernels = [
+            gpf.kernels.SquaredExponential,
+            gpf.kernels.Matern32,
+            gpf.kernels.RationalQuadratic,
+            gpf.kernels.Exponential,
+            gpf.kernels.Linear,
+            gpf.kernels.Cosine,
+            gpf.kernels.Polynomial,
+            gpf.kernels.Matern12,
+            gpf.kernels.Matern52,
+            gpf.kernels.White]
         return kernels
 
-    def impute_missing_values(self, dataset: pd.DataFrame, feature_columns: list, output_columns: list, target_column: str, kernel: Optional[str] = None) -> pd.DataFrame:
+    def impute_missing_values(
+            self,
+            dataset: pd.DataFrame,
+            feature_columns: list,
+            output_columns: list,
+            target_column: str,
+            kernel: Optional[str] = None) -> pd.DataFrame:
         """
         Imputes missing values in the target column of the dataset using Gaussian Process Regression (GPR).
 
@@ -322,8 +341,8 @@ class GPImputer(BaseImputer):
         if not missing_data.empty:
             X_missing = missing_data[feature_columns].values
             if p > 1:
-                X_missing, _ = self.augmentData(
-                    X_missing, Y_train, 1)  # FIXME change 1 to p or target_column
+                # FIXME change 1 to p or target_column
+                X_missing, _ = self.augmentData(X_missing, Y_train, 1)
                 predicted_means_missing, _ = self.predict(X_missing)
                 predicted_means_missing = predicted_means_missing[:, 0]
             else:
@@ -342,13 +361,25 @@ class GPImputer(BaseImputer):
                 X_new_aug)
             predicted_means_new = predicted_means_new[:, 0]
             predicted_variances_new = predicted_variances_new[:, 0]
-            self.plot_imputed_data(train_data[feature_columns].values, train_data[[target_column]].values, X_missing[:, 0], predicted_means_missing, extended_dataset,
-                                   predicted_means_new, predicted_variances_new)
+            self.plot_imputed_data(train_data[feature_columns].values,
+                                   train_data[[target_column]].values,
+                                   X_missing[:,
+                                             0],
+                                   predicted_means_missing,
+                                   extended_dataset,
+                                   predicted_means_new,
+                                   predicted_variances_new)
         else:
             predicted_means_new, predicted_variances_new = self.predict(
                 extended_dataset)
-            self.plot_imputed_data(X_train, Y_train, X_missing, predicted_means_missing, extended_dataset,
-                                   predicted_means_new, predicted_variances_new)
+            self.plot_imputed_data(
+                X_train,
+                Y_train,
+                X_missing,
+                predicted_means_missing,
+                extended_dataset,
+                predicted_means_new,
+                predicted_variances_new)
 
         self.data = dataset
         return dataset
@@ -378,9 +409,15 @@ class GPImputer(BaseImputer):
         # Number of points to add on each side
         num_points = len(original_data)
         extended_lower = np.linspace(
-            lower_extension, original_data.min(), num=num_points // 10, endpoint=False)
+            lower_extension,
+            original_data.min(),
+            num=num_points // 10,
+            endpoint=False)
         extended_upper = np.linspace(
-            original_data.max(), upper_extension, num=num_points // 10, endpoint=False)
+            original_data.max(),
+            upper_extension,
+            num=num_points // 10,
+            endpoint=False)
 
         # Combine original and extended points
         extended_range = np.concatenate(
@@ -390,7 +427,15 @@ class GPImputer(BaseImputer):
 
     # plot the original and imputed data
 
-    def plot_imputed_data(self, X_train: np.ndarray, Y_train: np.ndarray, X_missing, predicted_means_missing, X_new: np.ndarray, predicted_means: np.ndarray, predicted_variances: np.ndarray) -> None:
+    def plot_imputed_data(
+            self,
+            X_train: np.ndarray,
+            Y_train: np.ndarray,
+            X_missing,
+            predicted_means_missing,
+            X_new: np.ndarray,
+            predicted_means: np.ndarray,
+            predicted_variances: np.ndarray) -> None:
         """
         Plots the original and imputed data points.
 
@@ -412,8 +457,19 @@ class GPImputer(BaseImputer):
 
         plt.plot(X_new, predicted_means,
                  'g-', label='Predicted Function')
-        plt.fill_between((X_new).flatten(), predicted_means.flatten() -
-                         1.96 * np.sqrt(predicted_variances.flatten()), predicted_means.flatten() + 1.96 * np.sqrt(predicted_variances.flatten()), color='g', alpha=0.1, label='95% Confidence Interval')
+        plt.fill_between(
+            (X_new).flatten(),
+            predicted_means.flatten() -
+            1.96 *
+            np.sqrt(
+                predicted_variances.flatten()),
+            predicted_means.flatten() +
+            1.96 *
+            np.sqrt(
+                predicted_variances.flatten()),
+            color='g',
+            alpha=0.1,
+            label='95% Confidence Interval')
 
         plt.plot(X_train, Y_train, 'ro', label='Training Data')
         plt.xlabel('X')
