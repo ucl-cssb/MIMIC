@@ -66,12 +66,10 @@ Compilers
 """"""""""
 * g++ compiler is needed for the PyMC3 package.
 
-Solvers
-""""""""
-* Solver 1
-* Solver 2
-* ...
-
+.. Solvers
+.. """"""""
+.. * Solver 1
+.. * Solver 2
 
 Steps
 ^^^^^
@@ -87,31 +85,13 @@ Steps
 Usage
 -------
 
-Running gLV Model Simulations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To get started with MIMIC, you can explore a variety of detailed examples and comprehensive documentation.
 
-.. code-block:: bash
+- **Documentation**: Visit our [complete documentation](https://yourdocumentationurl.com) for detailed guides, API references, and more.
+- **Examples**: Check out our [Examples Directory](https://yourdocumentationurl.com/examples) which includes Jupyter notebooks demonstrating how to use MIMIC for different applications and scenarios.
 
-    python3 run_gLV.py <output directory> <number to simulate> <number of species> <number of time points> <number of replicates> <number of time points to fit> <number of replicates to fit> <number of time points to predict> <number of replicates to predict>
+The documentation is regularly updated with the latest information on usage, features, and examples to help you effectively utilize the MIMIC package in your research or applications.
 
-Example:
-
-.. code-block:: bash
-
-    python run_gLV.py "C:\Users\User\Desktop\test_gLV" 100 10 100 10 50 5 50 5
-
-Generating gLV Simulations
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: bash
-
-    python3 run_gLV_sims.py <output directory> <number to simulate>
-
-Example:
-
-.. code-block:: bash
-
-    python run_gLV_sims.py "C:\Users\User\Desktop\test_gLV" 100
 
 Contributing
 -------------
