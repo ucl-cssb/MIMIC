@@ -88,10 +88,24 @@ def compare_params(mu=None, M=None, alpha=None, e=None):
         print("\n", np.array(M[0]))
 
         fig, ax = plt.subplots()
-        ax.stem(np.arange(0, M[0].shape[0] ** 2),
-                np.array(M[1]).flatten(), markerfmt="D", label='M_hat', linefmt='C0-')
-        ax.stem(np.arange(0, M[0].shape[0] ** 2),
-                np.array(M[0]).flatten(), markerfmt="X", label='M', linefmt='C1-')
+        ax.stem(
+            np.arange(
+                0,
+                M[0].shape[0] ** 2),
+            np.array(
+                M[1]).flatten(),
+            markerfmt="D",
+            label='M_hat',
+            linefmt='C0-')
+        ax.stem(
+            np.arange(
+                0,
+                M[0].shape[0] ** 2),
+            np.array(
+                M[0]).flatten(),
+            markerfmt="X",
+            label='M',
+            linefmt='C1-')
         ax.set_ylabel('M[i,j]')
         ax.legend()
 
@@ -101,10 +115,26 @@ def compare_params(mu=None, M=None, alpha=None, e=None):
         print("\n", np.array(alpha[0]))
 
         fig, ax = plt.subplots()
-        ax.stem(np.arange(0, alpha[0].shape[0] * alpha[0].shape[1]),
-                np.array(alpha[1]).flatten(), markerfmt="D", label='a_hat', linefmt='C0-')
-        ax.stem(np.arange(0, alpha[0].shape[0] * alpha[0].shape[1]),
-                np.array(alpha[0]).flatten(), markerfmt="X", label='a', linefmt='C1-')
+        ax.stem(
+            np.arange(
+                0,
+                alpha[0].shape[0] *
+                alpha[0].shape[1]),
+            np.array(
+                alpha[1]).flatten(),
+            markerfmt="D",
+            label='a_hat',
+            linefmt='C0-')
+        ax.stem(
+            np.arange(
+                0,
+                alpha[0].shape[0] *
+                alpha[0].shape[1]),
+            np.array(
+                alpha[0]).flatten(),
+            markerfmt="X",
+            label='a',
+            linefmt='C1-')
         ax.set_ylabel('a[i,j]')
         ax.legend()
 

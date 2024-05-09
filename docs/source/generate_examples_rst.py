@@ -41,7 +41,8 @@ def generate_rst(notebooks, target_dir, output_file):
         f.write(".. toctree::\n")
         f.write("   :maxdepth: 2\n\n")
         for nb in notebooks:
-            # Notebooks are now within `docs/source/notebooks`, adjust path accordingly
+            # Notebooks are now within `docs/source/notebooks`, adjust path
+            # accordingly
             nb_path = os.path.join('notebooks', nb).replace(os.path.sep, '/')
             f.write(f"   {nb_path}\n")
 

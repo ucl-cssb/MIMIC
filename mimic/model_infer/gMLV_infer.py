@@ -64,7 +64,10 @@ class Ridge2(BaseEstimator, RegressorMixin):
 
     def get_params(self, deep=True) -> dict:
         # suppose this estimator has parameters "alpha" and "recursive"
-        return {"alphas": self.alphas, "num_species": self.num_species, "num_pert": self.num_pert}
+        return {
+            "alphas": self.alphas,
+            "num_species": self.num_species,
+            "num_pert": self.num_pert}
 
 
 def ridge_fit(X, F, alphas, num_species) -> np.ndarray:
@@ -101,7 +104,8 @@ def ridge_fit_pert(X, F, alphas, num_species, num_pert) -> np.ndarray:
 
 def ridge_fit_test(tX, tF, num_species, cRidge=Ridge1) -> None:
     # sourcery skip: extract-duplicate-method
-    # NOTE: `cRidge` is not defined in this file, so I temporarily replaced it with `Ridge1`
+    # NOTE: `cRidge` is not defined in this file, so I temporarily replaced it
+    # with `Ridge1`
     print("default ridge")
     model = Ridge(alpha=0.01, fit_intercept=False)
     model.fit(tX, tF)
@@ -149,7 +153,8 @@ def linearize_time_course_16S(yobs, times) -> tuple[np.ndarray, np.ndarray]:
 
 
 # here u should be of length timepoints
-def linearize_time_course_16S_u(yobs, times, u) -> tuple[np.ndarray, np.ndarray]:
+def linearize_time_course_16S_u(
+        yobs, times, u) -> tuple[np.ndarray, np.ndarray]:
     num_species = yobs.shape[1]
     nt = len(times)
 
@@ -168,7 +173,8 @@ def linearize_time_course_16S_u(yobs, times, u) -> tuple[np.ndarray, np.ndarray]
     return tX, F
 
 
-def linearise_time_course_metabolites(sobs, yobs, times) -> tuple[np.ndarray, np.ndarray]:
+def linearise_time_course_metabolites(
+        sobs, yobs, times) -> tuple[np.ndarray, np.ndarray]:
     nm = sobs.shape[1]
     ns = yobs.shape[1]
 
@@ -227,8 +233,11 @@ def fit_alpha_Ridge1(X, F, num_species, n_a0, n_a1) -> tuple[float, float]:
             for j in range(n_a1)
         )
     cv = RepeatedKFold(n_splits=10, n_repeats=10)
-    cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv)
-                  for r in candidate_regressors]
+    cv_results = [-cross_val_score(r,
+                                   X,
+                                   F,
+                                   scoring='neg_root_mean_squared_error',
+                                   cv=cv) for r in candidate_regressors]
 
     cv_means = np.array([np.mean(x) for x in cv_results])
     cv_se = np.array([np.std(x) / np.sqrt(100) for x in cv_results])
@@ -247,7 +256,8 @@ def fit_alpha_Ridge1(X, F, num_species, n_a0, n_a1) -> tuple[float, float]:
     return a0[inds[0]], a1[inds[1]]
 
 
-def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2) -> tuple[float, float, float]:
+def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0,
+                     n_a1, n_a2) -> tuple[float, float, float]:
     # use own ridge model
 
     a0 = np.logspace(-6, 3, n_a0)  # constraint on Mij matrix elements
@@ -268,8 +278,11 @@ def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2) -> tuple[flo
                 for k in range(n_a2)
             )
     cv = RepeatedKFold(n_splits=10, n_repeats=10)
-    cv_results = [-cross_val_score(r, X, F, scoring='neg_root_mean_squared_error', cv=cv)
-                  for r in candidate_regressors]
+    cv_results = [-cross_val_score(r,
+                                   X,
+                                   F,
+                                   scoring='neg_root_mean_squared_error',
+                                   cv=cv) for r in candidate_regressors]
 
     cv_means = np.array([np.mean(x) for x in cv_results])
     cv_se = np.array([np.std(x) / np.sqrt(100) for x in cv_results])
@@ -289,7 +302,8 @@ def fit_alpha_Ridge2(X, F, num_species, num_pert, n_a0, n_a1, n_a2) -> tuple[flo
     return a0[inds[0]], a1[inds[1]], a2[inds[2]]
 
 
-def do_final_fit_Ridge1(X, F, num_species, a0, a1) -> tuple[list[float], list[list[float]]]:
+def do_final_fit_Ridge1(X, F, num_species, a0,
+                        a1) -> tuple[list[float], list[list[float]]]:
     model = Ridge1(alphas=[a0, a1], num_species=num_species)
     model.fit(X, F)
     if model.coef_ is None:
@@ -299,7 +313,15 @@ def do_final_fit_Ridge1(X, F, num_species, a0, a1) -> tuple[list[float], list[li
     return mu_h, M_h
 
 
-def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2) -> tuple[list[float], list[list[float]], list[list[float]]]:
+def do_final_fit_Ridge2(X,
+                        F,
+                        num_species,
+                        num_pert,
+                        a0,
+                        a1,
+                        a2) -> tuple[list[float],
+                                     list[list[float]],
+                                     list[list[float]]]:
     model = Ridge2(alphas=[a0, a1, a2],
                    num_species=num_species, num_pert=num_pert)
     model.fit(X, F)
@@ -307,7 +329,7 @@ def do_final_fit_Ridge2(X, F, num_species, num_pert, a0, a1, a2) -> tuple[list[f
         raise ValueError("Model coefficients are not set.")
     M_h = [model.coef_[i][:num_species].tolist() for i in range(num_species)]
     mu_h = [model.coef_[i][num_species] for i in range(num_species)]
-    e_h = [model.coef_[i][(num_species+1):] for i in range(num_species)]
+    e_h = [model.coef_[i][(num_species + 1):] for i in range(num_species)]
 
     return mu_h, M_h, e_h
 
@@ -362,14 +384,30 @@ def do_bootstrapping(X, F, num_species, a0, a1, nt, nboots=100) -> None:
             elif mms_min[i] < 0 and mms_max[i] < 0:
                 star = "*"
 
-        print(i + 1, np.unravel_index(i, (num_species, num_species)), np.round(mms_min[i], decimals=3), " - ",
-              np.round(mms_max[i], decimals=3), star)
+        print(
+            i + 1,
+            np.unravel_index(
+                i,
+                (num_species,
+                 num_species)),
+            np.round(
+                mms_min[i],
+                decimals=3),
+            " - ",
+            np.round(
+                mms_max[i],
+                decimals=3),
+            star)
 
 
 def plot_alpha_lasso(X, S, n_a) -> None:
     candidate_alpha = np.logspace(-1, 2, n_a)
-    candidate_regressors = [Lasso(
-        alpha=a, fit_intercept=False, max_iter=10000, tol=1e-1) for a in candidate_alpha]
+    candidate_regressors = [
+        Lasso(
+            alpha=a,
+            fit_intercept=False,
+            max_iter=10000,
+            tol=1e-1) for a in candidate_alpha]
 
     coefs = [r.fit(X, S).coef_.flatten() for r in candidate_regressors]
 
@@ -388,12 +426,20 @@ def plot_alpha_lasso(X, S, n_a) -> None:
 
 def fit_alpha_lasso(X, S, n_a) -> tuple[float, float]:
     candidate_alpha = np.logspace(-1, 2, n_a)
-    candidate_regressors = [Lasso(
-        alpha=a, fit_intercept=False, max_iter=10000, tol=1e-1) for a in candidate_alpha]
+    candidate_regressors = [
+        Lasso(
+            alpha=a,
+            fit_intercept=False,
+            max_iter=10000,
+            tol=1e-1) for a in candidate_alpha]
 
     cv = RepeatedKFold(n_splits=10, n_repeats=10)
-    cv_results = [-cross_val_score(r, X, S, scoring='neg_root_mean_squared_error', cv=cv, n_jobs=-1) for r in
-                  candidate_regressors]
+    cv_results = [-cross_val_score(r,
+                                   X,
+                                   S,
+                                   scoring='neg_root_mean_squared_error',
+                                   cv=cv,
+                                   n_jobs=-1) for r in candidate_regressors]
 
     n_est = np.array([len(x) for x in cv_results])
     cv_means = np.array([np.mean(x) for x in cv_results])
@@ -412,7 +458,10 @@ def fit_alpha_lasso(X, S, n_a) -> tuple[float, float]:
     plt.fill_between(candidate_alpha, cv_means + 1 *
                      cv_se, cv_means - 1 * cv_se, alpha=.1)
     plt.axhline(cutoff, linestyle='dotted', label='Best + One SE')
-    plt.scatter([candidate_alpha[one_se_rule_i]], [cv_means[one_se_rule_i]], marker='o', color='orange',
+    plt.scatter([candidate_alpha[one_se_rule_i]],
+                [cv_means[one_se_rule_i]],
+                marker='o',
+                color='orange',
                 label='One SE Rule')
     plt.scatter([candidate_alpha[min_i]], [cv_means[min_i]],
                 marker='o', color='blue', label='Minimum rule')
@@ -426,7 +475,8 @@ def fit_alpha_lasso(X, S, n_a) -> tuple[float, float]:
 
 
 ###########################################################
-# older function using other more standard methods. Might come back to these at some point
+# older function using other more standard methods. Might come back to
+# these at some point
 
 
 # def fit_alpha_default():

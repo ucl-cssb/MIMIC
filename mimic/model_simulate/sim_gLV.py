@@ -14,7 +14,13 @@ class sim_gLV(BaseModel):
     Class for a generalised Lotka-Volterra model
     """
 
-    def __init__(self, num_species=2, num_perturbations=0, mu=None, M=None, epsilon=None):
+    def __init__(
+            self,
+            num_species=2,
+            num_perturbations=0,
+            mu=None,
+            M=None,
+            epsilon=None):
         """
         Constructor for the gLV model
 
@@ -45,7 +51,7 @@ class sim_gLV(BaseModel):
                         continue
                     tau = stats.halfcauchy.rvs(loc=0, scale=0.001)
                     lam = stats.halfcauchy.rvs(loc=0, scale=1)
-                    M = stats.norm.rvs(loc=0, scale=tau*lam)
+                    M = stats.norm.rvs(loc=0, scale=tau * lam)
                     self.M[i, j] = M
         else:
             self.M = M
@@ -66,13 +72,14 @@ class sim_gLV(BaseModel):
         self.parameters = {"num_species": self.nsp,
                            "mu": self.mu, "M": self.M, "epsilon": self.epsilon}
 
-    def set_parameters(self, num_species: Optional[int] = None,
+    def set_parameters(self,
+                       num_species: Optional[int] = None,
                        mu: Optional[Union[List[float],
                                           NDArray[numpy.float64]]] = None,
                        M: Optional[Union[List[List[float]],
                                          NDArray[numpy.float64]]] = None,
-                       epsilon: Optional[Union[List[List[float]], NDArray[numpy
-                                                                          .float64]]] = None) -> None:
+                       epsilon: Optional[Union[List[List[float]],
+                                               NDArray[numpy .float64]]] = None) -> None:
         """
         Updates the simulation parameters. Only provided values are updated; others remain unchanged.
 
@@ -96,7 +103,14 @@ class sim_gLV(BaseModel):
 
     # HACK: this is a hack to avoid PyLint's arguments-differ error, but maybe we should change it so that the simulate method in the base class has the same signature as this one
     # pylint: disable=arguments-differ
-    def simulate(self, times, init_species, u=None) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    def simulate(self,
+                 times,
+                 init_species,
+                 u=None) -> tuple[numpy.ndarray,
+                                  numpy.ndarray,
+                                  numpy.ndarray,
+                                  numpy.ndarray,
+                                  numpy.ndarray]:
         """
         Simulate the gLV model.
 
