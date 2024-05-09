@@ -82,11 +82,12 @@ jobs:
 
       - name: Type check with mypy
         run: mypy --ignore-missing-imports --check-untyped-defs .
-      - name: Set PYTHONPATH (Unix)
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
-        if: runner.os != 'Windows'
-      - name: Set PYTHONPATH (Windows)
-        run: echo "PYTHONPATH=%CD%" >> $GITHUB_ENV
-        if: runner.os == 'Windows'
+      - name: Set PYTHONPATH based on OS
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            echo "PYTHONPATH=%CD%" >> $GITHUB_ENV
+          else
+            echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+          endif
       - name: Run tests
         run: pytest tests/ --maxfail=1 --disable-warnings
