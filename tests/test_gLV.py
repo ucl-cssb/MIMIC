@@ -30,8 +30,8 @@ def test_glv_1_stationary_species_sim():
     assert glv.M[0][0] == 0
 
     times = numpy.linspace(0, 10, 11)
-    init_species = [1]
-    s_obs, init_species, mu, M = glv.simulate(times, init_species)
+    init_species = numpy.array([1])
+    s_obs, init_species, mu, M, epsilon = glv.simulate(times, init_species)
     assert len(s_obs) == 11
     assert len(s_obs[0]) == 1
     assert len(init_species) == 1
@@ -47,8 +47,8 @@ def test_glv_1_stationary_species_sim():
     glv = sim_gLV(num_species=1, mu=[1], M=numpy.array([[-1]]))
     glv.print_parameters()
     times = numpy.linspace(0, 10, 11)
-    init_species = [1]
-    s_obs, init_species, mu, M = glv.simulate(times, init_species)
+    init_species = numpy.array([1])
+    s_obs, init_species, mu, M, epsilon = glv.simulate(times, init_species)
     for s in s_obs:
         assert s[0] == 1
 
@@ -63,8 +63,9 @@ def test_glv_1_exponential_species_sim():
     assert glv.M[0][0] == 0
 
     times = numpy.linspace(0, 10, 11)
-    init_species = [1]
-    s_obs, init_species, mu, M = glv.simulate(times, init_species)
+    init_species = numpy.array([1])
+
+    s_obs, init_species, mu, M, epsilon = glv.simulate(times, init_species)
     assert len(s_obs) == 11
     assert len(s_obs[0]) == 1
     assert len(init_species) == 1
@@ -106,8 +107,8 @@ def test_glv_2_no_interaction_species_sim():
         1, 2], M=numpy.array([[-1, 0], [0, -1]]))
     glv.print_parameters()
     times = numpy.linspace(0, 100, 11)
-    init_species = [1, 1]
-    s_obs, init_species, mu, M = glv.simulate(times, init_species)
+    init_species = numpy.array([1, 1])
+    s_obs, init_species, mu, M, epsilon = glv.simulate(times, init_species)
     assert s_obs.shape == (11, 2)
     assert abs(s_obs[10][0] - 1) < 0.01
     assert abs(s_obs[10][1] - 2) < 0.01
