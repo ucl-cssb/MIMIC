@@ -30,7 +30,15 @@ class sim_gMLV(BaseModel):
         simulate: Runs the gMLV simulation over a specified time course and initial conditions.
     """
 
-    def __init__(self, num_species=2, num_metabolites=0, num_perturbations=0, mu=None, M=None, beta=None, epsilon=None):
+    def __init__(
+            self,
+            num_species=2,
+            num_metabolites=0,
+            num_perturbations=0,
+            mu=None,
+            M=None,
+            beta=None,
+            epsilon=None):
         """
         Initializes the gMLV simulation with given parameters or defaults.
 
@@ -65,7 +73,7 @@ class sim_gMLV(BaseModel):
                         continue
                     tau = stats.halfcauchy.rvs(loc=0, scale=0.001)
                     lam = stats.halfcauchy.rvs(loc=0, scale=1)
-                    M = stats.norm.rvs(loc=0, scale=tau*lam)
+                    M = stats.norm.rvs(loc=0, scale=tau * lam)
                     # if i == j:
                     #     self.M[i, j] = -abs(M)
                     self.M[i, j] = M
@@ -78,8 +86,8 @@ class sim_gMLV(BaseModel):
         if beta is None and self.nm > 0:
             self.beta = numpy.zeros((self.nm, self.nsp))
             for _ in range(self.nm):
-                i = random.randint(0, self.nm-1)
-                j = random.randint(0, self.nsp-1)
+                i = random.randint(0, self.nm - 1)
+                j = random.randint(0, self.nsp - 1)
                 self.beta[i, j] = random.uniform(a=0, b=1)
         else:
             self.beta = beta
@@ -97,12 +105,27 @@ class sim_gMLV(BaseModel):
         else:
             self.epsilon = epsilon
 
-        self.parameters = {"num_species": self.nsp, "num_metabolites": self.nm, "num_perturbations": self.np,
-                           "mu": self.mu, "M": self.M, "beta": self.beta, "epsilon": self.epsilon}
+        self.parameters = {
+            "num_species": self.nsp,
+            "num_metabolites": self.nm,
+            "num_perturbations": self.np,
+            "mu": self.mu,
+            "M": self.M,
+            "beta": self.beta,
+            "epsilon": self.epsilon}
 
-    def set_parameters(self, num_species: Optional[int] = None, num_metabolites: Optional[int] = None, num_perturbations: Optional[int] = None,
-                       mu: Optional[Union[List[float], numpy.ndarray]] = None, M: Optional[Union[List[List[float]], numpy.ndarray]] = None,
-                       beta: Optional[Union[List[List[float]], numpy.ndarray]] = None, epsilon: Optional[Union[List[List[float]], numpy.ndarray]] = None) -> None:
+    def set_parameters(self,
+                       num_species: Optional[int] = None,
+                       num_metabolites: Optional[int] = None,
+                       num_perturbations: Optional[int] = None,
+                       mu: Optional[Union[List[float],
+                                          numpy.ndarray]] = None,
+                       M: Optional[Union[List[List[float]],
+                                         numpy.ndarray]] = None,
+                       beta: Optional[Union[List[List[float]],
+                                            numpy.ndarray]] = None,
+                       epsilon: Optional[Union[List[List[float]],
+                                               numpy.ndarray]] = None) -> None:
         """
         Updates the simulation parameters. Only provided values are updated; others remain unchanged.
 
@@ -124,16 +147,33 @@ class sim_gMLV(BaseModel):
         if mu is not None:
             self.mu = mu
         if M is not None:
-            self.M = M
+            self.M = numpy.asarray(M, dtype=numpy.float64)
         if beta is not None:
-            self.beta = beta
+            self.beta = numpy.asarray(beta, dtype=numpy.float64)
         if epsilon is not None:
-            self.epsilon = epsilon
+            self.epsilon = numpy.asarray(epsilon, dtype=numpy.float64)
 
-        self.parameters = {"num_species": self.nsp, "num_metabolites": self.nm, "num_perturbations": self.np,
-                           "mu": self.mu, "M": self.M, "beta": self.beta, "epsilon": self.epsilon}
+        self.parameters = {
+            "num_species": self.nsp,
+            "num_metabolites": self.nm,
+            "num_perturbations": self.np,
+            "mu": self.mu,
+            "M": self.M,
+            "beta": self.beta,
+            "epsilon": self.epsilon}
 
-    def simulate(self, times, sy0, u=None) -> tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    # HACK: this is a hack to avoid PyLint's arguments-differ error, but maybe we should change it so that the simulate method in the base class has the same signature as this one
+    # pylint: disable=arguments-differ
+
+    def simulate(self,
+                 times,
+                 sy0,
+                 u=None) -> tuple[numpy.ndarray,
+                                  numpy.ndarray,
+                                  numpy.ndarray,
+                                  numpy.ndarray,
+                                  numpy.ndarray,
+                                  numpy.ndarray]:
         """
         Runs the gMLV simulation over the specified time course with given initial conditions and optional perturbations.
 
@@ -143,7 +183,7 @@ class sim_gMLV(BaseModel):
             u (callable, optional): Function representing the external perturbation signal over time.
 
         Returns:
-            tuple: Tuple containing the simulation results for species (yobs), metabolites (sobs), 
+            tuple: Tuple containing the simulation results for species (yobs), metabolites (sobs),
             initial conditions (sy0), growth rates (mu), interaction matrix (M), and metabolite production rates (beta).
         """
         self.check_params(self.parameters, 'gMLV')

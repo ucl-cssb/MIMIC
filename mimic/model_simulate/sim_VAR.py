@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -62,18 +62,25 @@ class sim_VAR(BaseModel):
         """
         super().__init__()
 
-        self.model = "VAR"
-        self.n_obs = None
-        self.coefficients = None
-        self.initial_values = None
-        self.noise_stddev = None
-        self.output = None
-        self.dataM = None
-        self.coefficientsM = None
-        self.initial_valuesM = None
+        self.model: str = "VAR"
+        self.n_obs: Optional[int] = None
+        self.coefficients: Optional[np.ndarray] = None
+        self.initial_values: Optional[np.ndarray] = None
+        self.noise_stddev: Optional[Union[int, float]] = None
+        self.output: Optional[str] = None
+        self.dataM: Optional[np.ndarray] = None
+        self.coefficientsM: Optional[np.ndarray] = None
+        self.initial_valuesM: Optional[np.ndarray] = None
 
-        self.parameters = {"n_obs": self.n_obs, "coefficients": self.coefficients,
-                           "initial_values": self.initial_values, "noise_stddev": self.noise_stddev, "output": self.output}
+        self.parameters: Dict[str,
+                              Optional[Union[int,
+                                             float,
+                                             np.ndarray,
+                                             str]]] = {"n_obs": self.n_obs,
+                                                       "coefficients": self.coefficients,
+                                                       "initial_values": self.initial_values,
+                                                       "noise_stddev": self.noise_stddev,
+                                                       "output": self.output}
 
     def set_parameters(self,
                        n_obs: Optional[int] = None,
@@ -112,36 +119,53 @@ class sim_VAR(BaseModel):
         if initial_valuesM is not None:
             self.initial_valuesM = np.array(initial_valuesM)
 
-        self.parameters = {"n_obs": self.n_obs, "coefficients": self.coefficients,
-                           "initial_values": self.initial_values, "noise_stddev": self.noise_stddev, "output": self.output,
-                           "coefficientsM": self.coefficientsM, "initial_valuesM": self.initial_valuesM}
+        self.parameters = {
+            "n_obs": self.n_obs,
+            "coefficients": self.coefficients,
+            "initial_values": self.initial_values,
+            "noise_stddev": self.noise_stddev,
+            "output": self.output,
+            "coefficientsM": self.coefficientsM,
+            "initial_valuesM": self.initial_valuesM}
 
     def generate_var1_data(self) -> np.ndarray:
         """
         Generate simulated data from a VAR(1) process.
 
-        Simulates a univariate or multivariate VAR(1) process based on the set parameters. 
+        Simulates a univariate or multivariate VAR(1) process based on the set parameters.
         This method populates the `data` attribute with the generated data.
 
         Returns:
             np.ndarray: The generated data as a numpy array with shape (n_obs, number of variables).
         """
+        # Check if the coefficients and initial values are provided
+        if self.coefficients is None or self.initial_values is None or self.n_obs is None:
+            raise ValueError(
+                "coefficients, number of observations and initial_values must be provided for VARsim")
+
         dim = len(self.initial_values)
         data = np.zeros((self.n_obs, dim))
         data[0, :] = self.initial_values[:, 0]
+
+        if self.noise_stddev is None:
+            self.noise_stddev = 0.1
+            print("noise_stddev not provided, setting to default value 0.1")
 
         for t in range(1, self.n_obs):
             # VAR(1) process: X_t = A * X_{t-1} + noise
             noise = np.random.normal(scale=self.noise_stddev, size=dim)
             data[t, :] = np.dot(self.coefficients, data[t - 1, :]) + noise
 
-        if self.output != 'none':
+        if self.output is not None:
             self.make_plot_overlay(data, None, self.output)
 
         self.data = data  # the generated data
         return data
 
-    def generate_mvar1_data(self, coefficientsM, initial_valuesM) -> tuple[np.ndarray, np.ndarray]:
+    def generate_mvar1_data(self,
+                            coefficientsM: np.ndarray,
+                            initial_valuesM: np.ndarray) -> tuple[np.ndarray,
+                                                                  np.ndarray]:
         """
         Generates synthetic data for a multivariate autoregressive (MVAR) process of order 1.
 
@@ -157,6 +181,17 @@ class sim_VAR(BaseModel):
                    for the X process, and the second array is the generated data for the S process.
                    Both arrays have shapes (n_obs, number of X variables) and (n_obs, number of S variables), respectively.
         """
+
+        # Check if the coefficients and initial values are provided
+        if coefficientsM is None or initial_valuesM is None:
+            raise ValueError(
+                "coefficients, number of observations and initial_values must be provided for MVARsim")
+
+        # check if initial_values and n_obs is different from None
+        if self.initial_values is None or self.n_obs is None or self.coefficients is None:
+            raise ValueError(
+                "initial_values and n_obs must be provided for MVARsim")
+
         nX = len(self.initial_values)
         data = np.zeros((self.n_obs, nX))
         data[0, :] = self.initial_values[:, 0]
@@ -166,6 +201,10 @@ class sim_VAR(BaseModel):
         nS = len(initial_valuesM)
         dataM = np.zeros((self.n_obs, nS))
         dataM[0, :] = initial_valuesM[:, 0]
+
+        if self.noise_stddev is None:
+            self.noise_stddev = 0.1
+            print("noise_stddev not provided, setting to default value 0.1")
 
         for t in range(1, self.n_obs):
             # VAR(1) process: X_t = A * X_{t-1} + noise
@@ -181,13 +220,13 @@ class sim_VAR(BaseModel):
             product = coefficientsM @ Xt
             dataM[t, :] = product[:, 0] + noise
 
-        if self.output != 'none':
+        if self.output is not None:
             self.make_plot_overlay(data, dataM, self.output)
 
         self.data, self.dataM = data, dataM  # the generated data
         return data, dataM
 
-    def simulate(self, command) -> None:
+    def simulate(self, command: str) -> None:
         """
         Simulates data based on the specified command.
 
@@ -200,21 +239,34 @@ class sim_VAR(BaseModel):
         Raises:
             ValueError: If an invalid command is provided.
         """
-        if command == "VARsim":
-            self.check_params(self.parameters, "VAR")
-            self.generate_var1_data()
-        elif command == "MVARsim":
-            self.check_params(self.parameters, "VAR")
-            self.coefficientsM = self.parameters["coefficientsM"]
-            self.initial_valuesM = self.parameters["initial_valuesM"]
+        if command == "MVARsim":
+            self.check_params(self.parameters, "sVAR")
+            self.coefficientsM = (
+                np.array([self.parameters["coefficientsM"]])
+                if isinstance(self.parameters["coefficientsM"], (int, float, str))
+                else self.parameters["coefficientsM"]
+            )
+            self.initial_valuesM = (
+                np.array([self.parameters["initial_valuesM"]])
+                if isinstance(
+                    self.parameters["initial_valuesM"], (int, float, str)
+                )
+                else self.parameters["initial_valuesM"]
+            )
             if self.coefficientsM is None or self.initial_valuesM is None:
                 raise ValueError(
                     "coefficientsM and initial_valuesM must be provided for MVARsim")
             self.generate_mvar1_data(self.coefficientsM, self.initial_valuesM)
+        elif command == "VARsim":
+            self.check_params(self.parameters, "VAR")
+            self.generate_var1_data()
         else:
             raise ValueError("Invalid command. Must be 'VARsim' or 'MVARsim'")
 
-    def make_plot_overlay(self, dataX, dataS=None, output='show') -> None:
+    def make_plot_overlay(self,
+                          dataX: np.ndarray,
+                          dataS: Optional[np.ndarray] = None,
+                          output: Optional[str] = 'show') -> None:
         """
         Creates an overlay plot of the given data for easy comparison.
 
@@ -233,8 +285,11 @@ class sim_VAR(BaseModel):
         nX = dataX.shape[1]
 
         # Create a figure with two subplots
-        fig, axs = plt.subplots(2, 1, figsize=(
-            10, 4)) if dataS is not None else plt.subplots(1, 1, figsize=(10, 4))
+        fig, axs = plt.subplots(
+            2, 1, figsize=(
+                10, 4)) if dataS is not None else plt.subplots(
+            1, 1, figsize=(
+                10, 4))
         axs = np.atleast_1d(axs)  # Ensure axs is always a list
 
         # Plot each variable in dataX on the first subplot
@@ -256,11 +311,12 @@ class sim_VAR(BaseModel):
         if output in ['save', 'both']:
             plt.savefig("plot-data-overlay.pdf")
 
-        # If the output option is 'show' or 'both', show the figure in a new window
+        # If the output option is 'show' or 'both', show the figure in a new
+        # window
         if output in ['show', 'both']:
             plt.show()
 
-    def make_plot_stacked(self, dataX, dataS) -> None:
+    def make_plot_stacked(self, dataX: np.ndarray, dataS: np.ndarray) -> None:
         """
         Creates a stacked plot and a heatmap for the given data, providing a comprehensive view of the data dynamics.
 
@@ -287,11 +343,14 @@ class sim_VAR(BaseModel):
         fig, axs = plt.subplots(2, 1, figsize=(10, 4))
         # Stack plot for dataX
         axs[0].stackplot(
-            range(len(dataX)), *dataX.T, labels=[f"X{str(i)}" for i in range(nX)]
-        )
+            range(
+                len(dataX)),
+            *dataX.T,
+            labels=[
+                f"X{str(i)}" for i in range(nX)])
         axs[0].set_title("Abundance, log10 X")
         axs[0].set_ylabel("X")
-        axs[0].set_xlim(0, nobs-1)
+        axs[0].set_xlim(0, nobs - 1)
 
         sns.heatmap(
             dataS.T,
@@ -309,7 +368,10 @@ class sim_VAR(BaseModel):
         plt.tight_layout()  # Adjust the layout
         plt.savefig("plot-data-XS-stacked.pdf")
 
-    def make_plot(self, dataX, dataS=None, output='show') -> None:
+    def make_plot(self,
+                  dataX: np.ndarray,
+                  dataS: Optional[np.ndarray] = None,
+                  output: Optional[str] = 'show') -> None:
         """
         Generates separate line plots for each variable in the given data, facilitating detailed analysis.
 
@@ -330,7 +392,7 @@ class sim_VAR(BaseModel):
         # Number of columns in dataS if it is provided
         nS = len(dataS[0]) if dataS is not None else 0
 
-        fig, axs = plt.subplots(nX + nS, 1, figsize=(10, 2*(nX+nS)))
+        fig, axs = plt.subplots(nX + nS, 1, figsize=(10, 2 * (nX + nS)))
 
         # Adjust the vertical spacing between subplots
         plt.subplots_adjust(hspace=0.5)
@@ -340,32 +402,13 @@ class sim_VAR(BaseModel):
                 axs[i].plot(dataX[:, i])
                 axs[i].set_title(f"X{str(i)}")
             elif dataS is not None:
-                axs[i].plot(dataS[:, i-nX])
+                axs[i].plot(dataS[:, i - nX])
                 axs[i].set_title(f"S{str(i - nX)}")
 
             # Set the y-axis label
             axs[i].set_ylabel('Abundance')
 
-        if output in ['save', 'both']:
+        if output in {'save', 'both'}:
             plt.savefig("plot-data-stacked.pdf")
-        if output in ['show', 'both']:
+        if output in {'show', 'both'}:
             plt.show()
-
-
-# if __name__ == "__main__":
-
-#     parametersX = read_parameters('parameters2.json')
-#     simulator = sim_VAR(**parametersX)
-#     simulator.simulate("VARsim")
-
-#     make_plot(simulator.data)
-
-#     parametersS = read_parameters('parametersS.json')
-
-#     simulator.simulate("MVARsim", **parametersS)
-
-#     # make_plot_stacked(simulator.data)
-
-#     # simulator = sim_VAR(n_obs=100, coefficients=[
-#     # [0.8, -0.2], [0.3, 0.5]], initial_values=[[1], [2]], noise_stddev=1.0, output='show')
-#     # simulator.simulate("VARsim")

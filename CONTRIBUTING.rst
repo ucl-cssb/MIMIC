@@ -17,61 +17,76 @@ Making Changes
 ----------------
 
 #. **Fork the Repository**
-
    * Fork the repository on GitHub.
 
 #. **Clone the Fork**
-
    * Clone your fork to your local machine.
 
 #. **Create a Branch**
-
    * Create a new branch for your changes.
    * Name the branch something descriptive (e.g., `add-comment-feature`).
 
 #. **Make Your Changes**
-
    * Follow the coding standards and write quality code.
    * Add comments to your code where necessary.
    * Write tests for your changes.
 
 #. **Commit Your Changes**
-
    * Make sure your commit messages are clear and descriptive.
 
 #. **Push to the Branch**
-
    * Push your changes to your branch in your forked repository.
 
 #. **Submit a Pull Request**
-
    * Open a pull request to the main branch of the original repository.
-   * Fill in the pull request template and ensure you've completed all the checklist items.
+   * Ensure all actions in the PR checklist are completed before submitting.
 
 Pull Request Checklist
 ------------------------
 
 Before submitting your Pull Request, ensure:
 
-* You have followed the coding standards and added necessary comments.
-* You have added or updated tests where appropriate.
-* You have updated the documentation related to your changes, if necessary.
-* Your branch merges cleanly with the main branch.
+* Your branch is re-based on the latest main branch.
+* Necessary documentation is updated or added.
+* Your code is well-commented, especially in complex or critical areas.
+* Your code has been thoroughly tested in your local setup.
+* The PR template questions are filled out to provide context on your changes.
+
+Development Workflow
+----------------------
+
+Our GitHub Actions workflow ensures that every push to `master` and every pull request undergoes rigorous checks to maintain the quality and integrity of the code. Here's what happens under the hood:
+
+1. **Automatic Dependency Management**: When changes are pushed to the repository, our workflow automatically updates the `requirements.txt` file to reflect the latest dependencies needed for the project. This ensures that the project always has up-to-date dependencies.
+
+2. **Continuous Integration Tests**:
+    - **Build**: The code is built across multiple operating systems (Ubuntu, macOS, and Windows) using different versions of Python to ensure cross-platform compatibility.
+    - **Code Formatting**: We use `autopep8` to automatically format the code to adhere to PEP 8 standards. This helps in maintaining the readability and consistency of the code.
+    - **Linting**: The `flake8` tool checks for syntax errors or undefined names in the code. It's crucial for catching common errors that might otherwise go unnoticed.
+    - **Type Checking**: `mypy` is used for type checking, ensuring that type hints are used correctly throughout the codebase.
+    - **Testing**: Our tests are run with `pytest`, which not only checks for correct behavior but also ensures that any new changes do not break existing functionalities.
+
+3. **Handling Artifacts**: If the `requirements.txt` is updated, it's uploaded as an artifact to GitHub, which can be used for debugging or direct download from the Actions log.
+
+**Why Your PR Might Fail**:
+
+- **Dependency Issues**: If `requirements.txt` does not correctly reflect the project's dependencies due to an incomplete update.
+- **Code Non-compliance**: Failing to meet formatting guidelines, having syntax errors, or failing type checks.
+- **Test Failures**: Breaking changes that cause unit tests to fail.
+
+Please ensure your code adheres to the guidelines laid out in this document and passes all checks before submitting a pull request.
 
 Code Review Process
 ---------------------
 
 #. **Reviewer Assignment**
-
    * Once you open a PR, a maintainer will assign a reviewer.
 
 #. **Addressing Feedback**
-
    * If your PR receives comments, address them promptly.
    * Make any requested changes and push them to your branch.
 
 #. **Approval and Merge**
-
    * After your PR is approved by a reviewer, a maintainer will merge it.
 
 Reporting Bugs

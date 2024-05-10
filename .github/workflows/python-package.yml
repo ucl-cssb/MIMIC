@@ -6,38 +6,110 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions:
+  contents: write
+
 jobs:
+  update-requirements:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: Install autopep8
+        run: python -m pip install autopep8
+
+      - name: Format code with autopep8
+        run: autopep8 --in-place --aggressive --aggressive --recursive mimic/
+
+      - name: Automatic requirements.txt for Python Project
+        uses: ryan-rozario/pipreqs-action@v3.0.0
+        with:
+          PROJECT_PATH: mimic/
+          REQUIREMENT_PATH: requirements.txt
+
+      - name: Commit changes
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add .
+          git commit -m "Update requirements.txt and format code" || true
+        continue-on-error: true # In case there are no changes
+
+      - name: Upload updated requirements.txt
+        uses: actions/upload-artifact@v3
+        with:
+          name: requirements
+          path: requirements.txt
+
   build:
+    needs: update-requirements
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-13, windows-latest] # Update to macos-latest when https://github.com/actions/setup-python/issues/850 has been resolved
-        python-version: ["3.9", "3.10"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10"]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Cache Python dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install autopep8 flake8
-        python -m pip install -r requirements.txt || echo "No requirements.txt found"
-    - name: Format code with autopep8
-      run: autopep8 --in-place --aggressive --aggressive --recursive .
-    - name: Lint with flake8
-      run: |
-        # Stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # You can also enforce a max line length if desired
-        # flake8 . --count --max-line-length=127 --statistics
+      - uses: actions/checkout@v2
+
+      - name: Download updated requirements.txt
+        uses: actions/download-artifact@v3
+        with:
+          name: requirements
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Cache Python dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install flake8 mypy pytest
+          if [ -f requirements.txt ]; then
+            python -m pip install -r requirements.txt
+          else
+            echo "No requirements.txt found"
+            exit 1
+          fi
+
+      - name: Lint with flake8
+        run: |
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # You can also enforce a max line length if desired
+          # flake8 . --count --max-line-length=127 --statistics
+
+      - name: Type check with mypy
+        run: mypy --ignore-missing-imports --check-untyped-defs .
+      
+      - name: Set PYTHONPATH (Unix)
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+        if: runner.os != 'Windows'
+      
+      - name: Set PYTHONPATH (Windows)
+        shell: cmd
+        run: |
+          setlocal enabledelayedexpansion
+          echo PYTHONPATH=!CD! >> %GITHUB_ENV%
+        if: runner.os == 'Windows'
+        
+      - name: Run tests
+        run: pytest tests/ --disable-warnings

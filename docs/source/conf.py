@@ -72,5 +72,6 @@ nbsphinx_execute = 'never'
 autoclass_content = 'both'
 
 # Run the script to generate examples.rst
-# This script will generate examples.rst from the jupyter notebooks in the examples directory
+# This script will generate examples.rst from the jupyter notebooks in the
+# examples directory
 generate_examples_rst.main()
