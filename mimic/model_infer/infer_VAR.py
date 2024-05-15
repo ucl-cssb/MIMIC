@@ -1,6 +1,7 @@
 import arviz as az
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import pymc as pm
 import pytensor.tensor as at
 
@@ -28,7 +29,20 @@ class infer_VAR:
         None
     """
 
-    def __init__(self, data):
+    def __init__(self, data: np.ndarray):
+        # Check if data is a pandas DataFrame
+        if isinstance(data, pd.DataFrame):
+            # If it is, convert it to a numpy array
+            data = data.values
+        elif not isinstance(data, np.ndarray):
+            # If data is not a numpy array, try to convert it to a numpy array
+            try:
+                data = np.array(data)
+            except Exception as e:
+                raise TypeError(
+                    f"Data could not be converted to a numpy array: {e}"
+                ) from e
+
         self.data = data  # data to do inference on
 
     # import data from a .csv file
@@ -86,7 +100,7 @@ class infer_VAR:
             # print("A:",A.shape)
             # print("data[:-1, :]:", data[:-1, :].shape)
             print("data[1:, :]:", data[1:, :].shape)
-            x0_obs = data[0, :].copy().reshape(2, 1)
+            x0_obs = data[0, :].copy().reshape(-1, 1)
             print("x0:", x0_obs.shape)
 
             mu = x0 + pm.math.dot(A, data[:-1, :].T)
