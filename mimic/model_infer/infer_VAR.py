@@ -16,7 +16,7 @@ class infer_VAR:
         data (numpy.ndarray): The data to perform inference on.
 
     Methods:
-        import_data(file_path):
+        import_data(file_path, index_col=None, parse_dates=False):
             Imports data from a .csv file.
 
         run_inference():
@@ -29,37 +29,47 @@ class infer_VAR:
         None
     """
 
-    def __init__(self, data: np.ndarray):
-        # Check if data is a pandas DataFrame
+    def __init__(self, data):
+        self.data = self._validate_data(data)
+
+    def _validate_data(self, data):
         if isinstance(data, pd.DataFrame):
-            # If it is, convert it to a numpy array
-            data = data.values
-        elif not isinstance(data, np.ndarray):
-            # If data is not a numpy array, try to convert it to a numpy array
+            return data.values
+        elif isinstance(data, np.ndarray):
+            return data
+        elif isinstance(data, (list, tuple)):
             try:
-                data = np.array(data)
+                return np.array(data)
             except Exception as e:
                 raise TypeError(
                     f"Data could not be converted to a numpy array: {e}"
                 ) from e
+        else:
+            raise TypeError(
+                "Unsupported data type. Data must be a DataFrame, ndarray, list, or tuple.")
 
-        self.data = data  # data to do inference on
-
-    # import data from a .csv file
-    def import_data(self, file_path) -> None:
+    def import_data(self, file_path, index_col=None, parse_dates=False) -> None:
         """
         Imports data from a .csv file.
 
         Args:
         file_path (str): The path to the .csv file.
+        index_col (int, optional): Column to use as the row labels of the DataFrame.
+        parse_dates (bool, optional): Parse dates as datetime.
 
         Returns:
         None
         """
-        self.data = np.genfromtxt(file_path, delimiter=',')
-        return
+        try:
+            data = pd.read_csv(file_path, index_col=index_col,
+                               parse_dates=parse_dates)
+            self.data = self._validate_data(data)
+        except Exception as e:
+            raise ValueError(
+                f"Failed to import data from {file_path}: {e}") from e
 
-    def run_inference(self) -> None:  # sourcery skip: extract-method
+    # sourcery skip: extract-method
+    def run_inference(self, samples=2000, tune=1000, cores=2) -> None:
         """
         Runs the inference process for the VAR model.
 
@@ -117,7 +127,7 @@ class infer_VAR:
         with var_model:
             # FIXME: #38 make these arguments specifiable in the
             # parameters.json file file
-            trace = pm.sample(2000, tune=1000, cores=2)
+            trace = pm.sample(samples, tune=tune, cores=cores)
 
         # Plotting the posterior distributions
         # pm.plot_posterior(trace, var_names=['x0', 'A'])
@@ -136,7 +146,7 @@ class infer_VAR:
         az.plot_posterior(trace, var_names=["x0", "A"])
         plt.savefig("posterior_plot.pdf")
 
-    def run_inference_large(self) -> None:
+    def run_inference_large(self, samples=4000, tune=2000, cores=4) -> None:
         """
         Run large-scale inference for VAR model.
 
@@ -147,7 +157,6 @@ class infer_VAR:
             None
         """
         data = self.data
-
         # Check the dimensions of the data
         ndim = data.shape[1]
 
@@ -171,7 +180,6 @@ class infer_VAR:
 
             # Priors for coefficients with horseshoe -> sparse VAR
             noise_stddev = pm.HalfNormal("noise_stddev", 25)
-            # HACK: mu = 0 was addded by me. It might be wrong and mu =
             # [0,0]*ndim might be better
             x0 = pm.Normal('x0', mu=0,
                            sigma=0.001, shape=(ndim, 1))
@@ -193,8 +201,8 @@ class infer_VAR:
             c2 = pm.InverseGamma("c2", 2, 8)
             tau = pm.HalfCauchy("tau", beta=tau0)
             lam = pm.HalfCauchy("lam", beta=1, shape=(ndim, ndim))
-            A = pm.Normal('A', mu=0, sigma=tau * lam * at.sqrt((c2 /
-                          (c2 + tau**2 * lam**2)), shape=(ndim, ndim)))
+            A = pm.Normal('A', mu=0, sigma=tau * lam * at.sqrt(c2 /
+                          (c2 + tau**2 * lam**2)), shape=(ndim, ndim))
 
             # Priors for coefficients with LKJ prior
             noise_chol, _, _ = pm.LKJCholeskyCov(
@@ -207,7 +215,7 @@ class infer_VAR:
 
         # Sampling from the posterior
         with var_model:
-            trace = pm.sample(2000, tune=1000, cores=4)
+            trace = pm.sample(samples, tune=tune, cores=cores)
 
         print(az.summary(trace, var_names=["A"]))
 
