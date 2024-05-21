@@ -29,8 +29,11 @@ class infer_VAR:
         None
     """
 
-    def __init__(self, data):
+    def __init__(self, data, coefficients=None, intercepts=None, covariance_matrix=None):
         self.data = self._validate_data(data)
+        self.coefficients = coefficients
+        self.intercepts = intercepts
+        self.covariance_matrix = covariance_matrix
 
     def _validate_data(self, data):
         if isinstance(data, pd.DataFrame):
@@ -90,30 +93,44 @@ class infer_VAR:
         dim = data.shape[1]
 
         # PyMC3 model
+        # Set priors if provided, else default to zero mean and unit variance
+        x0_prior_mu = self.intercepts.flatten() if self.intercepts is not None else np.zeros(
+            dim)
+        A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
+            (dim, dim))
+        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else np.eye(
+            dim)
         with pm.Model() as var_model:
             # Priors for x0 and sigma
             # QUESTION: should the sigma be the noise_stddev from the
             # parameters.json file?
-            x0 = pm.Normal('x0', mu=0, sigma=1, shape=(dim, 1))
-            A = pm.Normal('A', mu=0, sigma=1, shape=(dim, dim))
+            x0 = pm.Normal('x0', mu=x0_prior_mu, sigma=1, shape=(dim,))
+            A = pm.Normal('A', mu=A_prior_mu, sigma=1, shape=(dim, dim))
 
             # Priors for coefficients with LKJ prior
             # packed_L = pm.LKJCholeskyCov('packed_L', n=dim, eta=2.0, sd_dist=pm.HalfCauchy.dist(2.5))
             # L = pm.expand_packed_triangular(dim, packed_L)
             # coefficients = pm.MvNormal('coefficients', mu=0, chol=L, shape=(dim, dim))
 
-            noise_chol, _, _ = pm.LKJCholeskyCov(
-                "noise_chol", eta=1.0, n=dim, sd_dist=pm.HalfNormal.dist(sigma=1.0))
+            # If noise covariance is provided, use it as a prior
+            if noise_cov_prior is not None:
+                noise_chol = np.linalg.cholesky(noise_cov_prior)
+                # noise_chol = pm.Deterministic("noise_chol", noise_chol)
+
+            # Otherwise, use LKJ prior
+            else:
+                noise_chol, _, _ = pm.LKJCholeskyCov(
+                    "noise_chol", eta=1.0, n=dim, sd_dist=pm.HalfNormal.dist(sigma=1.0))
 
             # VAR(1) process likelihood
             print("x0:", x0.shape)
             # print("A:",A.shape)
             # print("data[:-1, :]:", data[:-1, :].shape)
             print("data[1:, :]:", data[1:, :].shape)
-            x0_obs = data[0, :].copy().reshape(-1, 1)
+            x0_obs = data[0, :].copy().reshape(-1)
             print("x0:", x0_obs.shape)
 
-            mu = x0 + pm.math.dot(A, data[:-1, :].T)
+            mu = x0[:, np.newaxis] + pm.math.dot(A, data[:-1, :].T)
             print("mu:", mu.T.shape)
             print("data:", data[1:, :].shape)
 
@@ -222,14 +239,3 @@ class infer_VAR:
         az.plot_posterior(trace, var_names=[
             "A"])
         plt.savefig("plot-posterior.pdf")
-
-
-# if __name__ == '__main__':
-#     # Import parameters from JSON file
-
-#     parameters = read_parameters('parameters.json')
-#     simulator = sim_VAR(**parameters)
-#     simulator.run("VARsim")
-
-#     infer = infer_VAR(simulator.data)
-#     infer.run_inference()
