@@ -182,6 +182,14 @@ class infer_VAR:
         D0 = 2
         N = data.shape[0]
 
+        # Set priors if provided, else default to zero mean and unit variance
+        x0_prior_mu = self.intercepts.flatten(
+        ) if self.intercepts is not None else np.zeros(ndim)
+        A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
+            (ndim, ndim))
+        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else np.eye(
+            ndim)
+
         # create and fit PyMC model
         with pm.Model() as var_model:
             # Standard LKJ priors Priors for x0 and sigma
@@ -198,8 +206,8 @@ class infer_VAR:
             # Priors for coefficients with horseshoe -> sparse VAR
             noise_stddev = pm.HalfNormal("noise_stddev", 25)
             # [0,0]*ndim might be better
-            x0 = pm.Normal('x0', mu=0,
-                           sigma=0.001, shape=(ndim, 1))
+            x0 = pm.Normal('x0', mu=x0_prior_mu,
+                           sigma=0.001, shape=(ndim,))
 
             # Standard horse shoe
             # Prior on error SD
@@ -218,15 +226,20 @@ class infer_VAR:
             c2 = pm.InverseGamma("c2", 2, 8)
             tau = pm.HalfCauchy("tau", beta=tau0)
             lam = pm.HalfCauchy("lam", beta=1, shape=(ndim, ndim))
-            A = pm.Normal('A', mu=0, sigma=tau * lam * at.sqrt(c2 /
+            A = pm.Normal('A', mu=A_prior_mu, sigma=tau * lam * at.sqrt(c2 /
                           (c2 + tau**2 * lam**2)), shape=(ndim, ndim))
 
-            # Priors for coefficients with LKJ prior
-            noise_chol, _, _ = pm.LKJCholeskyCov(
-                "noise_chol", eta=1.0, n=ndim, sd_dist=pm.HalfNormal.dist(sigma=1.0))
+            # If noise covariance is provided, use it as a prior
+            if noise_cov_prior is not None:
+                noise_chol = np.linalg.cholesky(noise_cov_prior)
+
+            # Otherwise, use LKJ prior
+            else:
+                noise_chol, _, _ = pm.LKJCholeskyCov(
+                    "noise_chol", eta=1.0, n=ndim, sd_dist=pm.HalfNormal.dist(sigma=1.0))
 
             # VAR(1) process likelihood
-            mu = x0 + pm.math.dot(A, data[:-1, :].T)
+            mu = x0[:, np.newaxis] + pm.math.dot(A, data[:-1, :].T)
             likelihood = pm.MvNormal(
                 'likelihood_t', mu=mu.T, chol=noise_chol, observed=data[1:, :])
 
