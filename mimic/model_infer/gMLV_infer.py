@@ -1,8 +1,9 @@
+from typing import Any, List, Optional
+
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import linalg as la
 from numpy.typing import NDArray
-from typing import Any, List, Optional
 from scipy.integrate import odeint
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
