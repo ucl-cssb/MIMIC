@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pymc as pm
 import pytensor.tensor as at
+import seaborn as sns
 
 
 class infer_VAR:
@@ -25,18 +26,27 @@ class infer_VAR:
         run_inference_large():
             Runs large-scale inference for VAR model.
 
+        run_inference_xs():
+            Runs the inference process for the VAR model with metabolite data.
+
+        run_inference_large_xs():
+            Runs large-scale inference for the VAR model with metabolite data.
+
     Returns:
         None
     """
 
-    def __init__(self, data, coefficients=None, intercepts=None, covariance_matrix=None):
+    def __init__(self, data=None, coefficients=None, intercepts=None, covariance_matrix=None, dataS=None):
         self.data = self._validate_data(data)
+        self.dataS = self._validate_data(dataS) if dataS is not None else None
         self.coefficients = coefficients
         self.intercepts = intercepts
         self.covariance_matrix = covariance_matrix
 
     def _validate_data(self, data):
-        if isinstance(data, pd.DataFrame):
+        if data is None:
+            return None
+        elif isinstance(data, pd.DataFrame):
             return data.values
         elif isinstance(data, np.ndarray):
             return data
@@ -51,7 +61,7 @@ class infer_VAR:
             raise TypeError(
                 "Unsupported data type. Data must be a DataFrame, ndarray, list, or tuple.")
 
-    def import_data(self, file_path, index_col=None, parse_dates=False) -> None:
+    def import_data(self, file_path, index_col=None, parse_dates=False, data_type='X') -> None:
         """
         Imports data from a .csv file.
 
@@ -59,6 +69,7 @@ class infer_VAR:
         file_path (str): The path to the .csv file.
         index_col (int, optional): Column to use as the row labels of the DataFrame.
         parse_dates (bool, optional): Parse dates as datetime.
+        data_type (str): Specify whether the data is for 'X' (abundance) or 'S' (metabolite).
 
         Returns:
         None
@@ -66,7 +77,12 @@ class infer_VAR:
         try:
             data = pd.read_csv(file_path, index_col=index_col,
                                parse_dates=parse_dates)
-            self.data = self._validate_data(data)
+            if data_type == 'X':
+                self.data = self._validate_data(data)
+            elif data_type == 'S':
+                self.dataS = self._validate_data(data)
+            else:
+                raise ValueError("data_type must be either 'X' or 'S'.")
         except Exception as e:
             raise ValueError(
                 f"Failed to import data from {file_path}: {e}") from e
@@ -79,6 +95,9 @@ class infer_VAR:
         Returns:
         None
         """
+        if self.data is None:
+            print("Error: No data to perform inference on.")
+            return
         data = self.data
 
         # Check the dimensions of the data
@@ -98,8 +117,7 @@ class infer_VAR:
             dim)
         A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
             (dim, dim))
-        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else np.eye(
-            dim)
+        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
         with pm.Model() as var_model:
             # Priors for x0 and sigma
             # QUESTION: should the sigma be the noise_stddev from the
@@ -162,6 +180,8 @@ class infer_VAR:
 
         az.plot_posterior(trace, var_names=["x0", "A"])
         plt.savefig("posterior_plot.pdf")
+        az.to_netcdf(trace, 'model_posterior.nc')
+        np.savez("data.npz", dataX=data)
 
     def run_inference_large(self, samples=4000, tune=2000, cores=4) -> None:
         """
@@ -173,6 +193,9 @@ class infer_VAR:
         Returns:
             None
         """
+        if self.data is None:
+            print("Error: No data to perform inference on.")
+            return
         data = self.data
         # Check the dimensions of the data
         ndim = data.shape[1]
@@ -187,8 +210,7 @@ class infer_VAR:
         ) if self.intercepts is not None else np.zeros(ndim)
         A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
             (ndim, ndim))
-        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else np.eye(
-            ndim)
+        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
 
         # create and fit PyMC model
         with pm.Model() as var_model:
@@ -252,3 +274,303 @@ class infer_VAR:
         az.plot_posterior(trace, var_names=[
             "A"])
         plt.savefig("plot-posterior.pdf")
+        az.to_netcdf(trace, 'model_posterior.nc')
+        np.savez("data.npz", dataX=data)
+
+    def run_inference_xs(self, samples=2000, tune=1000, cores=2) -> None:
+        """
+        Runs the inference process for the VAR model with metabolite data.
+
+        Returns:
+        None
+        """
+        if self.dataS is None:
+            raise ValueError(
+                "Metabolite data is missing. Please provide dataS.")
+
+        if self.data is None:
+            raise ValueError(
+                "Abundance data is missing. Please provide dataX.")
+
+        dataX = self.data
+        dataS = self.dataS
+
+        nX = dataX.shape[1]
+        nS = dataS.shape[1]
+
+        # Set priors if provided, else default to zero mean and unit variance
+        x0_prior_mu = self.intercepts.flatten(
+        ) if self.intercepts is not None else np.zeros(nX)
+        A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
+            (nX, nX))
+        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
+
+        # PyMC3 model
+        with pm.Model() as var_model:
+            X0h = pm.Normal('X0h', mu=x0_prior_mu, sigma=1, shape=(nX,))
+            S0h = pm.Normal('S0h', mu=0, sigma=1, shape=(nS,))
+            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=1, shape=(nX, nX))
+            Bh = pm.Normal('Bh', mu=0, sigma=1, shape=(nS, nX))
+
+            if noise_cov_prior is not None:
+                sigma = np.linalg.cholesky(noise_cov_prior)
+            else:
+                sigma = pm.HalfNormal('sigma', sigma=1, shape=(nX + nS))
+
+            data = np.concatenate((dataX, dataS), axis=1)
+
+            muX = pm.Deterministic('muX', pm.math.dot(Ah, dataX[:-1, :].T))
+            muS = pm.math.dot(Bh, muX)
+            muXs = muX[:, 1:]
+            muSs = muS[:, :-1]
+            mu = pm.math.concatenate((muXs, muSs), axis=0)
+
+            likelihood = pm.Normal('likelihood', mu=mu.T,
+                                   sigma=sigma, observed=data[2:, :])
+
+        with var_model:
+            idata = pm.sample(samples, tune=tune, cores=cores)
+
+        print(az.summary(idata, var_names=["Ah", "Bh"]))
+        az.to_netcdf(idata, 'model_posterior.nc')
+        np.savez("data.npz", dataX=dataX, dataS=dataS)
+
+    def run_inference_large_xs(self, samples=4000, tune=2000, cores=4) -> None:
+        """
+        Runs large-scale inference for the VAR model with metabolite data.
+
+        Returns:
+        None
+        """
+        if self.dataS is None:
+            raise ValueError(
+                "Metabolite data is missing. Please provide dataS.")
+
+        if self.data is None:
+            raise ValueError(
+                "Abundance data is missing. Please provide dataX.")
+
+        dataX = self.data
+        dataS = self.dataS
+
+        nX = dataX.shape[1]
+        nS = dataS.shape[1]
+
+        DA = nX * nX
+        DA0 = 5
+        DB = nS * nX
+        DB0 = 4
+        N = dataX.shape[0] - 2
+
+        # Set priors if provided, else default to zero mean and unit variance
+        x0_prior_mu = self.intercepts.flatten(
+        ) if self.intercepts is not None else np.zeros(nX)
+        A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
+            (nX, nX))
+        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
+
+        with pm.Model() as var_model:
+            tau0_A = (DA0 / (DA - DA0)) * 0.1 / np.sqrt(N)
+            c2_A = pm.InverseGamma("c2_A", 2, 1)
+            tau_A = pm.HalfCauchy("tau_A", beta=tau0_A)
+            lam_A = pm.HalfCauchy("lam_A", beta=1, shape=(nX, nX))
+            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=tau_A * lam_A *
+                           at.sqrt(c2_A / (c2_A + tau_A**2 * lam_A**2)), shape=(nX, nX))
+
+            tau0_B = (DB0 / (DB - DB0)) * 0.1 / np.sqrt(N)
+            c2_B = pm.InverseGamma("c2_B", 2, 1)
+            tau_B = pm.HalfCauchy("tau_B", beta=tau0_B)
+            lam_B = pm.HalfCauchy("lam_B", beta=1, shape=(nS, nX))
+            Bh = pm.Normal('Bh', mu=0, sigma=tau_B * lam_B *
+                           at.sqrt(c2_B / (c2_B + tau_B**2 * lam_B**2)), shape=(nS, nX))
+
+            if noise_cov_prior is not None:
+                sigma = np.linalg.cholesky(noise_cov_prior)
+            else:
+                sigma = pm.TruncatedNormal(
+                    'sigma', mu=0.1, sigma=0.1, lower=0, shape=(nX + nS))
+
+            data = np.concatenate((dataX, dataS), axis=1)
+
+            muX = pm.Deterministic('muX', pm.math.dot(Ah, dataX[:-1, :].T))
+            muS = pm.math.dot(Bh, muX)
+            muXs = muX[:, 1:]
+            muSs = muS[:, :-1]
+            mu = pm.math.concatenate((muXs, muSs), axis=0)
+
+            likelihood = pm.Normal('likelihood', mu=mu.T,
+                                   sigma=sigma, observed=data[2:, :])
+
+        with var_model:
+            trace = pm.sample(samples, tune=tune, cores=cores)
+
+        print(az.summary(trace, var_names=["Ah", "Bh"]))
+        az.to_netcdf(trace, 'model_posterior.nc')
+        np.savez("data.npz", dataX=dataX, dataS=dataS)
+
+    def posterior_analysis(self, A=None, B=None):
+        """
+        Performs posterior analysis and visualizes the results.
+
+        Args:
+        simulated (bool): Indicates whether the data is simulated or not.
+
+        Returns:
+        None
+        """
+        with np.load("data.npz", allow_pickle=True) as xsdata:
+            dataX = xsdata['dataX']
+            dataS = xsdata['dataS']
+
+        self.make_plot_stacked(dataX, dataS)
+
+        idata = az.from_netcdf('model_posterior.nc')
+
+        print(az.summary(idata, var_names=["Ah", "Bh"]))
+
+        true_values = [A, B] if A is not None and B is not None else None
+
+        self.plot_heatmap(
+            idata, matrices=["Ah", "Bh"], true_values=true_values)
+
+    def make_plot_stacked(self, dataX, dataS):
+        """
+        Creates a stacked plot of abundance and metabolite data.
+
+        Args:
+        dataX (numpy.ndarray): The abundance data.
+        dataS (numpy.ndarray): The metabolite data.
+
+        Returns:
+        None
+        """
+        dataX = dataX + 1.0
+
+        nX = len(dataX[0])
+        nS = len(dataS[0])
+        nobs = dataS.shape[0]
+
+        fig, axs = plt.subplots(2, 1, figsize=(10, 4))
+
+        axs[0].stackplot(
+            range(len(dataX)), *dataX.T, labels=[f"X{str(i)}" for i in range(nX)]
+        )
+        axs[0].set_title("Abundance, log10 X")
+        axs[0].set_ylabel("X")
+        axs[0].set_xlim(0, nobs - 1)
+
+        sns.heatmap(
+            dataS.T,
+            annot=False,
+            cmap="YlGnBu",
+            yticklabels=[f"S{str(i)}" for i in range(nS)],
+            ax=axs[1],
+            cbar=False,
+        )
+        axs[1].set_title("Metabolites, S")
+        axs[1].set_ylabel("S")
+        axs[1].set_xlabel("time (weeks)")
+        axs[1].set_xlim(0, nobs)
+
+        plt.tight_layout()
+        plt.savefig("plot-data-XS-stacked.pdf")
+
+    def plot_heatmap(self, idata, matrices=None, true_values=None):
+        """
+        Plots heatmaps of the inferred matrices.
+
+        Args:
+        idata (arviz.InferenceData): The inference data.
+        matrices (list of str): List of keys for matrices in idata.posterior to plot.
+        true_values (list of numpy.ndarray): List of true matrices to compare with.
+
+        Returns:
+        None
+        """
+        if matrices is None:
+            matrices = ['Ah', 'Bh']  # default matrices to plot
+
+        num_matrices = len(matrices)
+        fig, axes = plt.subplots(
+            1, num_matrices, figsize=(7 * num_matrices, 7))
+
+        if num_matrices == 1:
+            axes = [axes]  # ensure axes is a list for consistent indexing
+
+        for idx, matrix_key in enumerate(matrices):
+            if matrix_key not in idata.posterior:
+                print(f"Key '{matrix_key}' not found in idata.posterior")
+                continue
+
+            matrix = idata.posterior[matrix_key].values
+            matrix_sum = np.median(matrix, axis=(0, 1))
+
+            sns.heatmap(matrix_sum, ax=axes[idx], cmap='viridis')
+            axes[idx].set_title(f'{matrix_key}hat')
+            axes[idx].set_ylabel('X')
+            axes[idx].set_xlabel('X' if matrix_sum.shape[0]
+                                 == matrix_sum.shape[1] else 'S')
+
+            if true_values is not None and len(true_values) > idx and true_values[idx] is not None:
+                true_matrix = true_values[idx]
+                for i in range(matrix_sum.shape[0]):
+                    for j in range(matrix_sum.shape[1]):
+                        axes[idx].text(
+                            j + 0.5, i + 0.5, f'{true_matrix[i, j]:.2f}', ha='center', va='center', color='white')
+
+        plt.tight_layout()
+        plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')
+
+    # def plot_heatmap(self, idata, A=None, B=None):
+    #     """
+    #     Plots heatmaps of the inferred A and B matrices.
+
+    #     Args:
+    #     idata (arviz.InferenceData): The inference data.
+    #     A (numpy.ndarray): The true A matrix.
+    #     B (numpy.ndarray): The true B matrix.
+
+    #     Returns:
+    #     None
+    #     """
+    #     matrix1 = idata.posterior['Ah'].values
+    #     matrix2 = idata.posterior['Bh'].values
+
+    #     matrix1_sum = np.median(matrix1, axis=(0, 1))
+    #     matrix2_sum = np.median(matrix2, axis=(0, 1))
+
+    #     fig, ax = plt.subplots(1, 2, figsize=(14, 7), gridspec_kw={
+    #                            'width_ratios': [1, 1.2]})
+
+    #     sns.heatmap(matrix1_sum, ax=ax[0], cmap='viridis')
+    #     ax[0].set_title('Ahat')
+    #     ax[0].set_ylabel('X')
+    #     ax[0].set_xlabel('X')
+    #     if A is not None:
+    #         for i in range(matrix1_sum.shape[0]):
+    #             for j in range(matrix1_sum.shape[1]):
+    #                 ax[0].text(
+    #                     j + 0.5, i + 0.5, f'{A[i, j]:.2f}', ha='center', va='center', color='white')
+
+    #     matrix2_sum = matrix2_sum.T
+
+    #     sns.heatmap(matrix2_sum, ax=ax[1], cmap='viridis')
+    #     ax[1].set_title('Bhat')
+    #     ax[1].set_xlabel('S')
+
+    #     if B is not None:
+    #         BT = B.T
+    #         for i in range(matrix2_sum.shape[0]):
+    #             for j in range(matrix2_sum.shape[1]):
+    #                 ax[1].text(
+    #                     j + 0.5, i + 0.5, f'{BT[i, j]:.2f}', ha='center', va='center', color='white')
+
+    #     plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')
+
+
+# Path: mimic/model_infer/infer_VAR.py
+
+# Example usage:
+# infer = infer_VAR(dataX, dataS)
+# infer.run_inference_xs()
+# infer.posterior_analysis(simulated=True)
