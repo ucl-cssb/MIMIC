@@ -12,18 +12,18 @@ mimic.model\_infer.cLV module
    :undoc-members:
    :show-inheritance:
 
-mimic.model\_infer.gMLV\_infer module
--------------------------------------
+mimic.model\_infer.infer\_VAR\_bayes module
+-------------------------------------------
 
-.. automodule:: mimic.model_infer.gMLV_infer
+.. automodule:: mimic.model_infer.infer_VAR_bayes
    :members:
    :undoc-members:
    :show-inheritance:
 
-mimic.model\_infer.infer\_VAR module
-------------------------------------
+mimic.model\_infer.infer\_gMLV\_lm module
+-----------------------------------------
 
-.. automodule:: mimic.model_infer.infer_VAR
+.. automodule:: mimic.model_infer.infer_gMLV_lm
    :members:
    :undoc-members:
    :show-inheritance:
