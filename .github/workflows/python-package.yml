@@ -40,6 +40,7 @@ jobs:
           git config --global user.name "GitHub Action"
           git add .
           git commit -m "Update requirements.txt and format code" || true
+          git push origin HEAD:${{ github.ref }} || true
         continue-on-error: true # In case there are no changes
 
       - name: Upload updated requirements.txt
