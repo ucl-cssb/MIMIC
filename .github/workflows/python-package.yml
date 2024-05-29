@@ -47,7 +47,7 @@ jobs:
             BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
           fi
           echo "Pushing changes to branch: $BRANCH_NAME"
-          git push origin "HEAD:refs/heads/$BRANCH_NAME" || true
+          git push origin "${BRANCH_NAME}" || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true # In case there are no changes
