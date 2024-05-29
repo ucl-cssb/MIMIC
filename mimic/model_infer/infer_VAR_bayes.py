@@ -36,7 +36,13 @@ class infer_VAR:
         None
     """
 
-    def __init__(self, data=None, coefficients=None, intercepts=None, covariance_matrix=None, dataS=None):
+    def __init__(
+            self,
+            data=None,
+            coefficients=None,
+            intercepts=None,
+            covariance_matrix=None,
+            dataS=None):
         self.data = self._validate_data(data)
         self.dataS = self._validate_data(dataS) if dataS is not None else None
         self.coefficients = coefficients
@@ -61,7 +67,12 @@ class infer_VAR:
             raise TypeError(
                 "Unsupported data type. Data must be a DataFrame, ndarray, list, or tuple.")
 
-    def import_data(self, file_path, index_col=None, parse_dates=False, data_type='X') -> None:
+    def import_data(
+            self,
+            file_path,
+            index_col=None,
+            parse_dates=False,
+            data_type='X') -> None:
         """
         Imports data from a .csv file.
 
@@ -113,8 +124,8 @@ class infer_VAR:
 
         # PyMC3 model
         # Set priors if provided, else default to zero mean and unit variance
-        x0_prior_mu = self.intercepts.flatten() if self.intercepts is not None else np.zeros(
-            dim)
+        x0_prior_mu = self.intercepts.flatten(
+        ) if self.intercepts is not None else np.zeros(dim)
         A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
             (dim, dim))
         noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
@@ -374,14 +385,14 @@ class infer_VAR:
             c2_A = pm.InverseGamma("c2_A", 2, 1)
             tau_A = pm.HalfCauchy("tau_A", beta=tau0_A)
             lam_A = pm.HalfCauchy("lam_A", beta=1, shape=(nX, nX))
-            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=tau_A * lam_A *
+            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=tau_A * lam_A * \
                            at.sqrt(c2_A / (c2_A + tau_A**2 * lam_A**2)), shape=(nX, nX))
 
             tau0_B = (DB0 / (DB - DB0)) * 0.1 / np.sqrt(N)
             c2_B = pm.InverseGamma("c2_B", 2, 1)
             tau_B = pm.HalfCauchy("tau_B", beta=tau0_B)
             lam_B = pm.HalfCauchy("lam_B", beta=1, shape=(nS, nX))
-            Bh = pm.Normal('Bh', mu=0, sigma=tau_B * lam_B *
+            Bh = pm.Normal('Bh', mu=0, sigma=tau_B * lam_B * \
                            at.sqrt(c2_B / (c2_B + tau_B**2 * lam_B**2)), shape=(nS, nX))
 
             if noise_cov_prior is not None:
@@ -453,8 +464,11 @@ class infer_VAR:
         fig, axs = plt.subplots(2, 1, figsize=(10, 4))
 
         axs[0].stackplot(
-            range(len(dataX)), *dataX.T, labels=[f"X{str(i)}" for i in range(nX)]
-        )
+            range(
+                len(dataX)),
+            *dataX.T,
+            labels=[
+                f"X{str(i)}" for i in range(nX)])
         axs[0].set_title("Abundance, log10 X")
         axs[0].set_ylabel("X")
         axs[0].set_xlim(0, nobs - 1)
@@ -511,12 +525,18 @@ class infer_VAR:
             axes[idx].set_xlabel('X' if matrix_sum.shape[0]
                                  == matrix_sum.shape[1] else 'S')
 
-            if true_values is not None and len(true_values) > idx and true_values[idx] is not None:
+            if true_values is not None and len(
+                    true_values) > idx and true_values[idx] is not None:
                 true_matrix = true_values[idx]
                 for i in range(matrix_sum.shape[0]):
                     for j in range(matrix_sum.shape[1]):
                         axes[idx].text(
-                            j + 0.5, i + 0.5, f'{true_matrix[i, j]:.2f}', ha='center', va='center', color='white')
+                            j + 0.5,
+                            i + 0.5,
+                            f'{true_matrix[i, j]:.2f}',
+                            ha='center',
+                            va='center',
+                            color='white')
 
         plt.tight_layout()
         plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')
@@ -550,7 +570,8 @@ class infer_VAR:
     #         for i in range(matrix1_sum.shape[0]):
     #             for j in range(matrix1_sum.shape[1]):
     #                 ax[0].text(
-    #                     j + 0.5, i + 0.5, f'{A[i, j]:.2f}', ha='center', va='center', color='white')
+    # j + 0.5, i + 0.5, f'{A[i, j]:.2f}', ha='center', va='center',
+    # color='white')
 
     #     matrix2_sum = matrix2_sum.T
 
@@ -563,7 +584,8 @@ class infer_VAR:
     #         for i in range(matrix2_sum.shape[0]):
     #             for j in range(matrix2_sum.shape[1]):
     #                 ax[1].text(
-    #                     j + 0.5, i + 0.5, f'{BT[i, j]:.2f}', ha='center', va='center', color='white')
+    # j + 0.5, i + 0.5, f'{BT[i, j]:.2f}', ha='center', va='center',
+    # color='white')
 
     #     plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')
 

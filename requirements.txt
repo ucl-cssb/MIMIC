@@ -1,11 +1,11 @@
 arviz==0.18.0
 gpflow==2.9.1
-matplotlib==3.8.4
+matplotlib==3.9.0
 mimic==2.2.0
 numpy==1.26.4
 pandas==2.2.2
-pymc==5.14.0
-pytensor==2.20.0
-scikit_learn==1.4.2
-scipy==1.13.0
+pymc==5.15.0
+pytensor==2.22.1
+scikit_learn==1.5.0
+scipy==1.13.1
 seaborn==0.13.2
