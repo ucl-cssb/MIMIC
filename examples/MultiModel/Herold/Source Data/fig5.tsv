@@ -1,0 +1,2041 @@
+param	date	value	month	season	fraction	measurement	metabolite_class
+1-monopalmitoylglycerol_bnp	2011-03-21	-0.30053544061411513	03	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-03-21	-0.3848289696650288	03	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-03-21	-0.27595439542132116	03	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-03-21	-0.3558250664049707	03	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-03-21	-0.1973477341490532	03	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-03-21	NA	03	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-03-21	-0.3373024682120554	03	Spring	extracellular	snp	lipid related
+alanine_bp	2011-03-21	0.0175807033482376	03	Spring	intracellular	bp	amino acid
+alanine_sp	2011-03-21	1.107639290257744	03	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-03-21	-0.5368258258914005	03	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-03-21	-1.5945314134810267	03	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-03-21	0.7185636178360234	03	Spring	online	pcparams	pH
+cellobiose_sp	2011-03-21	-0.16868398575797758	03	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-03-21	0.9421284244962449	03	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-03-21	-0.48781467318994814	03	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-03-21	-0.6639094320720953	03	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-03-21	2.754596950991201	03	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-03-21	-0.5980921480534179	03	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-03-21	-0.356918479793845	03	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-03-21	-0.3282504260076581	03	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-03-21	NA	03	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-03-21	-0.4020889733187541	03	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-03-21	-0.3614615364184293	03	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-03-21	-0.1850023216639938	03	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-03-21	-0.14546689727277407	03	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-03-21	-0.057761709311747164	03	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-03-21	0.14776342878422094	03	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-03-21	-0.20432296938177189	03	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-03-21	-0.21236350700467746	03	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-03-21	-0.2908679354191447	03	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-03-21	-0.35765899236039345	03	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-03-21	-0.4344922429718685	03	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-03-21	-0.36664311861547305	03	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-03-21	-0.5101577860614632	03	Spring	online	pcparams	conductivity
+proline_ratio	2011-03-21	-0.5950676005866526	03	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-03-21	0.11990214005925391	03	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-03-21	-0.4999995545930971	03	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-03-21	-0.5697102061789894	03	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-03-21	-0.2433540501048122	03	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-03-21	-0.5473860721146856	03	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-03-29	-0.44902517967244016	03	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-03-29	-0.3848289696650288	03	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-03-29	-0.4558065141152915	03	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-03-29	-0.3471283046848877	03	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-03-29	-0.49365103922456705	03	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-03-29	NA	03	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-03-29	-0.3373024682120554	03	Spring	extracellular	snp	lipid related
+alanine_bp	2011-03-29	1.9004374955371437	03	Spring	intracellular	bp	amino acid
+alanine_sp	2011-03-29	2.784192465357395	03	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-03-29	-0.4444427323709594	03	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-03-29	-0.37444192372531654	03	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-03-29	1.0716531836106928	03	Spring	online	pcparams	pH
+cellobiose_sp	2011-03-29	-0.39730421962411366	03	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-03-29	0.12493192275040443	03	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-03-29	-0.3414504846302438	03	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-03-29	-0.6047008969521722	03	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-03-29	0.04021528796525491	03	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-03-29	-0.5953557678512623	03	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-03-29	-0.4523924177737496	03	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-03-29	-0.49827964423768417	03	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-03-29	-0.2157364939683362	03	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-03-29	-0.42719961606513784	03	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-03-29	-0.3297943395517418	03	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-03-29	0.5781660833074787	03	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-03-29	-0.3257256362627134	03	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-03-29	-0.20573393251812794	03	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-03-29	0.4548416736030818	03	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-03-29	-0.07325268420748497	03	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-03-29	-0.23891134648681592	03	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-03-29	-1.3633649514049566	03	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-03-29	-0.3703858384881097	03	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-03-29	-0.39650692963008877	03	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-03-29	-0.3737397914356163	03	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-03-29	0.30220868504606546	03	Spring	online	pcparams	conductivity
+proline_ratio	2011-03-29	-0.48161298833004845	03	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-03-29	0.32869915904615626	03	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-03-29	-0.5692976697108076	03	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-03-29	-0.5298258419587473	03	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-03-29	-0.6607085606163955	03	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-03-29	-0.4735530478337713	03	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-04-05	-0.296323557278593	04	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-04-05	-0.30807517726633576	04	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-04-05	-0.36541202658221067	04	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-04-05	-0.34126540679557177	04	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-04-05	-0.39296810796528553	04	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-04-05	2.994543542576842	04	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-04-05	-0.32328904106349743	04	Spring	extracellular	snp	lipid related
+alanine_bp	2011-04-05	0.4759055223272796	04	Spring	intracellular	bp	amino acid
+alanine_sp	2011-04-05	2.11099850668656	04	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-04-05	-0.48904363020046215	04	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-04-05	-0.3576246070597855	04	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-04-05	0.31014569890473564	04	Spring	online	pcparams	pH
+cellobiose_sp	2011-04-05	-0.32208287828917725	04	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-04-05	-0.35803659478072164	04	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-04-05	0.26966367343473036	04	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-04-05	-0.6071979838313495	04	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-04-05	-0.26619428011944174	04	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-04-05	-0.6195646586168837	04	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-04-05	-0.29113888727268233	04	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-04-05	-0.02288027082681377	04	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-04-05	0.008402833024574912	04	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-04-05	-0.2247032123105405	04	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-04-05	-0.1403533271467911	04	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-04-05	0.3216562877177966	04	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-04-05	-0.2425417006269942	04	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-04-05	-0.265029607139757	04	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-04-05	0.008650993899704178	04	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-04-05	0.047691255569523236	04	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-04-05	-0.32343886263553195	04	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-04-05	-0.6176821109119761	04	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-04-05	-0.3350400704498962	04	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-04-05	-0.12190319382603837	04	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-04-05	-0.30320950812683534	04	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-04-05	-0.5401360503551953	04	Spring	online	pcparams	conductivity
+proline_ratio	2011-04-05	-0.4859596836342028	04	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-04-05	0.02796851518589972	04	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-04-05	-0.5293218599720454	04	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-04-05	-0.5677042150079934	04	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-04-05	-0.6602284096573188	04	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-04-05	-0.5055499036478419	04	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-04-14	-0.4225718440227243	04	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-04-14	-0.3848289696650288	04	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-04-14	-0.4243510034508519	04	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-04-14	-0.3558250664049707	04	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-04-14	-0.3735804801623814	04	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-04-14	4.542179567804837	04	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-04-14	-0.3304115341256115	04	Spring	extracellular	snp	lipid related
+alanine_bp	2011-04-14	2.077000757603262	04	Spring	intracellular	bp	amino acid
+alanine_sp	2011-04-14	0.7157956586446355	04	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-04-14	-0.4271434350295229	04	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-04-14	-0.25778922775676927	04	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-04-14	0.985708942520235	04	Spring	online	pcparams	pH
+cellobiose_sp	2011-04-14	-0.6121026453589704	04	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-04-14	-0.3231052791145934	04	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-04-14	-0.24105269628070328	04	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-04-14	-0.49137199022756006	04	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-04-14	0.10820612113614093	04	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-04-14	-0.5863532671673605	04	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-04-14	-0.3629379087237082	04	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-04-14	-0.5293122240519177	04	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-04-14	-0.40369872160178494	04	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-04-14	-0.30549602773491374	04	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-04-14	-0.4558150092552107	04	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-04-14	2.4120998551434902	04	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-04-14	-0.4559727785743442	04	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-04-14	-0.06770702570579291	04	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-04-14	0.18705899249200483	04	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-04-14	0.2069959275286802	04	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-04-14	-0.4933132743053307	04	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-04-14	-0.55028957612895	04	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-04-14	-0.35970595534933086	04	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-04-14	-0.33611228870552906	04	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-04-14	-0.3653214908067243	04	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-04-14	0.6835075195053264	04	Spring	online	pcparams	conductivity
+proline_ratio	2011-04-14	-0.37498318109882356	04	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-04-14	-0.20533223225624908	04	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-04-14	-0.5992779496314693	04	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-04-14	-0.5354911971721608	04	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-04-14	-0.4535810525770272	04	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-04-14	-0.4285212429954399	04	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-04-21	-0.4447173900384832	04	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-04-21	-0.3848289696650288	04	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-04-21	-0.4618897304883361	04	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-04-21	-0.3425763383767647	04	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-04-21	-0.4924357690973614	04	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-04-21	3.2005796144739755	04	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-04-21	-0.32588217419619236	04	Spring	extracellular	snp	lipid related
+alanine_bp	2011-04-21	-0.40178456206743957	04	Spring	intracellular	bp	amino acid
+alanine_sp	2011-04-21	0.4668298884637349	04	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-04-21	-0.46761319158982284	04	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-04-21	-1.3141653894503893	04	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-04-21	0.9610054763034235	04	Spring	online	pcparams	pH
+cellobiose_sp	2011-04-21	-0.18143364021283717	04	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-04-21	-0.5097586364669902	04	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-04-21	0.16152783312271973	04	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-04-21	-0.6514819925147254	04	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-04-21	0.635033730352818	04	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-04-21	-0.5837958160186686	04	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-04-21	-0.3429477243353487	04	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-04-21	-0.47223456320237284	04	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-04-21	-0.36115049907300584	04	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-04-21	-0.22468010562631932	04	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-04-21	-0.35322803772029926	04	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-04-21	-0.0890334383972962	04	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-04-21	-0.18740560608270523	04	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-04-21	-0.5881755912040268	04	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-04-21	-0.44638448620167626	04	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-04-21	0.37941661533358156	04	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-04-21	-0.5062495657167978	04	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-04-21	0.10319716696876655	04	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-04-21	-0.3274087335141735	04	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-04-21	-0.1966064720780182	04	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-04-21	-0.3166542509152805	04	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-04-21	0.6426432907218863	04	Spring	online	pcparams	conductivity
+proline_ratio	2011-04-21	-0.6167383251254803	04	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-04-21	-0.39162378319893176	04	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-04-21	-0.7523717915452611	04	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-04-21	-0.533286040947449	04	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-04-21	-0.7767291674197266	04	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-04-21	-0.48290205698988614	04	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-04-29	-0.4461177169241492	04	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-04-29	-0.2748619556207856	04	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-04-29	-0.5498375104377176	04	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-04-29	-0.29435640644582356	04	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-04-29	-0.5460577973612706	04	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-04-29	6.148958289174496	04	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-04-29	-0.3355360400057617	04	Spring	extracellular	snp	lipid related
+alanine_bp	2011-04-29	1.1349890367502544	04	Spring	intracellular	bp	amino acid
+alanine_sp	2011-04-29	-0.31766721383940505	04	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-04-29	-0.2782328101900565	04	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-04-29	-0.8222457444907757	04	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-04-29	0.7961660848393207	04	Spring	online	pcparams	pH
+cellobiose_sp	2011-04-29	-0.43936501783486653	04	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-04-29	-0.4729757304198366	04	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-04-29	0.6071550768280487	04	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-04-29	-0.30545188660609707	04	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-04-29	-0.04082566037893202	04	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-04-29	-0.030898007171674152	04	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-04-29	-0.40673674499967793	04	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-04-29	-0.542021013978566	04	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-04-29	-0.5083769648037874	04	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-04-29	-0.1705028578329282	04	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-04-29	-0.37510270078996866	04	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-04-29	0.3749765464817211	04	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-04-29	-0.36671747098097995	04	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-04-29	-0.08756995120122338	04	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-04-29	0.08080718584163103	04	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-04-29	0.24904222079097207	04	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-04-29	-0.5455467839807744	04	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-04-29	-0.25542211613655624	04	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-04-29	-0.36105724634387343	04	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-04-29	-0.2184414601091851	04	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-04-29	-0.3352251479178707	04	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-04-29	-0.8980643223763901	04	Spring	online	pcparams	conductivity
+proline_ratio	2011-04-29	-0.11711574484263894	04	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-04-29	0.263888422088289	04	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-04-29	-0.06890864681635707	04	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-04-29	-0.35644078727613143	04	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-04-29	-0.510789981704781	04	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-04-29	-0.2991881454662477	04	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-05-06	-0.4246964450501931	05	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-05-06	-0.3848289696650288	05	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-05-06	-0.46437968372946326	05	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-05-06	-0.3558250664049707	05	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-05-06	-0.46534458865218464	05	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-05-06	NA	05	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-05-06	-0.3373024682120554	05	Spring	extracellular	snp	lipid related
+alanine_bp	2011-05-06	1.2319862187232402	05	Spring	intracellular	bp	amino acid
+alanine_sp	2011-05-06	1.6261185676300614	05	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-05-06	-0.2196911061512269	05	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-05-06	-0.3209670302773348	05	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-05-06	0.9679861326616215	05	Spring	online	pcparams	pH
+cellobiose_sp	2011-05-06	-0.17074851013374606	05	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-05-06	0.4770229777111155	05	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-05-06	-0.34530331577242607	05	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-05-06	-0.7421894211411231	05	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-05-06	-0.46507787116958793	05	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-05-06	-0.5599673548926704	05	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-05-06	-0.33059638502356364	05	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-05-06	-0.46783372331292405	05	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-05-06	-0.14703778571228637	05	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-05-06	-0.3414399409196136	05	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-05-06	-0.38142765367924286	05	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-05-06	1.7326743589643034	05	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-05-06	-0.22102172093496786	05	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-05-06	-0.6443398595549101	05	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-05-06	-0.046397888379980524	05	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-05-06	0.41221210829235466	05	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-05-06	-0.3627099856757834	05	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-05-06	-0.16048348427833892	05	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-05-06	-0.3492089872044514	05	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-05-06	-0.1713725253436092	05	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-05-06	-0.3163621359709248	05	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-05-06	0.403250981620743	05	Spring	online	pcparams	conductivity
+proline_ratio	2011-05-06	-0.9464795220734286	05	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-05-06	0.18988871334219906	05	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-05-06	-0.7181564349588173	05	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-05-06	-0.45895500456879607	05	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-05-06	-1.2881050443436262	05	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-05-06	-0.6074176602343276	05	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-05-13	-0.5617708327188017	05	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-05-13	-0.3848289696650288	05	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-05-13	-0.5772565229027383	05	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-05-13	-0.35302084582640353	05	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-05-13	-0.5583550301951776	05	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-05-13	NA	05	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-05-13	-0.3373024682120554	05	Spring	extracellular	snp	lipid related
+alanine_bp	2011-05-13	1.4028839516339298	05	Spring	intracellular	bp	amino acid
+alanine_sp	2011-05-13	0.7094405001764424	05	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-05-13	-0.09550824158818837	05	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-05-13	0.13408382553629625	05	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-05-13	0.6991839854596198	05	Spring	online	pcparams	pH
+cellobiose_sp	2011-05-13	-0.23050888260198904	05	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-05-13	0.01213444646836767	05	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-05-13	-0.42942905072566956	05	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-05-13	-0.45424683091884177	05	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-05-13	0.4556473295423585	05	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-05-13	-0.5046681054566551	05	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-05-13	-0.42105017091660796	05	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-05-13	-0.5623622126757047	05	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-05-13	-0.29644820217722273	05	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-05-13	-0.3609107100243708	05	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-05-13	-0.47099179357367277	05	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-05-13	-0.16845019466336394	05	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-05-13	-0.22425136287482622	05	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-05-13	-0.5013648787637217	05	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-05-13	-0.13253358442874297	05	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-05-13	-0.2850400107769696	05	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-05-13	-0.3591855075755264	05	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-05-13	0.34128735687598954	05	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-05-13	-0.37298799917577097	05	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-05-13	-0.4344922429718685	05	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-05-13	-0.37613702244590547	05	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-05-13	-0.4853830821524476	05	Spring	online	pcparams	conductivity
+proline_ratio	2011-05-13	-0.4750062482417022	05	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-05-13	0.12329026946475888	05	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-05-13	-0.5023414298823756	05	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-05-13	-0.46310183636742785	05	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-05-13	-0.625564864407767	05	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-05-13	-0.3848648320357716	05	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-05-20	-0.48781692858167197	05	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-05-20	-0.3848289696650288	05	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-05-20	-0.5005684094062884	05	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-05-20	-0.3558250664049707	05	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-05-20	-0.4909043128953446	05	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-05-20	NA	05	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-05-20	-0.3373024682120554	05	Spring	extracellular	snp	lipid related
+alanine_bp	2011-05-20	1.6901878096290601	05	Spring	intracellular	bp	amino acid
+alanine_sp	2011-05-20	1.9270617975885396	05	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-05-20	-0.4783413345430788	05	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-05-20	-0.12039235670597187	05	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-05-20	0.8051879337856588	05	Spring	online	pcparams	pH
+cellobiose_sp	2011-05-20	-0.07139360934443605	05	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-05-20	0.5415562862428536	05	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-05-20	-0.48065739390943824	05	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-05-20	-0.5470766628771856	05	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-05-20	1.3796717549205124	05	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-05-20	-0.596101751003521	05	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-05-20	-0.3143577306109017	05	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-05-20	-0.5288944725163185	05	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-05-20	0.5528115207132055	05	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-05-20	-0.42833328298949125	05	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-05-20	-0.5001219654323441	05	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-05-20	-0.0755247668862971	05	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-05-20	-0.08802892138858127	05	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-05-20	-0.19002988522681125	05	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-05-20	0.5531672043893553	05	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-05-20	-0.1388619250032323	05	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-05-20	-0.09755067581118122	05	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-05-20	0.4948050362138485	05	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-05-20	-0.3724032616386306	05	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-05-20	-0.4344922429718685	05	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-05-20	-0.3773209786887549	05	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-05-20	0.5180154416361162	05	Spring	online	pcparams	conductivity
+proline_ratio	2011-05-20	-0.5698486985111609	05	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-05-20	-0.38271950249253683	05	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-05-20	-0.6018040546992399	05	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-05-20	-0.5572826271338804	05	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-05-20	-0.5863894639087405	05	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-05-20	-0.47046741997926295	05	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-05-27	-0.4645462801404666	05	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-05-27	-0.3848289696650288	05	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-05-27	-0.49526817224041697	05	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-05-27	-0.3393146404785176	05	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-05-27	-0.455328047083482	05	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-05-27	NA	05	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-05-27	-0.3373024682120554	05	Spring	extracellular	snp	lipid related
+alanine_bp	2011-05-27	-0.25643206449731537	05	Spring	intracellular	bp	amino acid
+alanine_sp	2011-05-27	-0.3035220401125706	05	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-05-27	-0.4888160477528974	05	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-05-27	0.7042081996334976	05	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-05-27	1.211326180235496	05	Spring	online	pcparams	pH
+cellobiose_sp	2011-05-27	-0.20454774821869331	05	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-05-27	3.238421678628441	05	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-05-27	-0.6514350227036056	05	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-05-27	-0.44192241082304473	05	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-05-27	4.582736051416101	05	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-05-27	-0.48856420664992545	05	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-05-27	-0.30491006826828704	05	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-05-27	-0.5068849907527814	05	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-05-27	-0.14936245445237722	05	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-05-27	-0.3879838235303409	05	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-05-27	-0.5001219654323441	05	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-05-27	0.016593804778209927	05	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-05-27	-0.22838946706076818	05	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-05-27	-0.08449577173986982	05	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-05-27	0.31298556671443156	05	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-05-27	0.20656120350870452	05	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-05-27	-0.46027568587283807	05	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-05-27	-0.5866712763193599	05	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-05-27	-0.3389448497632657	05	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-05-27	-0.4344922429718685	05	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-05-27	-0.3442748491902836	05	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-05-27	0.5898374535950984	05	Spring	online	pcparams	conductivity
+proline_ratio	2011-05-27	-0.34512274935770404	05	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-05-27	-0.32221000002568295	05	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-05-27	-0.56884891986512	05	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-05-27	-0.44647524835465674	05	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-05-27	-0.19305629272635785	05	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-05-27	-0.4677060487708313	05	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-06-03	-0.5282296274604771	06	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-06-03	-0.3848289696650288	06	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-06-03	-0.6077338384204491	06	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-06-03	-0.3499536898158071	06	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-06-03	-0.537597149301484	06	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-06-03	5.855814689561226	06	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-06-03	-0.33578914361343065	06	Spring	extracellular	snp	lipid related
+alanine_bp	2011-06-03	-0.8599131167206104	06	Spring	intracellular	bp	amino acid
+alanine_sp	2011-06-03	-0.7306956632974291	06	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-06-03	-0.31172788666625595	06	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-06-03	0.5672859045855981	06	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-06-03	-0.8899483093907319	06	Spring	online	pcparams	pH
+cellobiose_sp	2011-06-03	-0.40899643834839255	06	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-06-03	-0.08172385002442878	06	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-06-03	-0.5187119937192001	06	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-06-03	-0.21255977030447956	06	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-06-03	-0.2122119200332238	06	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-06-03	0.029314471964781475	06	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-06-03	-0.36988175709060256	06	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-06-03	-0.5376819430446985	06	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-06-03	-0.3430476379976222	06	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-06-03	-0.41695641564805386	06	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-06-03	-0.5001219654323441	06	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-06-03	-0.3043582524200972	06	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-06-03	-0.3426140872967074	06	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-06-03	1.2770023952845695	06	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-06-03	-0.6515606987798889	06	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-06-03	-0.24619186270113994	06	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-06-03	-0.5274682685123656	06	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-06-03	-0.7840329930848206	06	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-06-03	-0.3661656572938789	06	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-06-03	-0.36926285911522816	06	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-06-03	-0.3712884794474476	06	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-06-03	0.8033835534276533	06	Spring	online	pcparams	conductivity
+proline_ratio	2011-06-03	-0.337811882444838	06	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-06-03	0.1633119029480168	06	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-06-03	-0.2874405493710577	06	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-06-03	-0.3785431915671522	06	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-06-03	-0.1328893079335802	06	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-06-03	-0.3439129875038521	06	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-06-09	-0.37868351666149574	06	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-06-09	-0.3848289696650288	06	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-06-09	-0.45007994158371517	06	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-06-09	-0.34484409030538854	06	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-06-09	-0.42297994219808926	06	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-06-09	NA	06	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-06-09	-0.3373024682120554	06	Spring	extracellular	snp	lipid related
+alanine_bp	2011-06-09	0.8832347916478948	06	Spring	intracellular	bp	amino acid
+alanine_sp	2011-06-09	1.6056589547118671	06	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2011-06-09	-0.4649470796251511	06	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-06-09	1.5934505993926242	06	Spring	online	pcparams	NA
+BB1_pH_pcparams	2011-06-09	-1.0886976889913969	06	Spring	online	pcparams	pH
+cellobiose_sp	2011-06-09	0.1032008156556949	06	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-06-09	0.09601927868809212	06	Spring	ratio	ratio	lipid related
+cholesterol_snp	2011-06-09	-0.2494630827476016	06	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2011-06-09	-0.5905307267190033	06	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2011-06-09	-0.4954984417635896	06	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-06-09	-0.4158311920542989	06	Spring	ratio	ratio	lipid related
+glycerol_bp	2011-06-09	-0.08989303889793782	06	Spring	intracellular	bp	lipid related
+glycerol_sp	2011-06-09	-0.15181464409770026	06	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-06-09	-0.47811331552952685	06	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-06-09	-0.2880233797784968	06	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-06-09	-0.29654735636759305	06	Spring	extracellular	snp	lipid related
+lactose_ratio	2011-06-09	-0.11082971394196353	06	Spring	ratio	ratio	carbohydrate
+lactose_sp	2011-06-09	0.029020948383041933	06	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2011-06-09	-0.1325613351776858	06	Spring	ratio	ratio	carbohydrate
+mannose_bp	2011-06-09	-0.14020454317052128	06	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2011-06-09	-0.31501825848018944	06	Spring	ratio	ratio	carbohydrate
+mannose_sp	2011-06-09	-0.05423704090044117	06	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-06-09	0.27620317761542135	06	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2011-06-09	-0.35932101928212246	06	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-06-09	-0.269673437988743	06	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-06-09	-0.35485006929251434	06	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-06-09	-0.18203127458513935	06	Spring	online	pcparams	conductivity
+proline_ratio	2011-06-09	-0.3892130514445536	06	Spring	ratio	ratio	amino acid
+putrescine_bp	2011-06-09	-0.3489435190073201	06	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-06-09	-0.3599482909869028	06	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2011-06-09	-0.4883070741606348	06	Spring	ratio	ratio	amino acid
+sucrose_ratio	2011-06-09	-0.601478969424957	06	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2011-06-09	-0.472356262584961	06	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-06-17	-0.4123661916530662	06	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-06-17	-0.3848289696650288	06	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-06-17	-0.45268247942728956	06	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-06-17	-0.35190313765840786	06	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-06-17	-0.5081277385935585	06	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-06-17	NA	06	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-06-17	-0.3373024682120554	06	Summer	extracellular	snp	lipid related
+alanine_bp	2011-06-17	0.08791631919009467	06	Summer	intracellular	bp	amino acid
+alanine_sp	2011-06-17	0.7927790266253087	06	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-06-17	-0.4023763420861304	06	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-06-17	1.4669438544105777	06	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-06-17	-0.7584357096065509	06	Summer	online	pcparams	pH
+cellobiose_sp	2011-06-17	-0.2232926185845867	06	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-06-17	0.3567531879603381	06	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-06-17	-0.5903464400368198	06	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-06-17	-0.43860534818508484	06	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-06-17	-0.4826607590203032	06	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-06-17	-0.3415427534750841	06	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-06-17	-0.2843530543810523	06	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-06-17	-0.28125080709293016	06	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-06-17	0.4933955107255843	06	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-06-17	-0.4551351617172384	06	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-06-17	-0.5001219654323441	06	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-06-17	-0.2796957887552314	06	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-06-17	-0.24360081330254388	06	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-06-17	-0.3582102446308538	06	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-06-17	-0.5013043001252132	06	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-06-17	-0.2234579274577634	06	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-06-17	-0.45481199411033724	06	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-06-17	0.0675066819801985	06	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-06-17	-0.3704517591416507	06	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-06-17	-0.4344922429718685	06	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-06-17	-0.3698344803731017	06	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-06-17	1.2256796415517888	06	Summer	online	pcparams	conductivity
+proline_ratio	2011-06-17	-0.39737508329717974	06	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-06-17	-0.3556139036560748	06	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-06-17	-0.3854860651490771	06	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-06-17	-0.44093638886314923	06	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-06-17	-0.4340017209867028	06	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-06-17	-0.4204969261277212	06	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-06-24	-0.2548704505175415	06	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-06-24	-0.3128285031944832	06	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-06-24	-0.2431961314344121	06	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-06-24	-0.3399647870318152	06	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-06-24	-0.2315246579972164	06	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-06-24	0.6875209557995541	06	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-06-24	-0.28420792861234573	06	Summer	extracellular	snp	lipid related
+alanine_bp	2011-06-24	-0.11637298022631315	06	Summer	intracellular	bp	amino acid
+alanine_sp	2011-06-24	0.844255127964707	06	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-06-24	-0.1973296921537003	06	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-06-24	1.0537856170652409	06	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-06-24	-0.8912834405254697	06	Summer	online	pcparams	pH
+cellobiose_sp	2011-06-24	0.6164580500616396	06	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-06-24	0.8032191157658691	06	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-06-24	-0.3259184542102927	06	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-06-24	-0.3937665688841978	06	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-06-24	-0.21968103740741227	06	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-06-24	-0.09616101905259324	06	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-06-24	-0.23023078457226917	06	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-06-24	-0.10289420586483478	06	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-06-24	0.1983423093384162	06	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-06-24	-0.2268142849009945	06	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-06-24	-0.2604004548710534	06	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-06-24	-0.4123460118569409	06	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-06-24	0.33022764840631635	06	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-06-24	-0.10046058161532792	06	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-06-24	-0.15609317165676243	06	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-06-24	-0.5796205666315202	06	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-06-24	1.2347670761919223	06	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-06-24	-1.2587813924515325	06	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-06-24	-0.25079285420310726	06	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-06-24	-0.23521532399455944	06	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-06-24	-0.2418009397986002	06	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-06-24	-0.4629162273551832	06	Summer	online	pcparams	conductivity
+proline_ratio	2011-06-24	-0.5647746260009937	06	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-06-24	-0.28614886597598604	06	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-06-24	-0.5804386898098896	06	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-06-24	-0.4999864308433197	06	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-06-24	-0.6202311299711917	06	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-06-24	-0.42410433084756893	06	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-07-01	-0.14495198649195654	07	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-07-01	-0.36530635920350796	07	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-07-01	-0.2563210351175178	07	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-07-01	-0.35061996670161494	07	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-07-01	-0.13004410362436475	07	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-07-01	0.20336026594228407	07	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-07-01	-0.29413945804760344	07	Summer	extracellular	snp	lipid related
+alanine_bp	2011-07-01	-0.12548722020118924	07	Summer	intracellular	bp	amino acid
+alanine_sp	2011-07-01	0.13582972615692734	07	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-07-01	-0.2590115011441759	07	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-07-01	1.108655338398143	07	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-07-01	-1.1178647145228553	07	Summer	online	pcparams	pH
+cellobiose_sp	2011-07-01	0.48286529395956773	07	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-07-01	0.3382286050316964	07	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-07-01	-0.5366116367299618	07	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-07-01	-0.3900725742918032	07	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-07-01	0.25657870349992085	07	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-07-01	-0.3181213629051472	07	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-07-01	0.11677120022310017	07	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-07-01	-0.11187858167261437	07	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-07-01	-0.18802459600998359	07	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-07-01	-0.35698557191364316	07	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-07-01	-0.1865964462689001	07	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-07-01	-0.3413617044564899	07	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-07-01	0.31359338943290044	07	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-07-01	-0.2421516497538907	07	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-07-01	0.02990846320272376	07	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-07-01	-0.3681670337730445	07	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-07-01	0.17770972195990922	07	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-07-01	1.5689541861438343	07	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-07-01	-0.33745739889444376	07	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-07-01	-0.3004236615439198	07	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-07-01	-0.3225851919929262	07	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-07-01	0.8553978627958742	07	Summer	online	pcparams	conductivity
+proline_ratio	2011-07-01	-0.3361073670280465	07	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-07-01	-0.45915726480882296	07	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-07-01	-0.40166076355273844	07	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-07-01	-0.39001875702323185	07	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-07-01	-0.32801670231172503	07	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-07-01	-0.3722182127567289	07	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-07-08	-0.5103106054788346	07	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-07-08	-0.3848289696650288	07	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-07-08	-0.608651924484997	07	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-07-08	-0.3496058764564593	07	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-07-08	-0.574643565441804	07	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-07-08	NA	07	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-07-08	-0.3373024682120554	07	Summer	extracellular	snp	lipid related
+alanine_bp	2011-07-08	-0.9288633045020838	07	Summer	intracellular	bp	amino acid
+alanine_sp	2011-07-08	-0.7605756155428824	07	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-07-08	-0.5677800429686145	07	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-07-08	1.2896729605895454	07	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-07-08	-0.25036768189616854	07	Summer	online	pcparams	pH
+cellobiose_sp	2011-07-08	-0.09698325200890306	07	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-07-08	-0.14384730633434736	07	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-07-08	-0.3643639561227143	07	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-07-08	-0.41969890888388983	07	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-07-08	3.6485707448379356	07	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-07-08	0.26725838114822287	07	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-07-08	-0.2851850354543005	07	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-07-08	-0.4524891947712242	07	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-07-08	-0.5049947679229869	07	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-07-08	-0.31307898684766444	07	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-07-08	-0.38124491537777705	07	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-07-08	-0.4242011195230326	07	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-07-08	-0.1603445052878218	07	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-07-08	-0.5862963912275267	07	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-07-08	-0.8571242515515632	07	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-07-08	-0.53791500044437	07	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-07-08	-0.4048265875998741	07	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-07-08	-0.6781744106684652	07	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-07-08	-0.3631671233354337	07	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-07-08	-0.34220034274427474	07	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-07-08	-0.34628747052895625	07	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-07-08	1.223940444622218	07	Summer	online	pcparams	conductivity
+proline_ratio	2011-07-08	-0.2407648944831355	07	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-07-08	-0.36955880153648113	07	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-07-08	-0.37964251680706623	07	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-07-08	-0.7297465069793025	07	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-07-08	-0.6439795647191155	07	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-07-08	-0.554485596204859	07	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-08-05	-0.473752938996807	08	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-08-05	-0.3848289696650288	08	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-08-05	-0.5513065364084484	08	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-08-05	-0.3558250664049707	08	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-08-05	-0.5874238091633711	08	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-08-05	NA	08	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-08-05	-0.3373024682120554	08	Summer	extracellular	snp	lipid related
+alanine_bp	2011-08-05	-0.5097165201431173	08	Summer	intracellular	bp	amino acid
+alanine_sp	2011-08-05	-0.25365778549995377	08	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-08-05	-0.4538060595336954	08	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-08-05	2.731337820719422	08	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-08-05	-1.4288692154892977	08	Summer	online	pcparams	pH
+cellobiose_sp	2011-08-05	-0.07875228566695396	08	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-08-05	4.948768295874764	08	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-08-05	-0.6831245503073142	08	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-08-05	-0.2985641805458492	08	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-08-05	0.24939323735559207	08	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-08-05	-0.39191675785541247	08	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-08-05	-0.3394314214496533	08	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-08-05	-0.4706410164552364	08	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-08-05	0.03645165542309783	08	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-08-05	-0.4650210668347164	08	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-08-05	-0.5001219654323441	08	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-08-05	-0.42475371942973816	08	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-08-05	-0.1357478086809317	08	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-08-05	-0.2614170312797618	08	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-08-05	-0.792627455538512	08	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-08-05	-0.43687281047481596	08	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-08-05	-0.39593885202340656	08	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-08-05	1.2990266121425365	08	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-08-05	-0.3672127456909434	08	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-08-05	-0.4344922429718685	08	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-08-05	-0.375197771071213	08	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-08-05	0.36245609338032664	08	Summer	online	pcparams	conductivity
+proline_ratio	2011-08-05	-0.38378620161994675	08	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-08-05	-0.4488492469461092	08	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-08-05	-0.4012344429414572	08	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-08-05	-0.2738812914923846	08	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-08-05	1.8577326979095699	08	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-08-05	-0.3663476093930995	08	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-08-11	-0.5715828303528291	08	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-08-11	-0.3848289696650288	08	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-08-11	-0.6297588130498294	08	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-08-11	-0.3558250664049707	08	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-08-11	-0.5858323988830695	08	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-08-11	NA	08	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-08-11	-0.3373024682120554	08	Summer	extracellular	snp	lipid related
+alanine_bp	2011-08-11	-0.8245971258233579	08	Summer	intracellular	bp	amino acid
+alanine_sp	2011-08-11	-0.9551542797575027	08	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-08-11	-0.5357400374404776	08	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-08-11	3.584633156755637	08	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-08-11	-1.1696575785618417	08	Summer	online	pcparams	pH
+cellobiose_sp	2011-08-11	-0.40946839936969875	08	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-08-11	0.3566123524081857	08	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-08-11	-0.6080644846323864	08	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-08-11	-0.05925543944744922	08	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-08-11	-0.4388566236916043	08	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-08-11	4.031948147254034	08	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-08-11	-0.4303798921037525	08	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-08-11	-0.5476511566076404	08	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-08-11	2.2727975690213627	08	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-08-11	-0.44288190949054723	08	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-08-11	-0.5001219654323441	08	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-08-11	-0.3238563857071621	08	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-08-11	-0.3833849775747053	08	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-08-11	1.6415370539801295	08	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-08-11	-0.7827942076953414	08	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-08-11	-0.6433335737314612	08	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-08-11	-0.4339712798769497	08	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-08-11	2.1440640703844522	08	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-08-11	-0.3718170499686349	08	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-08-11	-0.4344922429718685	08	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-08-11	-0.3796101871910677	08	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-08-11	0.840583050348766	08	Summer	online	pcparams	conductivity
+proline_ratio	2011-08-11	-0.47968994540873294	08	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-08-11	-0.5242566635482977	08	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-08-11	-0.4880817485084374	08	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-08-11	-0.3452714897734078	08	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-08-11	0.037699198378280875	08	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-08-11	-0.4442558326828325	08	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-08-19	-0.6101243219113248	08	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-08-19	-0.3848289696650288	08	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-08-19	-0.5975236775984765	08	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-08-19	-0.3558250664049707	08	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-08-19	-0.5380995689187548	08	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-08-19	NA	08	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-08-19	-0.3373024682120554	08	Summer	extracellular	snp	lipid related
+alanine_bp	2011-08-19	-1.3610499541878418	08	Summer	intracellular	bp	amino acid
+alanine_sp	2011-08-19	-1.10199371668301	08	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-08-19	-0.23245490218709675	08	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-08-19	2.9260835647772723	08	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-08-19	-0.3400110782493708	08	Summer	online	pcparams	pH
+cellobiose_sp	2011-08-19	-0.24588594574420952	08	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-08-19	0.01896020044882578	08	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-08-19	-0.6312245176597894	08	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-08-19	-0.2069598222985291	08	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-08-19	-0.17946170918231555	08	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-08-19	0.7466695915480063	08	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-08-19	-0.4345025430696797	08	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-08-19	-0.5016040878573486	08	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-08-19	NA	08	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-08-19	-0.4882440130046116	08	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-08-19	-0.5001219654323441	08	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-08-19	-0.23902449190573993	08	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-08-19	-0.23285945801628194	08	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-08-19	0.02303729241714666	08	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-08-19	-0.8016023170485876	08	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-08-19	-0.2581254471547723	08	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-08-19	-0.3930113741643888	08	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-08-19	0.022417077282441723	08	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-08-19	-0.37334049342922665	08	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-08-19	-0.4344922429718685	08	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-08-19	-0.36804275266261294	08	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-08-19	2.0557344519909404	08	Summer	online	pcparams	conductivity
+proline_ratio	2011-08-19	-0.13482111278036507	08	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-08-19	-0.6571786983481553	08	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-08-19	-0.306001237062273	08	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-08-19	-0.22946285199114158	08	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-08-19	5.737870933982924	08	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-08-19	-0.247352290328416	08	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-08-29	-0.596830421248231	08	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-08-29	-0.3848289696650288	08	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-08-29	-0.600193381233677	08	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-08-29	-0.32655128307203724	08	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-08-29	-0.5399699431071052	08	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-08-29	0.03535645578160427	08	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-08-29	-0.32884557721558205	08	Summer	extracellular	snp	lipid related
+alanine_bp	2011-08-29	-1.0021179532150253	08	Summer	intracellular	bp	amino acid
+alanine_sp	2011-08-29	-1.5718604784899095	08	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-08-29	0.8791818123380036	08	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-08-29	-0.5408785220651123	08	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-08-29	-1.111981944368052	08	Summer	online	pcparams	pH
+cellobiose_sp	2011-08-29	-0.4783689699692392	08	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-08-29	-0.46664476264958027	08	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-08-29	-0.40443163759862216	08	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-08-29	0.6050655239587687	08	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-08-29	-0.3664356683518271	08	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-08-29	0.2740079922055041	08	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-08-29	-0.4076318600263736	08	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-08-29	-0.5192888146488985	08	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-08-29	-0.4561852600683089	08	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-08-29	-0.21058436844554196	08	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-08-29	-0.36371622155978184	08	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-08-29	-0.38525750580945184	08	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-08-29	-0.3892436414556586	08	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-08-29	2.036792969695208	08	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-08-29	-0.6711388338677364	08	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-08-29	-0.49145261612377367	08	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-08-29	-0.21881643021971806	08	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-08-29	-1.0514914635794237	08	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-08-29	-0.32311949062786155	08	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-08-29	-0.22789269959313768	08	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-08-29	-0.29363874487275765	08	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-08-29	-0.05073316149623122	08	Summer	online	pcparams	conductivity
+proline_ratio	2011-08-29	-0.31181382829274396	08	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-08-29	-0.5601758320485372	08	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-08-29	-0.45062866434309334	08	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-08-29	-0.1031241756975449	08	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-08-29	5.2223612250058915	08	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-08-29	1.5332069530054113	08	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-09-05	-0.4548101725461651	09	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-09-05	-0.3848289696650288	09	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-09-05	-0.5676034980419782	09	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-09-05	-0.3558250664049707	09	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-09-05	-0.485848135099382	09	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-09-05	NA	09	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-09-05	-0.3373024682120554	09	Summer	extracellular	snp	lipid related
+alanine_bp	2011-09-05	0.051091920343208315	09	Summer	intracellular	bp	amino acid
+alanine_sp	2011-09-05	0.19398321766557244	09	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-09-05	-0.37992147919593394	09	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-09-05	-0.3900881560585094	09	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-09-05	-0.6544435642680271	09	Summer	online	pcparams	pH
+cellobiose_sp	2011-09-05	0.21159507437832378	09	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-09-05	1.303868758040645	09	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-09-05	-0.571747320131231	09	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-09-05	-0.6219770450992491	09	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-09-05	-0.30769155057408554	09	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-09-05	-0.1527490482728475	09	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-09-05	-0.172867676556428	09	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-09-05	-0.251708403329958	09	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-09-05	0.18134576993210297	09	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-09-05	-0.4674662509122446	09	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-09-05	-0.5001219654323441	09	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-09-05	-0.3608934386275352	09	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-09-05	0.08325629838338083	09	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-09-05	-0.2362257551671143	09	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-09-05	0.19148111512006358	09	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-09-05	-0.5209113758038237	09	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-09-05	0.28148164565790823	09	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-09-05	-0.7379580732987616	09	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-09-05	-0.36518966278422205	09	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-09-05	-0.4344922429718685	09	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-09-05	-0.3715571349817165	09	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-09-05	1.9920936768812387	09	Summer	online	pcparams	conductivity
+proline_ratio	2011-09-05	-0.639725137793159	09	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-09-05	-0.5090701779282623	09	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-09-05	-0.708168162727324	09	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-09-05	-0.5928106683377168	09	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-09-05	0.0504797989887201	09	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-09-05	-0.5276370242978008	09	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-09-12	-0.4899467399423184	09	Summer	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-09-12	-0.3848289696650288	09	Summer	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-09-12	-0.5155419627923377	09	Summer	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-09-12	-0.33762315584772107	09	Summer	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-09-12	-0.475372197518205	09	Summer	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-09-12	NA	09	Summer	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-09-12	-0.3373024682120554	09	Summer	extracellular	snp	lipid related
+alanine_bp	2011-09-12	-0.9968593136768712	09	Summer	intracellular	bp	amino acid
+alanine_sp	2011-09-12	-0.4968321441998959	09	Summer	extracellular	sp	amino acid
+aspartic acid_ratio	2011-09-12	-0.3703508630048117	09	Summer	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-09-12	-0.21962378679577588	09	Summer	online	pcparams	NA
+BB1_pH_pcparams	2011-09-12	-1.125282347837515	09	Summer	online	pcparams	pH
+cellobiose_sp	2011-09-12	0.09624378253504973	09	Summer	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-09-12	-0.004563868562252007	09	Summer	ratio	ratio	lipid related
+cholesterol_snp	2011-09-12	-0.4874851888739235	09	Summer	extracellular	snp	lipid related
+glutamic acid_ratio	2011-09-12	-0.38470097212750687	09	Summer	ratio	ratio	amino acid
+glyceric acid_ratio	2011-09-12	-0.39515817191329744	09	Summer	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-09-12	-0.14197908203308626	09	Summer	ratio	ratio	lipid related
+glycerol_bp	2011-09-12	-0.4182656978100733	09	Summer	intracellular	bp	lipid related
+glycerol_sp	2011-09-12	-0.3078350690767353	09	Summer	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-09-12	0.2179071840273836	09	Summer	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-09-12	-0.4241222781848469	09	Summer	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-09-12	-0.48086223934462746	09	Summer	extracellular	snp	lipid related
+lactose_ratio	2011-09-12	-0.46279888923698664	09	Summer	ratio	ratio	carbohydrate
+lactose_sp	2011-09-12	-0.022260997981828328	09	Summer	extracellular	sp	carbohydrate
+mannitol_ratio	2011-09-12	1.4985820936417737	09	Summer	ratio	ratio	carbohydrate
+mannose_bp	2011-09-12	-0.6252976270932397	09	Summer	intracellular	bp	carbohydrate
+mannose_ratio	2011-09-12	-0.5236217982405104	09	Summer	ratio	ratio	carbohydrate
+mannose_sp	2011-09-12	0.04332986539956847	09	Summer	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-09-12	-0.7247741613334252	09	Summer	online	pcparams	NA
+octadecadienoic acid_snp	2011-09-12	-0.3584332262395234	09	Summer	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-09-12	-0.3704561028599304	09	Summer	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-09-12	-0.3645227758903718	09	Summer	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-09-12	-0.7267884088169748	09	Summer	online	pcparams	conductivity
+proline_ratio	2011-09-12	-0.4322544850244677	09	Summer	ratio	ratio	amino acid
+putrescine_bp	2011-09-12	-0.3841367721938711	09	Summer	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-09-12	-0.4504073754166658	09	Summer	ratio	ratio	organonitrogen compound
+serine_ratio	2011-09-12	-0.4331817547899383	09	Summer	ratio	ratio	amino acid
+sucrose_ratio	2011-09-12	-0.10984886398421922	09	Summer	ratio	ratio	carbohydrate
+threonine_ratio	2011-09-12	-0.45633776988848856	09	Summer	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-09-19	-0.5100671607295593	09	Fall	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-09-19	-0.3848289696650288	09	Fall	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-09-19	-0.5943845918372559	09	Fall	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-09-19	-0.3396533931725233	09	Fall	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-09-19	-0.5352131354503016	09	Fall	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-09-19	NA	09	Fall	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-09-19	-0.3373024682120554	09	Fall	extracellular	snp	lipid related
+alanine_bp	2011-09-19	-1.714237130572173	09	Fall	intracellular	bp	amino acid
+alanine_sp	2011-09-19	-1.5667011431983418	09	Fall	extracellular	sp	amino acid
+aspartic acid_ratio	2011-09-19	-0.2731064804797064	09	Fall	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-09-19	-0.5274517278205355	09	Fall	online	pcparams	NA
+BB1_pH_pcparams	2011-09-19	-1.3149846802773992	09	Fall	online	pcparams	pH
+cellobiose_sp	2011-09-19	-0.3607577112714987	09	Fall	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-09-19	-0.5023163235192887	09	Fall	ratio	ratio	lipid related
+cholesterol_snp	2011-09-19	-0.43019285920473976	09	Fall	extracellular	snp	lipid related
+glutamic acid_ratio	2011-09-19	0.18638164488968825	09	Fall	ratio	ratio	amino acid
+glyceric acid_ratio	2011-09-19	0.9632201254340429	09	Fall	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-09-19	0.3751060859206572	09	Fall	ratio	ratio	lipid related
+glycerol_bp	2011-09-19	-0.362931780855532	09	Fall	intracellular	bp	lipid related
+glycerol_sp	2011-09-19	-0.44291177331024056	09	Fall	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-09-19	NA	09	Fall	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-09-19	-0.30022668182063694	09	Fall	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-09-19	-0.40580960307688657	09	Fall	extracellular	snp	lipid related
+lactose_ratio	2011-09-19	-0.45957808293085217	09	Fall	ratio	ratio	carbohydrate
+lactose_sp	2011-09-19	-0.3582632409244815	09	Fall	extracellular	sp	carbohydrate
+mannitol_ratio	2011-09-19	3.8507178542496225	09	Fall	ratio	ratio	carbohydrate
+mannose_bp	2011-09-19	-0.7610906406835547	09	Fall	intracellular	bp	carbohydrate
+mannose_ratio	2011-09-19	-0.7895757805534769	09	Fall	ratio	ratio	carbohydrate
+mannose_sp	2011-09-19	-0.41605639365011576	09	Fall	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-09-19	-1.0313287172861845	09	Fall	online	pcparams	NA
+octadecadienoic acid_snp	2011-09-19	-0.3637599701246853	09	Fall	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-09-19	-0.3597246497759053	09	Fall	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-09-19	-0.3601785475936476	09	Fall	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-09-19	-0.6313906665346553	09	Fall	online	pcparams	conductivity
+proline_ratio	2011-09-19	-0.82974774217706	09	Fall	ratio	ratio	amino acid
+putrescine_bp	2011-09-19	-0.4589870476437713	09	Fall	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-09-19	-0.6832615401444023	09	Fall	ratio	ratio	organonitrogen compound
+serine_ratio	2011-09-19	1.2648504852125522	09	Fall	ratio	ratio	amino acid
+sucrose_ratio	2011-09-19	NA	09	Fall	ratio	ratio	carbohydrate
+threonine_ratio	2011-09-19	-0.18388912390795004	09	Fall	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-09-28	-0.6085275422229026	09	Fall	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-09-28	-0.3848289696650288	09	Fall	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-09-28	-0.6574651918881588	09	Fall	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-09-28	-0.3536244819154352	09	Fall	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-09-28	-0.6669738715700366	09	Fall	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-09-28	NA	09	Fall	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-09-28	-0.3373024682120554	09	Fall	extracellular	snp	lipid related
+alanine_bp	2011-09-28	-1.241203633422827	09	Fall	intracellular	bp	amino acid
+alanine_sp	2011-09-28	-1.132974570520302	09	Fall	extracellular	sp	amino acid
+aspartic acid_ratio	2011-09-28	-0.2212981466592606	09	Fall	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-09-28	-0.5187326214236093	09	Fall	online	pcparams	NA
+BB1_pH_pcparams	2011-09-28	-0.773711001926786	09	Fall	online	pcparams	pH
+cellobiose_sp	2011-09-28	-0.6098416591418471	09	Fall	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-09-28	-0.37473359629808456	09	Fall	ratio	ratio	lipid related
+cholesterol_snp	2011-09-28	-0.36955813242728264	09	Fall	extracellular	snp	lipid related
+glutamic acid_ratio	2011-09-28	-0.15586739557920765	09	Fall	ratio	ratio	amino acid
+glyceric acid_ratio	2011-09-28	-0.4513445610564052	09	Fall	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-09-28	0.33223280051635545	09	Fall	ratio	ratio	lipid related
+glycerol_bp	2011-09-28	-0.44094403143774424	09	Fall	intracellular	bp	lipid related
+glycerol_sp	2011-09-28	-0.5570032898313603	09	Fall	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-09-28	-0.21476558254657993	09	Fall	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-09-28	-0.3382254345746233	09	Fall	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-09-28	-0.46841204178794027	09	Fall	extracellular	snp	lipid related
+lactose_ratio	2011-09-28	-0.24216654224334924	09	Fall	ratio	ratio	carbohydrate
+lactose_sp	2011-09-28	-0.39445795852256954	09	Fall	extracellular	sp	carbohydrate
+mannitol_ratio	2011-09-28	0.8538176642778791	09	Fall	ratio	ratio	carbohydrate
+mannose_bp	2011-09-28	-0.8516739624225265	09	Fall	intracellular	bp	carbohydrate
+mannose_ratio	2011-09-28	-0.4330481065748601	09	Fall	ratio	ratio	carbohydrate
+mannose_sp	2011-09-28	-0.4786998317874447	09	Fall	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-09-28	-1.1138230395503623	09	Fall	online	pcparams	NA
+octadecadienoic acid_snp	2011-09-28	-0.37623559979506677	09	Fall	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-09-28	-0.4034985308624775	09	Fall	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-09-28	-0.3741685869348876	09	Fall	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-09-28	1.6556620471173966	09	Fall	online	pcparams	conductivity
+proline_ratio	2011-09-28	-0.4509274695206833	09	Fall	ratio	ratio	amino acid
+putrescine_bp	2011-09-28	-0.4081246455069668	09	Fall	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-09-28	-0.47321862624769256	09	Fall	ratio	ratio	organonitrogen compound
+serine_ratio	2011-09-28	-0.1604979542683517	09	Fall	ratio	ratio	amino acid
+sucrose_ratio	2011-09-28	4.829834634405473	09	Fall	ratio	ratio	carbohydrate
+threonine_ratio	2011-09-28	-0.3263241547503283	09	Fall	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-10-05	-0.4838736853955641	10	Fall	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-10-05	-0.3848289696650288	10	Fall	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-10-05	-0.5616566785178788	10	Fall	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-10-05	-0.3558250664049707	10	Fall	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-10-05	-0.6327061401458668	10	Fall	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-10-05	NA	10	Fall	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-10-05	-0.3373024682120554	10	Fall	extracellular	snp	lipid related
+alanine_bp	2011-10-05	0.4111937132469553	10	Fall	intracellular	bp	amino acid
+alanine_sp	2011-10-05	-0.17059767130164316	10	Fall	extracellular	sp	amino acid
+aspartic acid_ratio	2011-10-05	-0.28370100848660923	10	Fall	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-10-05	-0.4842084089179175	10	Fall	online	pcparams	NA
+BB1_pH_pcparams	2011-10-05	-0.6882409812527116	10	Fall	online	pcparams	pH
+cellobiose_sp	2011-10-05	-0.3328530828443553	10	Fall	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-10-05	5.584739868236292	10	Fall	ratio	ratio	lipid related
+cholesterol_snp	2011-10-05	-0.6976422185970286	10	Fall	extracellular	snp	lipid related
+glutamic acid_ratio	2011-10-05	-0.28069788972834364	10	Fall	ratio	ratio	amino acid
+glyceric acid_ratio	2011-10-05	-0.0532106344239574	10	Fall	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-10-05	-0.25338765391521945	10	Fall	ratio	ratio	lipid related
+glycerol_bp	2011-10-05	-0.41512394955359455	10	Fall	intracellular	bp	lipid related
+glycerol_sp	2011-10-05	-0.4734015469912986	10	Fall	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-10-05	-0.2229653532962354	10	Fall	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-10-05	-0.47789525526928023	10	Fall	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-10-05	-0.5001219654323441	10	Fall	extracellular	snp	lipid related
+lactose_ratio	2011-10-05	-0.2094345387427125	10	Fall	ratio	ratio	carbohydrate
+lactose_sp	2011-10-05	-0.3106730506635966	10	Fall	extracellular	sp	carbohydrate
+mannitol_ratio	2011-10-05	-0.1959003588043524	10	Fall	ratio	ratio	carbohydrate
+mannose_bp	2011-10-05	-0.29357379824926577	10	Fall	intracellular	bp	carbohydrate
+mannose_ratio	2011-10-05	-0.25757012789338807	10	Fall	ratio	ratio	carbohydrate
+mannose_sp	2011-10-05	-0.3374141847980406	10	Fall	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-10-05	-0.18133408855588176	10	Fall	online	pcparams	NA
+octadecadienoic acid_snp	2011-10-05	-0.3787971623857087	10	Fall	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-10-05	-0.4344922429718685	10	Fall	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-10-05	-0.3812947266243839	10	Fall	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-10-05	1.7899886882123952	10	Fall	online	pcparams	conductivity
+proline_ratio	2011-10-05	-0.26230305676457655	10	Fall	ratio	ratio	amino acid
+putrescine_bp	2011-10-05	-0.2952090680967465	10	Fall	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-10-05	-0.3029445017136446	10	Fall	ratio	ratio	organonitrogen compound
+serine_ratio	2011-10-05	-0.3012633827275444	10	Fall	ratio	ratio	amino acid
+sucrose_ratio	2011-10-05	0.24705824151862255	10	Fall	ratio	ratio	carbohydrate
+threonine_ratio	2011-10-05	-0.2791465453825689	10	Fall	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-10-12	-0.39107911054710526	10	Fall	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-10-12	-0.3848289696650288	10	Fall	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-10-12	-0.4553031510025488	10	Fall	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-10-12	-0.3558250664049707	10	Fall	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-10-12	-0.46105533935845333	10	Fall	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-10-12	NA	10	Fall	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-10-12	-0.3373024682120554	10	Fall	extracellular	snp	lipid related
+alanine_bp	2011-10-12	0.18023313295546292	10	Fall	intracellular	bp	amino acid
+alanine_sp	2011-10-12	0.358582941997537	10	Fall	extracellular	sp	amino acid
+aspartic acid_ratio	2011-10-12	-0.5581493244083983	10	Fall	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-10-12	-0.09790269021837018	10	Fall	online	pcparams	NA
+BB1_pH_pcparams	2011-10-12	-1.0465012830035216	10	Fall	online	pcparams	pH
+cellobiose_sp	2011-10-12	-0.0882022840346956	10	Fall	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-10-12	2.3646503428563874	10	Fall	ratio	ratio	lipid related
+cholesterol_snp	2011-10-12	-0.5984453095625321	10	Fall	extracellular	snp	lipid related
+glutamic acid_ratio	2011-10-12	-0.7296562170782063	10	Fall	ratio	ratio	amino acid
+glyceric acid_ratio	2011-10-12	1.6417193683054176	10	Fall	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-10-12	-0.47342487080473544	10	Fall	ratio	ratio	lipid related
+glycerol_bp	2011-10-12	-0.11465940421827935	10	Fall	intracellular	bp	lipid related
+glycerol_sp	2011-10-12	-0.2698704116233863	10	Fall	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-10-12	3.8101754373647734	10	Fall	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-10-12	-0.4134813531330119	10	Fall	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-10-12	-0.5001219654323441	10	Fall	extracellular	snp	lipid related
+lactose_ratio	2011-10-12	-0.1104709852749405	10	Fall	ratio	ratio	carbohydrate
+lactose_sp	2011-10-12	-0.15882397865554088	10	Fall	extracellular	sp	carbohydrate
+mannitol_ratio	2011-10-12	-0.5520896084082264	10	Fall	ratio	ratio	carbohydrate
+mannose_bp	2011-10-12	0.2723239944928685	10	Fall	intracellular	bp	carbohydrate
+mannose_ratio	2011-10-12	-0.44837230552564805	10	Fall	ratio	ratio	carbohydrate
+mannose_sp	2011-10-12	0.10114309616402341	10	Fall	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-10-12	0.43033008172493287	10	Fall	online	pcparams	NA
+octadecadienoic acid_snp	2011-10-12	-0.28980654141964524	10	Fall	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-10-12	-0.4344922429718685	10	Fall	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-10-12	-0.29166059854391546	10	Fall	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-10-12	0.4270708518329713	10	Fall	online	pcparams	conductivity
+proline_ratio	2011-10-12	-0.5371372710447502	10	Fall	ratio	ratio	amino acid
+putrescine_bp	2011-10-12	-0.4534065449399291	10	Fall	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-10-12	-0.6988398148404608	10	Fall	ratio	ratio	organonitrogen compound
+serine_ratio	2011-10-12	-0.6445775282832112	10	Fall	ratio	ratio	amino acid
+sucrose_ratio	2011-10-12	1.8802857856950261	10	Fall	ratio	ratio	carbohydrate
+threonine_ratio	2011-10-12	-0.5905791219032883	10	Fall	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-11-02	-0.025823741231045933	11	Fall	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-11-02	-0.35228499188783857	11	Fall	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-11-02	-0.08367379227981597	11	Fall	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-11-02	-0.34504896088984	11	Fall	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-11-02	-0.04688982379895915	11	Fall	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-11-02	0.9909285306435256	11	Fall	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-11-02	-0.3073284377343774	11	Fall	extracellular	snp	lipid related
+alanine_bp	2011-11-02	-0.7119565650591549	11	Fall	intracellular	bp	amino acid
+alanine_sp	2011-11-02	-0.14126842179134558	11	Fall	extracellular	sp	amino acid
+aspartic acid_ratio	2011-11-02	-0.27842836276517435	11	Fall	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-11-02	-0.8476109363072134	11	Fall	online	pcparams	NA
+BB1_pH_pcparams	2011-11-02	-0.6290043750560621	11	Fall	online	pcparams	pH
+cellobiose_sp	2011-11-02	0.5332615659794742	11	Fall	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-11-02	0.15905942004880955	11	Fall	ratio	ratio	lipid related
+cholesterol_snp	2011-11-02	-0.4547775414032848	11	Fall	extracellular	snp	lipid related
+glutamic acid_ratio	2011-11-02	-0.37801780543845054	11	Fall	ratio	ratio	amino acid
+glyceric acid_ratio	2011-11-02	-0.0015605025023827678	11	Fall	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-11-02	-0.3977018508577358	11	Fall	ratio	ratio	lipid related
+glycerol_bp	2011-11-02	0.16822180057199287	11	Fall	intracellular	bp	lipid related
+glycerol_sp	2011-11-02	0.4705390643941967	11	Fall	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-11-02	-0.11146606414016402	11	Fall	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-11-02	-0.2193627417360193	11	Fall	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-11-02	-0.013518800611628409	11	Fall	extracellular	snp	lipid related
+lactose_ratio	2011-11-02	-0.4231343463712176	11	Fall	ratio	ratio	carbohydrate
+lactose_sp	2011-11-02	0.2985725452974034	11	Fall	extracellular	sp	carbohydrate
+mannitol_ratio	2011-11-02	-0.44481222983639507	11	Fall	ratio	ratio	carbohydrate
+mannose_bp	2011-11-02	0.17059702800771723	11	Fall	intracellular	bp	carbohydrate
+mannose_ratio	2011-11-02	-0.42480852480174963	11	Fall	ratio	ratio	carbohydrate
+mannose_sp	2011-11-02	0.5231066094819973	11	Fall	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-11-02	-1.4026430147267799	11	Fall	online	pcparams	NA
+octadecadienoic acid_snp	2011-11-02	-0.330288936477358	11	Fall	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-11-02	-0.351119294463382	11	Fall	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-11-02	-0.30510827320733425	11	Fall	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-11-02	0.5727615017276858	11	Fall	online	pcparams	conductivity
+proline_ratio	2011-11-02	-0.4639871970446579	11	Fall	ratio	ratio	amino acid
+putrescine_bp	2011-11-02	-0.014113741093273246	11	Fall	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-11-02	-0.47714070874093506	11	Fall	ratio	ratio	organonitrogen compound
+serine_ratio	2011-11-02	-0.3891199617135103	11	Fall	ratio	ratio	amino acid
+sucrose_ratio	2011-11-02	-0.31153593075999875	11	Fall	ratio	ratio	carbohydrate
+threonine_ratio	2011-11-02	-0.3759136039298077	11	Fall	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-11-07	-0.03297040350300697	11	Fall	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-11-07	-0.3848289696650288	11	Fall	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-11-07	-0.1171787457578943	11	Fall	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-11-07	-0.3558250664049707	11	Fall	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-11-07	-0.0779139228777043	11	Fall	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-11-07	3.0854526697780327	11	Fall	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-11-07	-0.3037140970272445	11	Fall	extracellular	snp	lipid related
+alanine_bp	2011-11-07	-1.0374883131703427	11	Fall	intracellular	bp	amino acid
+alanine_sp	2011-11-07	-0.242182264321714	11	Fall	extracellular	sp	amino acid
+aspartic acid_ratio	2011-11-07	0.9393813507086051	11	Fall	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-11-07	-0.7638523543690243	11	Fall	online	pcparams	NA
+BB1_pH_pcparams	2011-11-07	-1.04075371499102	11	Fall	online	pcparams	pH
+cellobiose_sp	2011-11-07	0.9124568975406175	11	Fall	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-11-07	1.4861629614739913	11	Fall	ratio	ratio	lipid related
+cholesterol_snp	2011-11-07	-0.402633298599836	11	Fall	extracellular	snp	lipid related
+glutamic acid_ratio	2011-11-07	-0.5526307927055074	11	Fall	ratio	ratio	amino acid
+glyceric acid_ratio	2011-11-07	-0.6149504415718179	11	Fall	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-11-07	-0.6496075067562573	11	Fall	ratio	ratio	lipid related
+glycerol_bp	2011-11-07	-0.22366815403561827	11	Fall	intracellular	bp	lipid related
+glycerol_sp	2011-11-07	0.42743470489735774	11	Fall	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-11-07	-0.29684853349772033	11	Fall	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-11-07	-0.36282301604693173	11	Fall	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-11-07	0.010996485743903854	11	Fall	extracellular	snp	lipid related
+lactose_ratio	2011-11-07	-0.5720583046968784	11	Fall	ratio	ratio	carbohydrate
+lactose_sp	2011-11-07	0.5388402950028384	11	Fall	extracellular	sp	carbohydrate
+mannitol_ratio	2011-11-07	-0.5105607045034862	11	Fall	ratio	ratio	carbohydrate
+mannose_bp	2011-11-07	0.24962690546183927	11	Fall	intracellular	bp	carbohydrate
+mannose_ratio	2011-11-07	-0.6397660193424691	11	Fall	ratio	ratio	carbohydrate
+mannose_sp	2011-11-07	1.2087479144538462	11	Fall	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-11-07	-1.2787112119964166	11	Fall	online	pcparams	NA
+octadecadienoic acid_snp	2011-11-07	-0.29399496612250553	11	Fall	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-11-07	-0.4344922429718685	11	Fall	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-11-07	-0.3119060795338915	11	Fall	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-11-07	0.053253076430667845	11	Fall	online	pcparams	conductivity
+proline_ratio	2011-11-07	-0.6794713127787608	11	Fall	ratio	ratio	amino acid
+putrescine_bp	2011-11-07	0.11099012905570085	11	Fall	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-11-07	-0.641768425975046	11	Fall	ratio	ratio	organonitrogen compound
+serine_ratio	2011-11-07	-0.36341744666799036	11	Fall	ratio	ratio	amino acid
+sucrose_ratio	2011-11-07	0.33700993735425966	11	Fall	ratio	ratio	carbohydrate
+threonine_ratio	2011-11-07	-0.4051240797239815	11	Fall	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-11-16	1.4028079584614364	11	Fall	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-11-16	-0.03483771869576031	11	Fall	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-11-16	1.6636354386770862	11	Fall	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-11-16	0.010330254220170447	11	Fall	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-11-16	1.096221771902283	11	Fall	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-11-16	1.1447138300508322	11	Fall	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-11-16	-0.07484747521384719	11	Fall	extracellular	snp	lipid related
+alanine_bp	2011-11-16	-1.2197728260016734	11	Fall	intracellular	bp	amino acid
+alanine_sp	2011-11-16	-0.495212301487765	11	Fall	extracellular	sp	amino acid
+aspartic acid_ratio	2011-11-16	-0.9488550071905778	11	Fall	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-11-16	-0.3845639276512866	11	Fall	online	pcparams	NA
+BB1_pH_pcparams	2011-11-16	-0.7058006264356151	11	Fall	online	pcparams	pH
+cellobiose_sp	2011-11-16	3.234627557319522	11	Fall	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-11-16	0.3957999787213347	11	Fall	ratio	ratio	lipid related
+cholesterol_snp	2011-11-16	0.7090368767853643	11	Fall	extracellular	snp	lipid related
+glutamic acid_ratio	2011-11-16	-0.9632280112817057	11	Fall	ratio	ratio	amino acid
+glyceric acid_ratio	2011-11-16	2.0994322105531262	11	Fall	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-11-16	-0.5672409540409119	11	Fall	ratio	ratio	lipid related
+glycerol_bp	2011-11-16	1.6371246542232745	11	Fall	intracellular	bp	lipid related
+glycerol_sp	2011-11-16	1.694046164117143	11	Fall	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-11-16	-1.0903913805116268	11	Fall	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-11-16	0.408935889296293	11	Fall	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-11-16	0.5138312431308243	11	Fall	extracellular	snp	lipid related
+lactose_ratio	2011-11-16	-0.7996984326439103	11	Fall	ratio	ratio	carbohydrate
+lactose_sp	2011-11-16	2.469014567253837	11	Fall	extracellular	sp	carbohydrate
+mannitol_ratio	2011-11-16	-0.5879071135100189	11	Fall	ratio	ratio	carbohydrate
+mannose_bp	2011-11-16	3.8568344439223847	11	Fall	intracellular	bp	carbohydrate
+mannose_ratio	2011-11-16	-0.7036342552155221	11	Fall	ratio	ratio	carbohydrate
+mannose_sp	2011-11-16	2.8545785576549525	11	Fall	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-11-16	0.18527239657682135	11	Fall	online	pcparams	NA
+octadecadienoic acid_snp	2011-11-16	0.3777905024466856	11	Fall	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-11-16	0.2690944718440553	11	Fall	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-11-16	0.4530901886245088	11	Fall	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-11-16	1.0865558511908129	11	Fall	online	pcparams	conductivity
+proline_ratio	2011-11-16	-0.969070837666751	11	Fall	ratio	ratio	amino acid
+putrescine_bp	2011-11-16	1.1525347640527996	11	Fall	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-11-16	-0.7185288817785639	11	Fall	ratio	ratio	organonitrogen compound
+serine_ratio	2011-11-16	0.26172992333455497	11	Fall	ratio	ratio	amino acid
+sucrose_ratio	2011-11-16	2.5590837494604215	11	Fall	ratio	ratio	carbohydrate
+threonine_ratio	2011-11-16	-0.6748238578772536	11	Fall	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-11-23	2.5911744715338894	11	Fall	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-11-23	4.5447932938462525	11	Fall	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-11-23	2.285039941484355	11	Fall	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-11-23	3.1124410703628893	11	Fall	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-11-23	2.957769025317542	11	Fall	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-11-23	-0.45871729793585747	11	Fall	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-11-23	2.9074702238394936	11	Fall	extracellular	snp	lipid related
+alanine_bp	2011-11-23	-1.415105825135411	11	Fall	intracellular	bp	amino acid
+alanine_sp	2011-11-23	-0.2753433032095039	11	Fall	extracellular	sp	amino acid
+aspartic acid_ratio	2011-11-23	-0.8023153361369055	11	Fall	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-11-23	-0.6770437787241469	11	Fall	online	pcparams	NA
+BB1_pH_pcparams	2011-11-23	-0.6899517728571086	11	Fall	online	pcparams	pH
+cellobiose_sp	2011-11-23	4.25403294648085	11	Fall	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-11-23	-0.025431082379613272	11	Fall	ratio	ratio	lipid related
+cholesterol_snp	2011-11-23	3.5575508773474755	11	Fall	extracellular	snp	lipid related
+glutamic acid_ratio	2011-11-23	-1.0163338522554028	11	Fall	ratio	ratio	amino acid
+glyceric acid_ratio	2011-11-23	2.348592332714258	11	Fall	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-11-23	-0.568653501728984	11	Fall	ratio	ratio	lipid related
+glycerol_bp	2011-11-23	5.761736997405317	11	Fall	intracellular	bp	lipid related
+glycerol_sp	2011-11-23	3.56975262850048	11	Fall	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-11-23	-0.7349884134141452	11	Fall	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-11-23	3.1461148088340485	11	Fall	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-11-23	3.5581343870097917	11	Fall	extracellular	snp	lipid related
+lactose_ratio	2011-11-23	-0.3239085699908252	11	Fall	ratio	ratio	carbohydrate
+lactose_sp	2011-11-23	5.552053943329497	11	Fall	extracellular	sp	carbohydrate
+mannitol_ratio	2011-11-23	-0.4737945510577874	11	Fall	ratio	ratio	carbohydrate
+mannose_bp	2011-11-23	4.804388332620424	11	Fall	intracellular	bp	carbohydrate
+mannose_ratio	2011-11-23	-0.10546962252047752	11	Fall	ratio	ratio	carbohydrate
+mannose_sp	2011-11-23	4.034363190052959	11	Fall	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-11-23	-0.20917753958823612	11	Fall	online	pcparams	NA
+octadecadienoic acid_snp	2011-11-23	2.5625403639858413	11	Fall	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-11-23	2.771930698832931	11	Fall	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-11-23	3.65789586930053	11	Fall	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-11-23	0.6811850728608349	11	Fall	online	pcparams	conductivity
+proline_ratio	2011-11-23	-0.8941870312104008	11	Fall	ratio	ratio	amino acid
+putrescine_bp	2011-11-23	4.53394809876168	11	Fall	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-11-23	1.089604213125546	11	Fall	ratio	ratio	organonitrogen compound
+serine_ratio	2011-11-23	-0.51686507883825	11	Fall	ratio	ratio	amino acid
+sucrose_ratio	2011-11-23	-0.28026730008314815	11	Fall	ratio	ratio	carbohydrate
+threonine_ratio	2011-11-23	-0.5402788473843295	11	Fall	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-11-29	2.0271477943212273	11	Fall	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-11-29	3.512223712102393	11	Fall	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-11-29	1.994547567956138	11	Fall	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-11-29	5.01945302839669	11	Fall	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-11-29	0.7519355279117663	11	Fall	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-11-29	-0.6022197218321603	11	Fall	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-11-29	5.370179840085276	11	Fall	extracellular	snp	lipid related
+alanine_bp	2011-11-29	-2.1495517815893193	11	Fall	intracellular	bp	amino acid
+alanine_sp	2011-11-29	-0.32382727880599543	11	Fall	extracellular	sp	amino acid
+aspartic acid_ratio	2011-11-29	-0.5701123251415608	11	Fall	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-11-29	-0.5114502506304339	11	Fall	online	pcparams	NA
+BB1_pH_pcparams	2011-11-29	-0.5960537053973	11	Fall	online	pcparams	pH
+cellobiose_sp	2011-11-29	3.5227172050276336	11	Fall	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-11-29	0.06613785131510792	11	Fall	ratio	ratio	lipid related
+cholesterol_snp	2011-11-29	3.477977814834538	11	Fall	extracellular	snp	lipid related
+glutamic acid_ratio	2011-11-29	-0.6437862938458944	11	Fall	ratio	ratio	amino acid
+glyceric acid_ratio	2011-11-29	-0.09926930300491796	11	Fall	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-11-29	-0.522975429566453	11	Fall	ratio	ratio	lipid related
+glycerol_bp	2011-11-29	0.4662737057191808	11	Fall	intracellular	bp	lipid related
+glycerol_sp	2011-11-29	2.9512285474173012	11	Fall	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-11-29	-0.11615371426127573	11	Fall	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-11-29	4.7841338723015	11	Fall	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-11-29	3.0021052455028436	11	Fall	extracellular	snp	lipid related
+lactose_ratio	2011-11-29	-0.20333161317510187	11	Fall	ratio	ratio	carbohydrate
+lactose_sp	2011-11-29	2.763076484344495	11	Fall	extracellular	sp	carbohydrate
+mannitol_ratio	2011-11-29	-0.1307254117500079	11	Fall	ratio	ratio	carbohydrate
+mannose_bp	2011-11-29	1.0797715002324682	11	Fall	intracellular	bp	carbohydrate
+mannose_ratio	2011-11-29	-0.24971487846716692	11	Fall	ratio	ratio	carbohydrate
+mannose_sp	2011-11-29	3.0294075233573117	11	Fall	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-11-29	-0.2424135707466434	11	Fall	online	pcparams	NA
+octadecadienoic acid_snp	2011-11-29	4.229153090660462	11	Fall	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-11-29	5.044599929201974	11	Fall	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-11-29	4.871380122969422	11	Fall	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-11-29	0.49727562669940545	11	Fall	online	pcparams	conductivity
+proline_ratio	2011-11-29	-0.33931750403483124	11	Fall	ratio	ratio	amino acid
+putrescine_bp	2011-11-29	4.743574278122375	11	Fall	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-11-29	0.867735775104869	11	Fall	ratio	ratio	organonitrogen compound
+serine_ratio	2011-11-29	0.22514316708181561	11	Fall	ratio	ratio	amino acid
+sucrose_ratio	2011-11-29	5.827023647891915	11	Fall	ratio	ratio	carbohydrate
+threonine_ratio	2011-11-29	-0.1598132116770558	11	Fall	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-12-21	4.405934824712662	12	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-12-21	1.9542994185922484	12	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-12-21	4.271539926011674	12	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-12-21	1.9794142107020862	12	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-12-21	2.6134692458696867	12	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-12-21	-0.3991895424140745	12	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-12-21	1.9839794382048228	12	Winter	extracellular	snp	lipid related
+alanine_bp	2011-12-21	-0.8887224302266977	12	Winter	intracellular	bp	amino acid
+alanine_sp	2011-12-21	1.292937141919493	12	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2011-12-21	-1.106120828858245	12	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-12-21	0.12936158439625606	12	Winter	online	pcparams	NA
+BB1_pH_pcparams	2011-12-21	-0.15020861409297018	12	Winter	online	pcparams	pH
+cellobiose_sp	2011-12-21	0.7247655710393996	12	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-12-21	0.7821283421086661	12	Winter	ratio	ratio	lipid related
+cholesterol_snp	2011-12-21	1.0686926675907544	12	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2011-12-21	-0.9603547343035863	12	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2011-12-21	0.5352283490743914	12	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-12-21	-0.7636232138583013	12	Winter	ratio	ratio	lipid related
+glycerol_bp	2011-12-21	2.1189371088868976	12	Winter	intracellular	bp	lipid related
+glycerol_sp	2011-12-21	3.9858133085254956	12	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-12-21	0.8679248151352222	12	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-12-21	0.7890982980474008	12	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-12-21	2.9787752049930165	12	Winter	extracellular	snp	lipid related
+lactose_ratio	2011-12-21	-0.0864977743167062	12	Winter	ratio	ratio	carbohydrate
+lactose_sp	2011-12-21	0.43625243214279275	12	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2011-12-21	-0.6631328040685931	12	Winter	ratio	ratio	carbohydrate
+mannose_bp	2011-12-21	0.23573612347761547	12	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2011-12-21	-1.0504285134640183	12	Winter	ratio	ratio	carbohydrate
+mannose_sp	2011-12-21	2.372278639591289	12	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-12-21	-1.10884805998375	12	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2011-12-21	0.8155848381355535	12	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-12-21	0.8693015471088199	12	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-12-21	0.796450623842868	12	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-12-21	-0.10989154079498197	12	Winter	online	pcparams	conductivity
+proline_ratio	2011-12-21	-0.9208343847501906	12	Winter	ratio	ratio	amino acid
+putrescine_bp	2011-12-21	0.5826925606552747	12	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-12-21	-0.41686850273041143	12	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2011-12-21	-0.6291426987745944	12	Winter	ratio	ratio	amino acid
+sucrose_ratio	2011-12-21	0.8061503672210449	12	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2011-12-21	-0.628595253806528	12	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2011-12-28	0.76892696896169	12	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2011-12-28	1.08207533611521	12	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2011-12-28	0.8650011930896021	12	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2011-12-28	0.3288723927257255	12	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2011-12-28	0.986641022956243	12	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2011-12-28	-0.2140636247666097	12	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2011-12-28	0.1536105224155598	12	Winter	extracellular	snp	lipid related
+alanine_bp	2011-12-28	-0.1601277491095432	12	Winter	intracellular	bp	amino acid
+alanine_sp	2011-12-28	-0.6422796102393926	12	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2011-12-28	-0.192106824435072	12	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2011-12-28	0.2678956636142891	12	Winter	online	pcparams	NA
+BB1_pH_pcparams	2011-12-28	-0.12145105206164754	12	Winter	online	pcparams	pH
+cellobiose_sp	2011-12-28	-0.6182655618619766	12	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2011-12-28	-0.20054328306326014	12	Winter	ratio	ratio	lipid related
+cholesterol_snp	2011-12-28	0.148513490323217	12	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2011-12-28	-0.1636558706297133	12	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2011-12-28	-0.02917225272495831	12	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2011-12-28	-0.13802888603289964	12	Winter	ratio	ratio	lipid related
+glycerol_bp	2011-12-28	0.1532119731234154	12	Winter	intracellular	bp	lipid related
+glycerol_sp	2011-12-28	0.34827375070044114	12	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2011-12-28	-0.1617309117769941	12	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2011-12-28	-0.09377632090157836	12	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2011-12-28	0.23312996301302233	12	Winter	extracellular	snp	lipid related
+lactose_ratio	2011-12-28	1.443272861426194	12	Winter	ratio	ratio	carbohydrate
+lactose_sp	2011-12-28	-0.4912843114256974	12	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2011-12-28	-0.26255183514375263	12	Winter	ratio	ratio	carbohydrate
+mannose_bp	2011-12-28	-0.6034011801535977	12	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2011-12-28	-0.17403644823642597	12	Winter	ratio	ratio	carbohydrate
+mannose_sp	2011-12-28	-0.5236239673097768	12	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2011-12-28	-1.0307203374708007	12	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2011-12-28	-0.006939099345122693	12	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2011-12-28	-0.009090158058617783	12	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2011-12-28	-0.022006750150284877	12	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2011-12-28	-0.7614924606832294	12	Winter	online	pcparams	conductivity
+proline_ratio	2011-12-28	-0.17449007775977507	12	Winter	ratio	ratio	amino acid
+putrescine_bp	2011-12-28	0.054955058913768916	12	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2011-12-28	-0.24880513811821353	12	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2011-12-28	-0.2108929275996471	12	Winter	ratio	ratio	amino acid
+sucrose_ratio	2011-12-28	6.116085895791498	12	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2011-12-28	-0.18953795617207464	12	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-01-03	3.021181199156105	01	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-01-03	2.032503791804297	01	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-01-03	3.100444322614794	01	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-01-03	2.087582140623439	01	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-01-03	4.621513818332061	01	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-01-03	-0.17485263399426382	01	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-01-03	2.0489993773632675	01	Winter	extracellular	snp	lipid related
+alanine_bp	2012-01-03	0.3020748282215572	01	Winter	intracellular	bp	amino acid
+alanine_sp	2012-01-03	0.2463549636437131	01	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-01-03	-0.1878817178995857	01	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-01-03	-0.3844482068126236	01	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-01-03	0.30915601283619987	01	Winter	online	pcparams	pH
+cellobiose_sp	2012-01-03	-0.24446053511261778	01	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-01-03	-0.18625989844663024	01	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-01-03	1.9095040414306892	01	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-01-03	-0.19585012640059002	01	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-01-03	6.31565247205139	01	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-01-03	-0.15757595007792968	01	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-01-03	2.1005832876005996	01	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-01-03	1.0000702768169292	01	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-01-03	-0.16036606931389316	01	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-01-03	1.0038611514548286	01	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-01-03	2.003479894162877	01	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-01-03	-0.03527224730048517	01	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-01-03	-0.2362412320736735	01	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-01-03	-0.16235287959327793	01	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-01-03	0.3985762356502297	01	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-01-03	-0.14616426317668388	01	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-01-03	-0.06282049168420865	01	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-01-03	-1.1939932827580857	01	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-01-03	1.0358432476293127	01	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-01-03	1.235821101398951	01	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-01-03	0.9590487178429744	01	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-01-03	-2.2783437595120213	01	Winter	online	pcparams	conductivity
+proline_ratio	2012-01-03	-0.17175041648412973	01	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-01-03	-0.05609704087570069	01	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-01-03	-0.17921943146719024	01	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-01-03	-0.19173877319034996	01	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-01-03	0.1390837818482132	01	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-01-03	-0.18671986494625328	01	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-01-11	1.0157644909524686	01	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-01-11	1.5717846158392426	01	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-01-11	1.1473092219070118	01	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-01-11	1.3879001936182231	01	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-01-11	1.4027570662117987	01	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-01-11	-0.40096533898621683	01	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-01-11	0.6439020773724575	01	Winter	extracellular	snp	lipid related
+alanine_bp	2012-01-11	0.2886169445511667	01	Winter	intracellular	bp	amino acid
+alanine_sp	2012-01-11	0.34779223326427233	01	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-01-11	0.9676422178908813	01	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-01-11	-0.3597614370107731	01	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-01-11	0.2408469142719403	01	Winter	online	pcparams	pH
+cellobiose_sp	2012-01-11	-0.4371888577684698	01	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-01-11	-1.1646691420055602	01	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-01-11	3.412782348046161	01	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-01-11	-0.21168909261813224	01	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-01-11	1.522568053693412	01	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-01-11	0.8143637695992607	01	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-01-11	0.5885475517899779	01	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-01-11	0.9689004082635133	01	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-01-11	-0.9774306620503675	01	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-01-11	3.146727129649585	01	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-01-11	2.921938975760811	01	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-01-11	3.38417087347509	01	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-01-11	-0.34580863237057535	01	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-01-11	0.3837132603411381	01	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-01-11	0.17219149191061883	01	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-01-11	0.4294629967388258	01	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-01-11	-0.19840862641661874	01	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-01-11	-0.8943694706875472	01	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-01-11	4.132494822856678	01	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-01-11	3.037325990739981	01	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-01-11	2.447481957637962	01	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-01-11	-1.5938336930229244	01	Winter	online	pcparams	conductivity
+proline_ratio	2012-01-11	-0.5494832355044392	01	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-01-11	-0.16218906301404964	01	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-01-11	-0.8055105911272179	01	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-01-11	0.6581060097786566	01	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-01-11	0.9825564934173263	01	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-01-11	-0.1372578117046401	01	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-01-19	-0.270817047518723	01	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-01-19	-0.3848289696650288	01	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-01-19	-0.20015774802723518	01	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-01-19	-0.3558250664049707	01	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-01-19	0.1519436881238522	01	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-01-19	0.16872570854192273	01	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-01-19	-0.2794819115972091	01	Winter	extracellular	snp	lipid related
+alanine_bp	2012-01-19	0.5065130755678888	01	Winter	intracellular	bp	amino acid
+alanine_sp	2012-01-19	-1.1655360507399126	01	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-01-19	0.22393778641754247	01	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-01-19	-0.09421919687775389	01	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-01-19	-0.07693789479401777	01	Winter	online	pcparams	pH
+cellobiose_sp	2012-01-19	-0.617822072959868	01	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-01-19	-0.5907479893136275	01	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-01-19	0.005895778139464258	01	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-01-19	-0.07217845177356187	01	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-01-19	0.32900175303268453	01	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-01-19	0.35478918638763873	01	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-01-19	-0.13634028307998988	01	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-01-19	-0.47394712732686484	01	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-01-19	-0.6053658058987629	01	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-01-19	-0.29962783512518076	01	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-01-19	-0.3391967208473208	01	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-01-19	5.73845899190017	01	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-01-19	-0.49916703590989253	01	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-01-19	-0.2046574604492486	01	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-01-19	-0.12569690259812136	01	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-01-19	0.28715047001571015	01	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-01-19	-0.6344030718275936	01	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-01-19	-0.35478655968126765	01	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-01-19	-0.3383184154852401	01	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-01-19	-0.22895579613283154	01	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-01-19	-0.31169566731700327	01	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-01-19	-0.7431086676213081	01	Winter	online	pcparams	conductivity
+proline_ratio	2012-01-19	-0.07027149466382421	01	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-01-19	-0.42755047626695586	01	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-01-19	-0.43050431791019533	01	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-01-19	-0.3368753779647709	01	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-01-19	0.04427193268433216	01	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-01-19	-0.39413650162528835	01	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-01-25	0.10980720746001749	01	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-01-25	-0.3068662964742362	01	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-01-25	0.2059694025058997	01	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-01-25	-0.28420760835017056	01	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-01-25	0.367485279824956	01	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-01-25	0.32927221771129334	01	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-01-25	-0.19600727869697968	01	Winter	extracellular	snp	lipid related
+alanine_bp	2012-01-25	0.35537308723671734	01	Winter	intracellular	bp	amino acid
+alanine_sp	2012-01-25	-0.258463996558128	01	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-01-25	-0.46777621209175957	01	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-01-25	-0.34391754366334315	01	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-01-25	0.2165943563808156	01	Winter	online	pcparams	pH
+cellobiose_sp	2012-01-25	-0.5598692542064809	01	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-01-25	-0.7430405399481254	01	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-01-25	0.069660623893913	01	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-01-25	-0.48619917687777775	01	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-01-25	-0.304850655695706	01	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-01-25	-0.6142014526801532	01	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-01-25	-0.13001808977221121	01	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-01-25	-0.041662317433135046	01	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-01-25	-0.5069730104446716	01	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-01-25	-0.2169168054086531	01	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-01-25	-0.17632345945111405	01	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-01-25	3.913898249878192	01	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-01-25	-0.4325921304967129	01	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-01-25	0.11557870856897763	01	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-01-25	0.06625077380286669	01	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-01-25	0.2341757049283	01	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-01-25	-0.4653624625162244	01	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-01-25	-0.1260744107916313	01	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-01-25	-0.3034447822574335	01	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-01-25	-0.13857414670764576	01	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-01-25	-0.208946401330032	01	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-01-25	-1.6529060075130126	01	Winter	online	pcparams	conductivity
+proline_ratio	2012-01-25	-0.5415963284605836	01	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-01-25	-0.4161275070671269	01	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-01-25	-0.9292038232791189	01	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-01-25	-0.6987161119350581	01	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-01-25	-0.14376919699620008	01	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-01-25	-0.4741070263392955	01	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-02-01	-0.05148303740438737	02	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-02-01	-0.1289776358540285	02	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-02-01	0.28157271426675856	02	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-02-01	-0.13516438852910972	02	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-02-01	0.6308841088990375	02	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-02-01	-0.544089432707712	02	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-02-01	-0.12736968851523234	02	Winter	extracellular	snp	lipid related
+alanine_bp	2012-02-01	-0.22520972787637514	02	Winter	intracellular	bp	amino acid
+alanine_sp	2012-02-01	-1.6123244471652445	02	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-02-01	0.45670408317502287	02	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-02-01	-0.0694229745919451	02	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-02-01	-0.07635816621041948	02	Winter	online	pcparams	pH
+cellobiose_sp	2012-02-01	-0.6117373521797024	02	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-02-01	-0.6157512787682564	02	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-02-01	-0.1975396403813258	02	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-02-01	2.3411944655456107	02	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-02-01	-0.2211818285034475	02	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-02-01	2.1895922253418414	02	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-02-01	-0.2572156044956365	02	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-02-01	-0.5258992839341827	02	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-02-01	-0.636275181319731	02	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-02-01	-0.23632184938848977	02	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-02-01	-0.28412402968050393	02	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-02-01	-0.14222559884843775	02	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-02-01	-0.4324256660033963	02	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-02-01	4.742394701075249	02	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-02-01	-0.46204140402530197	02	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-02-01	-0.6077463164792496	02	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-02-01	-0.40491609166125875	02	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-02-01	-0.05985287659475843	02	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-02-01	-0.3015545849196435	02	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-02-01	-0.25699150882212285	02	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-02-01	-0.28013124280899404	02	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-02-01	0.6878977840396668	02	Winter	online	pcparams	conductivity
+proline_ratio	2012-02-01	0.5907863786855676	02	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-02-01	0.10044087156556483	02	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-02-01	-0.48519084660222367	02	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-02-01	0.729308547819897	02	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-02-01	-0.38533649494509364	02	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-02-01	0.8788753415397134	02	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-02-08	-0.18995803017234908	02	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-02-08	-0.09531837990715805	02	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-02-08	-0.12465004591515484	02	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-02-08	-0.22852105316728344	02	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-02-08	-0.061027875874348936	02	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-02-08	-0.7846274161781271	02	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-02-08	-0.1407641046470884	02	Winter	extracellular	snp	lipid related
+alanine_bp	2012-02-08	0.6288506155349602	02	Winter	intracellular	bp	amino acid
+alanine_sp	2012-02-08	-0.6090358926177261	02	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-02-08	0.21771666486031166	02	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-02-08	-0.18502496127188298	02	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-02-08	-0.762921465803735	02	Winter	online	pcparams	pH
+cellobiose_sp	2012-02-08	-0.4411941853800542	02	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-02-08	-0.8138862116066736	02	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-02-08	0.016917957472837617	02	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-02-08	1.085003190452714	02	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-02-08	0.4991660000147448	02	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-02-08	-0.3496386205450221	02	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-02-08	-0.3438302698666815	02	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-02-08	-0.38625680552868624	02	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-02-08	-0.771256807213557	02	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-02-08	-0.2418661653427669	02	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-02-08	-0.3375017631151266	02	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-02-08	1.3969644688975527	02	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-02-08	-0.3832430121979841	02	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-02-08	5.287607434742227	02	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-02-08	0.1754611498494131	02	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-02-08	-0.5086769367998515	02	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-02-08	-0.289880801975164	02	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-02-08	1.5539780329208828	02	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-02-08	-0.29634749613955147	02	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-02-08	-0.21635764570684388	02	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-02-08	-0.26535814337318114	02	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-02-08	-0.857487576600365	02	Winter	online	pcparams	conductivity
+proline_ratio	2012-02-08	-0.27086206232797405	02	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-02-08	0.0354540943354615	02	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-02-08	-0.590133929305968	02	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-02-08	0.30996892514574054	02	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-02-08	-0.01214954722404383	02	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-02-08	-0.6559083554741297	02	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-02-14	-0.17418922852623123	02	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-02-14	-0.3204978773767817	02	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-02-14	-0.1120299003494283	02	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-02-14	-0.3145816092782219	02	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-02-14	-0.09881875633129612	02	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-02-14	1.3803316155272394	02	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-02-14	-0.2898216361131162	02	Winter	extracellular	snp	lipid related
+alanine_bp	2012-02-14	1.0315530415915288	02	Winter	intracellular	bp	amino acid
+alanine_sp	2012-02-14	0.7981987885199154	02	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-02-14	-0.22365112977378362	02	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-02-14	-0.4171440244367381	02	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-02-14	-0.9498836670637115	02	Winter	online	pcparams	pH
+cellobiose_sp	2012-02-14	-0.5818823995189573	02	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-02-14	-0.4958088199976789	02	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-02-14	0.03243054900044599	02	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-02-14	-0.5753513744670046	02	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-02-14	-0.8384834643161084	02	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-02-14	-0.5824176606133298	02	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-02-14	-0.301185269271235	02	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-02-14	-0.10962355417927307	02	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-02-14	-0.423174176938517	02	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-02-14	-0.18825361642361857	02	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-02-14	-0.21376710497416304	02	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-02-14	4.196852930949504	02	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-02-14	-0.44366836966488665	02	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-02-14	-0.489243376676122	02	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-02-14	-0.3193232632849304	02	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-02-14	0.5005806315882162	02	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-02-14	-0.5584424723519485	02	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-02-14	1.6335599308197457	02	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-02-14	-0.2941682749015335	02	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-02-14	-0.14104004841115533	02	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-02-14	-0.28374807088214365	02	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-02-14	0.3048059297165328	02	Winter	online	pcparams	conductivity
+proline_ratio	2012-02-14	-0.5258530989827784	02	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-02-14	-0.2785180791868651	02	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-02-14	-0.7756887629779466	02	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-02-14	-0.5835683544043043	02	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-02-14	-0.5611418499096028	02	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-02-14	-0.5851555298128976	02	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-02-23	-0.23700832617468184	02	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-02-23	-0.3848289696650288	02	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-02-23	-0.21215069208733559	02	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-02-23	-0.3558250664049707	02	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-02-23	-0.2201669004036949	02	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-02-23	NA	02	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-02-23	-0.3373024682120554	02	Winter	extracellular	snp	lipid related
+alanine_bp	2012-02-23	1.3368725677063653	02	Winter	intracellular	bp	amino acid
+alanine_sp	2012-02-23	1.5775427363253334	02	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-02-23	-0.24363873150520146	02	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-02-23	-0.47570505261025414	02	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-02-23	-0.5861616323727764	02	Winter	online	pcparams	pH
+cellobiose_sp	2012-02-23	-0.2699134627387998	02	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-02-23	1.1493677989491677	02	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-02-23	-0.566499902664155	02	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-02-23	-0.7027015821479813	02	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-02-23	-0.5379723799164386	02	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-02-23	-0.4975058308162779	02	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-02-23	-0.4203359903736134	02	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-02-23	-0.2828385176460517	02	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-02-23	NA	02	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-02-23	-0.43692535711063507	02	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-02-23	-0.35606084113197	02	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-02-23	0.43757237220122636	02	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-02-23	-0.26890607461946564	02	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-02-23	-0.4203147429745032	02	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-02-23	0.19737421501274838	02	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-02-23	-0.13562612065984853	02	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-02-23	-0.35456297742329107	02	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-02-23	1.5324000258579975	02	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-02-23	-0.3630706170335908	02	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-02-23	-0.4344922429718685	02	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-02-23	-0.36303481309471397	02	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-02-23	-0.8023426681126217	02	Winter	online	pcparams	conductivity
+proline_ratio	2012-02-23	-0.5859544604423647	02	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-02-23	-0.21533868685693636	02	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-02-23	-0.6923636126017512	02	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-02-23	-0.645161917867428	02	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-02-23	1.1847580367250452	02	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-02-23	-0.6547187380297376	02	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-02-29	-0.5748130084485362	02	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-02-29	-0.3596690220946607	02	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-02-29	-0.5287662018436706	02	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-02-29	-0.3558250664049707	02	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-02-29	-0.5215986654345441	02	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-02-29	NA	02	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-02-29	-0.3373024682120554	02	Winter	extracellular	snp	lipid related
+alanine_bp	2012-02-29	-0.3925572269848663	02	Winter	intracellular	bp	amino acid
+alanine_sp	2012-02-29	-0.8378734308108029	02	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-02-29	-0.0769588934166615	02	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-02-29	-0.34894917544495857	02	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-02-29	0.04012523549837039	02	Winter	online	pcparams	pH
+cellobiose_sp	2012-02-29	-0.6180543024960529	02	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-02-29	-0.36202424924352955	02	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-02-29	-0.04051836139202937	02	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-02-29	-0.2723831326177685	02	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-02-29	-0.10110779772746961	02	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-02-29	0.010178366565837762	02	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-02-29	-0.4333672601645245	02	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-02-29	-0.5641596554797891	02	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-02-29	-0.3602802254856729	02	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-02-29	-0.2489413942535854	02	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-02-29	-0.28177538805758584	02	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-02-29	6.112340028011918	02	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-02-29	-0.505505263883032	02	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-02-29	-0.1616733643805331	02	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-02-29	-0.645997360871627	02	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-02-29	0.04719874252422439	02	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-02-29	-0.6158294948568294	02	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-02-29	1.2333948870918057	02	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-02-29	-0.3171112234252519	02	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-02-29	-0.2100821968051453	02	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-02-29	-0.3067494296050038	02	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-02-29	-0.6615594468813623	02	Winter	online	pcparams	conductivity
+proline_ratio	2012-02-29	-0.01815905822015527	02	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-02-29	-0.29061335473089445	02	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-02-29	0.020061873764981607	02	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-02-29	-0.3195388046137241	02	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-02-29	-0.1053784657703745	02	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-02-29	-0.2935578962473533	02	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-03-08	-0.4460494335136281	03	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-03-08	-0.3058078691142899	03	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-03-08	-0.36626162409751867	03	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-03-08	-0.3386974874230891	03	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-03-08	-0.4153637714890248	03	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-03-08	5.860632576177256	03	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-03-08	-0.333557964505753	03	Winter	extracellular	snp	lipid related
+alanine_bp	2012-03-08	0.6022185264484415	03	Winter	intracellular	bp	amino acid
+alanine_sp	2012-03-08	0.7159200393886287	03	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-03-08	-0.22047977254912793	03	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-03-08	-0.430410100385275	03	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-03-08	-0.48266066011074005	03	Winter	online	pcparams	pH
+cellobiose_sp	2012-03-08	-0.3869058728649366	03	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-03-08	-0.2813097314656464	03	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-03-08	-0.1642591092416426	03	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-03-08	-0.29882816236552096	03	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-03-08	-0.3293001499708723	03	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-03-08	-0.25474113233859524	03	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-03-08	-0.41096899993120106	03	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-03-08	-0.36462842399309675	03	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-03-08	NA	03	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-03-08	-0.27972386862471116	03	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-03-08	-0.3520377442554475	03	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-03-08	0.36759351601308166	03	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-03-08	-0.3294769191090566	03	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-03-08	0.17207438817754014	03	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-03-08	-0.6741634946276692	03	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-03-08	-0.2609626473665851	03	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-03-08	-0.4055348446267505	03	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-03-08	2.651791183467121	03	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-03-08	-0.3228978682960042	03	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-03-08	-0.28400470174183523	03	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-03-08	-0.3140591591328213	03	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-03-08	-1.2340670429021958	03	Winter	online	pcparams	conductivity
+proline_ratio	2012-03-08	-0.331541129980997	03	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-03-08	-0.4063143568097407	03	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-03-08	-0.3944608407204377	03	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-03-08	-0.34867360024000305	03	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-03-08	-0.4271932105798972	03	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-03-08	-0.3475161782669705	03	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-03-14	-0.4410618391496911	03	Winter	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-03-14	-0.3848289696650288	03	Winter	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-03-14	-0.400920115020691	03	Winter	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-03-14	-0.3558250664049707	03	Winter	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-03-14	-0.46248515360480474	03	Winter	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-03-14	NA	03	Winter	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-03-14	-0.3373024682120554	03	Winter	extracellular	snp	lipid related
+alanine_bp	2012-03-14	2.167172911315572	03	Winter	intracellular	bp	amino acid
+alanine_sp	2012-03-14	-0.31845561954165347	03	Winter	extracellular	sp	amino acid
+aspartic acid_ratio	2012-03-14	-0.18831478180689237	03	Winter	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-03-14	-0.6161326298252473	03	Winter	online	pcparams	NA
+BB1_pH_pcparams	2012-03-14	1.0154689618735473	03	Winter	online	pcparams	pH
+cellobiose_sp	2012-03-14	-0.4720935582400609	03	Winter	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-03-14	0.1991220270509827	03	Winter	ratio	ratio	lipid related
+cholesterol_snp	2012-03-14	-0.5477613225513075	03	Winter	extracellular	snp	lipid related
+glutamic acid_ratio	2012-03-14	-0.6980819979686853	03	Winter	ratio	ratio	amino acid
+glyceric acid_ratio	2012-03-14	4.4605412343122675	03	Winter	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-03-14	-0.5918329647832105	03	Winter	ratio	ratio	lipid related
+glycerol_bp	2012-03-14	-0.2823746504377158	03	Winter	intracellular	bp	lipid related
+glycerol_sp	2012-03-14	-0.508937702347636	03	Winter	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-03-14	-0.5246087877025363	03	Winter	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-03-14	-0.4475433453558716	03	Winter	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-03-14	-0.5001219654323441	03	Winter	extracellular	snp	lipid related
+lactose_ratio	2012-03-14	1.643557318219102	03	Winter	ratio	ratio	carbohydrate
+lactose_sp	2012-03-14	-0.40800244582906936	03	Winter	extracellular	sp	carbohydrate
+mannitol_ratio	2012-03-14	0.7849404414829637	03	Winter	ratio	ratio	carbohydrate
+mannose_bp	2012-03-14	0.8525783171082265	03	Winter	intracellular	bp	carbohydrate
+mannose_ratio	2012-03-14	0.7280528932877683	03	Winter	ratio	ratio	carbohydrate
+mannose_sp	2012-03-14	-0.4899975296644894	03	Winter	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-03-14	0.05273513816692541	03	Winter	online	pcparams	NA
+octadecadienoic acid_snp	2012-03-14	-0.3644461791177419	03	Winter	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-03-14	-0.4344922429718685	03	Winter	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-03-14	-0.35095269333021656	03	Winter	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-03-14	-0.44283364830575905	03	Winter	online	pcparams	conductivity
+proline_ratio	2012-03-14	-0.5020741734769378	03	Winter	ratio	ratio	amino acid
+putrescine_bp	2012-03-14	-0.33535487922867385	03	Winter	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-03-14	-1.022962875507393	03	Winter	ratio	ratio	organonitrogen compound
+serine_ratio	2012-03-14	-0.75686553429665	03	Winter	ratio	ratio	amino acid
+sucrose_ratio	2012-03-14	-0.5210123747271388	03	Winter	ratio	ratio	carbohydrate
+threonine_ratio	2012-03-14	-0.7158341589308689	03	Winter	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-03-22	-0.3818705032462546	03	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-03-22	-0.2341048852835161	03	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-03-22	-0.350094020505423	03	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-03-22	-0.1943860799421111	03	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-03-22	-0.39086480432179416	03	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-03-22	-0.7457801743983702	03	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-03-22	-0.22586083635658374	03	Spring	extracellular	snp	lipid related
+alanine_bp	2012-03-22	0.5531786402217463	03	Spring	intracellular	bp	amino acid
+alanine_sp	2012-03-22	-0.7491303854131183	03	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2012-03-22	0.6988244735810638	03	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-03-22	-0.5414111009123055	03	Spring	online	pcparams	NA
+BB1_pH_pcparams	2012-03-22	0.8499709863838592	03	Spring	online	pcparams	pH
+cellobiose_sp	2012-03-22	-0.618719561827984	03	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-03-22	-0.6672638513526993	03	Spring	ratio	ratio	lipid related
+cholesterol_snp	2012-03-22	-0.25844242811054285	03	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2012-03-22	0.9529865075560682	03	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2012-03-22	-0.5062804604124752	03	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-03-22	-0.1098112181920282	03	Spring	ratio	ratio	lipid related
+glycerol_bp	2012-03-22	-0.39937605458258146	03	Spring	intracellular	bp	lipid related
+glycerol_sp	2012-03-22	-0.3994581631358773	03	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-03-22	0.1340752750655512	03	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-03-22	-0.26946993412925774	03	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-03-22	-0.4290114293669017	03	Spring	extracellular	snp	lipid related
+lactose_ratio	2012-03-22	4.444341253462559	03	Spring	ratio	ratio	carbohydrate
+lactose_sp	2012-03-22	-0.4827006339109817	03	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2012-03-22	-0.3801456673974676	03	Spring	ratio	ratio	carbohydrate
+mannose_bp	2012-03-22	-0.41092081067310876	03	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2012-03-22	0.7836609824869537	03	Spring	ratio	ratio	carbohydrate
+mannose_sp	2012-03-22	-0.6341729069634847	03	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-03-22	0.8092199786925799	03	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2012-03-22	-0.26329599426139044	03	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-03-22	-0.4344922429718685	03	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-03-22	-0.23373943455624724	03	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-03-22	-0.35616340251811485	03	Spring	online	pcparams	conductivity
+proline_ratio	2012-03-22	-0.020040872524293266	03	Spring	ratio	ratio	amino acid
+putrescine_bp	2012-03-22	-0.2972786221341634	03	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-03-22	-0.7385751538044839	03	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2012-03-22	-0.2996445215563646	03	Spring	ratio	ratio	amino acid
+sucrose_ratio	2012-03-22	0.9789550270115118	03	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2012-03-22	-0.2491100823425658	03	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-03-28	-0.4177869390609319	03	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-03-28	-0.357083614995054	03	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-03-28	-0.40288943142875683	03	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-03-28	-0.3014858131228619	03	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-03-28	-0.33017310261072236	03	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-03-28	-0.9489334911109192	03	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-03-28	-0.19740990667814684	03	Spring	extracellular	snp	lipid related
+alanine_bp	2012-03-28	0.18963607553437942	03	Spring	intracellular	bp	amino acid
+alanine_sp	2012-03-28	-0.6282018587026659	03	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2012-03-28	1.018224071923236	03	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-03-28	-0.33773269470644823	03	Spring	online	pcparams	NA
+BB1_pH_pcparams	2012-03-28	1.066908077909924	03	Spring	online	pcparams	pH
+cellobiose_sp	2012-03-28	-0.43452737964978866	03	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-03-28	-0.4326132590725449	03	Spring	ratio	ratio	lipid related
+cholesterol_snp	2012-03-28	-0.27691376269928525	03	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2012-03-28	-0.35233191525748964	03	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2012-03-28	0.9645788586124192	03	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-03-28	1.7095209808635048	03	Spring	ratio	ratio	lipid related
+glycerol_bp	2012-03-28	-0.2583564358243033	03	Spring	intracellular	bp	lipid related
+glycerol_sp	2012-03-28	-0.48136955397174797	03	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-03-28	-0.6342852748705425	03	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-03-28	-0.22324465416540332	03	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-03-28	-0.3154547511945571	03	Spring	extracellular	snp	lipid related
+lactose_ratio	2012-03-28	1.8971543290210102	03	Spring	ratio	ratio	carbohydrate
+lactose_sp	2012-03-28	-0.39552233879007337	03	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2012-03-28	0.430977244786042	03	Spring	ratio	ratio	carbohydrate
+mannose_bp	2012-03-28	-0.23532775175651452	03	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2012-03-28	0.06255241417959452	03	Spring	ratio	ratio	carbohydrate
+mannose_sp	2012-03-28	-0.46018342749062063	03	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-03-28	0.7635490228891627	03	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2012-03-28	-0.30597709776009596	03	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-03-28	-0.1464640530246341	03	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-03-28	-0.24001313878430058	03	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-03-28	0.25907024573068654	03	Spring	online	pcparams	conductivity
+proline_ratio	2012-03-28	0.008497320058404326	03	Spring	ratio	ratio	amino acid
+putrescine_bp	2012-03-28	-0.3376195743369386	03	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-03-28	-0.5361163482759308	03	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2012-03-28	-0.7529333142123401	03	Spring	ratio	ratio	amino acid
+sucrose_ratio	2012-03-28	-1.2462399193366325	03	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2012-03-28	-0.6038064582187007	03	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-04-04	-0.33595534225142404	04	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-04-04	-0.3848289696650288	04	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-04-04	-0.2901292461098554	04	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-04-04	-0.3346467069715523	04	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-04-04	-0.442777635955016	04	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-04-04	3.818769524696578	04	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-04-04	-0.334400602157831	04	Spring	extracellular	snp	lipid related
+alanine_bp	2012-04-04	0.7404058517358524	04	Spring	intracellular	bp	amino acid
+alanine_sp	2012-04-04	-1.2293886584670382	04	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2012-04-04	0.50712414588297	04	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-04-04	-0.15990281766360134	04	Spring	online	pcparams	NA
+BB1_pH_pcparams	2012-04-04	2.1736090757887525	04	Spring	online	pcparams	pH
+cellobiose_sp	2012-04-04	-0.6144528712619435	04	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-04-04	-0.47249814368900356	04	Spring	ratio	ratio	lipid related
+cholesterol_snp	2012-04-04	-0.5512919490192263	04	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2012-04-04	1.4469061114450652	04	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2012-04-04	1.4209713675646962	04	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-04-04	0.9495484960144838	04	Spring	ratio	ratio	lipid related
+glycerol_bp	2012-04-04	-0.3512519918870501	04	Spring	intracellular	bp	lipid related
+glycerol_sp	2012-04-04	-0.578159679737168	04	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-04-04	-0.6832768302451908	04	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-04-04	-0.2977271272298882	04	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-04-04	-0.438779233700895	04	Spring	extracellular	snp	lipid related
+lactose_ratio	2012-04-04	2.8186235593551063	04	Spring	ratio	ratio	carbohydrate
+lactose_sp	2012-04-04	-0.49719935797457354	04	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2012-04-04	-0.5064835991328867	04	Spring	ratio	ratio	carbohydrate
+mannose_bp	2012-04-04	-0.6024078618310029	04	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2012-04-04	-0.7333348113498912	04	Spring	ratio	ratio	carbohydrate
+mannose_sp	2012-04-04	-0.5995474466295173	04	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-04-04	-0.27341548808341376	04	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2012-04-04	-0.3241544370083646	04	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-04-04	-0.4344922429718685	04	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-04-04	-0.3040628226862193	04	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-04-04	0.10083451119015095	04	Spring	online	pcparams	conductivity
+proline_ratio	2012-04-04	0.5646342154301538	04	Spring	ratio	ratio	amino acid
+putrescine_bp	2012-04-04	-0.13967247109427158	04	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-04-04	-0.7339516759969975	04	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2012-04-04	-0.060119617584836686	04	Spring	ratio	ratio	amino acid
+sucrose_ratio	2012-04-04	-0.13613917503617062	04	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2012-04-04	-0.20661367277056017	04	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-04-10	-0.06723764405076235	04	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-04-10	-0.27065451774953336	04	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-04-10	-0.01590532733082437	04	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-04-10	-0.27916328996691	04	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-04-10	-0.1802815389533211	04	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-04-10	-0.06432920782752352	04	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-04-10	-0.22343719758133992	04	Spring	extracellular	snp	lipid related
+alanine_bp	2012-04-10	0.24784430776923747	04	Spring	intracellular	bp	amino acid
+alanine_sp	2012-04-10	0.08215129185591216	04	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2012-04-10	-0.1721047075148505	04	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-04-10	-0.41717959314041503	04	Spring	online	pcparams	NA
+BB1_pH_pcparams	2012-04-10	2.748825140693031	04	Spring	online	pcparams	pH
+cellobiose_sp	2012-04-10	-0.30818566524847696	04	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-04-10	-0.1637898225295802	04	Spring	ratio	ratio	lipid related
+cholesterol_snp	2012-04-10	-0.1972408134419684	04	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2012-04-10	-0.667321600687582	04	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2012-04-10	-0.007225346750108013	04	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-04-10	-0.7139760561473061	04	Spring	ratio	ratio	lipid related
+glycerol_bp	2012-04-10	-0.30133655862285424	04	Spring	intracellular	bp	lipid related
+glycerol_sp	2012-04-10	-0.27627675150992964	04	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-04-10	3.9824519515703023	04	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-04-10	0.0060166186170749845	04	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-04-10	-0.3452446050114267	04	Spring	extracellular	snp	lipid related
+lactose_ratio	2012-04-10	0.7100494703902577	04	Spring	ratio	ratio	carbohydrate
+lactose_sp	2012-04-10	-0.3077477617592334	04	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2012-04-10	-0.6558840052205298	04	Spring	ratio	ratio	carbohydrate
+mannose_bp	2012-04-10	-0.35123655946318133	04	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2012-04-10	0.11708256174296192	04	Spring	ratio	ratio	carbohydrate
+mannose_sp	2012-04-10	-0.46454729022227587	04	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-04-10	-0.8078602765541099	04	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2012-04-10	-0.2197201124419949	04	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-04-10	0.0402440506361959	04	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-04-10	-0.16023839578102006	04	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-04-10	-1.0994156180160841	04	Spring	online	pcparams	conductivity
+proline_ratio	2012-04-10	-0.8453957148972572	04	Spring	ratio	ratio	amino acid
+putrescine_bp	2012-04-10	-0.3784015456970437	04	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-04-10	-1.0363333091011229	04	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2012-04-10	-0.3450554271088395	04	Spring	ratio	ratio	amino acid
+sucrose_ratio	2012-04-10	-0.9662406597923121	04	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2012-04-10	-0.5320507256349495	04	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-04-17	-0.2262744407516188	04	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-04-17	-0.2911001201458562	04	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-04-17	-0.189844431624421	04	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-04-17	-0.34803375876848475	04	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-04-17	-0.3352425541744813	04	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-04-17	0.7247789089091257	04	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-04-17	-0.3175333883759976	04	Spring	extracellular	snp	lipid related
+alanine_bp	2012-04-17	-0.7963670024914732	04	Spring	intracellular	bp	amino acid
+alanine_sp	2012-04-17	-0.5542100969921436	04	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2012-04-17	-0.18029216946481053	04	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-04-17	-0.4172271619757088	04	Spring	online	pcparams	NA
+BB1_pH_pcparams	2012-04-17	1.0179631460060843	04	Spring	online	pcparams	pH
+cellobiose_sp	2012-04-17	-0.2680890989747982	04	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-04-17	0.1665613387807977	04	Spring	ratio	ratio	lipid related
+cholesterol_snp	2012-04-17	-0.5351958221666469	04	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2012-04-17	-0.1955365972483936	04	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2012-04-17	0.5968632112821923	04	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-04-17	-0.2624129773924461	04	Spring	ratio	ratio	lipid related
+glycerol_bp	2012-04-17	-0.3539491027053698	04	Spring	intracellular	bp	lipid related
+glycerol_sp	2012-04-17	-0.3449328163345587	04	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-04-17	-0.19512919926236985	04	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-04-17	-0.2984460864757401	04	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-04-17	-0.32929947804452203	04	Spring	extracellular	snp	lipid related
+lactose_ratio	2012-04-17	-0.2863696104692693	04	Spring	ratio	ratio	carbohydrate
+lactose_sp	2012-04-17	-0.27627399484769993	04	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2012-04-17	-0.3844297007264065	04	Spring	ratio	ratio	carbohydrate
+mannose_bp	2012-04-17	-0.7264589843245983	04	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2012-04-17	-0.2911698138260397	04	Spring	ratio	ratio	carbohydrate
+mannose_sp	2012-04-17	-0.4977963535594803	04	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-04-17	1.6263581170547063	04	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2012-04-17	-0.3417512953285273	04	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-04-17	-0.24884321727995407	04	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-04-17	-0.3398765152036025	04	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-04-17	0.08966450869870678	04	Spring	online	pcparams	conductivity
+proline_ratio	2012-04-17	-0.3724570492792076	04	Spring	ratio	ratio	amino acid
+putrescine_bp	2012-04-17	-0.29925810227321836	04	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-04-17	-0.421929929382289	04	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2012-04-17	-0.3606380724376399	04	Spring	ratio	ratio	amino acid
+sucrose_ratio	2012-04-17	-0.138775669595391	04	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2012-04-17	-0.3774960583222533	04	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-04-25	0.09393035805613746	04	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-04-25	0.23562359718936773	04	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-04-25	0.20020179036268138	04	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-04-25	0.2298211983942309	04	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-04-25	0.41212365092831343	04	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-04-25	-0.07365837432557816	04	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-04-25	0.05601995798270758	04	Spring	extracellular	snp	lipid related
+alanine_bp	2012-04-25	-0.9407960225632003	04	Spring	intracellular	bp	amino acid
+alanine_sp	2012-04-25	-0.45238430273288527	04	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2012-04-25	-0.18352512157502604	04	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-04-25	-0.41669751608919486	04	Spring	online	pcparams	NA
+BB1_pH_pcparams	2012-04-25	1.2422927898913734	04	Spring	online	pcparams	pH
+cellobiose_sp	2012-04-25	-0.008689156857474505	04	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-04-25	-0.3221143592005133	04	Spring	ratio	ratio	lipid related
+cholesterol_snp	2012-04-25	0.25113817246670944	04	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2012-04-25	0.037827887467757615	04	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2012-04-25	3.087997227297501	04	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-04-25	-0.04893866987038835	04	Spring	ratio	ratio	lipid related
+glycerol_bp	2012-04-25	-0.03941941241253127	04	Spring	intracellular	bp	lipid related
+glycerol_sp	2012-04-25	0.3171079462263737	04	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-04-25	4.912682721681708	04	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-04-25	0.7304246992948189	04	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-04-25	0.42404570473049796	04	Spring	extracellular	snp	lipid related
+lactose_ratio	2012-04-25	-0.30523465678590334	04	Spring	ratio	ratio	carbohydrate
+lactose_sp	2012-04-25	-0.062237993155116765	04	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2012-04-25	-0.5296092743675973	04	Spring	ratio	ratio	carbohydrate
+mannose_bp	2012-04-25	-0.328053109440038	04	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2012-04-25	-0.4744615065332294	04	Spring	ratio	ratio	carbohydrate
+mannose_sp	2012-04-25	0.09275362975811105	04	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-04-25	0.531243585853108	04	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2012-04-25	1.2961098105542161	04	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-04-25	0.5344682915081256	04	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-04-25	0.7314463674811363	04	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-04-25	-1.917955774565619	04	Spring	online	pcparams	conductivity
+proline_ratio	2012-04-25	0.053661952540382446	04	Spring	ratio	ratio	amino acid
+putrescine_bp	2012-04-25	-0.40851573687653187	04	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-04-25	-0.5806133688226429	04	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2012-04-25	-0.4146483235437582	04	Spring	ratio	ratio	amino acid
+sucrose_ratio	2012-04-25	0.32935181929133284	04	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2012-04-25	-0.2952149034320234	04	Spring	ratio	ratio	amino acid
+1-monopalmitoylglycerol_bnp	2012-05-03	0.15475260858545664	05	Spring	intracellular	bnp	lipid related
+1-monopalmitoylglycerol_snp	2012-05-03	-0.22464665966940825	05	Spring	extracellular	snp	lipid related
+1-oleoylglycerol_bnp	2012-05-03	0.29951660511563094	05	Spring	intracellular	bnp	lipid related
+1-oleoylglycerol_snp	2012-05-03	-0.25249593197407877	05	Spring	extracellular	snp	lipid related
+2-oleoylglycerol_bnp	2012-05-03	-0.029755097290659057	05	Spring	intracellular	bnp	lipid related
+2-oleoylglycerol_ratio	2012-05-03	-0.2525985622328142	05	Spring	ratio	ratio	lipid related
+2-oleoylglycerol_snp	2012-05-03	-0.17117418272964943	05	Spring	extracellular	snp	lipid related
+alanine_bp	2012-05-03	-0.2186614969072224	05	Spring	intracellular	bp	amino acid
+alanine_sp	2012-05-03	-0.5427126228044256	05	Spring	extracellular	sp	amino acid
+aspartic acid_ratio	2012-05-03	-0.2314191970402397	05	Spring	ratio	ratio	amino acid
+BB1_dry-mass_pcparams	2012-05-03	-0.41654704852661817	05	Spring	online	pcparams	NA
+BB1_pH_pcparams	2012-05-03	2.0697406337241615	05	Spring	online	pcparams	pH
+cellobiose_sp	2012-05-03	-0.4485998264681444	05	Spring	extracellular	sp	carbohydrate
+cholesterol_ratio	2012-05-03	-0.18483126071894596	05	Spring	ratio	ratio	lipid related
+cholesterol_snp	2012-05-03	-0.46089940927234135	05	Spring	extracellular	snp	lipid related
+glutamic acid_ratio	2012-05-03	-0.12995713336081005	05	Spring	ratio	ratio	amino acid
+glyceric acid_ratio	2012-05-03	-0.23858690871795343	05	Spring	ratio	ratio	lipid related
+glycerol 2-phosphate_ratio	2012-05-03	5.943464855479511	05	Spring	ratio	ratio	lipid related
+glycerol_bp	2012-05-03	-0.08814570688499437	05	Spring	intracellular	bp	lipid related
+glycerol_sp	2012-05-03	0.04386204053761281	05	Spring	extracellular	sp	lipid related
+glycerol-3-phosphate_ratio	2012-05-03	NA	05	Spring	ratio	ratio	lipid related
+hexadecanoic acid_snp	2012-05-03	-0.29586138694865566	05	Spring	extracellular	snp	lipid related
+hexadecenoic acid_snp	2012-05-03	-0.22123645805872544	05	Spring	extracellular	snp	lipid related
+lactose_ratio	2012-05-03	-0.12635409028509262	05	Spring	ratio	ratio	carbohydrate
+lactose_sp	2012-05-03	-0.3981092975330619	05	Spring	extracellular	sp	carbohydrate
+mannitol_ratio	2012-05-03	1.4377260246715529	05	Spring	ratio	ratio	carbohydrate
+mannose_bp	2012-05-03	-0.5019446856538358	05	Spring	intracellular	bp	carbohydrate
+mannose_ratio	2012-05-03	-0.20451606631293845	05	Spring	ratio	ratio	carbohydrate
+mannose_sp	2012-05-03	-0.5788397798359286	05	Spring	extracellular	sp	carbohydrate
+nitrate_pcparams	2012-05-03	1.048052143348309	05	Spring	online	pcparams	NA
+octadecadienoic acid_snp	2012-05-03	-0.30216560704335027	05	Spring	extracellular	snp	lipid related
+octadecan-1-ol_snp	2012-05-03	-0.3000969483963243	05	Spring	extracellular	snp	lipid related
+octadecenoic acid_snp	2012-05-03	-0.27376006500860106	05	Spring	extracellular	snp	lipid related
+outflow conductivity_pcparams	2012-05-03	-1.705755555788686	05	Spring	online	pcparams	conductivity
+proline_ratio	2012-05-03	-0.24315449906763908	05	Spring	ratio	ratio	amino acid
+putrescine_bp	2012-05-03	-0.24787316989608524	05	Spring	intracellular	bp	organonitrogen compound
+putrescine_ratio	2012-05-03	-0.25695019355268195	05	Spring	ratio	ratio	organonitrogen compound
+serine_ratio	2012-05-03	-0.15325129915667277	05	Spring	ratio	ratio	amino acid
+sucrose_ratio	2012-05-03	NA	05	Spring	ratio	ratio	carbohydrate
+threonine_ratio	2012-05-03	-0.2109241567340924	05	Spring	ratio	ratio	amino acid
