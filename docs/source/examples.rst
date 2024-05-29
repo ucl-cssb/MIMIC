@@ -12,8 +12,9 @@ Examples
    notebooks/gMLV/examples-ridge-lasso-gMLV
    notebooks/gMLV/examples-sim-gMLV
    notebooks/GP/examples-impute-GP
-   notebooks/GP/examples-impute-GP_Herold
    notebooks/GP/examples-impute-GP_Stein
+   notebooks/MultiModel/Herold/examples-Herold
+   notebooks/MVAR/examples-infer-MVAR
    notebooks/MVAR/examples-sim-MVAR
    notebooks/VAR/examples-bayes-VAR
    notebooks/VAR/examples-sim-VAR
