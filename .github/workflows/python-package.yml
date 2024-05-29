@@ -40,7 +40,8 @@ jobs:
           git config --global user.name "GitHub Action"
           git add .
           git commit -m "Update requirements.txt and format code" || true
-        continue-on-error: true # In case there are no changess
+          git push origin HEAD:${{ github.head_ref }} || true
+        continue-on-error: true # In case there are no changes
 
       - name: Upload updated requirements.txt
         uses: actions/upload-artifact@v3
