@@ -32,7 +32,7 @@ jobs:
         uses: ryan-rozario/pipreqs-action@v3.0.0
         with:
           PROJECT_PATH: mimic/
-          REQUIREMENT_PATH: requirements.txt
+          REQUIREMENT_PATH: ./requirements.txt
 
       - name: Commit changes
         run: |
@@ -40,17 +40,8 @@ jobs:
           git config --global user.name "GitHub Action"
           git add .
           git commit -m "Update requirements.txt and format code" || true
-          if [ "${{ github.event_name }}" = "pull_request" ]
-          then
-            BRANCH_NAME=${{ github.head_ref }}
-          else
-            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-          fi
-          echo "Pushing changes to branch: $BRANCH_NAME"
-          git push origin "refs/heads/${BRANCH_NAME}" || true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true # In case there are no changes
+        continue-on-error: true # In case there are no changess
+
       - name: Upload updated requirements.txt
         uses: actions/upload-artifact@v3
         with:
