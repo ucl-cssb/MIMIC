@@ -16,6 +16,17 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Set up Git
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]
+          then
+            BRANCH_NAME=${{ github.head_ref }}
+          else
+            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          fi
+          git checkout $BRANCH_NAME
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -40,13 +51,7 @@ jobs:
           git config --global user.name "GitHub Action"
           git add .
           git commit -m "Update requirements.txt and format code" || true
-          if [ "${{ github.event_name }}" = "pull_request" ]
-          then
-            BRANCH_NAME=${{ github.head_ref }}
-          else
-            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-          fi
-          git push origin $BRANCH_NAME
+          git push origin HEAD
         continue-on-error: true # In case there are no changes
 
       - name: Upload updated requirements.txt
