@@ -4,8 +4,8 @@ matplotlib==3.9.0
 mimic==2.2.0
 numpy==1.26.4
 pandas==2.2.2
-pymc==5.15.0
-pytensor==2.22.1
+pymc
+pytensor
 scikit_learn==1.5.0
 scipy==1.13.1
 seaborn==0.13.2
