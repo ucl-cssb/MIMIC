@@ -40,8 +40,12 @@ jobs:
           git config --global user.name "GitHub Action"
           git add .
           git commit -m "Update requirements.txt and format code" || true
-          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-          git checkout -b $BRANCH_NAME
+          if [ "${{ github.event_name }}" = "pull_request" ]
+          then
+            BRANCH_NAME=${{ github.head_ref }}
+          else
+            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          fi
           git push origin $BRANCH_NAME
         continue-on-error: true # In case there are no changes
 
