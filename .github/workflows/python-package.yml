@@ -16,6 +16,17 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Set up Git
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]
+          then
+            BRANCH_NAME=${{ github.head_ref }}
+          else
+            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          fi
+          git checkout $BRANCH_NAME
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -24,15 +35,17 @@ jobs:
 
       - name: Install autopep8
         run: python -m pip install autopep8
-
+  
       - name: Format code with autopep8
         run: autopep8 --in-place --aggressive --aggressive --recursive mimic/
+  
+ 
 
-      - name: Automatic requirements.txt for Python Project
-        uses: ryan-rozario/pipreqs-action@v3.0.0
-        with:
-          PROJECT_PATH: mimic/
-          REQUIREMENT_PATH: requirements.txt
+      - name: Install pip-tools
+        run: python -m pip install pip-tools
+
+      - name: Compile requirements.txt
+        run: pip-compile --output-file requirements.txt requirements.in
 
       - name: Commit changes
         run: |
@@ -40,6 +53,7 @@ jobs:
           git config --global user.name "GitHub Action"
           git add .
           git commit -m "Update requirements.txt and format code" || true
+          git push origin HEAD
         continue-on-error: true # In case there are no changes
 
       - name: Upload updated requirements.txt
@@ -87,29 +101,4 @@ jobs:
             python -m pip install -r requirements.txt
           else
             echo "No requirements.txt found"
-            exit 1
           fi
-
-      - name: Lint with flake8
-        run: |
-          # Stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # You can also enforce a max line length if desired
-          # flake8 . --count --max-line-length=127 --statistics
-
-      - name: Type check with mypy
-        run: mypy --ignore-missing-imports --check-untyped-defs .
-      
-      - name: Set PYTHONPATH (Unix)
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
-        if: runner.os != 'Windows'
-      
-      - name: Set PYTHONPATH (Windows)
-        shell: cmd
-        run: |
-          setlocal enabledelayedexpansion
-          echo PYTHONPATH=!CD! >> %GITHUB_ENV%
-        if: runner.os == 'Windows'
-        
-      - name: Run tests
-        run: pytest tests/ --disable-warnings

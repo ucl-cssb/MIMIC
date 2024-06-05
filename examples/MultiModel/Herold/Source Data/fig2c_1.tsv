@@ -1,0 +1,974 @@
+group_fig2c	binID	GeneID	gene	KO	KO_Defintion	product	EC	FunC_ID
+dgat	A01_O1.2.4	A01_O1.2.4_PROKKA_03556	wax-dgaT_2	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	O-acyltransferase WSD	2.3.1.20	3
+dgat	A01_O1.2.4	A01_O1.2.4_PROKKA_51222	wax-dgaT_8	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	O-acyltransferase WSD	2.3.1.20	3
+dgat	D04_G2.5	D04_G2.5_PROKKA_199635	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D04_L6	D04_L6_PROKKA_144266	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1809	2.3.1.20	1
+dgat	D04_O2.19	D04_O2.19_PROKKA_92257	tgs2_2	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs2	2.3.1.20	1
+dgat	D04_O2.19	D04_O2.19_PROKKA_104651	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3848	2.3.1.20	1
+dgat	D04_O2.19	D04_O2.19_PROKKA_109598	tgs3_1	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs3	2.3.1.20	1
+dgat	D04_O2.19	D04_O2.19_PROKKA_19779	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D04_O2.19	D04_O2.19_PROKKA_41810	tgs1_5	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D04_O2.19	D04_O2.19_PROKKA_65874	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT0231	2.3.1.20	1
+dgat	D05_G3.14.1	D05_G3.14.1_PROKKA_187287	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D05_G3.4	D05_G3.4_PROKKA_103777	tgs1_5	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D05_L3.17	D05_L3.17_PROKKA_79503	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	3
+dgat	D05_L3.17	D05_L3.17_PROKKA_118549	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	3
+dgat	D05_L3.17	D05_L3.17_PROKKA_118550	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	3
+dgat	D05_L3.17	D05_L3.17_PROKKA_178672	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3584	2.3.1.20	3
+dgat	D05_L3.17	D05_L3.17_PROKKA_34129	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	3
+dgat	D05_L3.17	D05_L3.17_PROKKA_34798	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	3
+dgat	D09_G1.28	D09_G1.28_PROKKA_207154	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3584	2.3.1.20	1
+dgat	D09_G1.28	D09_G1.28_PROKKA_56958	tgs3_1	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs3	2.3.1.20	1
+dgat	D11_O1.27.3	D11_O1.27.3_PROKKA_124211	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	3
+dgat	D11_O1.27.3	D11_O1.27.3_PROKKA_151860	tgs1_13	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	3
+dgat	D11_O1.7	D11_O1.7_PROKKA_80400	tgs1_6	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D11_O1.7	D11_O1.7_PROKKA_108821	tgs1_7	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D11_O1.7	D11_O1.7_PROKKA_180140	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	hypothetical protein	NA	1
+dgat	D11_O1.7	D11_O1.7_PROKKA_216571	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	hypothetical protein	NA	1
+dgat	D12_L1.3	D12_L1.3_PROKKA_07744	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1809	2.3.1.20	1
+dgat	D12_L1.3	D12_L1.3_PROKKA_140730	tgs3_2	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs3	2.3.1.20	1
+dgat	D15_G1.8	D15_G1.8_PROKKA_95902	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3584	2.3.1.20	3
+dgat	D15_G1.8	D15_G1.8_PROKKA_97102	tgs1_2	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	3
+dgat	D15_G1.8	D15_G1.8_PROKKA_142393	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3848	2.3.1.20	3
+dgat	D15_G1.8	D15_G1.8_PROKKA_145119	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	3
+dgat	D15_G1.8	D15_G1.8_PROKKA_147237	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3848	2.3.1.20	3
+dgat	D15_G1.8	D15_G1.8_PROKKA_157944	tgs2	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs2	2.3.1.20	3
+dgat	D15_G1.8	D15_G1.8_PROKKA_31622	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2343	2.3.1.20	3
+dgat	D15_G4	D15_G4_PROKKA_126747	wax-dgaT_12	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	O-acyltransferase WSD	2.3.1.20	3
+dgat	D15_G4	D15_G4_PROKKA_14331	wax-dgaT_3	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	O-acyltransferase WSD	2.3.1.20	3
+dgat	D15_L1.3	D15_L1.3_PROKKA_189986	wax-dgaT_17	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	O-acyltransferase WSD	2.3.1.20	3
+dgat	D20_O1.17	D20_O1.17_PROKKA_151122	tgs1_7	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	3
+dgat	D20_O1.17	D20_O1.17_PROKKA_211810	tgs2_2	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs2	2.3.1.20	3
+dgat	D20_P23	D20_P23_PROKKA_59492	tgs1_3	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	3
+dgat	D22_G1.42.2	D22_G1.42.2_PROKKA_224210	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1809	2.3.1.20	1
+dgat	D22_L1.5.4	D22_L1.5.4_PROKKA_39546	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D22_L1.5.4	D22_L1.5.4_PROKKA_65122	tgs3_2	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs3	2.3.1.20	1
+dgat	D24_L14	D24_L14_PROKKA_92929	tgs4_1	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase Tgs4	2.3.1.20	3
+dgat	D24_L14	D24_L14_PROKKA_284519	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	3
+dgat	D27_L1.3.2	D27_L1.3.2_PROKKA_68789	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3584	2.3.1.20	3
+dgat	D27_L1.3.2	D27_L1.3.2_PROKKA_148637	wax-dgaT_6	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	O-acyltransferase WSD	2.3.1.20	3
+dgat	D28_L2.9	D28_L2.9_PROKKA_83262	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D28_L2.9	D28_L2.9_PROKKA_08569	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT0231	2.3.1.20	1
+dgat	D28_L2.9	D28_L2.9_PROKKA_203231	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3172	2.3.1.20	1
+dgat	D28_L2.9	D28_L2.9_PROKKA_205643	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1809	2.3.1.20	1
+dgat	D28_L2.9	D28_L2.9_PROKKA_220843	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D28_L2.9	D28_L2.9_PROKKA_268328	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D29_L5	D29_L5_PROKKA_04782	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase	2.3.1.20	1
+dgat	D29_L5	D29_L5_PROKKA_165743	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase	2.3.1.20	1
+dgat	D29_L5	D29_L5_PROKKA_271632	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase	2.3.1.20	1
+dgat	D29_L5	D29_L5_PROKKA_281660	tgs1_18	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D29_L5	D29_L5_PROKKA_313557	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase	2.3.1.20	1
+dgat	D29_O1.25	D29_O1.25_PROKKA_127616	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	hypothetical protein	NA	1
+dgat	D29_O1.25	D29_O1.25_PROKKA_212502	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase	2.3.1.20	1
+dgat	D29_O1.25	D29_O1.25_PROKKA_270139	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase	2.3.1.20	1
+dgat	D30_G5	D30_G5_PROKKA_71191	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D30_G5	D30_G5_PROKKA_93475	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D30_G5	D30_G5_PROKKA_116526	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D30_G5	D30_G5_PROKKA_171707	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D30_G5	D30_G5_PROKKA_241342	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D30_G5	D30_G5_PROKKA_28000	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT0231	2.3.1.20	1
+dgat	D32_O1.57	D32_O1.57_PROKKA_16161	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	3
+dgat	D36_L1.15	D36_L1.15_PROKKA_148955	tgs1_7	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	3
+dgat	D36_L1.41	D36_L1.41_PROKKA_114252	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3584	2.3.1.20	1
+dgat	D36_L1.41	D36_L1.41_PROKKA_220379	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D37_G11	D37_G11_PROKKA_79011	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D37_G11	D37_G11_PROKKA_81679	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D37_G11	D37_G11_PROKKA_217168	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D37_G11	D37_G11_PROKKA_241125	tgs1_14	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D37_G11	D37_G11_PROKKA_23695	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D37_G11	D37_G11_PROKKA_69584	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D37_G1.25.1	D37_G1.25.1_PROKKA_99147	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D37_G1.25.1	D37_G1.25.1_PROKKA_99304	tgs1_12	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D37_G1.25.1	D37_G1.25.1_PROKKA_112514	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D37_G1.25.1	D37_G1.25.1_PROKKA_15308	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D37_G1.25.1	D37_G1.25.1_PROKKA_27018	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D37_G1.25.1	D37_G1.25.1_PROKKA_54812	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D37_G1.25.1	D37_G1.25.1_PROKKA_59287	tgs1_7	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D39_O1.57	D39_O1.57_PROKKA_87322	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D39_O1.57	D39_O1.57_PROKKA_91454	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1809	2.3.1.20	1
+dgat	D39_O1.57	D39_O1.57_PROKKA_10497	tgs3	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs3	2.3.1.20	1
+dgat	D39_O1.57	D39_O1.57_PROKKA_213642	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D39_O1.57	D39_O1.57_PROKKA_260874	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1809	2.3.1.20	1
+dgat	D42_G14	D42_G14_PROKKA_137433	wax-dgaT_8	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	O-acyltransferase WSD	2.3.1.20	1
+dgat	D42_G14	D42_G14_PROKKA_192911	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT3584	2.3.1.20	1
+dgat	D43_G6	D43_G6_PROKKA_62535	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D43_G6	D43_G6_PROKKA_191408	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D43_G6	D43_G6_PROKKA_192128	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D43_G6	D43_G6_PROKKA_221789	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D43_G6	D43_G6_PROKKA_01613	tgs1_1	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D43_G6	D43_G6_PROKKA_43559	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D44_G14	D44_G14_PROKKA_106995	wax-dgaT_6	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	O-acyltransferase WSD	2.3.1.20	3
+dgat	D46_L2.48	D46_L2.48_PROKKA_244416	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D47_G1.71.2	D47_G1.71.2_PROKKA_183656	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1809	2.3.1.20	1
+dgat	D51_G1.1.2	D51_G1.1.2_PROKKA_94408	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1809	2.3.1.20	1
+dgat	D51_G1.1.2	D51_G1.1.2_PROKKA_124054	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1468	2.3.1.20	1
+dgat	D51_G1.1.2	D51_G1.1.2_PROKKA_163246	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D51_G1.1.2	D51_G1.1.2_PROKKA_188761	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D51_G1.1.2	D51_G1.1.2_PROKKA_194683	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT1809	2.3.1.20	1
+dgat	D51_G1.1.2	D51_G1.1.2_PROKKA_194685	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT0231	2.3.1.20	1
+dgat	D51_G1.1.2	D51_G1.1.2_PROKKA_256210	NA	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	Putative diacyglycerol O-acyltransferase/MT2557	2.3.1.20	1
+dgat	D51_G1.1.2	D51_G1.1.2_PROKKA_24409	tgs1_2	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	1
+dgat	D51_G9	D51_G9_PROKKA_187768	tgs1_5	K00635	diacylglycerol O-acyltransferase [EC:2.3.1.20]	putative diacyglycerol O-acyltransferase tgs1	2.3.1.20	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_09068	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	hypothetical protein	NA	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_19655	lip_15	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_34409	ytpA_13	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_39594	lip_25	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_39595	lip_26	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_45439	ytpA_15	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_54019	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_06821	lip_10	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_06820	lip_9	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_55054	lip_35	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	A01_O1.2.4	A01_O1.2.4_PROKKA_55668	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D04_G2.13	D04_G2.13_PROKKA_101408	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	CHAT domain protein	NA	4
+tag lipase	D04_G2.5	D04_G2.5_PROKKA_73352	NA	K01054	acylglycerol lipase [EC:3.1.1.23]	Alpha/beta hydrolase family protein	NA	1
+tag lipase	D04_G2.5	D04_G2.5_PROKKA_62317	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	1
+tag lipase	D04_L6	D04_L6_PROKKA_282855	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	1
+tag lipase	D04_O2.19	D04_O2.19_PROKKA_127735	ytpA_14	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	1
+tag lipase	D04_O2.19	D04_O2.19_PROKKA_158658	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	putative inactive lipase/MT1628	NA	1
+tag lipase	D04_O2.19	D04_O2.19_PROKKA_253317	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	esterase	NA	1
+tag lipase	D04_O2.19	D04_O2.19_PROKKA_22593	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	1
+tag lipase	D05_G3.4	D05_G3.4_PROKKA_151765	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	1
+tag lipase	D05_L3.17	D05_L3.17_PROKKA_75609	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	3
+tag lipase	D05_L3.17	D05_L3.17_PROKKA_95441	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	hypothetical protein	NA	3
+tag lipase	D05_L3.17	D05_L3.17_PROKKA_181293	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	Patatin-like phospholipase	NA	3
+tag lipase	D08_G1.16	D08_G1.16_PROKKA_143982	estB_22	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	2
+tag lipase	D08_G1.16	D08_G1.16_PROKKA_18394	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase (class 3)	NA	2
+tag lipase	D08_O6	D08_O6_PROKKA_176432	ytpA_21	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D09_G1.28	D09_G1.28_PROKKA_110831	ytpA_19	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	1
+tag lipase	D09_G1.28	D09_G1.28_PROKKA_48136	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	1
+tag lipase	D10_O1.45	D10_O1.45_PROKKA_200740	lip_32	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase precursor	3.1.1.3	2
+tag lipase	D10_O1.45	D10_O1.45_PROKKA_202634	ytpA_23	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	2
+tag lipase	D10_O1.45	D10_O1.45_PROKKA_231122	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	2
+tag lipase	D10_O1.45	D10_O1.45_PROKKA_242674	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D11_O1.27.3	D11_O1.27.3_PROKKA_171970	lip_17	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D11_O1.27.3	D11_O1.27.3_PROKKA_237786	estB_34	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	3
+tag lipase	D11_O1.27.3	D11_O1.27.3_PROKKA_29770	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	3
+tag lipase	D11_O1.27.3	D11_O1.27.3_PROKKA_42452	ytpA_6	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	3
+tag lipase	D11_O1.7	D11_O1.7_PROKKA_79706	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	1
+tag lipase	D11_O1.7	D11_O1.7_PROKKA_146987	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	1
+tag lipase	D11_O1.7	D11_O1.7_PROKKA_153069	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	1
+tag lipase	D11_O1.7	D11_O1.7_PROKKA_195829	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	1
+tag lipase	D11_O1.7	D11_O1.7_PROKKA_232026	ytpA_23	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	1
+tag lipase	D12_L1.3	D12_L1.3_PROKKA_84816	estB_7	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	1
+tag lipase	D12_L1.3	D12_L1.3_PROKKA_102731	ytpA_16	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	1
+tag lipase	D13_G1.3.2	D13_G1.3.2_PROKKA_117727	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D13_G1.3.2	D13_G1.3.2_PROKKA_195348	ytpA_14	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D13_G1.3.2	D13_G1.3.2_PROKKA_209653	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D13_G1.3.2	D13_G1.3.2_PROKKA_298106	ytpA_18	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D13_G1.3.2	D13_G1.3.2_PROKKA_39531	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	hypothetical protein	NA	4
+tag lipase	D13_G1.3.2	D13_G1.3.2_PROKKA_44847	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	4
+tag lipase	D13_L7	D13_L7_PROKKA_62635	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	4
+tag lipase	D15_G1.18.2	D15_G1.18.2_PROKKA_05751	lip_4	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D15_G1.18.2	D15_G1.18.2_PROKKA_117187	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	Patatin-like phospholipase	NA	3
+tag lipase	D15_G1.8	D15_G1.8_PROKKA_06251	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	acyl-CoA synthetase	NA	3
+tag lipase	D15_G1.8	D15_G1.8_PROKKA_90441	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	3
+tag lipase	D15_G1.8	D15_G1.8_PROKKA_92883	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	hypothetical protein	NA	3
+tag lipase	D15_G1.8	D15_G1.8_PROKKA_93170	ytpA_18	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	3
+tag lipase	D15_G1.8	D15_G1.8_PROKKA_121878	lip_38	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D15_G1.8	D15_G1.8_PROKKA_163054	ytpA_27	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	3
+tag lipase	D15_G1.8	D15_G1.8_PROKKA_174716	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	3
+tag lipase	D15_G1.8	D15_G1.8_PROKKA_180273	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	3
+tag lipase	D15_G4	D15_G4_PROKKA_102923	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D15_G4	D15_G4_PROKKA_104304	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	Patatin-like phospholipase	NA	3
+tag lipase	D15_G4	D15_G4_PROKKA_136053	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	3
+tag lipase	D15_G4	D15_G4_PROKKA_15924	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D15_G4	D15_G4_PROKKA_191610	lip_64	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D15_G4	D15_G4_PROKKA_192977	lipL_5	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D15_L1.3	D15_L1.3_PROKKA_08068	NA	K01054	acylglycerol lipase [EC:3.1.1.23]	lysophospholipase L2	NA	3
+tag lipase	D15_L1.3	D15_L1.3_PROKKA_89792	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	Patatin-like phospholipase	NA	3
+tag lipase	D15_L1.3	D15_L1.3_PROKKA_95367	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	3
+tag lipase	D15_L1.3	D15_L1.3_PROKKA_104930	lip_34	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D15_L1.3	D15_L1.3_PROKKA_135556	ytpA_24	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	3
+tag lipase	D15_L1.3	D15_L1.3_PROKKA_20560	lip_11	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D15_L1.3	D15_L1.3_PROKKA_29487	lip_15	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_81658	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	4
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_86878	ytpA_16	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_103103	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	Patatin-like phospholipase	NA	4
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_111241	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	4
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_153846	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_176072	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_181819	ytpA_29	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_190227	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	4
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_43803	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_57152	ytpA_10	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D19_G1.34.1.1	D19_G1.34.1.1_PROKKA_45215	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D20_O1.13	D20_O1.13_PROKKA_61991	lipA_6	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase precursor	3.1.1.3	4
+tag lipase	D20_O1.13	D20_O1.13_PROKKA_126382	ytpA_14	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D20_O1.13	D20_O1.13_PROKKA_127291	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	4
+tag lipase	D20_O1.13	D20_O1.13_PROKKA_174380	estB_18	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	4
+tag lipase	D20_O1.13	D20_O1.13_PROKKA_39745	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D20_O1.17	D20_O1.17_PROKKA_188859	NA	K01054	acylglycerol lipase [EC:3.1.1.23]	lysophospholipase L2	NA	3
+tag lipase	D20_P23	D20_P23_PROKKA_113204	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	3
+tag lipase	D22_L1.5.4	D22_L1.5.4_PROKKA_230398	estB_28	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	1
+tag lipase	D24_L14	D24_L14_PROKKA_245220	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D26_L1.23	D26_L1.23_PROKKA_165174	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D27_L1.3.2	D27_L1.3.2_PROKKA_142384	NA	K01054	acylglycerol lipase [EC:3.1.1.23]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D27_L1.3.2	D27_L1.3.2_PROKKA_46293	ytpA_7	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	3
+tag lipase	D27_L1.3.2	D27_L1.3.2_PROKKA_64667	lip_6	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D28_L2.9	D28_L2.9_PROKKA_119685	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	putative inactive lipase/MT1628	NA	1
+tag lipase	D28_L2.9	D28_L2.9_PROKKA_164116	estB_19	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	1
+tag lipase	D28_L2.9	D28_L2.9_PROKKA_224945	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	1
+tag lipase	D28_L2.9	D28_L2.9_PROKKA_224946	NA	K01054	acylglycerol lipase [EC:3.1.1.23]	lysophospholipase L2	NA	1
+tag lipase	D29_L5	D29_L5_PROKKA_139015	estB_19	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB	3.1.1.3	1
+tag lipase	D29_L5	D29_L5_PROKKA_139014	estA_4	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase EstA	3.1.1.3	1
+tag lipase	D29_O1.25	D29_O1.25_PROKKA_170472	estB_22	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB	3.1.1.3	1
+tag lipase	D30_G5	D30_G5_PROKKA_16160	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	1
+tag lipase	D30_G5	D30_G5_PROKKA_274152	estA_8	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase EstA precursor	3.1.1.3	1
+tag lipase	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_63011	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D30_P23	D30_P23_PROKKA_123351	ytpA_9	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	2
+tag lipase	D30_P23	D30_P23_PROKKA_154857	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D30_P23	D30_P23_PROKKA_268660	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D30_P23	D30_P23_PROKKA_56003	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Caspase domain protein	NA	2
+tag lipase	D31_O1.3.2	D31_O1.3.2_PROKKA_95178	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	4
+tag lipase	D31_O1.3.2	D31_O1.3.2_PROKKA_08868	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D31_O1.3.2	D31_O1.3.2_PROKKA_13993	lip_6	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	4
+tag lipase	D31_O1.3.2	D31_O1.3.2_PROKKA_185145	ytpA_24	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D31_O1.3.2	D31_O1.3.2_PROKKA_208774	NA	K01054	acylglycerol lipase [EC:3.1.1.23]	hypothetical protein	NA	4
+tag lipase	D31_O1.3.2	D31_O1.3.2_PROKKA_219309	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D31_O1.3.2	D31_O1.3.2_PROKKA_220041	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	4
+tag lipase	D31_O1.3.2	D31_O1.3.2_PROKKA_34879	lip_9	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	4
+tag lipase	D31_O1.3.2	D31_O1.3.2_PROKKA_50183	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D32_O1.57	D32_O1.57_PROKKA_16159	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D32_O1.57	D32_O1.57_PROKKA_52307	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D33_L1.8.2	D33_L1.8.2_PROKKA_192843	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase (class 3)	NA	2
+tag lipase	D35_G2.23	D35_G2.23_PROKKA_213610	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D35_G2.23	D35_G2.23_PROKKA_33381	ytpA_4	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	2
+tag lipase	D35_G2.27	D35_G2.27_PROKKA_155970	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D36_G7	D36_G7_PROKKA_154627	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	2
+tag lipase	D36_G7	D36_G7_PROKKA_38829	ytpA_8	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	2
+tag lipase	D36_L1.15	D36_L1.15_PROKKA_62126	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	CHAT domain protein	NA	3
+tag lipase	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_123138	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	4
+tag lipase	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_137018	ytpA_23	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_204879	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_212351	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	hypothetical protein	NA	4
+tag lipase	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_59318	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	4
+tag lipase	D37_G1.25.1	D37_G1.25.1_PROKKA_154216	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	1
+tag lipase	D37_G1.25.1	D37_G1.25.1_PROKKA_192275	estB_27	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	1
+tag lipase	D37_G1.25.1	D37_G1.25.1_PROKKA_272065	ytpA_19	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	1
+tag lipase	D39_G1.35	D39_G1.35_PROKKA_149156	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D39_G1.35	D39_G1.35_PROKKA_154206	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D39_G1.35	D39_G1.35_PROKKA_214686	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D39_O1.57	D39_O1.57_PROKKA_87869	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	1
+tag lipase	D39_O1.57	D39_O1.57_PROKKA_94092	NA	K01054	acylglycerol lipase [EC:3.1.1.23]	lysophospholipase L2	NA	1
+tag lipase	D39_O1.57	D39_O1.57_PROKKA_09155	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	CHAT domain protein	NA	1
+tag lipase	D39_O1.57	D39_O1.57_PROKKA_146526	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	1
+tag lipase	D42_G1.1.2.3	D42_G1.1.2.3_PROKKA_268138	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	CHAT domain protein	NA	2
+tag lipase	D42_G14	D42_G14_PROKKA_96650	estB_9	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	1
+tag lipase	D42_G14	D42_G14_PROKKA_105274	ytpA_12	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	1
+tag lipase	D42_G14	D42_G14_PROKKA_146764	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	1
+tag lipase	D43_G6	D43_G6_PROKKA_175807	estA_5	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase EstA precursor	3.1.1.3	1
+tag lipase	D43_G6	D43_G6_PROKKA_199210	estB_22	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	1
+tag lipase	D44_G14	D44_G14_PROKKA_06177	NA	K14674	TAG lipase / steryl ester hydrolase / phospholipase A2 / LPA acyltransferase [EC:3.1.1.3 3.1.1.13 3.1.1.4 2.3.1.51]	Patatin-like phospholipase	NA	3
+tag lipase	D44_G14	D44_G14_PROKKA_102608	lip_27	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D44_G14	D44_G14_PROKKA_102609	lip_28	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D44_G14	D44_G14_PROKKA_180021	lip_45	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lactonizing lipase precursor	3.1.1.3	3
+tag lipase	D44_G14	D44_G14_PROKKA_17491	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	3
+tag lipase	D44_G14	D44_G14_PROKKA_245616	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D47_G1.71.2	D47_G1.71.2_PROKKA_256838	rutD_18	K01046	triacylglycerol lipase [EC:3.1.1.3]	Putative aminoacrylate hydrolase RutD	NA	1
+tag lipase	D47_O14	D47_O14_PROKKA_08406	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	2
+tag lipase	D47_O14	D47_O14_PROKKA_16724	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D47_O14	D47_O14_PROKKA_211885	estA_6	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase EstA precursor	3.1.1.3	2
+tag lipase	D47_O14	D47_O14_PROKKA_238740	ytpA_22	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	2
+tag lipase	D47_O14	D47_O14_PROKKA_36249	lipA_7	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase precursor	3.1.1.3	2
+tag lipase	D47_O5	D47_O5_PROKKA_149537	ytpA_15	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	2
+tag lipase	D47_O5	D47_O5_PROKKA_41397	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	2
+tag lipase	D47_P30	D47_P30_PROKKA_172175	estB_28	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	1
+tag lipase	D47_P30	D47_P30_PROKKA_194527	estB_34	K01046	triacylglycerol lipase [EC:3.1.1.3]	Extracellular esterase EstB precursor	3.1.1.3	1
+tag lipase	D49_G15	D49_G15_PROKKA_47686	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	2
+tag lipase	D49_O1	D49_O1_PROKKA_77222	estA_2	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase EstA precursor	3.1.1.3	4
+tag lipase	D49_O1	D49_O1_PROKKA_25507	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	4
+tag lipase	D49_O1	D49_O1_PROKKA_26172	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	4
+tag lipase	D49_O1	D49_O1_PROKKA_38104	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	hypothetical protein	NA	4
+tag lipase	D49_O1	D49_O1_PROKKA_51575	ytpA_5	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	4
+tag lipase	D51_G1.1.2	D51_G1.1.2_PROKKA_81692	estA_2	K01046	triacylglycerol lipase [EC:3.1.1.3]	Lipase EstA precursor	3.1.1.3	1
+tag lipase	D51_G1.1.2	D51_G1.1.2_PROKKA_16754	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	1
+tag lipase	D51_G1.1.2	D51_G1.1.2_PROKKA_234648	ytpA_13	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	1
+tag lipase	D51_G1.1.2	D51_G1.1.2_PROKKA_20750	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	1
+tag lipase	D51_G1.1.2	D51_G1.1.2_PROKKA_37278	NA	K01054	acylglycerol lipase [EC:3.1.1.23]	lysophospholipase L2	NA	1
+tag lipase	D51_G9	D51_G9_PROKKA_90726	ytpA_9	K01054	acylglycerol lipase [EC:3.1.1.23]	Phospholipase YtpA	3.1.1.-	3
+tag lipase	D51_G9	D51_G9_PROKKA_236246	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	Alpha/beta hydrolase family protein	NA	3
+tag lipase	D51_G9	D51_G9_PROKKA_24514	NA	K01046	triacylglycerol lipase [EC:3.1.1.3]	PGAP1-like protein	NA	3
+pha synthase	A01_O1.2.4	A01_O1.2.4_PROKKA_18918	phbC_2	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	A01_O1.2.4	A01_O1.2.4_PROKKA_53354	phbC_8	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D05_G3.14.1	D05_G3.14.1_PROKKA_165236	NA	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	acyl-CoA synthetase	NA	1
+pha synthase	D05_L3.17	D05_L3.17_PROKKA_57602	phbC_2	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D11_O1.27.3	D11_O1.27.3_PROKKA_92249	phbC_18	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D11_O1.27.3	D11_O1.27.3_PROKKA_31447	phbC_3	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D15_G1.18.2	D15_G1.18.2_PROKKA_117271	phbC_16	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D15_G1.18.2	D15_G1.18.2_PROKKA_32040	phbC_8	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D15_G1.8	D15_G1.8_PROKKA_09759	phbC_1	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D15_G1.8	D15_G1.8_PROKKA_17150	phbC_2	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D15_G1.8	D15_G1.8_PROKKA_29812	phbC_7	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D15_G4	D15_G4_PROKKA_101475	phbC_15	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D15_G4	D15_G4_PROKKA_159787	phbC_22	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D15_L1.3	D15_L1.3_PROKKA_87232	NA	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	hypothetical protein	NA	3
+pha synthase	D15_L1.3	D15_L1.3_PROKKA_153620	phbC_20	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D15_L1.3	D15_L1.3_PROKKA_155640	phbC_21	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D20_G1.24	D20_G1.24_PROKKA_158525	phbC_20	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D20_G1.24	D20_G1.24_PROKKA_169268	phbC_21	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D20_G1.24	D20_G1.24_PROKKA_179532	phbC_24	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D20_O1.13	D20_O1.13_PROKKA_97355	phbC_11	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	4
+pha synthase	D20_O1.17	D20_O1.17_PROKKA_69935	NA	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	hypothetical protein	NA	3
+pha synthase	D20_O1.17	D20_O1.17_PROKKA_135389	phbC_18	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D20_O1.17	D20_O1.17_PROKKA_178272	phbC_23	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D20_P23	D20_P23_PROKKA_113192	phbC_14	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D24_L14	D24_L14_PROKKA_105215	phbC_18	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D24_L14	D24_L14_PROKKA_252505	phbC_42	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D24_L14	D24_L14_PROKKA_288753	phbC_50	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D27_L1.3.2	D27_L1.3.2_PROKKA_18277	phbC_3	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D28_L2.9	D28_L2.9_PROKKA_67251	phbC_6	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	1
+pha synthase	D29_L5	D29_L5_PROKKA_86979	phbC_10	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	1
+pha synthase	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_174684	phbC_28	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_243772	phbC_38	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D30_P23	D30_P23_PROKKA_123383	phbC_16	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	2
+pha synthase	D31_O1.3.2	D31_O1.3.2_PROKKA_71694	NA	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Alpha/beta hydrolase family protein	NA	4
+pha synthase	D35_G2.61	D35_G2.61_PROKKA_107032	NA	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	hypothetical protein	NA	2
+pha synthase	D36_L1.15	D36_L1.15_PROKKA_249653	phbC_23	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D36_L1.15	D36_L1.15_PROKKA_72091	phbC_3	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_204873	NA	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Alpha/beta hydrolase family protein	NA	4
+pha synthase	D39_G1.35	D39_G1.35_PROKKA_110579	NA	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Alpha/beta hydrolase family protein	NA	2
+pha synthase	D39_G1.35	D39_G1.35_PROKKA_252500	phbC_38	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	2
+pha synthase	D39_O1.57	D39_O1.57_PROKKA_138589	phbC_22	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	1
+pha synthase	D42_G1.1.2.3	D42_G1.1.2.3_PROKKA_77295	phbC_6	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	2
+pha synthase	D44_G14	D44_G14_PROKKA_170068	phbC_21	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	3
+pha synthase	D44_G14	D44_G14_PROKKA_208502	NA	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	acyl-CoA synthetase	NA	3
+pha synthase	D49_O1	D49_O1_PROKKA_21526	phbC_2	K03821	polyhydroxyalkanoate synthase [EC:2.3.1.-]	Poly-beta-hydroxybutyrate polymerase	2.3.1.-	4
+pha depolymerase	D04_G2.13	D04_G2.13_PROKKA_62725	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	4
+pha depolymerase	D04_O2.19	D04_O2.19_PROKKA_276814	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	1
+pha depolymerase	D05_G3.4	D05_G3.4_PROKKA_140823	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D08_G1.16	D08_G1.16_PROKKA_57789	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D08_G1.16	D08_G1.16_PROKKA_67040	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D10_O1.45	D10_O1.45_PROKKA_16400	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D10_O1.45	D10_O1.45_PROKKA_217229	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D10_O1.45	D10_O1.45_PROKKA_258929	NA	K03932	polyhydroxybutyrate depolymerase	Phospholipase/Carboxylesterase	NA	2
+pha depolymerase	D10_O1.45	D10_O1.45_PROKKA_28589	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	2
+pha depolymerase	D11_O1.27.3	D11_O1.27.3_PROKKA_146656	phaZ2_1	K07518	hydroxybutyrate-dimer hydrolase [EC:3.1.1.22]	D-(-)-3-hydroxybutyrate oligomer hydrolase	3.1.1.22	3
+pha depolymerase	D11_O1.27.3	D11_O1.27.3_PROKKA_212980	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	3
+pha depolymerase	D11_O1.27.3	D11_O1.27.3_PROKKA_31458	NA	K05973	poly(3-hydroxybutyrate) depolymerase [EC:3.1.1.75]	hypothetical protein	NA	3
+pha depolymerase	D11_O1.27.3	D11_O1.27.3_PROKKA_36604	NA	K07518	hydroxybutyrate-dimer hydrolase [EC:3.1.1.22]	D-(-)-3-hydroxybutyrate oligomer hydrolase precursor	3.1.1.22	3
+pha depolymerase	D11_O1.7	D11_O1.7_PROKKA_261175	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	1
+pha depolymerase	D13_G1.3.2	D13_G1.3.2_PROKKA_144989	xynZ_1	K03932	polyhydroxybutyrate depolymerase	Endo-1%2C4-beta-xylanase Z precursor	3.2.1.8	4
+pha depolymerase	D13_G1.3.2	D13_G1.3.2_PROKKA_147579	pvaB	K03932	polyhydroxybutyrate depolymerase	Oxidized polyvinyl alcohol hydrolase precursor	3.7.1.7	4
+pha depolymerase	D13_G1.3.2	D13_G1.3.2_PROKKA_48428	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	4
+pha depolymerase	D15_G1.8	D15_G1.8_PROKKA_70745	NA	K05973	poly(3-hydroxybutyrate) depolymerase [EC:3.1.1.75]	hypothetical protein	NA	3
+pha depolymerase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_100387	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	4
+pha depolymerase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_21332	NA	K03932	polyhydroxybutyrate depolymerase	Phospholipase/Carboxylesterase	NA	4
+pha depolymerase	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_40751	NA	K03932	polyhydroxybutyrate depolymerase	Phospholipase/Carboxylesterase	NA	4
+pha depolymerase	D16_O2.2.1.1.14	D16_O2.2.1.1.14_PROKKA_74545	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	2
+pha depolymerase	D16_O2.2.1.1.14	D16_O2.2.1.1.14_PROKKA_111789	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	2
+pha depolymerase	D16_O2.2.1.1.14	D16_O2.2.1.1.14_PROKKA_09333	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D19_G1.34.1.1	D19_G1.34.1.1_PROKKA_275403	NA	K03932	polyhydroxybutyrate depolymerase	Prolyl oligopeptidase family protein	NA	2
+pha depolymerase	D20_O1.13	D20_O1.13_PROKKA_66143	NA	K03932	polyhydroxybutyrate depolymerase	Stigma-specific protein%2C Stig1	NA	4
+pha depolymerase	D20_O1.13	D20_O1.13_PROKKA_96536	NA	K03932	polyhydroxybutyrate depolymerase	Phospholipase/Carboxylesterase	NA	4
+pha depolymerase	D20_O1.13	D20_O1.13_PROKKA_101668	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	4
+pha depolymerase	D20_O1.13	D20_O1.13_PROKKA_109311	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	4
+pha depolymerase	D20_O1.13	D20_O1.13_PROKKA_120956	NA	K03932	polyhydroxybutyrate depolymerase	Phospholipase/Carboxylesterase	NA	4
+pha depolymerase	D20_O1.13	D20_O1.13_PROKKA_157092	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	4
+pha depolymerase	D20_O1.13	D20_O1.13_PROKKA_215651	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	4
+pha depolymerase	D20_O1.13	D20_O1.13_PROKKA_240769	NA	K05973	poly(3-hydroxybutyrate) depolymerase [EC:3.1.1.75]	hypothetical protein	NA	4
+pha depolymerase	D20_O1.13	D20_O1.13_PROKKA_56297	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	4
+pha depolymerase	D20_P23	D20_P23_PROKKA_113194	phaZ2	K07518	hydroxybutyrate-dimer hydrolase [EC:3.1.1.22]	D-(-)-3-hydroxybutyrate oligomer hydrolase	3.1.1.22	3
+pha depolymerase	D20_P23	D20_P23_PROKKA_116154	NA	K05973	poly(3-hydroxybutyrate) depolymerase [EC:3.1.1.75]	hypothetical protein	NA	3
+pha depolymerase	D23_P13	D23_P13_PROKKA_86806	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	2
+pha depolymerase	D23_P13	D23_P13_PROKKA_110294	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	2
+pha depolymerase	D23_P13	D23_P13_PROKKA_110295	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	2
+pha depolymerase	D23_P13	D23_P13_PROKKA_126901	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	2
+pha depolymerase	D23_P13	D23_P13_PROKKA_157752	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	2
+pha depolymerase	D24_L14	D24_L14_PROKKA_112018	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	3
+pha depolymerase	D24_L14	D24_L14_PROKKA_124068	NA	K07518	hydroxybutyrate-dimer hydrolase [EC:3.1.1.22]	D-(-)-3-hydroxybutyrate oligomer hydrolase precursor	3.1.1.22	3
+pha depolymerase	D24_L14	D24_L14_PROKKA_186225	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	3
+pha depolymerase	D24_L14	D24_L14_PROKKA_27920	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	3
+pha depolymerase	D26_L1.23	D26_L1.23_PROKKA_114737	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D28_L2.9	D28_L2.9_PROKKA_168526	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	1
+pha depolymerase	D29_O1.25	D29_O1.25_PROKKA_106174	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D29_O1.25	D29_O1.25_PROKKA_106173	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D30_G5	D30_G5_PROKKA_92311	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	1
+pha depolymerase	D30_G5	D30_G5_PROKKA_287483	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_88844	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	3
+pha depolymerase	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_65410	NA	K05973	poly(3-hydroxybutyrate) depolymerase [EC:3.1.1.75]	hypothetical protein	NA	3
+pha depolymerase	D30_P23	D30_P23_PROKKA_33414	celK	K03932	polyhydroxybutyrate depolymerase	Cellulose 1%2C4-beta-cellobiosidase precursor	3.2.1.91	2
+pha depolymerase	D31_O1.3.2	D31_O1.3.2_PROKKA_17872	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	4
+pha depolymerase	D31_O1.3.2	D31_O1.3.2_PROKKA_221308	NA	K03932	polyhydroxybutyrate depolymerase	Putative esterase	NA	4
+pha depolymerase	D33_L1.8.2	D33_L1.8.2_PROKKA_11759	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	2
+pha depolymerase	D33_L1.8.2	D33_L1.8.2_PROKKA_48429	NA	K03932	polyhydroxybutyrate depolymerase	Prolyl oligopeptidase family protein	NA	2
+pha depolymerase	D35_G2.61	D35_G2.61_PROKKA_189621	NA	K03932	polyhydroxybutyrate depolymerase	Phospholipase/Carboxylesterase	NA	2
+pha depolymerase	D35_G2.61	D35_G2.61_PROKKA_218528	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D35_G2.61	D35_G2.61_PROKKA_19566	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	2
+pha depolymerase	D36_G7	D36_G7_PROKKA_185183	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D36_G7	D36_G7_PROKKA_306192	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	2
+pha depolymerase	D36_L1.15	D36_L1.15_PROKKA_118890	NA	K05973	poly(3-hydroxybutyrate) depolymerase [EC:3.1.1.75]	hypothetical protein	NA	3
+pha depolymerase	D36_L1.41	D36_L1.41_PROKKA_254380	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	1
+pha depolymerase	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_15467	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	4
+pha depolymerase	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_234518	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	4
+pha depolymerase	D37_G11	D37_G11_PROKKA_09559	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	1
+pha depolymerase	D37_G11	D37_G11_PROKKA_16627	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D37_G11	D37_G11_PROKKA_16628	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D37_G11	D37_G11_PROKKA_295634	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	1
+pha depolymerase	D37_G11	D37_G11_PROKKA_54701	glpQ1_2	K03932	polyhydroxybutyrate depolymerase	putative glycerophosphoryl diester phosphodiesterase 1	3.1.4.46	1
+pha depolymerase	D37_G1.25.1	D37_G1.25.1_PROKKA_89010	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D37_G1.25.1	D37_G1.25.1_PROKKA_101751	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	1
+pha depolymerase	D37_G1.25.1	D37_G1.25.1_PROKKA_122779	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D37_G5	D37_G5_PROKKA_64969	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D39_G1.35	D39_G1.35_PROKKA_221810	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D39_G1.35	D39_G1.35_PROKKA_33504	NA	K03932	polyhydroxybutyrate depolymerase	Phospholipase/Carboxylesterase	NA	2
+pha depolymerase	D39_G1.35	D39_G1.35_PROKKA_48616	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D39_O1.57	D39_O1.57_PROKKA_85390	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	1
+pha depolymerase	D39_O1.57	D39_O1.57_PROKKA_24368	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	1
+pha depolymerase	D41_O4	D41_O4_PROKKA_221288	NA	K03932	polyhydroxybutyrate depolymerase	Prolyl oligopeptidase family protein	NA	2
+pha depolymerase	D41_O4	D41_O4_PROKKA_49304	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D42_G1.1.2.3	D42_G1.1.2.3_PROKKA_105871	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	2
+pha depolymerase	D42_G1.1.2.3	D42_G1.1.2.3_PROKKA_155473	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	2
+pha depolymerase	D43_G6	D43_G6_PROKKA_236008	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	1
+pha depolymerase	D43_G6	D43_G6_PROKKA_20784	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D44_O1.1.2.2.1.2.7	D44_O1.1.2.2.1.2.7_PROKKA_118552	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D47_O14	D47_O14_PROKKA_309595	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	2
+pha depolymerase	D47_O5	D47_O5_PROKKA_62249	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	2
+pha depolymerase	D47_P30	D47_P30_PROKKA_122381	NA	K03932	polyhydroxybutyrate depolymerase	Putative esterase	NA	1
+pha depolymerase	D47_P30	D47_P30_PROKKA_33056	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D47_P30	D47_P30_PROKKA_37545	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D49_O1	D49_O1_PROKKA_128364	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	4
+pha depolymerase	D49_O1	D49_O1_PROKKA_203154	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	4
+pha depolymerase	D51_G1.1.2	D51_G1.1.2_PROKKA_61307	NA	K03932	polyhydroxybutyrate depolymerase	Alpha/beta hydrolase family protein	NA	1
+pha depolymerase	D51_G1.1.2	D51_G1.1.2_PROKKA_130170	NA	K03932	polyhydroxybutyrate depolymerase	Phospholipase/Carboxylesterase	NA	1
+pha depolymerase	D51_G9	D51_G9_PROKKA_152750	NA	K05973	poly(3-hydroxybutyrate) depolymerase [EC:3.1.1.75]	acyl-CoA synthetase	NA	3
+pha depolymerase	D51_L1.24	D51_L1.24_PROKKA_77452	NA	K03932	polyhydroxybutyrate depolymerase	hypothetical protein	NA	3
+pha depolymerase	D51_L1.24	D51_L1.24_PROKKA_113612	NA	K03932	polyhydroxybutyrate depolymerase	Esterase PHB depolymerase	NA	3
+glyoxylate cycle	D04_O2.19	D04_O2.19_PROKKA_96167	icl_2	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	1
+glyoxylate cycle	D04_O2.19	D04_O2.19_PROKKA_158117	icl_5	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	1
+glyoxylate cycle	D04_O2.19	D04_O2.19_PROKKA_53906	glcB_6	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	1
+glyoxylate cycle	D05_L3.17	D05_L3.17_PROKKA_111735	aceB_6	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	3
+glyoxylate cycle	D08_O6	D08_O6_PROKKA_246604	aceB_8	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	4
+glyoxylate cycle	D15_G1.18.2	D15_G1.18.2_PROKKA_35819	glcB_2	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	3
+glyoxylate cycle	D15_G1.8	D15_G1.8_PROKKA_108823	aceA_5	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D15_G1.8	D15_G1.8_PROKKA_12649	glcB_1	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	3
+glyoxylate cycle	D15_G4	D15_G4_PROKKA_192840	NA	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D15_L1.3	D15_L1.3_PROKKA_77120	NA	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D15_L1.3	D15_L1.3_PROKKA_140836	glcB_5	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	3
+glyoxylate cycle	D20_G1.24	D20_G1.24_PROKKA_34119	aceB_1	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	3
+glyoxylate cycle	D20_G1.24	D20_G1.24_PROKKA_47838	aceA_6	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D20_O1.17	D20_O1.17_PROKKA_34590	aceB_2	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	3
+glyoxylate cycle	D20_O1.17	D20_O1.17_PROKKA_34589	aceA_4	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D20_P23	D20_P23_PROKKA_77953	aceA_7	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D20_P23	D20_P23_PROKKA_94859	aceB_7	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	3
+glyoxylate cycle	D24_L14	D24_L14_PROKKA_124079	aceA_11	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D24_L14	D24_L14_PROKKA_187442	aceB_10	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	3
+glyoxylate cycle	D26_L1.23	D26_L1.23_PROKKA_34135	aceB_1	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	2
+glyoxylate cycle	D26_L1.23	D26_L1.23_PROKKA_34137	icl_2	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	2
+glyoxylate cycle	D27_L1.3.2	D27_L1.3.2_PROKKA_154626	glcB_10	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	3
+glyoxylate cycle	D28_L2.9	D28_L2.9_PROKKA_261199	icl_10	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	1
+glyoxylate cycle	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_76352	aceA_6	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_82496	NA	K01638	malate synthase [EC:2.3.3.9]	malate synthase	NA	3
+glyoxylate cycle	D32_O1.57	D32_O1.57_PROKKA_171715	aceA_14	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D32_O1.57	D32_O1.57_PROKKA_171716	glcB_7	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	3
+glyoxylate cycle	D36_G7	D36_G7_PROKKA_146248	icl_7	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	2
+glyoxylate cycle	D36_G7	D36_G7_PROKKA_308839	aceB_8	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	2
+glyoxylate cycle	D36_L1.15	D36_L1.15_PROKKA_52201	glcB_1	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	3
+glyoxylate cycle	D37_G5	D37_G5_PROKKA_87575	aceB_6	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	2
+glyoxylate cycle	D44_G14	D44_G14_PROKKA_190877	glcB_13	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	3
+glyoxylate cycle	D44_G14	D44_G14_PROKKA_246525	NA	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D47_O14	D47_O14_PROKKA_181951	aceB_9	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	2
+glyoxylate cycle	D47_P30	D47_P30_PROKKA_141437	aceA_11	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	1
+glyoxylate cycle	D47_P30	D47_P30_PROKKA_141438	glcB_9	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	1
+glyoxylate cycle	D49_G15	D49_G15_PROKKA_59186	aceB_6	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	2
+glyoxylate cycle	D51_G9	D51_G9_PROKKA_84345	glcB_4	K01638	malate synthase [EC:2.3.3.9]	Malate synthase G	2.3.3.9	3
+glyoxylate cycle	D51_L1.24	D51_L1.24_PROKKA_272689	aceA_17	K01637	isocitrate lyase [EC:4.1.3.1]	Isocitrate lyase	4.1.3.1	3
+glyoxylate cycle	D51_L1.24	D51_L1.24_PROKKA_272690	aceB_21	K01638	malate synthase [EC:2.3.3.9]	Malate synthase A	2.3.3.9	3
+ethylmalonyl-CoA cycle	D04_O2.19	D04_O2.19_PROKKA_304476	inhA_16	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D05_G3.14.1	D05_G3.14.1_PROKKA_113202	ccrA2_4	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D05_G3.4	D05_G3.4_PROKKA_62913	mutB_7	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase large subunit	5.4.99.2	1
+ethylmalonyl-CoA cycle	D05_G3.4	D05_G3.4_PROKKA_109415	ccr_9	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D09_G1.28	D09_G1.28_PROKKA_227880	ccrA2_10	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D09_G1.28	D09_G1.28_PROKKA_39776	inhA_5	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D11_O1.7	D11_O1.7_PROKKA_80399	ccr_8	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D11_O1.7	D11_O1.7_PROKKA_168097	scpA_73	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase	5.4.99.2	1
+ethylmalonyl-CoA cycle	D11_O1.7	D11_O1.7_PROKKA_251615	inhA_19	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D12_L1.3	D12_L1.3_PROKKA_144562	mutB_15	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase large subunit	5.4.99.2	1
+ethylmalonyl-CoA cycle	D12_L1.3	D12_L1.3_PROKKA_146320	ccrA2_9	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D13_G1.3.2	D13_G1.3.2_PROKKA_210533	ccr_8	K14446	crotonyl-CoA carboxylase/reductase [EC:1.3.1.85]	Crotonyl-CoA reductase	1.3.1.86	4
+ethylmalonyl-CoA cycle	D13_G1.3.2	D13_G1.3.2_PROKKA_268138	mutB_36	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase large subunit	5.4.99.2	4
+ethylmalonyl-CoA cycle	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_75789	ccrA2_4	K14446	crotonyl-CoA carboxylase/reductase [EC:1.3.1.85]	Crotonyl-CoA reductase	1.3.1.86	4
+ethylmalonyl-CoA cycle	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_91607	mutB_11	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase large subunit	5.4.99.2	4
+ethylmalonyl-CoA cycle	D22_G1.42.2	D22_G1.42.2_PROKKA_82053	inhA_5	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D22_L1.5.4	D22_L1.5.4_PROKKA_190388	inhA_11	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D29_O1.25	D29_O1.25_PROKKA_06758	scpA_1	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase	5.4.99.2	1
+ethylmalonyl-CoA cycle	D30_G5	D30_G5_PROKKA_107900	scpA_38	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase	5.4.99.2	1
+ethylmalonyl-CoA cycle	D30_G5	D30_G5_PROKKA_127030	inhA_7	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D30_G5	D30_G5_PROKKA_194791	ccr_10	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D31_O1.3.2	D31_O1.3.2_PROKKA_111657	ccr_7	K14446	crotonyl-CoA carboxylase/reductase [EC:1.3.1.85]	Crotonyl-CoA reductase	1.3.1.86	4
+ethylmalonyl-CoA cycle	D31_O1.3.2	D31_O1.3.2_PROKKA_55828	ccrA2_3	K14446	crotonyl-CoA carboxylase/reductase [EC:1.3.1.85]	Crotonyl-CoA reductase	1.3.1.86	4
+ethylmalonyl-CoA cycle	D35_G2.23	D35_G2.23_PROKKA_229465	ccr_9	K14446	crotonyl-CoA carboxylase/reductase [EC:1.3.1.85]	Crotonyl-CoA reductase	1.3.1.86	2
+ethylmalonyl-CoA cycle	D36_L1.41	D36_L1.41_PROKKA_151585	mutB_25	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase large subunit	5.4.99.2	1
+ethylmalonyl-CoA cycle	D36_L1.41	D36_L1.41_PROKKA_41628	inhA_5	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D37_G11	D37_G11_PROKKA_194579	ccrA2_10	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D37_G11	D37_G11_PROKKA_31656	scpA_13	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase	5.4.99.2	1
+ethylmalonyl-CoA cycle	D37_G11	D37_G11_PROKKA_36458	inhA_2	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D37_G1.25.1	D37_G1.25.1_PROKKA_90684	ccr_7	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D37_G1.25.1	D37_G1.25.1_PROKKA_99119	inhA_7	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D37_G1.25.1	D37_G1.25.1_PROKKA_240086	scpA_91	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase	5.4.99.2	1
+ethylmalonyl-CoA cycle	D37_G1.25.1	D37_G1.25.1_PROKKA_22881	ccr_3	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D39_O1.57	D39_O1.57_PROKKA_95463	inhA_6	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D39_O1.57	D39_O1.57_PROKKA_308172	scpA_110	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase	5.4.99.2	1
+ethylmalonyl-CoA cycle	D42_G14	D42_G14_PROKKA_70885	ccrA2_4	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D42_G14	D42_G14_PROKKA_108273	inhA_3	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D42_G14	D42_G14_PROKKA_211687	scpA_73	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase	5.4.99.2	1
+ethylmalonyl-CoA cycle	D43_G6	D43_G6_PROKKA_73162	scpA_23	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase	5.4.99.2	1
+ethylmalonyl-CoA cycle	D47_G1.71.2	D47_G1.71.2_PROKKA_86750	inhA_8	K11611	enoyl ACP reductase [EC:1.3.1.9]	Enoyl-[acyl-carrier-protein] reductase [NADH]	1.3.1.9	1
+ethylmalonyl-CoA cycle	D47_O5	D47_O5_PROKKA_52957	ccr_5	K14446	crotonyl-CoA carboxylase/reductase [EC:1.3.1.85]	Crotonyl-CoA reductase	1.3.1.86	2
+ethylmalonyl-CoA cycle	D51_G1.1.2	D51_G1.1.2_PROKKA_140305	ccr_9	K17829	crotonyl-CoA reductase [EC:1.3.1.86]	Crotonyl-CoA reductase	1.3.1.86	1
+ethylmalonyl-CoA cycle	D51_G1.1.2	D51_G1.1.2_PROKKA_37266	scpA_18	K14447	ethylmalonyl-CoA mutase [EC:5.4.99.63]	Methylmalonyl-CoA mutase	5.4.99.2	1
+nitrate reduction	A01_O1.2.4	A01_O1.2.4_PROKKA_22188	nasA_5	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Nitrate reductase	1.7.99.4	3
+nitrate reduction	A01_O1.2.4	A01_O1.2.4_PROKKA_25160	narJ_1	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase molybdenum cofactor assembly chaperone NarJ	NA	3
+nitrate reduction	A01_O1.2.4	A01_O1.2.4_PROKKA_25161	narI_2	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Respiratory nitrate reductase 1 gamma chain	1.7.99.4	3
+nitrate reduction	D03_O1.31.2	D03_O1.31.2_PROKKA_192600	nirK_4	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	3
+nitrate reduction	D04_G2.13	D04_G2.13_PROKKA_15016	aniA_3	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	4
+nitrate reduction	D04_G2.13	D04_G2.13_PROKKA_287195	aniA_28	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	4
+nitrate reduction	D04_G2.5	D04_G2.5_PROKKA_82305	NA	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase delta subunit	NA	1
+nitrate reduction	D04_G2.5	D04_G2.5_PROKKA_82306	narX_9	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D04_L6	D04_L6_PROKKA_270092	aniA_26	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrate reduction	D04_O2.19	D04_O2.19_PROKKA_205647	narX_21	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D04_O2.19	D04_O2.19_PROKKA_326938	narX_31	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D05_G3.14.1	D05_G3.14.1_PROKKA_136910	nasC_7	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Assimilatory nitrate reductase catalytic subunit	1.7.99.4	1
+nitrate reduction	D05_G3.4	D05_G3.4_PROKKA_117145	narX_14	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D05_G3.4	D05_G3.4_PROKKA_57080	aniA_2	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrate reduction	D05_L3.17	D05_L3.17_PROKKA_64582	nasA_6	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Nitrate reductase	1.7.99.4	3
+nitrate reduction	D05_L3.17	D05_L3.17_PROKKA_103151	NA	K02570	periplasmic nitrate reductase NapD	assembly protein for periplasmic nitrate reductase	NA	3
+nitrate reduction	D05_L3.17	D05_L3.17_PROKKA_103152	napA_11	K02567	periplasmic nitrate reductase NapA [EC:1.7.99.-]	Periplasmic nitrate reductase precursor	1.7.99.4	3
+nitrate reduction	D11_O1.7	D11_O1.7_PROKKA_74176	NA	K10534	nitrate reductase (NAD(P)H) [EC:1.7.1.1 1.7.1.2 1.7.1.3]	Soluble cytochrome b558	NA	1
+nitrate reduction	D11_O1.7	D11_O1.7_PROKKA_15124	narJ_1	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase molybdenum cofactor assembly chaperone NarJ	NA	1
+nitrate reduction	D11_O1.7	D11_O1.7_PROKKA_15125	narX_1	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D15_G1.18.2	D15_G1.18.2_PROKKA_142335	narJ_9	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase molybdenum cofactor assembly chaperone NarJ	NA	3
+nitrate reduction	D15_G1.8	D15_G1.8_PROKKA_139850	NA	K10534	nitrate reductase (NAD(P)H) [EC:1.7.1.1 1.7.1.2 1.7.1.3]	Soluble cytochrome b558	NA	3
+nitrate reduction	D15_L1.3	D15_L1.3_PROKKA_141644	narJ_8	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase molybdenum cofactor assembly chaperone NarJ	NA	3
+nitrate reduction	D15_L1.3	D15_L1.3_PROKKA_141645	narI_9	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Respiratory nitrate reductase 1 gamma chain	1.7.99.4	3
+nitrate reduction	D15_L1.3	D15_L1.3_PROKKA_174350	nasA_18	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Nitrate reductase	1.7.99.4	3
+nitrate reduction	D19_G1.34.1.1	D19_G1.34.1.1_PROKKA_89183	aniA_9	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrate reduction	D20_G1.24	D20_G1.24_PROKKA_178444	narI_10	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Respiratory nitrate reductase 1 gamma chain	1.7.99.4	3
+nitrate reduction	D20_G1.24	D20_G1.24_PROKKA_255979	NA	K10534	nitrate reductase (NAD(P)H) [EC:1.7.1.1 1.7.1.2 1.7.1.3]	Soluble cytochrome b558	NA	3
+nitrate reduction	D20_O1.13	D20_O1.13_PROKKA_196739	copA_53	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper resistance protein A precursor	NA	4
+nitrate reduction	D20_P23	D20_P23_PROKKA_100715	narJ_6	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase molybdenum cofactor assembly chaperone NarJ	NA	3
+nitrate reduction	D20_P23	D20_P23_PROKKA_100716	narI_4	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Respiratory nitrate reductase 1 gamma chain	1.7.99.4	3
+nitrate reduction	D22_G1.42.2	D22_G1.42.2_PROKKA_127361	aniA_15	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrate reduction	D22_L1.5.4	D22_L1.5.4_PROKKA_113864	narX_13	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D23_P13	D23_P13_PROKKA_134915	narX_16	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	2
+nitrate reduction	D23_P13	D23_P13_PROKKA_134916	NA	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	hypothetical protein	NA	2
+nitrate reduction	D24_L14	D24_L14_PROKKA_118811	NA	K02570	periplasmic nitrate reductase NapD	assembly protein for periplasmic nitrate reductase	NA	3
+nitrate reduction	D24_L14	D24_L14_PROKKA_118812	napA_15	K02567	periplasmic nitrate reductase NapA [EC:1.7.99.-]	Periplasmic nitrate reductase precursor	1.7.99.4	3
+nitrate reduction	D26_L1.23	D26_L1.23_PROKKA_113074	aniA_10	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrate reduction	D28_L2.9	D28_L2.9_PROKKA_79299	narX_16	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D28_L2.9	D28_L2.9_PROKKA_193435	narX_32	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D28_L2.9	D28_L2.9_PROKKA_212868	narX_37	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D28_L2.9	D28_L2.9_PROKKA_212867	narX_36	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D28_L2.9	D28_L2.9_PROKKA_24035	narX_8	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D29_L5	D29_L5_PROKKA_151134	aniA_12	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase	1.7.2.1	1
+nitrate reduction	D29_L5	D29_L5_PROKKA_14114	narX_3	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D29_O1.25	D29_O1.25_PROKKA_213949	aniA_21	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase	1.7.2.1	1
+nitrate reduction	D30_G5	D30_G5_PROKKA_71190	aniA_7	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrate reduction	D30_G5	D30_G5_PROKKA_07757	nasC_1	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Assimilatory nitrate reductase catalytic subunit	1.7.99.4	1
+nitrate reduction	D30_G5	D30_G5_PROKKA_214024	narB_2	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Nitrate reductase	1.7.99.4	1
+nitrate reduction	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_250247	NA	K02570	periplasmic nitrate reductase NapD	assembly protein for periplasmic nitrate reductase	NA	3
+nitrate reduction	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_43324	napA_9	K02567	periplasmic nitrate reductase NapA [EC:1.7.99.-]	Periplasmic nitrate reductase precursor	1.7.99.4	3
+nitrate reduction	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_50018	nasA_6	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Nitrate reductase	1.7.99.4	3
+nitrate reduction	D30_P23	D30_P23_PROKKA_138718	narX_19	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	2
+nitrate reduction	D30_P23	D30_P23_PROKKA_138719	NA	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	hypothetical protein	NA	2
+nitrate reduction	D31_O1.3.2	D31_O1.3.2_PROKKA_170135	aniA_12	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	4
+nitrate reduction	D32_O1.57	D32_O1.57_PROKKA_237079	narW_3	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	putative nitrate reductase molybdenum cofactor assembly chaperone NarW	NA	3
+nitrate reduction	D32_O1.57	D32_O1.57_PROKKA_237080	narI_7	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Respiratory nitrate reductase 1 gamma chain	1.7.99.4	3
+nitrate reduction	D33_L1.8.2	D33_L1.8.2_PROKKA_157808	nirK_7	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrate reduction	D35_G2.27	D35_G2.27_PROKKA_15695	aniA_4	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrate reduction	D36_L1.15	D36_L1.15_PROKKA_117251	narJ_8	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase molybdenum cofactor assembly chaperone NarJ	NA	3
+nitrate reduction	D36_L1.15	D36_L1.15_PROKKA_117252	narI_5	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Respiratory nitrate reductase 1 gamma chain	1.7.99.4	3
+nitrate reduction	D36_L1.15	D36_L1.15_PROKKA_322447	NA	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase gamma subunit	NA	3
+nitrate reduction	D36_L1.41	D36_L1.41_PROKKA_227104	narX_32	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D36_L1.41	D36_L1.41_PROKKA_227105	narX_33	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_259292	narB_8	K00367	ferredoxin-nitrate reductase [EC:1.7.7.2]	Nitrate reductase	1.7.99.4	4
+nitrate reduction	D37_G11	D37_G11_PROKKA_135725	nasC_5	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Assimilatory nitrate reductase catalytic subunit	1.7.99.4	1
+nitrate reduction	D37_G11	D37_G11_PROKKA_66492	aniA_10	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrate reduction	D37_G1.25.1	D37_G1.25.1_PROKKA_107440	aniA_12	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrate reduction	D37_G1.25.1	D37_G1.25.1_PROKKA_230580	nasC_10	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Assimilatory nitrate reductase catalytic subunit	1.7.99.4	1
+nitrate reduction	D37_L8	D37_L8_PROKKA_113605	NA	K10534	nitrate reductase (NAD(P)H) [EC:1.7.1.1 1.7.1.2 1.7.1.3]	Soluble cytochrome b558	NA	4
+nitrate reduction	D39_G1.35	D39_G1.35_PROKKA_256792	NA	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase delta subunit	NA	2
+nitrate reduction	D42_G14	D42_G14_PROKKA_109621	NA	K10534	nitrate reductase (NAD(P)H) [EC:1.7.1.1 1.7.1.2 1.7.1.3]	Soluble cytochrome b558	NA	1
+nitrate reduction	D42_G14	D42_G14_PROKKA_132582	narX_15	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D42_G14	D42_G14_PROKKA_132583	narX_16	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D43_G6	D43_G6_PROKKA_32109	nasC_4	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Assimilatory nitrate reductase catalytic subunit	1.7.99.4	1
+nitrate reduction	D44_G14	D44_G14_PROKKA_183484	narW_4	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	putative nitrate reductase molybdenum cofactor assembly chaperone NarW	NA	3
+nitrate reduction	D44_G14	D44_G14_PROKKA_183485	narV_9	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Respiratory nitrate reductase 2 gamma chain	1.7.99.4	3
+nitrate reduction	D44_G14	D44_G14_PROKKA_29617	nasA_3	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Nitrate reductase	1.7.99.4	3
+nitrate reduction	D46_L2.48	D46_L2.48_PROKKA_254336	aniA_21	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrate reduction	D47_G1.71.2	D47_G1.71.2_PROKKA_109704	aniA_17	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrate reduction	D47_O14	D47_O14_PROKKA_234256	aniA_26	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrate reduction	D47_P30	D47_P30_PROKKA_124877	narX_9	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase-like protein NarX	1.7.99.4	1
+nitrate reduction	D49_O1	D49_O1_PROKKA_129259	NA	K10534	nitrate reductase (NAD(P)H) [EC:1.7.1.1 1.7.1.2 1.7.1.3]	Cytochrome b5-like Heme/Steroid binding domain protein	NA	4
+nitrate reduction	D49_O1	D49_O1_PROKKA_210669	aniA_19	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	4
+nitrate reduction	D49_O1	D49_O1_PROKKA_55236	NA	K00372	assimilatory nitrate reductase catalytic subunit [EC:1.7.99.-]	Molydopterin dinucleotide binding domain protein	NA	4
+nitrate reduction	D51_G1.1.2	D51_G1.1.2_PROKKA_58843	aniA_5	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrate reduction	D51_G9	D51_G9_PROKKA_103281	narV_4	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Respiratory nitrate reductase 2 gamma chain	1.7.99.4	3
+nitrate reduction	D51_G9	D51_G9_PROKKA_195180	narJ_4	K00373	nitrate reductase molybdenum cofactor assembly chaperone NarJ/NarW	Nitrate reductase molybdenum cofactor assembly chaperone NarJ	NA	3
+nitrate reduction	D51_G9	D51_G9_PROKKA_252857	NA	K00374	nitrate reductase gamma subunit [EC:1.7.5.1 1.7.99.-]	Nitrate reductase gamma subunit	NA	3
+nitrate reduction	D51_L1.24	D51_L1.24_PROKKA_196622	aniA_25	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to ammonia	A01_O1.2.4	A01_O1.2.4_PROKKA_13298	nasD_3	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	A01_O1.2.4	A01_O1.2.4_PROKKA_22189	nasD_7	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	A01_O1.2.4	A01_O1.2.4_PROKKA_55445	nasD_15	K17877	nitrite reductase (NAD(P)H) [EC:1.7.1.4]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	A01_O1.2.4	A01_O1.2.4_PROKKA_55446	nirD_11	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Nitrite reductase (NADH) small subunit	1.7.1.15	3
+nitrite reduction to ammonia	D04_G2.13	D04_G2.13_PROKKA_75236	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	4
+nitrite reduction to ammonia	D04_G2.13	D04_G2.13_PROKKA_120131	nrfH_4	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein NrfH	NA	4
+nitrite reduction to ammonia	D04_G2.13	D04_G2.13_PROKKA_237719	nrfA_7	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c-552 precursor	1.7.2.2	4
+nitrite reduction to ammonia	D04_G2.13	D04_G2.13_PROKKA_237720	nrfH_9	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein NrfH	NA	4
+nitrite reduction to ammonia	D04_G2.13	D04_G2.13_PROKKA_261332	sir_23	K00366	ferredoxin-nitrite reductase [EC:1.7.7.1]	Sulfite reductase [ferredoxin]	1.8.7.1	4
+nitrite reduction to ammonia	D04_G2.13	D04_G2.13_PROKKA_42948	NA	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Doubled CXXCH motif (Paired_CXXCH_1)	NA	4
+nitrite reduction to ammonia	D04_G2.5	D04_G2.5_PROKKA_111976	NA	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c bacterial	NA	1
+nitrite reduction to ammonia	D04_G2.5	D04_G2.5_PROKKA_122459	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	1
+nitrite reduction to ammonia	D04_G2.5	D04_G2.5_PROKKA_149663	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	1
+nitrite reduction to ammonia	D04_G2.5	D04_G2.5_PROKKA_255558	NA	K15876	cytochrome c nitrite reductase small subunit	hypothetical protein	NA	1
+nitrite reduction to ammonia	D04_G2.5	D04_G2.5_PROKKA_63138	nrfA_3	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c-552 precursor	1.7.2.2	1
+nitrite reduction to ammonia	D04_G2.5	D04_G2.5_PROKKA_63139	nrfH_3	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein NrfH	NA	1
+nitrite reduction to ammonia	D04_L6	D04_L6_PROKKA_67631	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	1
+nitrite reduction to ammonia	D04_L6	D04_L6_PROKKA_79298	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	1
+nitrite reduction to ammonia	D04_L6	D04_L6_PROKKA_10124	nrfH_1	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein NrfH	NA	1
+nitrite reduction to ammonia	D04_L6	D04_L6_PROKKA_244718	NA	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c552	NA	1
+nitrite reduction to ammonia	D04_L6	D04_L6_PROKKA_244719	nrfH_10	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein NrfH	NA	1
+nitrite reduction to ammonia	D04_L6	D04_L6_PROKKA_261615	nrfA_8	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c-552 precursor	1.7.2.2	1
+nitrite reduction to ammonia	D05_G3.14.1	D05_G3.14.1_PROKKA_136905	nirD_20	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Nitrite reductase (NADH) small subunit	1.7.1.15	1
+nitrite reduction to ammonia	D05_G3.14.1	D05_G3.14.1_PROKKA_136906	nasD_30	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	1
+nitrite reduction to ammonia	D05_G3.14.1	D05_G3.14.1_PROKKA_136908	sir_16	K00366	ferredoxin-nitrite reductase [EC:1.7.7.1]	Sulfite reductase [ferredoxin]	1.8.7.1	1
+nitrite reduction to ammonia	D05_L3.17	D05_L3.17_PROKKA_103551	torC	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein TorC	NA	3
+nitrite reduction to ammonia	D08_O6	D08_O6_PROKKA_86178	nrfA_4	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c-552 precursor	1.7.2.2	4
+nitrite reduction to ammonia	D08_O6	D08_O6_PROKKA_123627	NA	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c bacterial	NA	4
+nitrite reduction to ammonia	D08_O6	D08_O6_PROKKA_161087	nrfA_6	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c-552 precursor	1.7.2.2	4
+nitrite reduction to ammonia	D08_O6	D08_O6_PROKKA_12102	nrfH_1	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein NrfH	NA	4
+nitrite reduction to ammonia	D08_O6	D08_O6_PROKKA_64403	NA	K15876	cytochrome c nitrite reductase small subunit	cytochrome c-type protein NapC	NA	4
+nitrite reduction to ammonia	D11_O1.7	D11_O1.7_PROKKA_51783	NA	K15876	cytochrome c nitrite reductase small subunit	Class III cytochrome C family protein	NA	1
+nitrite reduction to ammonia	D13_G1.3.2	D13_G1.3.2_PROKKA_77183	sir_7	K00366	ferredoxin-nitrite reductase [EC:1.7.7.1]	Sulfite reductase [ferredoxin]	1.8.7.1	4
+nitrite reduction to ammonia	D13_G1.3.2	D13_G1.3.2_PROKKA_214101	NA	K15876	cytochrome c nitrite reductase small subunit	hypothetical protein	NA	4
+nitrite reduction to ammonia	D13_G1.3.2	D13_G1.3.2_PROKKA_18612	NA	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c bacterial	NA	4
+nitrite reduction to ammonia	D13_G1.3.2	D13_G1.3.2_PROKKA_20930	NA	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	BFD-like [2Fe-2S] binding domain protein	NA	4
+nitrite reduction to ammonia	D13_G1.3.2	D13_G1.3.2_PROKKA_287149	nirD_2	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Nitrite reductase (NADH) small subunit	1.7.1.15	4
+nitrite reduction to ammonia	D13_G1.3.2	D13_G1.3.2_PROKKA_287150	nasD_16	K17877	nitrite reductase (NAD(P)H) [EC:1.7.1.4]	Nitrite reductase [NAD(P)H]	1.7.1.4	4
+nitrite reduction to ammonia	D13_G1.3.2	D13_G1.3.2_PROKKA_48423	nrfA_1	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c-552 precursor	1.7.2.2	4
+nitrite reduction to ammonia	D15_G1.8	D15_G1.8_PROKKA_140177	nasA_16	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrate reductase	1.7.99.4	3
+nitrite reduction to ammonia	D15_G1.8	D15_G1.8_PROKKA_158750	nasE_4	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Assimilatory nitrite reductase [NAD(P)H] small subunit	1.7.1.4	3
+nitrite reduction to ammonia	D15_G1.8	D15_G1.8_PROKKA_158749	nasD_40	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D15_G1.8	D15_G1.8_PROKKA_166835	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	3
+nitrite reduction to ammonia	D15_G4	D15_G4_PROKKA_74780	nasD_19	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D15_G4	D15_G4_PROKKA_31000	nasA_9	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrate reductase	1.7.99.4	3
+nitrite reduction to ammonia	D15_G4	D15_G4_PROKKA_55602	nirD_10	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Nitrite reductase (NADH) small subunit	1.7.1.15	3
+nitrite reduction to ammonia	D15_G4	D15_G4_PROKKA_55603	nasD_17	K17877	nitrite reductase (NAD(P)H) [EC:1.7.1.4]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D15_L1.3	D15_L1.3_PROKKA_81218	nasD_20	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D15_L1.3	D15_L1.3_PROKKA_43047	nasD_14	K17877	nitrite reductase (NAD(P)H) [EC:1.7.1.4]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D15_L1.3	D15_L1.3_PROKKA_43048	nirD_8	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Nitrite reductase (NADH) small subunit	1.7.1.15	3
+nitrite reduction to ammonia	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_98048	sir_10	K00366	ferredoxin-nitrite reductase [EC:1.7.7.1]	Sulfite reductase [ferredoxin]	1.8.7.1	4
+nitrite reduction to ammonia	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_135765	nasD_31	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	4
+nitrite reduction to ammonia	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_142913	nrfH_4	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein NrfH	NA	4
+nitrite reduction to ammonia	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_142914	nrfA_4	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c-552 precursor	1.7.2.2	4
+nitrite reduction to ammonia	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_154482	NA	K15876	cytochrome c nitrite reductase small subunit	hypothetical protein	NA	4
+nitrite reduction to ammonia	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_158236	NA	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	BFD-like [2Fe-2S] binding domain protein	NA	4
+nitrite reduction to ammonia	D16_O2.2.1.1.14	D16_O2.2.1.1.14_PROKKA_188972	NA	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c552	NA	2
+nitrite reduction to ammonia	D20_G1.24	D20_G1.24_PROKKA_228457	nasE_7	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Assimilatory nitrite reductase [NAD(P)H] small subunit	1.7.1.4	3
+nitrite reduction to ammonia	D20_G1.24	D20_G1.24_PROKKA_228458	nasD_23	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D20_O1.13	D20_O1.13_PROKKA_75825	NA	K15876	cytochrome c nitrite reductase small subunit	hypothetical protein	NA	4
+nitrite reduction to ammonia	D20_O1.13	D20_O1.13_PROKKA_122557	NA	K15876	cytochrome c nitrite reductase small subunit	Class III cytochrome C family protein	NA	4
+nitrite reduction to ammonia	D20_O1.13	D20_O1.13_PROKKA_136174	NA	K15876	cytochrome c nitrite reductase small subunit	Geobacter CxxxxCH...CXXCH motif (GSu_C4xC__C2xCH)	NA	4
+nitrite reduction to ammonia	D20_O1.17	D20_O1.17_PROKKA_235516	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	3
+nitrite reduction to ammonia	D24_L14	D24_L14_PROKKA_141750	NA	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c bacterial	NA	3
+nitrite reduction to ammonia	D24_L14	D24_L14_PROKKA_230749	nasE_9	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Assimilatory nitrite reductase [NAD(P)H] small subunit	1.7.1.4	3
+nitrite reduction to ammonia	D24_L14	D24_L14_PROKKA_230750	nasD_16	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D27_L1.3.2	D27_L1.3.2_PROKKA_23230	nirD_2	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Nitrite reductase (NADH) small subunit	1.7.1.15	3
+nitrite reduction to ammonia	D28_L2.9	D28_L2.9_PROKKA_131731	nasD_24	K17877	nitrite reductase (NAD(P)H) [EC:1.7.1.4]	Nitrite reductase [NAD(P)H]	1.7.1.4	1
+nitrite reduction to ammonia	D28_L2.9	D28_L2.9_PROKKA_131732	nirD_12	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Nitrite reductase (NADH) small subunit	1.7.1.15	1
+nitrite reduction to ammonia	D28_L2.9	D28_L2.9_PROKKA_200587	nasD_40	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	1
+nitrite reduction to ammonia	D29_O1.25	D29_O1.25_PROKKA_48406	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	1
+nitrite reduction to ammonia	D30_G5	D30_G5_PROKKA_60109	nirD_2	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Nitrite reductase (NADH) small subunit	1.7.1.15	1
+nitrite reduction to ammonia	D30_G5	D30_G5_PROKKA_60110	nasD_4	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	1
+nitrite reduction to ammonia	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_50015	nasE_3	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Assimilatory nitrite reductase [NAD(P)H] small subunit	1.7.1.4	3
+nitrite reduction to ammonia	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_50016	nasD_2	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D31_O1.3.2	D31_O1.3.2_PROKKA_70961	NA	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	BFD-like [2Fe-2S] binding domain protein	NA	4
+nitrite reduction to ammonia	D31_O1.3.2	D31_O1.3.2_PROKKA_109204	sir_11	K00366	ferredoxin-nitrite reductase [EC:1.7.7.1]	Sulfite reductase [ferredoxin]	1.8.7.1	4
+nitrite reduction to ammonia	D31_O1.3.2	D31_O1.3.2_PROKKA_130877	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	4
+nitrite reduction to ammonia	D31_O1.3.2	D31_O1.3.2_PROKKA_194416	NA	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c bacterial	NA	4
+nitrite reduction to ammonia	D31_O1.3.2	D31_O1.3.2_PROKKA_17866	nrfA_1	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c-552 precursor	1.7.2.2	4
+nitrite reduction to ammonia	D31_O1.3.2	D31_O1.3.2_PROKKA_46732	nrfH_1	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein NrfH	NA	4
+nitrite reduction to ammonia	D35_G2.16	D35_G2.16_PROKKA_99050	NA	K15876	cytochrome c nitrite reductase small subunit	hypothetical protein	NA	2
+nitrite reduction to ammonia	D35_G2.23	D35_G2.23_PROKKA_42259	NA	K15876	cytochrome c nitrite reductase small subunit	Class III cytochrome C family protein	NA	2
+nitrite reduction to ammonia	D35_G2.61	D35_G2.61_PROKKA_54493	NA	K15876	cytochrome c nitrite reductase small subunit	Class III cytochrome C family protein	NA	2
+nitrite reduction to ammonia	D35_G2.61	D35_G2.61_PROKKA_54491	NA	K15876	cytochrome c nitrite reductase small subunit	cytochrome c nitrite reductase pentaheme subunit	NA	2
+nitrite reduction to ammonia	D36_L1.15	D36_L1.15_PROKKA_124638	NA	K15876	cytochrome c nitrite reductase small subunit	Class III cytochrome C family protein	NA	3
+nitrite reduction to ammonia	D36_L1.15	D36_L1.15_PROKKA_264249	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	3
+nitrite reduction to ammonia	D36_L1.15	D36_L1.15_PROKKA_302236	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	3
+nitrite reduction to ammonia	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_114796	nirD_6	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Nitrite reductase (NADH) small subunit	1.7.1.15	4
+nitrite reduction to ammonia	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_114797	nasD_13	K17877	nitrite reductase (NAD(P)H) [EC:1.7.1.4]	Nitrite reductase [NAD(P)H]	1.7.1.4	4
+nitrite reduction to ammonia	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_225697	NA	K15876	cytochrome c nitrite reductase small subunit	hypothetical protein	NA	4
+nitrite reduction to ammonia	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_234523	nrfA_3	K03385	nitrite reductase (cytochrome c-552) [EC:1.7.2.2]	Cytochrome c-552 precursor	1.7.2.2	4
+nitrite reduction to ammonia	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_234524	nrfH_3	K15876	cytochrome c nitrite reductase small subunit	Cytochrome c-type protein NrfH	NA	4
+nitrite reduction to ammonia	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_38388	NA	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	BFD-like [2Fe-2S] binding domain protein	NA	4
+nitrite reduction to ammonia	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_59479	NA	K15876	cytochrome c nitrite reductase small subunit	hypothetical protein	NA	4
+nitrite reduction to ammonia	D44_G14	D44_G14_PROKKA_29615	nasD_1	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D44_G14	D44_G14_PROKKA_29616	nasD_2	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Nitrite reductase [NAD(P)H]	1.7.1.4	3
+nitrite reduction to ammonia	D44_O1.1.2.2.1.2.7	D44_O1.1.2.2.1.2.7_PROKKA_220510	rubB_8	K00362	nitrite reductase (NADH) large subunit [EC:1.7.1.15]	Rubredoxin-NAD(+) reductase	1.18.1.1	2
+nitrite reduction to ammonia	D49_G15	D49_G15_PROKKA_222420	NA	K15876	cytochrome c nitrite reductase small subunit	Class III cytochrome C family protein	NA	2
+nitrite reduction to ammonia	D49_O1	D49_O1_PROKKA_177669	NA	K15876	cytochrome c nitrite reductase small subunit	hypothetical protein	NA	4
+nitrite reduction to ammonia	D49_O1	D49_O1_PROKKA_185575	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	4
+nitrite reduction to ammonia	D49_O1	D49_O1_PROKKA_237804	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	4
+nitrite reduction to ammonia	D51_G9	D51_G9_PROKKA_05574	nasE_1	K00363	nitrite reductase (NADH) small subunit [EC:1.7.1.15]	Assimilatory nitrite reductase [NAD(P)H] small subunit	1.7.1.4	3
+nitrite reduction to ammonia	D51_G9	D51_G9_PROKKA_217027	NA	K15876	cytochrome c nitrite reductase small subunit	Doubled CXXCH motif (Paired_CXXCH_1)	NA	3
+nitrite reduction to NO	D03_O1.31.2	D03_O1.31.2_PROKKA_192600	nirK_4	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D04_G2.13	D04_G2.13_PROKKA_15016	aniA_3	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	4
+nitrite reduction to NO	D04_G2.13	D04_G2.13_PROKKA_287195	aniA_28	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	4
+nitrite reduction to NO	D04_L6	D04_L6_PROKKA_270092	aniA_26	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrite reduction to NO	D05_G3.4	D05_G3.4_PROKKA_57080	aniA_2	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrite reduction to NO	D05_L3.17	D05_L3.17_PROKKA_99721	nirS_8	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D05_L3.17	D05_L3.17_PROKKA_102583	nirS_9	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D05_L3.17	D05_L3.17_PROKKA_103147	nirS_10	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D11_O1.27.3	D11_O1.27.3_PROKKA_137327	nirS_20	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D15_G1.18.2	D15_G1.18.2_PROKKA_33944	nirS_4	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D15_G1.8	D15_G1.8_PROKKA_137789	nirS_11	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D15_G1.8	D15_G1.8_PROKKA_173753	nirS_16	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D19_G1.34.1.1	D19_G1.34.1.1_PROKKA_89183	aniA_9	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrite reduction to NO	D20_G1.24	D20_G1.24_PROKKA_48720	nirS_9	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D20_O1.13	D20_O1.13_PROKKA_196739	copA_53	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper resistance protein A precursor	NA	4
+nitrite reduction to NO	D20_O1.17	D20_O1.17_PROKKA_167983	nirS_25	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D20_O1.17	D20_O1.17_PROKKA_196428	nirS_28	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D20_P23	D20_P23_PROKKA_152060	nirS_23	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D22_G1.42.2	D22_G1.42.2_PROKKA_127361	aniA_15	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrite reduction to NO	D24_L14	D24_L14_PROKKA_39580	nirS_6	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D24_L14	D24_L14_PROKKA_50699	nirS_8	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D26_L1.23	D26_L1.23_PROKKA_113074	aniA_10	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrite reduction to NO	D29_L5	D29_L5_PROKKA_151134	aniA_12	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase	1.7.2.1	1
+nitrite reduction to NO	D29_O1.25	D29_O1.25_PROKKA_213949	aniA_21	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase	1.7.2.1	1
+nitrite reduction to NO	D30_G5	D30_G5_PROKKA_71190	aniA_7	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrite reduction to NO	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_63018	nirS_16	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_63032	nirS_17	K15864	nitrite reductase (NO-forming) / hydroxylamine reductase [EC:1.7.2.1 1.7.99.1]	Nitrite reductase precursor	1.7.2.1	3
+nitrite reduction to NO	D31_O1.3.2	D31_O1.3.2_PROKKA_170135	aniA_12	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	4
+nitrite reduction to NO	D33_L1.8.2	D33_L1.8.2_PROKKA_157808	nirK_7	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrite reduction to NO	D35_G2.27	D35_G2.27_PROKKA_15695	aniA_4	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrite reduction to NO	D37_G11	D37_G11_PROKKA_66492	aniA_10	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrite reduction to NO	D37_G1.25.1	D37_G1.25.1_PROKKA_107440	aniA_12	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrite reduction to NO	D46_L2.48	D46_L2.48_PROKKA_254336	aniA_21	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrite reduction to NO	D47_G1.71.2	D47_G1.71.2_PROKKA_109704	aniA_17	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrite reduction to NO	D47_O14	D47_O14_PROKKA_234256	aniA_26	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	2
+nitrite reduction to NO	D49_O1	D49_O1_PROKKA_210669	aniA_19	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	4
+nitrite reduction to NO	D51_G1.1.2	D51_G1.1.2_PROKKA_58843	aniA_5	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	1
+nitrite reduction to NO	D51_L1.24	D51_L1.24_PROKKA_196622	aniA_25	K00368	nitrite reductase (NO-forming) [EC:1.7.2.1]	Copper-containing nitrite reductase precursor	1.7.2.1	3
+NO reduction	A01_O1.2.4	A01_O1.2.4_PROKKA_51509	norB_5	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	3
+NO reduction	D13_G1.3.2	D13_G1.3.2_PROKKA_153345	norB_15	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	4
+NO reduction	D15_G1.18.2	D15_G1.18.2_PROKKA_24312	norB_1	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	3
+NO reduction	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_175617	norB_10	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	4
+NO reduction	D19_G1.34.1.1	D19_G1.34.1.1_PROKKA_235460	norB_24	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D20_G1.24	D20_G1.24_PROKKA_75983	norB_10	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	3
+NO reduction	D20_O1.13	D20_O1.13_PROKKA_225606	norB_28	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	4
+NO reduction	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_283440	norB_38	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	3
+NO reduction	D30_P23	D30_P23_PROKKA_138710	norB_21	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D31_O1.3.2	D31_O1.3.2_PROKKA_99765	norB_12	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	4
+NO reduction	D35_G2.16	D35_G2.16_PROKKA_116794	norB_13	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D35_G2.27	D35_G2.27_PROKKA_73883	norB_9	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D36_G7	D36_G7_PROKKA_301981	norB_30	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D36_L2.1.6.2	D36_L2.1.6.2_PROKKA_163523	norB_20	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	4
+NO reduction	D39_G1.35	D39_G1.35_PROKKA_52671	norB_4	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D47_O14	D47_O14_PROKKA_06873	norB_1	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D47_O14	D47_O14_PROKKA_155165	norB_23	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D47_O14	D47_O14_PROKKA_234262	norB_30	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D47_O14	D47_O14_PROKKA_260871	norB_33	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D47_O14	D47_O14_PROKKA_273887	norB_35	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D49_G15	D49_G15_PROKKA_191466	NA	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Cytochrome C and Quinol oxidase polypeptide I	NA	2
+NO reduction	D49_G15	D49_G15_PROKKA_232812	norB_25	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	2
+NO reduction	D49_O1	D49_O1_PROKKA_53952	norB_5	K04561	nitric oxide reductase subunit B [EC:1.7.2.5]	Nitric oxide reductase subunit B	1.7.2.5	4
+N2O reduction	D08_G1.16	D08_G1.16_PROKKA_223095	nosZ_53	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D11_O1.27.3	D11_O1.27.3_PROKKA_54362	nosZ_12	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	3
+N2O reduction	D15_G1.8	D15_G1.8_PROKKA_57771	nosZ_6	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	3
+N2O reduction	D15_L1.3	D15_L1.3_PROKKA_51457	nosZ_5	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	3
+N2O reduction	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_45200	nosZ_4	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	4
+N2O reduction	D16_L3.1.1	D16_L3.1.1_PROKKA_104261	nosZ_26	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D16_L3.1.1	D16_L3.1.1_PROKKA_24585	nosZ_8	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D16_O2.2.1.1.14	D16_O2.2.1.1.14_PROKKA_100660	nosZ_24	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D16_O2.2.1.1.14	D16_O2.2.1.1.14_PROKKA_246365	nosZ_67	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D19_G1.34.1.1	D19_G1.34.1.1_PROKKA_152993	nosZ_49	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D19_G1.34.1.1	D19_G1.34.1.1_PROKKA_43160	nosZ_17	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D23_P13	D23_P13_PROKKA_143695	nosZ_45	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D24_L14	D24_L14_PROKKA_118007	nosZ_32	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	3
+N2O reduction	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_99294	nosZ_26	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	3
+N2O reduction	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_232554	NA	K00376	nitrous-oxide reductase [EC:1.7.2.4]	hypothetical protein	NA	3
+N2O reduction	D30_P23	D30_P23_PROKKA_262429	nosZ_61	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D33_L1.8.2	D33_L1.8.2_PROKKA_204528	nosZ_37	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D35_G2.16	D35_G2.16_PROKKA_43244	nosZ_11	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D35_G2.23	D35_G2.23_PROKKA_102109	nosZ_27	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D35_G2.27	D35_G2.27_PROKKA_24999	nosZ_7	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D37_G1.25.1	D37_G1.25.1_PROKKA_127432	cbaB_13	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Cytochrome c oxidase subunit 2	1.9.3.1	1
+N2O reduction	D37_G5	D37_G5_PROKKA_101851	nosZ_19	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D38_G2.3	D38_G2.3_PROKKA_169651	nosZ_28	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D39_G1.35	D39_G1.35_PROKKA_259165	nosZ_68	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D41_O4	D41_O4_PROKKA_31534	nosZ_6	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D47_O14	D47_O14_PROKKA_266715	nosZ_70	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D47_O5	D47_O5_PROKKA_295865	nosZ_74	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D47_O5	D47_O5_PROKKA_64493	nosZ_19	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+N2O reduction	D49_G15	D49_G15_PROKKA_247513	nosZ_66	K00376	nitrous-oxide reductase [EC:1.7.2.4]	Nitrous-oxide reductase precursor	1.7.2.4	2
+glutamine/glutamate synthesis	A01_O1.2.4	A01_O1.2.4_PROKKA_44847	gltD_2	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	A01_O1.2.4	A01_O1.2.4_PROKKA_44848	gltB_14	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain precursor	1.4.1.13	3
+glutamine/glutamate synthesis	D03_O1.31.2	D03_O1.31.2_PROKKA_69401	NA	K01915	glutamine synthetase [EC:6.3.1.2]	3-hydroxylaminophenol mutase	5.4.4.3	3
+glutamine/glutamate synthesis	D04_G2.5	D04_G2.5_PROKKA_74717	glnA_10	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D04_L6	D04_L6_PROKKA_189881	glnA_23	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D04_L6	D04_L6_PROKKA_189882	glnA_24	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D04_L6	D04_L6_PROKKA_271671	gltB_77	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	1
+glutamine/glutamate synthesis	D04_L6	D04_L6_PROKKA_271672	gltB_78	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D04_O2.19	D04_O2.19_PROKKA_161246	gltB_52	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D04_O2.19	D04_O2.19_PROKKA_179152	glnA_22	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 1	6.3.1.2	1
+glutamine/glutamate synthesis	D04_O2.19	D04_O2.19_PROKKA_219539	gltB_63	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D04_O2.19	D04_O2.19_PROKKA_225693	glnA_33	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D04_O2.19	D04_O2.19_PROKKA_254117	glnA_38	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D04_O2.19	D04_O2.19_PROKKA_271345	gltB_76	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D04_O2.19	D04_O2.19_PROKKA_59134	glnA_7	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D04_O2.19	D04_O2.19_PROKKA_61310	glnT_4	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 3	6.3.1.2	1
+glutamine/glutamate synthesis	D05_G3.14.1	D05_G3.14.1_PROKKA_179281	glnA_32	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D05_G3.14.1	D05_G3.14.1_PROKKA_179282	glnA_33	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D05_G3.4	D05_G3.4_PROKKA_94281	glnA2	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D05_G3.4	D05_G3.4_PROKKA_140762	gltB_35	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D05_G3.4	D05_G3.4_PROKKA_140763	gltB_36	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D05_G3.4	D05_G3.4_PROKKA_148096	glnA_29	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D05_L3.17	D05_L3.17_PROKKA_83799	gltB_20	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	3
+glutamine/glutamate synthesis	D05_L3.17	D05_L3.17_PROKKA_127212	NA	K01915	glutamine synthetase [EC:6.3.1.2]	3-hydroxylaminophenol mutase	5.4.4.3	3
+glutamine/glutamate synthesis	D08_G1.16	D08_G1.16_PROKKA_193055	glnA_37	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D08_G1.16	D08_G1.16_PROKKA_240646	gltD_29	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	2
+glutamine/glutamate synthesis	D08_O6	D08_O6_PROKKA_202714	gltD_25	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	4
+glutamine/glutamate synthesis	D09_G1.28	D09_G1.28_PROKKA_05438	glnA_2	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D09_G1.28	D09_G1.28_PROKKA_95489	gltB_30	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D09_G1.28	D09_G1.28_PROKKA_127923	gltB_37	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D09_G1.28	D09_G1.28_PROKKA_156128	puuA_7	K01915	glutamine synthetase [EC:6.3.1.2]	Gamma-glutamylputrescine synthetase PuuA	6.3.1.11	1
+glutamine/glutamate synthesis	D09_G1.28	D09_G1.28_PROKKA_41668	glnA_5	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D10_O1.45	D10_O1.45_PROKKA_113038	glnA_29	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D10_O1.45	D10_O1.45_PROKKA_123064	glnII_6	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 2	6.3.1.2	2
+glutamine/glutamate synthesis	D10_O1.45	D10_O1.45_PROKKA_152735	gltB_45	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	2
+glutamine/glutamate synthesis	D10_O1.45	D10_O1.45_PROKKA_211477	gltB_62	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	2
+glutamine/glutamate synthesis	D11_O1.27.3	D11_O1.27.3_PROKKA_157927	gltB_50	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D11_O1.7	D11_O1.7_PROKKA_115253	glnA_26	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D12_L1.3	D12_L1.3_PROKKA_87878	preT_1	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	NAD-dependent dihydropyrimidine dehydrogenase subunit PreT	1.3.1.1	1
+glutamine/glutamate synthesis	D12_L1.3	D12_L1.3_PROKKA_116122	glnA_23	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D12_L1.3	D12_L1.3_PROKKA_22773	gltB_11	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D13_G1.3.2	D13_G1.3.2_PROKKA_90181	glnA_16	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	4
+glutamine/glutamate synthesis	D13_G1.3.2	D13_G1.3.2_PROKKA_288702	gltB_77	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	4
+glutamine/glutamate synthesis	D15_G1.18.2	D15_G1.18.2_PROKKA_93870	glnA_22	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	3
+glutamine/glutamate synthesis	D15_G1.8	D15_G1.8_PROKKA_83316	gltB_24	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	3
+glutamine/glutamate synthesis	D15_G1.8	D15_G1.8_PROKKA_87440	gltB_28	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D15_G1.8	D15_G1.8_PROKKA_40143	NA	K01915	glutamine synthetase [EC:6.3.1.2]	3-hydroxylaminophenol mutase	5.4.4.3	3
+glutamine/glutamate synthesis	D15_G4	D15_G4_PROKKA_89070	glnA_19	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	3
+glutamine/glutamate synthesis	D15_G4	D15_G4_PROKKA_174799	gltD_10	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D15_G4	D15_G4_PROKKA_36530	gltB_7	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain precursor	1.4.1.13	3
+glutamine/glutamate synthesis	D15_L1.3	D15_L1.3_PROKKA_124344	gltB_36	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_173688	NA	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase%2C catalytic domain	NA	4
+glutamine/glutamate synthesis	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_179680	NA	K01915	glutamine synthetase [EC:6.3.1.2]	hypothetical protein	NA	4
+glutamine/glutamate synthesis	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_38715	gltB_9	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	4
+glutamine/glutamate synthesis	D15_O1.7.1.2.1	D15_O1.7.1.2.1_PROKKA_38714	gltB_8	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	4
+glutamine/glutamate synthesis	D19_G1.34.1.1	D19_G1.34.1.1_PROKKA_283701	gltD_22	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	2
+glutamine/glutamate synthesis	D20_G1.24	D20_G1.24_PROKKA_138632	NA	K01915	glutamine synthetase [EC:6.3.1.2]	3-hydroxylaminophenol mutase	5.4.4.3	3
+glutamine/glutamate synthesis	D20_G1.24	D20_G1.24_PROKKA_57095	gltB_26	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D20_O1.13	D20_O1.13_PROKKA_171928	glnII_7	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 2	6.3.1.2	4
+glutamine/glutamate synthesis	D20_O1.13	D20_O1.13_PROKKA_29991	gltD_2	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	4
+glutamine/glutamate synthesis	D20_O1.13	D20_O1.13_PROKKA_48615	glnA_6	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	4
+glutamine/glutamate synthesis	D20_O1.17	D20_O1.17_PROKKA_15964	NA	K01915	glutamine synthetase [EC:6.3.1.2]	3-hydroxylaminophenol mutase	5.4.4.3	3
+glutamine/glutamate synthesis	D20_O1.17	D20_O1.17_PROKKA_59741	gltB_27	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	3
+glutamine/glutamate synthesis	D20_P23	D20_P23_PROKKA_180042	glnA_26	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	3
+glutamine/glutamate synthesis	D20_P23	D20_P23_PROKKA_46390	gltD_5	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D20_P23	D20_P23_PROKKA_46389	gltB_20	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain precursor	1.4.1.13	3
+glutamine/glutamate synthesis	D22_G1.42.2	D22_G1.42.2_PROKKA_104134	glnA_21	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 1	6.3.1.2	1
+glutamine/glutamate synthesis	D22_L1.5.4	D22_L1.5.4_PROKKA_73751	glnA_17	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D22_L1.5.4	D22_L1.5.4_PROKKA_23857	gltB_9	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D23_P13	D23_P13_PROKKA_78551	glnA_22	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D23_P13	D23_P13_PROKKA_118266	preT_1	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	NAD-dependent dihydropyrimidine dehydrogenase subunit PreT	1.3.1.1	2
+glutamine/glutamate synthesis	D24_L14	D24_L14_PROKKA_82458	gltB_30	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D24_L14	D24_L14_PROKKA_82459	gltB_31	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	3
+glutamine/glutamate synthesis	D24_L14	D24_L14_PROKKA_09630	NA	K01915	glutamine synthetase [EC:6.3.1.2]	3-hydroxylaminophenol mutase	5.4.4.3	3
+glutamine/glutamate synthesis	D24_L14	D24_L14_PROKKA_36433	glnT_1	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 3	6.3.1.2	3
+glutamine/glutamate synthesis	D26_L1.23	D26_L1.23_PROKKA_219638	gltB_83	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	2
+glutamine/glutamate synthesis	D26_L1.23	D26_L1.23_PROKKA_219639	gltB_84	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	2
+glutamine/glutamate synthesis	D26_L1.23	D26_L1.23_PROKKA_61990	glnA_18	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D28_L2.9	D28_L2.9_PROKKA_73699	NA	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	hypothetical protein	NA	1
+glutamine/glutamate synthesis	D28_L2.9	D28_L2.9_PROKKA_91500	gltB_39	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D28_L2.9	D28_L2.9_PROKKA_07824	gltB_6	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D28_L2.9	D28_L2.9_PROKKA_135233	glnA_29	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 1	6.3.1.2	1
+glutamine/glutamate synthesis	D28_L2.9	D28_L2.9_PROKKA_242512	gltB_78	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D28_L2.9	D28_L2.9_PROKKA_267242	gltB_87	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D28_O5	D28_O5_PROKKA_37276	glnA_10	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	4
+glutamine/glutamate synthesis	D29_L5	D29_L5_PROKKA_04075	gltD_2	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D29_L5	D29_L5_PROKKA_266947	gltB_56	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D29_O1.25	D29_O1.25_PROKKA_277222	gltB_57	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D29_O1.25	D29_O1.25_PROKKA_277223	gltD_37	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D29_O1.25	D29_O1.25_PROKKA_55804	glnII_1	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D29_O1.25	D29_O1.25_PROKKA_55805	glnA_4	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D30_G5	D30_G5_PROKKA_101863	glnA2_2	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D30_G5	D30_G5_PROKKA_101862	glnII_4	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D30_G5	D30_G5_PROKKA_123748	gltB_42	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D30_G5	D30_G5_PROKKA_30135	glnA_6	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_88869	NA	K01915	glutamine synthetase [EC:6.3.1.2]	3-hydroxylaminophenol mutase	5.4.4.3	3
+glutamine/glutamate synthesis	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_247613	gltB_75	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	3
+glutamine/glutamate synthesis	D30_O2.4.2.2.2	D30_O2.4.2.2.2_PROKKA_247614	gltB_76	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D30_P23	D30_P23_PROKKA_25906	glnA_5	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D31_O1.3.2	D31_O1.3.2_PROKKA_102220	gltB_32	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	4
+glutamine/glutamate synthesis	D31_O1.3.2	D31_O1.3.2_PROKKA_102221	gltB_33	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	4
+glutamine/glutamate synthesis	D31_O1.3.2	D31_O1.3.2_PROKKA_169012	gltD_9	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	4
+glutamine/glutamate synthesis	D32_O1.57	D32_O1.57_PROKKA_66733	gltB_23	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	3
+glutamine/glutamate synthesis	D32_O1.57	D32_O1.57_PROKKA_66732	gltB_22	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D32_O1.57	D32_O1.57_PROKKA_315497	glnA_47	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	3
+glutamine/glutamate synthesis	D33_L1.8.2	D33_L1.8.2_PROKKA_203375	glnA_43	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D35_G2.27	D35_G2.27_PROKKA_204545	gltD_20	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	2
+glutamine/glutamate synthesis	D35_G2.61	D35_G2.61_PROKKA_63695	glnA_14	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D36_G7	D36_G7_PROKKA_210148	gltD_23	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	2
+glutamine/glutamate synthesis	D36_G7	D36_G7_PROKKA_47711	glnA_11	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D36_L1.15	D36_L1.15_PROKKA_322445	gltD_31	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D36_L1.41	D36_L1.41_PROKKA_134000	glnA_35	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D36_L1.41	D36_L1.41_PROKKA_149456	glnA_40	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D36_L1.41	D36_L1.41_PROKKA_249395	gltB_88	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D36_L1.41	D36_L1.41_PROKKA_249396	gltB_89	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D36_L1.41	D36_L1.41_PROKKA_281367	glnA_68	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D37_G11	D37_G11_PROKKA_116258	gltB_26	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D37_G11	D37_G11_PROKKA_116257	gltB_25	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D37_G11	D37_G11_PROKKA_153291	glnII_6	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D37_G11	D37_G11_PROKKA_20071	glnA_5	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D37_G11	D37_G11_PROKKA_279925	gltD_28	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D37_G11	D37_G11_PROKKA_286511	glnA_51	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D37_G1.25.1	D37_G1.25.1_PROKKA_137647	glnA_26	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D37_G1.25.1	D37_G1.25.1_PROKKA_192018	gltB_43	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D37_G1.25.1	D37_G1.25.1_PROKKA_192017	gltB_42	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D37_G1.25.1	D37_G1.25.1_PROKKA_230583	glnII_9	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D37_G1.25.1	D37_G1.25.1_PROKKA_230584	glnA_42	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D37_G1.25.1	D37_G1.25.1_PROKKA_234346	glnA_43	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D37_G1.25.1	D37_G1.25.1_PROKKA_268688	glnA_49	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D38_G2.3	D38_G2.3_PROKKA_174745	gltB_58	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	2
+glutamine/glutamate synthesis	D38_G2.3	D38_G2.3_PROKKA_203612	glnA_40	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D39_G1.35	D39_G1.35_PROKKA_142336	glnII_11	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 2	6.3.1.2	2
+glutamine/glutamate synthesis	D39_O1.57	D39_O1.57_PROKKA_87273	glnA_12	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D39_O1.57	D39_O1.57_PROKKA_181984	puuA_4	K01915	glutamine synthetase [EC:6.3.1.2]	Gamma-glutamylputrescine synthetase PuuA	6.3.1.11	1
+glutamine/glutamate synthesis	D39_O1.57	D39_O1.57_PROKKA_260868	gltB_61	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D39_O1.57	D39_O1.57_PROKKA_260867	gltB_60	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D39_O1.57	D39_O1.57_PROKKA_289736	glnA_47	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D39_O1.57	D39_O1.57_PROKKA_34443	glnA_4	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D41_O4	D41_O4_PROKKA_175811	gltB_57	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	2
+glutamine/glutamate synthesis	D41_O4	D41_O4_PROKKA_175812	gltB_58	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Ferredoxin-dependent glutamate synthase 1	1.4.7.1	2
+glutamine/glutamate synthesis	D42_G14	D42_G14_PROKKA_141810	glnA_16	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D42_G14	D42_G14_PROKKA_218634	gltD_27	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D42_G14	D42_G14_PROKKA_276647	gltB_62	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D42_G14	D42_G14_PROKKA_276648	gltB_63	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D43_G6	D43_G6_PROKKA_153734	gltB_29	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	1
+glutamine/glutamate synthesis	D43_G6	D43_G6_PROKKA_164041	gltB_38	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	1
+glutamine/glutamate synthesis	D43_G6	D43_G6_PROKKA_28326	glnA_11	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D43_G6	D43_G6_PROKKA_28327	glnII_1	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D44_G14	D44_G14_PROKKA_150719	NA	K01915	glutamine synthetase [EC:6.3.1.2]	3-hydroxylaminophenol mutase	5.4.4.3	3
+glutamine/glutamate synthesis	D44_G14	D44_G14_PROKKA_200733	gltB_59	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain precursor	1.4.1.13	3
+glutamine/glutamate synthesis	D44_G14	D44_G14_PROKKA_200734	gltD_16	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	3
+glutamine/glutamate synthesis	D44_O1.1.2.2.1.2.7	D44_O1.1.2.2.1.2.7_PROKKA_51628	NA	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase%2C catalytic domain	NA	2
+glutamine/glutamate synthesis	D46_L2.48	D46_L2.48_PROKKA_152711	glnA1_3	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 1	6.3.1.2	1
+glutamine/glutamate synthesis	D47_G1.71.2	D47_G1.71.2_PROKKA_86811	glnA1_3	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 1	6.3.1.2	1
+glutamine/glutamate synthesis	D47_O14	D47_O14_PROKKA_170720	glnA_25	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D47_O14	D47_O14_PROKKA_182711	gltB_43	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain	1.4.1.13	2
+glutamine/glutamate synthesis	D47_O14	D47_O14_PROKKA_182712	gltB_44	K00264	glutamate synthase (NADPH/NADH) [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] small chain	1.4.1.13	2
+glutamine/glutamate synthesis	D47_P30	D47_P30_PROKKA_85050	preT_1	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	NAD-dependent dihydropyrimidine dehydrogenase subunit PreT	1.3.1.1	1
+glutamine/glutamate synthesis	D47_P30	D47_P30_PROKKA_167364	glnA_24	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 1	6.3.1.2	1
+glutamine/glutamate synthesis	D47_P30	D47_P30_PROKKA_184776	glnA_28	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 1	6.3.1.2	1
+glutamine/glutamate synthesis	D47_P30	D47_P30_PROKKA_189960	glnA_31	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D49_G15	D49_G15_PROKKA_158877	glnA_27	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	2
+glutamine/glutamate synthesis	D49_O1	D49_O1_PROKKA_86213	glnA_13	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	4
+glutamine/glutamate synthesis	D49_O1	D49_O1_PROKKA_127458	preT_1	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	NAD-dependent dihydropyrimidine dehydrogenase subunit PreT	1.3.1.1	4
+glutamine/glutamate synthesis	D51_G1.1.2	D51_G1.1.2_PROKKA_240842	glnA_39	K01915	glutamine synthetase [EC:6.3.1.2]	putative glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D51_G1.1.2	D51_G1.1.2_PROKKA_240843	glnII_7	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 2	6.3.1.2	1
+glutamine/glutamate synthesis	D51_G1.1.2	D51_G1.1.2_PROKKA_34786	glnA_6	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase	6.3.1.2	1
+glutamine/glutamate synthesis	D51_G9	D51_G9_PROKKA_97363	NA	K00266	glutamate synthase (NADPH/NADH) small chain [EC:1.4.1.13 1.4.1.14]	putative glutamate synthase (NADPH) small subunit	NA	3
+glutamine/glutamate synthesis	D51_G9	D51_G9_PROKKA_55449	NA	K01915	glutamine synthetase [EC:6.3.1.2]	3-hydroxylaminophenol mutase	5.4.4.3	3
+glutamine/glutamate synthesis	D51_L1.24	D51_L1.24_PROKKA_134370	glnA_21	K01915	glutamine synthetase [EC:6.3.1.2]	Glutamine synthetase 1	6.3.1.2	3
+glutamine/glutamate synthesis	D51_L1.24	D51_L1.24_PROKKA_12178	gltB_5	K00265	glutamate synthase (NADPH/NADH) large chain [EC:1.4.1.13 1.4.1.14]	Glutamate synthase [NADPH] large chain precursor	1.4.1.13	3
