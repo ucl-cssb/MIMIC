@@ -343,6 +343,8 @@ class infer_VAR:
             idata = pm.sample(samples, tune=tune, cores=cores)
 
         print(az.summary(idata, var_names=["Ah", "Bh"]))
+        az.plot_posterior(idata, var_names=["Ah", "Bh"])
+        plt.savefig("posterior_plot.pdf")
         az.to_netcdf(idata, 'model_posterior.nc')
         np.savez("data.npz", dataX=dataX, dataS=dataS)
 
@@ -385,14 +387,14 @@ class infer_VAR:
             c2_A = pm.InverseGamma("c2_A", 2, 1)
             tau_A = pm.HalfCauchy("tau_A", beta=tau0_A)
             lam_A = pm.HalfCauchy("lam_A", beta=1, shape=(nX, nX))
-            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=tau_A * lam_A * \
+            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=tau_A * lam_A *
                            at.sqrt(c2_A / (c2_A + tau_A**2 * lam_A**2)), shape=(nX, nX))
 
             tau0_B = (DB0 / (DB - DB0)) * 0.1 / np.sqrt(N)
             c2_B = pm.InverseGamma("c2_B", 2, 1)
             tau_B = pm.HalfCauchy("tau_B", beta=tau0_B)
             lam_B = pm.HalfCauchy("lam_B", beta=1, shape=(nS, nX))
-            Bh = pm.Normal('Bh', mu=0, sigma=tau_B * lam_B * \
+            Bh = pm.Normal('Bh', mu=0, sigma=tau_B * lam_B *
                            at.sqrt(c2_B / (c2_B + tau_B**2 * lam_B**2)), shape=(nS, nX))
 
             if noise_cov_prior is not None:
@@ -416,6 +418,8 @@ class infer_VAR:
             trace = pm.sample(samples, tune=tune, cores=cores)
 
         print(az.summary(trace, var_names=["Ah", "Bh"]))
+        az.plot_posterior(trace, var_names=["Ah", "Bh"])
+        plt.savefig("posterior_plot.pdf")
         az.to_netcdf(trace, 'model_posterior.nc')
         np.savez("data.npz", dataX=dataX, dataS=dataS)
 
@@ -540,59 +544,3 @@ class infer_VAR:
 
         plt.tight_layout()
         plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')
-
-    # def plot_heatmap(self, idata, A=None, B=None):
-    #     """
-    #     Plots heatmaps of the inferred A and B matrices.
-
-    #     Args:
-    #     idata (arviz.InferenceData): The inference data.
-    #     A (numpy.ndarray): The true A matrix.
-    #     B (numpy.ndarray): The true B matrix.
-
-    #     Returns:
-    #     None
-    #     """
-    #     matrix1 = idata.posterior['Ah'].values
-    #     matrix2 = idata.posterior['Bh'].values
-
-    #     matrix1_sum = np.median(matrix1, axis=(0, 1))
-    #     matrix2_sum = np.median(matrix2, axis=(0, 1))
-
-    #     fig, ax = plt.subplots(1, 2, figsize=(14, 7), gridspec_kw={
-    #                            'width_ratios': [1, 1.2]})
-
-    #     sns.heatmap(matrix1_sum, ax=ax[0], cmap='viridis')
-    #     ax[0].set_title('Ahat')
-    #     ax[0].set_ylabel('X')
-    #     ax[0].set_xlabel('X')
-    #     if A is not None:
-    #         for i in range(matrix1_sum.shape[0]):
-    #             for j in range(matrix1_sum.shape[1]):
-    #                 ax[0].text(
-    # j + 0.5, i + 0.5, f'{A[i, j]:.2f}', ha='center', va='center',
-    # color='white')
-
-    #     matrix2_sum = matrix2_sum.T
-
-    #     sns.heatmap(matrix2_sum, ax=ax[1], cmap='viridis')
-    #     ax[1].set_title('Bhat')
-    #     ax[1].set_xlabel('S')
-
-    #     if B is not None:
-    #         BT = B.T
-    #         for i in range(matrix2_sum.shape[0]):
-    #             for j in range(matrix2_sum.shape[1]):
-    #                 ax[1].text(
-    # j + 0.5, i + 0.5, f'{BT[i, j]:.2f}', ha='center', va='center',
-    # color='white')
-
-    #     plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')
-
-
-# Path: mimic/model_infer/infer_VAR.py
-
-# Example usage:
-# infer = infer_VAR(dataX, dataS)
-# infer.run_inference_xs()
-# infer.posterior_analysis(simulated=True)
