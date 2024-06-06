@@ -7,6 +7,12 @@ import pickle
 import cloudpickle
 
 
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
 class infergLVbayes:
     """
     bayes_gLV class for Bayesian inference of gLV models without shrinkage priors
@@ -25,12 +31,13 @@ class infergLVbayes:
         None
     """
 
-    def __init__(self, X=None, F=None, mu=None, M=None):
+    def __init__(self, X=None, F=None, mu=None, M=None, M_h=None):
         # self.data = data  # data to do inference on
         self.X = X
         self.F = F
         self.mu = mu
         self.M = M
+        self.M_h = M_h
         # self.X: Optional[np.ndarray] = None
 
         # import data from a .csv file
@@ -172,3 +179,20 @@ class infergLVbayes:
       #  M_ij = M[mask]
       #  az.plot_posterior(idata, var_names=["M_ij_hat"], ref_val=M_ij.flatten().tolist())
       #  plt.savefig("plot-posterior-Mij.pdf")
+
+
+    def plot_interaction_matrix(self, M, M_h):
+        # visualize the interaction matrix
+        fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+
+        # Heatmap for M_hat
+        sns.heatmap(M_h, ax=ax, cmap='viridis')
+        ax.set_title('M_hat')
+        ax.set_ylabel('X')
+        ax.set_xlabel('X')
+
+        # Annotate the true values for matrix1
+        for i in range(M_h.shape[0]):
+            for j in range(M_h.shape[1]):
+                ax.text(j + 0.5, i + 0.5, f'{M[i, j]:.2f}', ha='center', va='center', color='white')
+
