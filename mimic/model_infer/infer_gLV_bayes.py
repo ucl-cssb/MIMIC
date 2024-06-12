@@ -263,7 +263,6 @@ class infergLVbayes:
       #  az.plot_posterior(idata, var_names=["M_ij_hat"], ref_val=M_ij.flatten().tolist())
       #  plt.savefig("plot-posterior-Mij.pdf")
 
-
     def plot_interaction_matrix(self, M, M_h):
         # visualize the interaction matrix
         fig, ax = plt.subplots(1, 1, figsize=(7, 7))
@@ -277,5 +276,10 @@ class infergLVbayes:
         # Annotate the true values for matrix1
         for i in range(M_h.shape[0]):
             for j in range(M_h.shape[1]):
-                ax.text(j + 0.5, i + 0.5, f'{M[i, j]:.2f}', ha='center', va='center', color='white')
-
+                ax.text(
+                    j + 0.5,
+                    i + 0.5,
+                    f'{M[i, j]:.2f}',
+                    ha='center',
+                    va='center',
+                    color='white')
