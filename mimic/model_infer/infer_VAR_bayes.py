@@ -525,23 +525,25 @@ class infer_VAR:
 
             sns.heatmap(matrix_sum, ax=axes[idx], cmap='viridis')
             axes[idx].set_title(f'{matrix_key}hat')
-            # NOTE: this might be a problem if the matrix is square but comparing abundances and metabolites
             axes[idx].set_xlabel('X')
             axes[idx].set_ylabel('X' if matrix_sum.shape[0]
                                  == matrix_sum.shape[1] else 'S')
 
-            if true_values is not None and len(
-                    true_values) > idx and true_values[idx] is not None:
-                true_matrix = true_values[idx]
-                for i in range(matrix_sum.shape[0]):
-                    for j in range(matrix_sum.shape[1]):
-                        axes[idx].text(
-                            j + 0.5,
-                            i + 0.5,
-                            f'{true_matrix[i, j]:.2f}',
-                            ha='center',
-                            va='center',
-                            color='white')
+            # Determine which values to annotate: true_values if provided, else matrix_sum
+            annotate_values = true_values[idx] if true_values is not None and len(
+                true_values) > idx and true_values[idx] is not None else matrix_sum
+
+            for i in range(matrix_sum.shape[0]):
+                for j in range(matrix_sum.shape[1]):
+                    text_color = 'white' if true_values is not None and len(
+                        true_values) > idx and true_values[idx] is not None else 'black'
+                    axes[idx].text(
+                        j + 0.5,
+                        i + 0.5,
+                        f'{annotate_values[i, j]:.2f}',
+                        ha='center',
+                        va='center',
+                        color=text_color)
 
         plt.tight_layout()
         plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')
