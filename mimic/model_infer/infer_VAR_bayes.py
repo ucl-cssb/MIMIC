@@ -525,8 +525,9 @@ class infer_VAR:
 
             sns.heatmap(matrix_sum, ax=axes[idx], cmap='viridis')
             axes[idx].set_title(f'{matrix_key}hat')
-            axes[idx].set_ylabel('X')
-            axes[idx].set_xlabel('X' if matrix_sum.shape[0]
+            # NOTE: this might be a problem if the matrix is square but comparing abundances and metabolites
+            axes[idx].set_xlabel('X')
+            axes[idx].set_ylabel('X' if matrix_sum.shape[0]
                                  == matrix_sum.shape[1] else 'S')
 
             if true_values is not None and len(
