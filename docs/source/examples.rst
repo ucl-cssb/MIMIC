@@ -13,6 +13,7 @@ Examples
    notebooks/gMLV/examples-sim-gMLV
    notebooks/GP/examples-impute-GP
    notebooks/GP/examples-impute-GP_Stein
+   notebooks/MultiModel/Herold/examples-Herold-Metabolites
    notebooks/MultiModel/Herold/examples-Herold
    notebooks/MVAR/examples-infer-MVAR
    notebooks/MVAR/examples-sim-MVAR
