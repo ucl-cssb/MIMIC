@@ -50,7 +50,7 @@ class infergLVbayes:
         self.M = M
         self.M_h = M_h
         self.DA = DA
-        self.DA0 = DA0
+        self.DA0 = DA0 if DA0 is not None else (self.calculate_DA0(F.shape[1]) if F is not None else None)
         self.N = N
         self.noise_stddev = noise_stddev
         self.epsilon = epsilon
@@ -72,6 +72,11 @@ class infergLVbayes:
         self.data = np.genfromtxt(file_path, delimiter=',')
         return
 
+    def calculate_DA0(self, num_species, proportion=0.15):
+        total_off_diagonal_elements = num_species * (num_species - 1)
+        expected_non_zero_elements = total_off_diagonal_elements * proportion
+        DA0 = int(round(expected_non_zero_elements))
+        return max(DA0, 1)
 
 
     def run_bayes_gLV(self) -> None:
@@ -181,9 +186,6 @@ class infergLVbayes:
 
         """
 
-        if self.X is None or self.F is None or self.mu is None or self.M is None:
-            raise ValueError("X, F, mu, and M must all be provided.")
-
         # data = self.data
         X = self.X
         F = self.F
@@ -193,6 +195,9 @@ class infergLVbayes:
         DA0 = self.DA0
         N = self.N
         noise_stddev = self.noise_stddev
+
+        # Print the values to debug
+        print(f"DA: {DA}, DA0: {DA0}, N: {N}, noise_stddev: {noise_stddev}")
 
         num_species = F.shape[1]
 
@@ -236,7 +241,8 @@ class infergLVbayes:
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
 
             # Posterior distribution
-            idata = pm.sample(1000, tune=2000, chains=4, cores=4)
+            idata = pm.sample(100, tune=100, chains=2, cores=1)
+            #idata = pm.sample(100, tune=100, chains=2, cores=1, init='adapt_diag')
 
         mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
         M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
@@ -245,9 +251,9 @@ class infergLVbayes:
         print(f"M_hat_np shape: {M_hat_np.shape}")
 
         # Plot and save posterior results
-        self.plot_posterior(idata, mu_hat, M_hat)
+        self.plot_posterior_a(idata, mu_hat_np, M_hat_np)
 
-        return idata, mu_hat_np, M_hat_np
+        return idata
 
         # Plot and save posterior results
         #self.plot_posterior(idata, mu, M)
@@ -255,18 +261,11 @@ class infergLVbayes:
         #return idata
 
         # print summary
-        summary = az.summary(
-            idata,
-            var_names=[
-                "mu_hat",
-                "M_ii_hat",
-                "M_ij_hat",
-                "M_hat",
-                "sigma"])
-        print(summary[["mean", "sd", "r_hat"]])
+        #summary = az.summary(idata, var_names=["mu_hat","M_ii_hat","M_ij_hat","M_hat","sigma"])
+        #print(summary[["mean", "sd", "r_hat"]])
 
         # Write posterior samples to file
-        az.to_netcdf(idata, 'model_posterior.nc')
+        #az.to_netcdf(idata, 'model_posterior.nc')
 
     def run_bayes_gLV_shrinkage_pert(self) -> None:
         """
@@ -292,6 +291,8 @@ class infergLVbayes:
         N = self.N
         noise_stddev = self.noise_stddev
         epsilon = self.epsilon
+
+
 
         bayes_model = pm.Model()
         with bayes_model:
