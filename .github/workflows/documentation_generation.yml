@@ -41,6 +41,7 @@ jobs:
           cd docs
           make clean
           make html
+          touch build/html/.nojekyll  # Create the .nojekyll file
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
