@@ -14,16 +14,24 @@ jobs:
     if: |
       github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc
+        run: sudo apt-get -y install pandoc
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5.1.0
         with:
-          python-version: "3.10"
+          python-version: '3.11'
+          cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install documentation dependencies
         run: |
-          pip install sphinx sphinx-rtd-theme nbsphinx ipykernel pandoc
+          python -m pip install --upgrade pip
+          pip install sphinx sphinx-rtd-theme nbsphinx ipykernel furo sphinx-autoapi recommonmark
+
+      - name: Install project dependencies
+        run: pip install -r requirements.txt
 
       - name: Generate API documentation
         run: sphinx-apidoc -o docs/source/ ./ setup.py
@@ -35,7 +43,7 @@ jobs:
           make html
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
