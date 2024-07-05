@@ -1,0 +1,3895 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Using the Data Imputator on a Real Public Dataset, Herold et al. (2020) &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css" />
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Simulate some time course data from the gMLV" href="../../gMLV/examples-sim-gMLV.html" />
+    <link rel="prev" title="Examples" href="../../../examples.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="Using-the-Data-Imputator-on-a-Real-Public-Dataset,-Herold-et-al.-(2020)">
+<h1>Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)<a class="headerlink" href="#Using-the-Data-Imputator-on-a-Real-Public-Dataset,-Herold-et-al.-(2020)" title="Link to this heading">¶</a></h1>
+<p>In this example, we will be using the GP imputator on a dataset available at <a class="reference external" href="https://doi.org/10.1038/s41467-020-19006-2">Herold et al., 2020</a> to imputate missing data. Then, we are going to use the VAR inference method to infer the causal relationships between the variables in the time series.</p>
+<p>First, we will import the neccessary libraries and load the dataset.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+
+<span class="kn">from</span> <span class="nn">mimic.data_imputation.impute_GP</span> <span class="kn">import</span> <span class="n">GPImputer</span>
+<span class="kn">from</span> <span class="nn">mimic.model_infer.infer_VAR_bayes</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+WARNING:tensorflow:From c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+WARNING:tensorflow:From c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\tensorflow_probability\python\internal\backend\numpy\_utils.py:48: The name tf.logging.TaskLevelStatusMessage is deprecated. Please use tf.compat.v1.logging.TaskLevelStatusMessage instead.
+
+WARNING:tensorflow:From c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\tensorflow_probability\python\internal\backend\numpy\_utils.py:48: The name tf.control_flow_v2_enabled is deprecated. Please use tf.compat.v1.control_flow_v2_enabled instead.
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Source Data/fig3ab.tsv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>genus</th>
+      <th>date</th>
+      <th>val</th>
+      <th>type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Acidimicrobium</td>
+      <td>2011-03-21</td>
+      <td>8.322484</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Acidimicrobium</td>
+      <td>2011-03-29</td>
+      <td>7.664534</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Acidimicrobium</td>
+      <td>2011-04-05</td>
+      <td>7.871188</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Acidimicrobium</td>
+      <td>2011-04-14</td>
+      <td>6.695900</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Acidimicrobium</td>
+      <td>2011-04-21</td>
+      <td>6.695177</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Acidimicrobium</td>
+      <td>2011-04-29</td>
+      <td>6.304652</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Acidimicrobium</td>
+      <td>2011-05-06</td>
+      <td>7.462918</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Acidimicrobium</td>
+      <td>2011-05-13</td>
+      <td>7.742366</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Acidimicrobium</td>
+      <td>2011-05-20</td>
+      <td>6.627358</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Acidimicrobium</td>
+      <td>2011-05-27</td>
+      <td>7.425880</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Acidimicrobium</td>
+      <td>2011-06-03</td>
+      <td>7.890684</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Acidimicrobium</td>
+      <td>2011-06-09</td>
+      <td>6.306718</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Acidimicrobium</td>
+      <td>2011-06-17</td>
+      <td>6.607237</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Acidimicrobium</td>
+      <td>2011-06-24</td>
+      <td>8.888402</td>
+      <td>MG</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Acidimicrobium</td>
+      <td>2011-07-01</td>
+      <td>9.086751</td>
+      <td>MG</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Separate-the-data-into-MG-and-MT-datasets">
+<h1>Separate the data into MG and MT datasets<a class="headerlink" href="#Separate-the-data-into-MG-and-MT-datasets" title="Link to this heading">¶</a></h1>
+<p>The data is separated into two datasets, MG and MT. The MG dataset contains the meta-genomics data, while the MT dataset contains the meta-transcriptomics. We will be using the MG dataset in this example.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># separate the data into MG and MT datasets</span>
+
+<span class="n">dataMG</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;MG&#39;</span><span class="p">]</span>
+
+<span class="n">dataMG</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+
+<span class="n">dataMT</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;MT&#39;</span><span class="p">]</span>
+
+<span class="n">dataMT</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+Index: 612 entries, 0 to 611
+Data columns (total 4 columns):
+ #   Column  Non-Null Count  Dtype
+---  ------  --------------  -----
+ 0   genus   561 non-null    object
+ 1   date    612 non-null    object
+ 2   val     612 non-null    float64
+ 3   type    612 non-null    object
+dtypes: float64(1), object(3)
+memory usage: 23.9+ KB
+&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+Index: 561 entries, 612 to 1172
+Data columns (total 4 columns):
+ #   Column  Non-Null Count  Dtype
+---  ------  --------------  -----
+ 0   genus   510 non-null    object
+ 1   date    561 non-null    object
+ 2   val     561 non-null    float64
+ 3   type    561 non-null    object
+dtypes: float64(1), object(3)
+memory usage: 21.9+ KB
+</pre></div></div>
+</div>
+<p>We will proceed with some data wrangling to prepare the data for the imputation process.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data cleaning</span>
+<span class="c1"># Rename Nan in the genus column to &#39;Other&#39;</span>
+
+<span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">)</span>
+
+<span class="c1"># Drop the &#39;type&#39; column</span>
+<span class="n">dataMG</span> <span class="o">=</span> <span class="n">dataMG</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+
+<span class="c1"># Change relative Date columns to days</span>
+<span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days</span>
+
+<span class="c1"># Change the &#39;genus&#39; column to a categorical column</span>
+<span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+
+
+<span class="n">dataMG</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+Index: 612 entries, 0 to 611
+Data columns (total 3 columns):
+ #   Column  Non-Null Count  Dtype
+---  ------  --------------  -----
+ 0   genus   612 non-null    category
+ 1   date    612 non-null    int64
+ 2   val     612 non-null    float64
+dtypes: category(1), float64(1), int64(1)
+memory usage: 15.3 KB
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\User\AppData\Local\Temp\ipykernel_33876\1446871442.py:4: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataMG[&#39;genus&#39;] = dataMG[&#39;genus&#39;].replace(np.nan, &#39;Other&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the data, relative abundance (value) vs. days (date) for each genus</span>
+
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dataMG</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Microbial Growth Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Relative Abundance&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  grouped_data = data.groupby(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_9_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_9_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pivot the data so each &#39;genus&#39; is a column</span>
+<span class="n">dataMG_pivot</span> <span class="o">=</span> <span class="n">dataMG</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+    <span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Create a stacked area chart</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">stackplot</span><span class="p">(</span><span class="n">dataMG_pivot</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dataMG_pivot</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">dataMG_pivot</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Microbial Growth Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Relative Abundance&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_10_0.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_10_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1"># Create a DataFrame with a complete range of days</span>
+<span class="n">all_days</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;days&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)})</span>
+
+<span class="c1"># Reindex the pivoted DataFrame to include all days, filling missing values with None</span>
+<span class="n">complete_dataMG</span> <span class="o">=</span> <span class="n">dataMG_pivot</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">all_days</span><span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">])</span>
+
+<span class="n">complete_dataMG</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>genus</th>
+      <th>Acidimicrobium</th>
+      <th>Acinetobacter</th>
+      <th>Albidiferax</th>
+      <th>Candidatus Microthrix</th>
+      <th>Chitinophaga pinensis</th>
+      <th>Dechloromonas</th>
+      <th>Haliscomenobacter</th>
+      <th>Intrasporangium</th>
+      <th>Leptospira</th>
+      <th>Other</th>
+      <th>Xanthomonas</th>
+      <th>mean abundance &lt; 2%</th>
+    </tr>
+    <tr>
+      <th>days</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>8.322484</td>
+      <td>0.791870</td>
+      <td>6.383491</td>
+      <td>26.180838</td>
+      <td>7.055585</td>
+      <td>4.998287</td>
+      <td>15.142620</td>
+      <td>11.445072</td>
+      <td>4.742982</td>
+      <td>2.357318</td>
+      <td>0.853658</td>
+      <td>11.725795</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>7.664534</td>
+      <td>0.911291</td>
+      <td>6.125822</td>
+      <td>23.641355</td>
+      <td>7.383681</td>
+      <td>5.273044</td>
+      <td>16.636265</td>
+      <td>11.476739</td>
+      <td>4.850959</td>
+      <td>2.520630</td>
+      <td>0.903478</td>
+      <td>12.612201</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">complete_dataMG</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CategoricalIndex([&#39;Acidimicrobium&#39;, &#39;Acinetobacter&#39;, &#39;Albidiferax&#39;,
+                  &#39;Candidatus Microthrix&#39;, &#39;Chitinophaga pinensis&#39;,
+                  &#39;Dechloromonas&#39;, &#39;Haliscomenobacter&#39;, &#39;Intrasporangium&#39;,
+                  &#39;Leptospira&#39;, &#39;Other&#39;, &#39;Xanthomonas&#39;, &#39;mean abundance &lt; 2%&#39;],
+                 categories=[&#39;Acidimicrobium&#39;, &#39;Acinetobacter&#39;, &#39;Albidiferax&#39;, &#39;Candidatus Microthrix&#39;, ..., &#39;Leptospira&#39;, &#39;Other&#39;, &#39;Xanthomonas&#39;, &#39;mean abundance &lt; 2%&#39;], ordered=False, dtype=&#39;category&#39;, name=&#39;genus&#39;)
+</pre></div></div>
+</div>
+<p>If we pick one column, say ‘Acinetobacter’, we can see that there are missing values in the dataset. We will use the GP imputator to fill in the missing values.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">complete_dataMG</span><span class="p">[</span><span class="s1">&#39;Acinetobacter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+359
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset the index</span>
+<span class="n">complete_dataMG_reset</span> <span class="o">=</span> <span class="n">complete_dataMG</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+<span class="c1"># Make index as float</span>
+<span class="n">complete_dataMG_reset</span><span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">complete_dataMG_reset</span><span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now &#39;days&#39; is a regular column and you can use it as a feature</span>
+<span class="n">new_dataset</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">complete_dataMG_reset</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Acidimicrobium&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Acinetobacter&#39;</span><span class="p">,</span> <span class="s1">&#39;Albidiferax&#39;</span><span class="p">],</span> <span class="s1">&#39;Acinetobacter&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: VGP
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: 236147.03324540867
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_16_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_16_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_dataset</span><span class="p">[</span><span class="s1">&#39;Acinetobacter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0
+</pre></div></div>
+</div>
+<p>We can see now that the data imputator calculated the missing values for the ‘Acinetobacter’ column. However, as we can see fro the graph, the imputed values are not great. This can be caused by multiple factors, so we are going to explore different methods to better impute the missing values.</p>
+<p>We are first going to try to do imputation using VGP imputation. This is a variational Gaussian process imputation method that is more robust to missing data and uses multiple imputs to calculate the missing values. However, as we will see, this method creates an imputation that is heavily biased by other imputs, so it doesn’t work in our case to determine the missing values of the ‘Acinetobacter’ column.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now &#39;days&#39; is a regular column and you can use it as a feature</span>
+<span class="n">new_dataset</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">complete_dataMG_reset</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Acidimicrobium&#39;</span><span class="p">,</span> <span class="s1">&#39;Acinetobacter&#39;</span><span class="p">,</span> <span class="s1">&#39;Albidiferax&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Candidatus Microthrix&#39;</span><span class="p">,</span> <span class="s1">&#39;Chitinophaga pinensis&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Dechloromonas&#39;</span><span class="p">,</span> <span class="s1">&#39;Haliscomenobacter&#39;</span><span class="p">,</span> <span class="s1">&#39;Intrasporangium&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Leptospira&#39;</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">,</span> <span class="s1">&#39;Xanthomonas&#39;</span><span class="p">,</span> <span class="s1">&#39;mean abundance &lt; 2%&#39;</span><span class="p">],</span> <span class="s1">&#39;Acinetobacter&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: VGP
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: 4811115.618247565
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_20_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_20_1.png" />
+</div>
+</div>
+<p>If we, isntead, do a single imputation using only a GPR model with a single imput (‘Acinetobacter’), we can see that the imputation is much better. This is because the imputation is not biased by other imputs, and the model can better predict the missing values.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now &#39;days&#39; is a regular column and you can use it as a feature</span>
+<span class="n">new_dataset2</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">complete_dataMG_reset</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Acinetobacter&#39;</span><span class="p">],</span> <span class="s1">&#39;Acinetobacter&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -248.40300696649717
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_22_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_22_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the dataset (new_dataset2) to a csv file</span>
+<span class="n">new_dataset2</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;imputed_data.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>So we will proceed to do a single imput GPR model for all the columns in the dataset. We will then use the VAR inference method to infer the causal relationships between the variables in the time series.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># do the imputation for each column (genus) in the dataset</span>
+<span class="c1"># Copy the original dataset</span>
+<span class="n">new_dataset_complete</span> <span class="o">=</span> <span class="n">complete_dataMG_reset</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">genus</span> <span class="ow">in</span> <span class="n">complete_dataMG</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="c1"># Impute the missing values for the current column</span>
+    <span class="n">imputed_data</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+        <span class="n">complete_dataMG_reset</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">genus</span><span class="p">],</span> <span class="n">genus</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Update the column in the new dataset with the imputed data</span>
+    <span class="n">new_dataset_complete</span><span class="p">[</span><span class="n">genus</span><span class="p">]</span> <span class="o">=</span> <span class="n">imputed_data</span><span class="p">[</span><span class="n">genus</span><span class="p">]</span>
+
+<span class="c1"># Save the dataset (new_dataset_complete) to a csv file</span>
+<span class="n">new_dataset_complete</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;imputed_data.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -162.28151984461607
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -248.40300696649717
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_3.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -137.06584629672068
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -297.92365659240966
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_7.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_7.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -225.68501007391774
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_9.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_9.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -71.0838410931403
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_11.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_11.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -181.18602198312468
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_13.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_13.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -168.5312326022697
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_15.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_15.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -236.7104662129815
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_17.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_17.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -51.797015513175154
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_19.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_19.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -54.937802829878464
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_21.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_21.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.Exponential&#39;&gt;
+BIC: -178.35294381418785
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_23.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_25_23.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reload the imputed data into a new DataFrame</span>
+
+<span class="n">imputed_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;imputed_data.csv&#39;</span><span class="p">)</span>
+
+<span class="n">imputed_data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>days</th>
+      <th>Acidimicrobium</th>
+      <th>Acinetobacter</th>
+      <th>Albidiferax</th>
+      <th>Candidatus Microthrix</th>
+      <th>Chitinophaga pinensis</th>
+      <th>Dechloromonas</th>
+      <th>Haliscomenobacter</th>
+      <th>Intrasporangium</th>
+      <th>Leptospira</th>
+      <th>Other</th>
+      <th>Xanthomonas</th>
+      <th>mean abundance &lt; 2%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.0</td>
+      <td>8.322484</td>
+      <td>0.791870</td>
+      <td>6.383491</td>
+      <td>26.180838</td>
+      <td>7.055585</td>
+      <td>4.998287</td>
+      <td>15.142620</td>
+      <td>11.445072</td>
+      <td>4.742982</td>
+      <td>2.357318</td>
+      <td>0.853658</td>
+      <td>11.725795</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.0</td>
+      <td>8.265177</td>
+      <td>0.763703</td>
+      <td>6.362575</td>
+      <td>25.593890</td>
+      <td>7.081694</td>
+      <td>5.072711</td>
+      <td>15.397948</td>
+      <td>11.546582</td>
+      <td>4.791269</td>
+      <td>2.382206</td>
+      <td>0.864697</td>
+      <td>11.836536</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2.0</td>
+      <td>8.180701</td>
+      <td>0.781881</td>
+      <td>6.330330</td>
+      <td>25.226861</td>
+      <td>7.127157</td>
+      <td>5.147886</td>
+      <td>15.663537</td>
+      <td>11.636934</td>
+      <td>4.833619</td>
+      <td>2.399779</td>
+      <td>0.879132</td>
+      <td>11.947293</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3.0</td>
+      <td>8.078737</td>
+      <td>0.801890</td>
+      <td>6.290243</td>
+      <td>24.849371</td>
+      <td>7.185821</td>
+      <td>5.219273</td>
+      <td>15.926969</td>
+      <td>11.710476</td>
+      <td>4.868031</td>
+      <td>2.418784</td>
+      <td>0.894873</td>
+      <td>12.058067</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4.0</td>
+      <td>7.969807</td>
+      <td>0.823758</td>
+      <td>6.246734</td>
+      <td>24.505012</td>
+      <td>7.249498</td>
+      <td>5.280679</td>
+      <td>16.172482</td>
+      <td>11.759176</td>
+      <td>4.892380</td>
+      <td>2.438263</td>
+      <td>0.909303</td>
+      <td>12.168858</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5.0</td>
+      <td>7.863614</td>
+      <td>0.847488</td>
+      <td>6.204391</td>
+      <td>24.245813</td>
+      <td>7.309111</td>
+      <td>5.324508</td>
+      <td>16.382314</td>
+      <td>11.772278</td>
+      <td>4.904550</td>
+      <td>2.457029</td>
+      <td>0.919595</td>
+      <td>12.279667</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6.0</td>
+      <td>7.770084</td>
+      <td>0.873055</td>
+      <td>6.167656</td>
+      <td>24.127242</td>
+      <td>7.355842</td>
+      <td>5.342460</td>
+      <td>16.538718</td>
+      <td>11.737040</td>
+      <td>4.902619</td>
+      <td>2.473734</td>
+      <td>0.923138</td>
+      <td>12.390494</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7.0</td>
+      <td>7.700314</td>
+      <td>0.900405</td>
+      <td>6.140528</td>
+      <td>24.199845</td>
+      <td>7.382293</td>
+      <td>5.326927</td>
+      <td>16.626579</td>
+      <td>11.641157</td>
+      <td>4.885061</td>
+      <td>2.487002</td>
+      <td>0.918012</td>
+      <td>12.501338</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8.0</td>
+      <td>7.664534</td>
+      <td>0.911291</td>
+      <td>6.125822</td>
+      <td>23.641355</td>
+      <td>7.383681</td>
+      <td>5.273044</td>
+      <td>16.636265</td>
+      <td>11.476739</td>
+      <td>4.850959</td>
+      <td>2.520630</td>
+      <td>0.903478</td>
+      <td>12.612201</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9.0</td>
+      <td>7.666801</td>
+      <td>0.960073</td>
+      <td>6.124129</td>
+      <td>25.024940</td>
+      <td>7.358852</td>
+      <td>5.180566</td>
+      <td>16.565955</td>
+      <td>11.244474</td>
+      <td>4.800196</td>
+      <td>2.499159</td>
+      <td>0.880339</td>
+      <td>12.321359</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10.0</td>
+      <td>7.701597</td>
+      <td>0.992116</td>
+      <td>6.133189</td>
+      <td>25.753165</td>
+      <td>7.310707</td>
+      <td>5.055128</td>
+      <td>16.422573</td>
+      <td>10.955857</td>
+      <td>4.733611</td>
+      <td>2.497398</td>
+      <td>0.851104</td>
+      <td>12.030537</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11.0</td>
+      <td>7.756540</td>
+      <td>1.025393</td>
+      <td>6.148177</td>
+      <td>26.621835</td>
+      <td>7.245802</td>
+      <td>4.907436</td>
+      <td>16.220878</td>
+      <td>10.632238</td>
+      <td>4.653122</td>
+      <td>2.490776</td>
+      <td>0.819790</td>
+      <td>11.739731</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>12.0</td>
+      <td>7.816900</td>
+      <td>1.059680</td>
+      <td>6.162504</td>
+      <td>27.550701</td>
+      <td>7.173270</td>
+      <td>4.751605</td>
+      <td>15.981051</td>
+      <td>10.301403</td>
+      <td>4.561808</td>
+      <td>2.479674</td>
+      <td>0.791448</td>
+      <td>11.448942</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>13.0</td>
+      <td>7.867041</td>
+      <td>1.094721</td>
+      <td>6.168573</td>
+      <td>28.452806</td>
+      <td>7.103389</td>
+      <td>4.602845</td>
+      <td>15.725567</td>
+      <td>9.993155</td>
+      <td>4.463977</td>
+      <td>2.464200</td>
+      <td>0.771427</td>
+      <td>11.158170</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>14.0</td>
+      <td>7.890203</td>
+      <td>1.130229</td>
+      <td>6.158709</td>
+      <td>29.247651</td>
+      <td>7.046066</td>
+      <td>4.475146</td>
+      <td>15.476159</td>
+      <td>9.734647</td>
+      <td>4.365213</td>
+      <td>2.444171</td>
+      <td>0.764505</td>
+      <td>10.867413</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>And we can run the VAR inference method to infer the causal relationships between the variables in the time series.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data</span><span class="p">)</span>
+<span class="n">infer</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+x0: Shape.0
+data[1:, :]: (409, 13)
+x0: (13,)
+mu: Shape.0
+data: (409, 13)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [x0, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 07:55<00:00 Sampling 2 chains, 4,000 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 479 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+            mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+x0[0]      1.000  0.000   1.000    1.000      0.000    0.000       3.0
+x0[1]      0.578  0.101   0.477    0.679      0.071    0.060       3.0
+x0[2]     -0.344  0.190  -0.534   -0.154      0.134    0.114       3.0
+x0[3]     -0.158  0.525  -0.682    0.367      0.370    0.313       3.0
+x0[4]      0.911  0.027   0.884    0.938      0.019    0.016       2.0
+...          ...    ...     ...      ...        ...      ...       ...
+A[12, 8]   0.013  0.007   0.006    0.020      0.005    0.004       3.0
+A[12, 9]   0.022  0.004   0.018    0.026      0.003    0.002       2.0
+A[12, 10] -0.223  0.108  -0.330   -0.115      0.076    0.064       3.0
+A[12, 11] -0.072  0.117  -0.188    0.045      0.082    0.070       3.0
+A[12, 12]  1.033  0.029   1.005    1.062      0.020    0.017       3.0
+
+           ess_tail  r_hat
+x0[0]          22.0   2.10
+x0[1]          13.0   2.21
+x0[2]          11.0   2.25
+x0[3]          13.0   2.20
+x0[4]          21.0   2.59
+...             ...    ...
+A[12, 8]       20.0   1.97
+A[12, 9]       10.0   2.94
+A[12, 10]      13.0   2.33
+A[12, 11]      25.0   2.15
+A[12, 12]      11.0   2.23
+
+[182 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (182) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_28_6.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_28_6.png" />
+</div>
+</div>
+<p>However, since the results are not great, we can try running run_inference_large() which uses parameter shrinkage and other prior assumptions to try and improve the inference results.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data</span><span class="p">)</span>
+<span class="n">infer</span><span class="o">.</span><span class="n">run_inference_large</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [24000/24000 46:28<00:00 Sampling 4 chains, 3,216 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 2796 seconds.
+There were 3216 divergences after tuning. Increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+            mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+A[0, 0]    1.000  0.000   1.000    1.000        0.0      0.0    3027.0
+A[0, 1]    0.011  0.001   0.009    0.012        0.0      0.0    3972.0
+A[0, 2]    0.010  0.000   0.010    0.011        0.0      0.0    4760.0
+A[0, 3]    0.008  0.001   0.007    0.010        0.0      0.0    2474.0
+A[0, 4]    0.010  0.000   0.010    0.011        0.0      0.0    3249.0
+...          ...    ...     ...      ...        ...      ...       ...
+A[12, 8]   0.006  0.004  -0.001    0.013        0.0      0.0    2510.0
+A[12, 9]   0.015  0.003   0.010    0.020        0.0      0.0    3846.0
+A[12, 10] -0.100  0.020  -0.138   -0.065        0.0      0.0    3502.0
+A[12, 11]  0.003  0.012  -0.017    0.030        0.0      0.0    2665.0
+A[12, 12]  1.009  0.006   0.999    1.022        0.0      0.0    2273.0
+
+           ess_tail  r_hat
+A[0, 0]      3965.0    1.0
+A[0, 1]      5416.0    1.0
+A[0, 2]      3997.0    1.0
+A[0, 3]      1469.0    1.0
+A[0, 4]      3313.0    1.0
+...             ...    ...
+A[12, 8]     1694.0    1.0
+A[12, 9]     6715.0    1.0
+A[12, 10]    6884.0    1.0
+A[12, 11]    1860.0    1.0
+A[12, 12]    5136.0    1.0
+
+[169 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (169) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_30_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_30_5.png" />
+</div>
+</div>
+<p>The results show an improvement (as seen by the r_hat values). However, if we look at the posterior distributions, some of them are wide, others are skewed, and some are multimodal. This indicates that the model is not a good fit for the data. Therefore, we are going to try different methods to improve the inference results.</p>
+<p>First of all, we are going to see if we normalize the data, if the inference results improve. We can see that the results even worse than before. This is because the data is already normalized, so normalizing it again is not a good idea.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standardize data</span>
+<span class="n">normalized_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">imputed_data</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">imputed_data</span><span class="p">,</span>
+                   <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">imputed_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Initialize and run the model with standardized data</span>
+<span class="n">infer3</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">normalized_data</span><span class="p">)</span>
+<span class="n">infer3</span><span class="o">.</span><span class="n">run_inference_large</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [24000/24000 1:38:36<00:00 Sampling 4 chains, 0 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 5923 seconds.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
+Chain 0 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+Chain 1 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+Chain 2 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+Chain 3 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+            mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+A[0, 0]    1.000  0.000   1.000    1.000      0.000    0.000       5.0
+A[0, 1]    0.000  0.000  -0.000    0.000      0.000    0.000       5.0
+A[0, 2]    0.000  0.000  -0.000    0.000      0.000    0.000       5.0
+A[0, 3]   -0.000  0.000  -0.000    0.000      0.000    0.000       5.0
+A[0, 4]    0.000  0.000  -0.000    0.000      0.000    0.000       5.0
+...          ...    ...     ...      ...        ...      ...       ...
+A[12, 8]  -0.080  0.215  -0.448    0.088      0.107    0.082       4.0
+A[12, 9]  -0.166  0.272  -0.498    0.254      0.136    0.104       4.0
+A[12, 10]  0.035  0.113  -0.061    0.228      0.056    0.043       4.0
+A[12, 11]  0.053  0.186  -0.111    0.368      0.093    0.071       4.0
+A[12, 12]  0.543  0.542  -0.280    1.100      0.271    0.207       4.0
+
+           ess_tail  r_hat
+A[0, 0]        26.0   2.71
+A[0, 1]        26.0   2.84
+A[0, 2]        26.0   2.80
+A[0, 3]        27.0   2.84
+A[0, 4]        26.0   2.84
+...             ...    ...
+A[12, 8]       12.0   3.42
+A[12, 9]       14.0   3.71
+A[12, 10]      13.0   3.28
+A[12, 11]      13.0   3.60
+A[12, 12]      13.0   3.35
+
+[169 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (169) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_33_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_33_5.png" />
+</div>
+</div>
+<p>We are then going to try and reduce the number of variables to infer relationships between. We are going to use the top 3 (most abundant) genus that have the highest abundance in the dataset.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># try reducing the number of columns to 3 for imputed_data for the most abundant genera</span>
+
+<span class="c1"># calculate the mean abundance of each genus</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">imputed_data</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+<span class="c1"># Get the most abundant genera (pick the top 3)</span>
+<span class="n">most_abundant_genera</span> <span class="o">=</span> <span class="n">imputed_data</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
+    <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">most_abundant_genera</span><span class="p">)</span>
+
+<span class="c1"># Reduce the number of columns to the most abundant genera</span>
+<span class="n">imputed_data_reduced</span> <span class="o">=</span> <span class="n">imputed_data</span><span class="p">[</span><span class="n">most_abundant_genera</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+days                     204.500000
+Acidimicrobium             7.893178
+Acinetobacter              9.441983
+Albidiferax                5.600342
+Candidatus Microthrix     24.973158
+Chitinophaga pinensis     11.994440
+Dechloromonas              2.267461
+Haliscomenobacter          7.822878
+Intrasporangium            6.793113
+Leptospira                 6.285400
+Other                      2.424799
+Xanthomonas                2.256361
+mean abundance &lt; 2%       12.388322
+dtype: float64
+Index([&#39;days&#39;, &#39;Candidatus Microthrix&#39;, &#39;mean abundance &lt; 2%&#39;], dtype=&#39;object&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now do the inference with only the most abundant genera</span>
+
+<span class="n">infer4</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data_reduced</span><span class="p">)</span>
+<span class="n">infer4</span><span class="o">.</span><span class="n">run_inference_large</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [24000/24000 02:02<00:00 Sampling 4 chains, 1,235 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 128 seconds.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
+There were 1235 divergences after tuning. Increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+          mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+A[0, 0]  1.001  0.000   1.001    1.001        0.0      0.0    2676.0
+A[0, 1]  0.009  0.001   0.008    0.011        0.0      0.0    1723.0
+A[0, 2]  0.044  0.001   0.041    0.047        0.0      0.0    5325.0
+A[1, 0]  0.000  0.000  -0.000    0.001        0.0      0.0     598.0
+A[1, 1]  0.997  0.003   0.991    1.003        0.0      0.0     854.0
+A[1, 2]  0.001  0.005  -0.008    0.011        0.0      0.0    9286.0
+A[2, 0] -0.000  0.000  -0.000    0.000        0.0      0.0     377.0
+A[2, 1]  0.000  0.001  -0.001    0.002        0.0      0.0    4995.0
+A[2, 2]  1.000  0.002   0.997    1.003        0.0      0.0    8429.0
+
+         ess_tail  r_hat
+A[0, 0]    5892.0   1.00
+A[0, 1]    7871.0   1.00
+A[0, 2]    8881.0   1.00
+A[1, 0]    5876.0   1.01
+A[1, 1]    6294.0   1.01
+A[1, 2]   10128.0   1.00
+A[2, 0]      70.0   1.01
+A[2, 1]    7872.0   1.00
+A[2, 2]    6627.0   1.00
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_36_4.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_36_4.png" />
+</div>
+</div>
+<p>We can see that the results much better, though we had to reduce the complexity. Therefore, how can we improve the inference results without reducing the complexity of the model? First of all, we are going to try and remove the days column from the dataset. This is because the days column is not a variable, but a time index.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do the same, but excluding the &#39;days&#39; column as a feature</span>
+
+<span class="n">imputed_data_reduced_no_days</span> <span class="o">=</span> <span class="n">imputed_data_reduced</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s1">&#39;days&#39;</span><span class="p">)</span>
+
+<span class="n">infer5</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data_reduced_no_days</span><span class="p">)</span>
+<span class="n">infer5</span><span class="o">.</span><span class="n">run_inference_large</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [24000/24000 01:19<00:00 Sampling 4 chains, 521 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 86 seconds.
+There were 521 divergences after tuning. Increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+          mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+A[0, 0]  1.000  0.003   0.995    1.005        0.0      0.0    7136.0
+A[0, 1]  0.001  0.005  -0.009    0.012        0.0      0.0    7001.0
+A[1, 0] -0.000  0.001  -0.002    0.001        0.0      0.0    5779.0
+A[1, 1]  1.000  0.002   0.997    1.003        0.0      0.0    5726.0
+
+         ess_tail  r_hat
+A[0, 0]    9383.0    1.0
+A[0, 1]    8889.0    1.0
+A[1, 0]    5165.0    1.0
+A[1, 1]    4610.0    1.0
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_38_4.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_38_4.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># try reducing the number of columns to 3 for imputed_data for the most abundant genera</span>
+
+<span class="c1"># calculate the mean abundance of each genus</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">imputed_data</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+<span class="c1"># Get the most abundant genera (pick the top 3)</span>
+<span class="n">most_abundant_genera</span> <span class="o">=</span> <span class="n">imputed_data</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
+    <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+<span class="n">most_abundant_genera</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;days&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">most_abundant_genera</span><span class="p">)</span>
+
+<span class="c1"># Reduce the number of columns to the most abundant genera</span>
+<span class="n">imputed_data_reduced</span> <span class="o">=</span> <span class="n">imputed_data</span><span class="p">[</span><span class="n">most_abundant_genera</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+days                     204.500000
+Acidimicrobium             7.893178
+Acinetobacter              9.441983
+Albidiferax                5.600342
+Candidatus Microthrix     24.973158
+Chitinophaga pinensis     11.994440
+Dechloromonas              2.267461
+Haliscomenobacter          7.822878
+Intrasporangium            6.793113
+Leptospira                 6.285400
+Other                      2.424799
+Xanthomonas                2.256361
+mean abundance &lt; 2%       12.388322
+dtype: float64
+Index([&#39;days&#39;, &#39;Candidatus Microthrix&#39;, &#39;mean abundance &lt; 2%&#39;,
+       &#39;Chitinophaga pinensis&#39;],
+      dtype=&#39;object&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer5</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data_reduced</span><span class="p">)</span>
+<span class="n">infer5</span><span class="o">.</span><span class="n">run_inference_large</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [24000/24000 02:48<00:00 Sampling 4 chains, 1,736 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 175 seconds.
+There were 1736 divergences after tuning. Increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+          mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+A[0, 0]  1.001  0.000   1.001    1.001        0.0      0.0    2076.0
+A[0, 1]  0.010  0.001   0.008    0.011        0.0      0.0    1868.0
+A[0, 2]  0.045  0.002   0.042    0.049        0.0      0.0    2212.0
+A[0, 3] -0.002  0.002  -0.007    0.002        0.0      0.0    1987.0
+A[1, 0]  0.000  0.000  -0.000    0.001        0.0      0.0    2132.0
+A[1, 1]  0.999  0.004   0.992    1.006        0.0      0.0    4607.0
+A[1, 2]  0.003  0.006  -0.006    0.016        0.0      0.0    3793.0
+A[1, 3] -0.007  0.008  -0.024    0.007        0.0      0.0    2733.0
+A[2, 0] -0.000  0.000  -0.000    0.000        0.0      0.0    4507.0
+A[2, 1]  0.001  0.001  -0.001    0.003        0.0      0.0    3247.0
+A[2, 2]  1.002  0.002   0.998    1.006        0.0      0.0    3279.0
+A[2, 3] -0.002  0.003  -0.008    0.002        0.0      0.0    2918.0
+A[3, 0] -0.000  0.000  -0.000    0.000        0.0      0.0    3716.0
+A[3, 1]  0.005  0.002   0.000    0.009        0.0      0.0    3130.0
+A[3, 2]  0.006  0.004  -0.001    0.014        0.0      0.0    3340.0
+A[3, 3]  0.987  0.006   0.975    0.998        0.0      0.0    2176.0
+
+         ess_tail  r_hat
+A[0, 0]    1998.0    1.0
+A[0, 1]    1565.0    1.0
+A[0, 2]    1511.0    1.0
+A[0, 3]    2186.0    1.0
+A[1, 0]    3291.0    1.0
+A[1, 1]    7209.0    1.0
+A[1, 2]    6502.0    1.0
+A[1, 3]    4613.0    1.0
+A[2, 0]    2654.0    1.0
+A[2, 1]    2439.0    1.0
+A[2, 2]    4918.0    1.0
+A[2, 3]    4017.0    1.0
+A[3, 0]    6567.0    1.0
+A[3, 1]    2106.0    1.0
+A[3, 2]    6713.0    1.0
+A[3, 3]    5626.0    1.0
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_40_4.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_40_4.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do the same, but excluding the &#39;days&#39; column as a feature from the impuuted data set</span>
+
+<span class="n">imputed_data_reduced_no_days</span> <span class="o">=</span> <span class="n">imputed_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s1">&#39;days&#39;</span><span class="p">)</span>
+
+<span class="n">infer6</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data_reduced_no_days</span><span class="p">)</span>
+<span class="n">infer6</span><span class="o">.</span><span class="n">run_inference_large</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [24000/24000 18:00<00:00 Sampling 4 chains, 3,689 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 1088 seconds.
+There were 3689 divergences after tuning. Increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+            mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+A[0, 0]    0.985  0.008   0.967    0.999      0.000    0.000    1434.0
+A[0, 1]    0.004  0.002   0.001    0.008      0.000    0.000    1558.0
+A[0, 2]   -0.025  0.009  -0.042   -0.008      0.000    0.000    2561.0
+A[0, 3]    0.001  0.002  -0.002    0.005      0.000    0.000    1517.0
+A[0, 4]    0.007  0.003   0.001    0.013      0.000    0.000    2533.0
+...          ...    ...     ...      ...        ...      ...       ...
+A[11, 7]   0.006  0.004  -0.001    0.014      0.000    0.000    1776.0
+A[11, 8]   0.015  0.003   0.010    0.021      0.000    0.000    2799.0
+A[11, 9]  -0.100  0.021  -0.139   -0.061      0.001    0.001    1051.0
+A[11, 10]  0.003  0.012  -0.018    0.029      0.000    0.000    4343.0
+A[11, 11]  1.009  0.006   0.998    1.019      0.000    0.000    1851.0
+
+           ess_tail  r_hat
+A[0, 0]       393.0    1.0
+A[0, 1]      3529.0    1.0
+A[0, 2]      3237.0    1.0
+A[0, 3]       562.0    1.0
+A[0, 4]      4754.0    1.0
+...             ...    ...
+A[11, 7]     3418.0    1.0
+A[11, 8]     2034.0    1.0
+A[11, 9]      318.0    1.0
+A[11, 10]    5675.0    1.0
+A[11, 11]    3160.0    1.0
+
+[144 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (144) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_41_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_41_5.png" />
+</div>
+</div>
+<p>Not necessarily better, but we can see that the results are different. This is because the days column was removed from the dataset, so the model is now inferring the relationships between the variables without the time as a feature. If time as a feauture affects the results, this means that the data is not stationary. We can try to make the data stationary by differencing the data.</p>
+<p>First, we will test to see if the data is stationary or not using the <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> package.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now we are going to check for stationarity in the data using adf and kpss tests from stasmodels library</span>
+<span class="c1"># We will use the imputed data set</span>
+
+<span class="kn">import</span> <span class="nn">statsmodels.api</span> <span class="k">as</span> <span class="nn">sm</span>
+<span class="kn">from</span> <span class="nn">statsmodels.tsa.stattools</span> <span class="kn">import</span> <span class="n">adfuller</span><span class="p">,</span> <span class="n">kpss</span>
+
+
+<span class="k">def</span> <span class="nf">adf_test</span><span class="p">(</span><span class="n">timeseries</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Results of Dickey-Fuller Test:&quot;</span><span class="p">)</span>
+    <span class="n">dftest</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="n">autolag</span><span class="o">=</span><span class="s2">&quot;AIC&quot;</span><span class="p">)</span>
+    <span class="n">dfoutput</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="n">dftest</span><span class="p">[:</span><span class="mi">4</span><span class="p">],</span>
+        <span class="n">index</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;Test Statistic&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;p-value&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#Lags Used&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Number of Observations Used&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dftest</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">dfoutput</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Critical Value (</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dfoutput</span><span class="p">)</span>
+    <span class="c1"># if p-value is less than 0.05, we reject the null hypothesis and say that the data is stationary</span>
+    <span class="c1"># print if the data is stationary or not</span>
+    <span class="k">if</span> <span class="n">dftest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.05</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ADF Test: Data is stationary&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ADF Test: Data is not stationary&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">kpss_test</span><span class="p">(</span><span class="n">timeseries</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Results of KPSS Test:&quot;</span><span class="p">)</span>
+    <span class="n">kpsstest</span> <span class="o">=</span> <span class="n">kpss</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="n">regression</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">kpss_output</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="n">kpsstest</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Test Statistic&quot;</span><span class="p">,</span> <span class="s2">&quot;p-value&quot;</span><span class="p">,</span> <span class="s2">&quot;Lags Used&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kpsstest</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">kpss_output</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Critical Value (</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">kpss_output</span><span class="p">)</span>
+    <span class="c1"># if p-value is greater than 0.05, we reject the null hypothesis and say that the data is stationary</span>
+    <span class="c1"># print if the data is stationary or not</span>
+    <span class="k">if</span> <span class="n">kpsstest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.05</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;KPSS test: Data is stationary&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;KPSS test: Data is not stationary&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check for stationarity in the data imputed_dataset (without the &#39;days&#39; column)</span>
+<span class="n">imputed_data_reduced_no_days</span> <span class="o">=</span> <span class="n">imputed_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s1">&#39;days&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">genus</span> <span class="ow">in</span> <span class="n">imputed_data_reduced_no_days</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">genus</span><span class="p">)</span>
+    <span class="n">adf_test</span><span class="p">(</span><span class="n">imputed_data_reduced_no_days</span><span class="p">[</span><span class="n">genus</span><span class="p">])</span>
+    <span class="n">kpss_test</span><span class="p">(</span><span class="n">imputed_data_reduced_no_days</span><span class="p">[</span><span class="n">genus</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Acidimicrobium
+Results of Dickey-Fuller Test:
+Test Statistic                  -2.694583
+p-value                          0.074980
+#Lags Used                      17.000000
+Number of Observations Used    392.000000
+Critical Value (1%)             -3.447142
+Critical Value (5%)             -2.868941
+Critical Value (10%)            -2.570713
+dtype: float64
+ADF Test: Data is not stationary
+Results of KPSS Test:
+Test Statistic            0.181567
+p-value                   0.100000
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Acinetobacter
+Results of Dickey-Fuller Test:
+Test Statistic                  -1.760882
+p-value                          0.400048
+#Lags Used                      18.000000
+Number of Observations Used    391.000000
+Critical Value (1%)             -3.447186
+Critical Value (5%)             -2.868960
+Critical Value (10%)            -2.570723
+dtype: float64
+ADF Test: Data is not stationary
+Results of KPSS Test:
+Test Statistic            0.538580
+p-value                   0.032977
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is not stationary
+
+
+Albidiferax
+Results of Dickey-Fuller Test:
+Test Statistic                  -3.230973
+p-value                          0.018260
+#Lags Used                      12.000000
+Number of Observations Used    397.000000
+Critical Value (1%)             -3.446930
+Critical Value (5%)             -2.868848
+Critical Value (10%)            -2.570663
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.18977
+p-value                   0.10000
+Lags Used                12.00000
+Critical Value (10%)      0.34700
+Critical Value (5%)       0.46300
+Critical Value (2.5%)     0.57400
+Critical Value (1%)       0.73900
+dtype: float64
+KPSS test: Data is stationary
+
+
+Candidatus Microthrix
+Results of Dickey-Fuller Test:
+Test Statistic                  -1.670607
+p-value                          0.446317
+#Lags Used                       9.000000
+Number of Observations Used    400.000000
+Critical Value (1%)             -3.446804
+Critical Value (5%)             -2.868793
+Critical Value (10%)            -2.570634
+dtype: float64
+ADF Test: Data is not stationary
+Results of KPSS Test:
+Test Statistic            0.491153
+p-value                   0.043659
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is not stationary
+
+
+Chitinophaga pinensis
+Results of Dickey-Fuller Test:
+Test Statistic                  -3.656258
+p-value                          0.004772
+#Lags Used                      18.000000
+Number of Observations Used    391.000000
+Critical Value (1%)             -3.447186
+Critical Value (5%)             -2.868960
+Critical Value (10%)            -2.570723
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.147337
+p-value                   0.100000
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Dechloromonas
+Results of Dickey-Fuller Test:
+Test Statistic                  -2.007589
+p-value                          0.283256
+#Lags Used                      16.000000
+Number of Observations Used    393.000000
+Critical Value (1%)             -3.447099
+Critical Value (5%)             -2.868923
+Critical Value (10%)            -2.570703
+dtype: float64
+ADF Test: Data is not stationary
+Results of KPSS Test:
+Test Statistic            2.066558
+p-value                   0.010000
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is not stationary
+
+
+Haliscomenobacter
+Results of Dickey-Fuller Test:
+Test Statistic                  -3.263321
+p-value                          0.016600
+#Lags Used                      18.000000
+Number of Observations Used    391.000000
+Critical Value (1%)             -3.447186
+Critical Value (5%)             -2.868960
+Critical Value (10%)            -2.570723
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            1.771421
+p-value                   0.010000
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is not stationary
+
+
+Intrasporangium
+Results of Dickey-Fuller Test:
+Test Statistic                  -1.606400
+p-value                          0.480378
+#Lags Used                      17.000000
+Number of Observations Used    392.000000
+Critical Value (1%)             -3.447142
+Critical Value (5%)             -2.868941
+Critical Value (10%)            -2.570713
+dtype: float64
+ADF Test: Data is not stationary
+Results of KPSS Test:
+Test Statistic            0.819306
+p-value                   0.010000
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is not stationary
+
+
+Leptospira
+Results of Dickey-Fuller Test:
+Test Statistic                  -2.285039
+p-value                          0.176839
+#Lags Used                      18.000000
+Number of Observations Used    391.000000
+Critical Value (1%)             -3.447186
+Critical Value (5%)             -2.868960
+Critical Value (10%)            -2.570723
+dtype: float64
+ADF Test: Data is not stationary
+Results of KPSS Test:
+Test Statistic            0.165134
+p-value                   0.100000
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Other
+Results of Dickey-Fuller Test:
+Test Statistic                  -1.747569
+p-value                          0.406785
+#Lags Used                       7.000000
+Number of Observations Used    402.000000
+Critical Value (1%)             -3.446722
+Critical Value (5%)             -2.868757
+Critical Value (10%)            -2.570614
+dtype: float64
+ADF Test: Data is not stationary
+Results of KPSS Test:
+Test Statistic            0.514436
+p-value                   0.038415
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is not stationary
+
+
+Xanthomonas
+Results of Dickey-Fuller Test:
+Test Statistic                  -2.371457
+p-value                          0.149955
+#Lags Used                      16.000000
+Number of Observations Used    393.000000
+Critical Value (1%)             -3.447099
+Critical Value (5%)             -2.868923
+Critical Value (10%)            -2.570703
+dtype: float64
+ADF Test: Data is not stationary
+Results of KPSS Test:
+Test Statistic            0.610083
+p-value                   0.021720
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is not stationary
+
+
+mean abundance &lt; 2%
+Results of Dickey-Fuller Test:
+Test Statistic                  -1.335809
+p-value                          0.612635
+#Lags Used                       8.000000
+Number of Observations Used    401.000000
+Critical Value (1%)             -3.446763
+Critical Value (5%)             -2.868775
+Critical Value (10%)            -2.570624
+dtype: float64
+ADF Test: Data is not stationary
+Results of KPSS Test:
+Test Statistic            1.449163
+p-value                   0.010000
+Lags Used                12.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is not stationary
+
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is smaller than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is smaller than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is smaller than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is smaller than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+</pre></div></div>
+</div>
+<p>These tests results show that most of the genus’ samples is not stationary, which means that the data is not homoscedastic. This is a common problem in microbiome data, where the variance of the data is not constant across the samples. This is a problem for most imputation methods, as they assume that the data is homoscedastic.</p>
+<p>To change this, we will be using a detrending method to make the data stationary by differencing the data. This will allow us to use the VAR inference method to impute the parameters of interaction.</p>
+<p>It is one of the simplest methods for detrending a time series. A new series is constructed where the value at the current time step is calculated as the difference between the original observation and the observation at the previous time step.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Differencing the imputed data set to make it stationary</span>
+
+<span class="n">differenced_data</span> <span class="o">=</span> <span class="n">imputed_data_reduced_no_days</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+<span class="c1"># Check for stationarity in the differenced data set</span>
+
+<span class="k">for</span> <span class="n">genus</span> <span class="ow">in</span> <span class="n">differenced_data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">genus</span><span class="p">)</span>
+    <span class="n">adf_test</span><span class="p">(</span><span class="n">differenced_data</span><span class="p">[</span><span class="n">genus</span><span class="p">])</span>
+    <span class="n">kpss_test</span><span class="p">(</span><span class="n">differenced_data</span><span class="p">[</span><span class="n">genus</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Acidimicrobium
+Results of Dickey-Fuller Test:
+Test Statistic                  -4.579203
+p-value                          0.000141
+#Lags Used                      16.000000
+Number of Observations Used    392.000000
+Critical Value (1%)             -3.447142
+Critical Value (5%)             -2.868941
+Critical Value (10%)            -2.570713
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.032483
+p-value                   0.100000
+Lags Used                11.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Acinetobacter
+Results of Dickey-Fuller Test:
+Test Statistic                  -4.592770
+p-value                          0.000133
+#Lags Used                      17.000000
+Number of Observations Used    391.000000
+Critical Value (1%)             -3.447186
+Critical Value (5%)             -2.868960
+Critical Value (10%)            -2.570723
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.174216
+p-value                   0.100000
+Lags Used                10.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Albidiferax
+Results of Dickey-Fuller Test:
+Test Statistic                  -4.009900
+p-value                          0.001360
+#Lags Used                      11.000000
+Number of Observations Used    397.000000
+Critical Value (1%)             -3.446930
+Critical Value (5%)             -2.868848
+Critical Value (10%)            -2.570663
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.043319
+p-value                   0.100000
+Lags Used                11.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Candidatus Microthrix
+Results of Dickey-Fuller Test:
+Test Statistic                -7.922252e+00
+p-value                        3.697462e-12
+#Lags Used                     6.000000e+00
+Number of Observations Used    4.020000e+02
+Critical Value (1%)           -3.446722e+00
+Critical Value (5%)           -2.868757e+00
+Critical Value (10%)          -2.570614e+00
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.094702
+p-value                   0.100000
+Lags Used                11.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Chitinophaga pinensis
+Results of Dickey-Fuller Test:
+Test Statistic                  -3.337052
+p-value                          0.013301
+#Lags Used                      16.000000
+Number of Observations Used    392.000000
+Critical Value (1%)             -3.447142
+Critical Value (5%)             -2.868941
+Critical Value (10%)            -2.570713
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.060045
+p-value                   0.100000
+Lags Used                11.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Dechloromonas
+Results of Dickey-Fuller Test:
+Test Statistic                  -3.077850
+p-value                          0.028236
+#Lags Used                      18.000000
+Number of Observations Used    390.000000
+Critical Value (1%)             -3.447229
+Critical Value (5%)             -2.868980
+Critical Value (10%)            -2.570733
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.106988
+p-value                   0.100000
+Lags Used                11.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Haliscomenobacter
+Results of Dickey-Fuller Test:
+Test Statistic                  -4.028671
+p-value                          0.001268
+#Lags Used                      18.000000
+Number of Observations Used    390.000000
+Critical Value (1%)             -3.447229
+Critical Value (5%)             -2.868980
+Critical Value (10%)            -2.570733
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.10064
+p-value                   0.10000
+Lags Used                11.00000
+Critical Value (10%)      0.34700
+Critical Value (5%)       0.46300
+Critical Value (2.5%)     0.57400
+Critical Value (1%)       0.73900
+dtype: float64
+KPSS test: Data is stationary
+
+
+Intrasporangium
+Results of Dickey-Fuller Test:
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Test Statistic                  -4.181869
+p-value                          0.000707
+#Lags Used                      16.000000
+Number of Observations Used    392.000000
+Critical Value (1%)             -3.447142
+Critical Value (5%)             -2.868941
+Critical Value (10%)            -2.570713
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.19829
+p-value                   0.10000
+Lags Used                11.00000
+Critical Value (10%)      0.34700
+Critical Value (5%)       0.46300
+Critical Value (2.5%)     0.57400
+Critical Value (1%)       0.73900
+dtype: float64
+KPSS test: Data is stationary
+
+
+Leptospira
+Results of Dickey-Fuller Test:
+Test Statistic                  -4.415580
+p-value                          0.000279
+#Lags Used                      17.000000
+Number of Observations Used    391.000000
+Critical Value (1%)             -3.447186
+Critical Value (5%)             -2.868960
+Critical Value (10%)            -2.570723
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.039759
+p-value                   0.100000
+Lags Used                11.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Other
+Results of Dickey-Fuller Test:
+Test Statistic                -7.492300e+00
+p-value                        4.472362e-11
+#Lags Used                     6.000000e+00
+Number of Observations Used    4.020000e+02
+Critical Value (1%)           -3.446722e+00
+Critical Value (5%)           -2.868757e+00
+Critical Value (10%)          -2.570614e+00
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.075285
+p-value                   0.100000
+Lags Used                11.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+Xanthomonas
+Results of Dickey-Fuller Test:
+Test Statistic                  -3.332549
+p-value                          0.013485
+#Lags Used                      18.000000
+Number of Observations Used    390.000000
+Critical Value (1%)             -3.447229
+Critical Value (5%)             -2.868980
+Critical Value (10%)            -2.570733
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.146004
+p-value                   0.100000
+Lags Used                11.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+mean abundance &lt; 2%
+Results of Dickey-Fuller Test:
+Test Statistic                  -4.769351
+p-value                          0.000062
+#Lags Used                       7.000000
+Number of Observations Used    401.000000
+Critical Value (1%)             -3.446763
+Critical Value (5%)             -2.868775
+Critical Value (10%)            -2.570624
+dtype: float64
+ADF Test: Data is stationary
+Results of KPSS Test:
+Test Statistic            0.189471
+p-value                   0.100000
+Lags Used                11.000000
+Critical Value (10%)      0.347000
+Critical Value (5%)       0.463000
+Critical Value (2.5%)     0.574000
+Critical Value (1%)       0.739000
+dtype: float64
+KPSS test: Data is stationary
+
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now we are going to to the VAR inference with the differenced data set</span>
+
+<span class="n">infer7</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">differenced_data</span><span class="p">)</span>
+<span class="n">infer7</span><span class="o">.</span><span class="n">run_inference_large</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [24000/24000 19:49<00:00 Sampling 4 chains, 6,152 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 1196 seconds.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
+There were 6152 divergences after tuning. Increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+            mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+A[0, 0]    0.927  0.020   0.891    0.970      0.001    0.001     707.0
+A[0, 1]    0.001  0.003  -0.004    0.008      0.000    0.000     278.0
+A[0, 2]   -0.066  0.021  -0.107   -0.026      0.001    0.000    1348.0
+A[0, 3]    0.007  0.005  -0.002    0.017      0.000    0.000     197.0
+A[0, 4]    0.012  0.009  -0.003    0.028      0.001    0.001     145.0
+...          ...    ...     ...      ...        ...      ...       ...
+A[11, 7]   0.007  0.017  -0.028    0.041      0.001    0.000     294.0
+A[11, 8]  -0.003  0.011  -0.027    0.013      0.001    0.001      52.0
+A[11, 9]   0.179  0.113  -0.017    0.367      0.004    0.003     674.0
+A[11, 10]  0.027  0.047  -0.048    0.124      0.005    0.003      72.0
+A[11, 11]  0.846  0.029   0.792    0.905      0.001    0.000    2210.0
+
+           ess_tail  r_hat
+A[0, 0]       248.0   1.07
+A[0, 1]      3640.0   1.02
+A[0, 2]      1592.0   1.08
+A[0, 3]      1939.0   1.02
+A[0, 4]      2107.0   1.03
+...             ...    ...
+A[11, 7]     2287.0   1.02
+A[11, 8]     4935.0   1.05
+A[11, 9]     2297.0   1.07
+A[11, 10]    1043.0   1.04
+A[11, 11]    4760.0   1.05
+
+[144 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (144) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_48_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_48_5.png" />
+</div>
+</div>
+<p>We can see the results of inferring the differenciated data. The results are not much better than before. So now, we are going to try one last method to improve the inference results. We are going use <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> to infer the relationships between the variables in the time series using a VAR model, then use the predicted posterior distributions as priors for the inference method and observe the results.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">statsmodels.tsa.api</span> <span class="kn">import</span> <span class="n">VAR</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a pandas dataframe of the original imputed data_set with days as the index</span>
+<span class="n">imputed_data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;days&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make VAR model with the imputed data set and statsmodels library</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">VAR</span><span class="p">(</span><span class="n">imputed_data</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">maxlags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\statsmodels\tsa\base\tsa_model.py:473: ValueWarning: An unsupported index was provided and will be ignored when e.g. forecasting.
+  self._init_dates(dates, freq)
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coefficients</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">params</span>
+<span class="n">covariance_matrix</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">sigma_u</span>
+<span class="n">intercepts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># remove the first row of the coefficients matrix</span>
+<span class="n">coefficients</span> <span class="o">=</span> <span class="n">coefficients</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="c1"># transpose the coefficients matrix</span>
+<span class="n">coefficients</span> <span class="o">=</span> <span class="n">coefficients</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># now use the VAR model with these as priors</span>
+<span class="n">infer8</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">intercepts</span><span class="p">,</span> <span class="n">covariance_matrix</span><span class="p">)</span>
+<span class="n">infer8</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+x0: Shape.0
+data[1:, :]: (409, 12)
+x0: (12,)
+mu: Shape.0
+data: (409, 12)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [x0, A]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 13:08<00:00 Sampling 2 chains, 0 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 792 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+            mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+x0[0]      1.004  0.492   0.036    1.886      0.011    0.008    1978.0
+x0[1]      7.629  0.927   5.861    9.258      0.014    0.010    4299.0
+x0[2]      0.647  0.422  -0.133    1.451      0.009    0.006    2292.0
+x0[3]      4.921  0.899   3.188    6.541      0.015    0.011    3442.0
+x0[4]      4.059  0.727   2.691    5.407      0.014    0.010    2686.0
+...          ...    ...     ...      ...        ...      ...       ...
+A[11, 7]   0.020  0.007   0.006    0.033      0.000    0.000    2050.0
+A[11, 8]   0.027  0.006   0.015    0.038      0.000    0.000    1841.0
+A[11, 9]  -0.101  0.023  -0.144   -0.060      0.000    0.000    5176.0
+A[11, 10]  0.020  0.021  -0.018    0.060      0.000    0.000    4905.0
+A[11, 11]  1.020  0.010   1.001    1.038      0.000    0.000    2471.0
+
+           ess_tail  r_hat
+x0[0]        2358.0    1.0
+x0[1]        2684.0    1.0
+x0[2]        2479.0    1.0
+x0[3]        3014.0    1.0
+x0[4]        2990.0    1.0
+...             ...    ...
+A[11, 7]     2822.0    1.0
+A[11, 8]     2507.0    1.0
+A[11, 9]     3666.0    1.0
+A[11, 10]    3373.0    1.0
+A[11, 11]    2560.0    1.0
+
+[156 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (156) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_54_6.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_54_6.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">posterior</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">from_netcdf</span><span class="p">(</span><span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
+<span class="n">infer8</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span><span class="n">idata</span><span class="o">=</span><span class="n">posterior</span><span class="p">,</span> <span class="n">matrices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>As we can see, the results are much better than before. This is because bayesian VAR inference method works much better with the predicted posterior distributions as priors. This is because the predicted posterior distributions offer a better estimate of the parameters of interaction between the variables in the time series which the bayesian VAR inference method can use to infer the causal relationships between the variables in the time series.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># do the same for run_inference_large</span>
+<span class="n">infer9</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">intercepts</span><span class="p">,</span> <span class="n">covariance_matrix</span><span class="p">)</span>
+<span class="n">infer9</span><span class="o">.</span><span class="n">run_inference_large</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [noise_stddev, x0, c2, tau, lam, A]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [24000/24000 50:10<00:00 Sampling 4 chains, 3,298 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 3017 seconds.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
+There were 3298 divergences after tuning. Increase `target_accept` or reparameterize.
+Chain 0 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+Chain 1 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+Chain 2 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+Chain 3 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+            mean   sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+A[0, 0]    0.963  0.0   0.963    0.963        0.0      0.0     295.0
+A[0, 1]   -0.005  0.0  -0.005   -0.005        0.0      0.0      16.0
+A[0, 2]   -0.033  0.0  -0.033   -0.033        0.0      0.0     492.0
+A[0, 3]   -0.008  0.0  -0.008   -0.008        0.0      0.0     652.0
+A[0, 4]   -0.004  0.0  -0.004   -0.004        0.0      0.0     320.0
+...          ...  ...     ...      ...        ...      ...       ...
+A[11, 7]   0.020  0.0   0.020    0.020        0.0      0.0      27.0
+A[11, 8]   0.027  0.0   0.027    0.027        0.0      0.0    1651.0
+A[11, 9]  -0.101  0.0  -0.101   -0.101        0.0      0.0     323.0
+A[11, 10]  0.020  0.0   0.020    0.020        0.0      0.0     363.0
+A[11, 11]  1.020  0.0   1.020    1.020        0.0      0.0     371.0
+
+           ess_tail  r_hat
+A[0, 0]       124.0   1.06
+A[0, 1]        27.0   1.30
+A[0, 2]       182.0   1.06
+A[0, 3]       241.0   1.03
+A[0, 4]        80.0   1.05
+...             ...    ...
+A[11, 7]       16.0   1.13
+A[11, 8]      800.0   1.04
+A[11, 9]      121.0   1.08
+A[11, 10]     192.0   1.04
+A[11, 11]     142.0   1.08
+
+[144 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (144) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_57_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_57_5.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">posterior2</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">from_netcdf</span><span class="p">(</span><span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
+<span class="n">infer9</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span><span class="n">idata</span><span class="o">=</span><span class="n">posterior2</span><span class="p">,</span> <span class="n">matrices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_58_0.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_58_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do the same data cleaning for the MT data set</span>
+
+<span class="c1"># Rename Nan in the genus column to &#39;Other&#39;</span>
+
+<span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">)</span>
+
+<span class="c1"># Drop the &#39;type&#39; column</span>
+<span class="n">dataMT</span> <span class="o">=</span> <span class="n">dataMT</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+
+<span class="c1"># Change relative Date columns to days</span>
+<span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days</span>
+
+<span class="c1"># Change the &#39;genus&#39; column to a categorical column</span>
+<span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+<br/><br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\User\AppData\Local\Temp\ipykernel_33876\3985596422.py:5: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataMT[&#39;genus&#39;] = dataMT[&#39;genus&#39;].replace(np.nan, &#39;Other&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the data, relative abundance (value) vs. days (date) for each genus</span>
+
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dataMT</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Microbial Meta Transcriptomics Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  grouped_data = data.groupby(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 0, &#39;Days&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_60_2.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_60_2.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pivot the data so each &#39;genus&#39; is a column</span>
+<span class="n">dataMT_pivot</span> <span class="o">=</span> <span class="n">dataMT</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+    <span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Pivot the MG data so each &#39;genus&#39; is a column</span>
+<span class="n">dataMG_pivot</span> <span class="o">=</span> <span class="n">dataMG</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+    <span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Since dataMG_pivot and data_MT_pivot have different columns, we will need to find the intersection between them</span>
+
+<span class="n">common_columns</span> <span class="o">=</span> <span class="n">dataMG_pivot</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">dataMT_pivot</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="n">data_MG_common</span> <span class="o">=</span> <span class="n">dataMG_pivot</span><span class="p">[</span><span class="n">common_columns</span><span class="p">]</span>
+<span class="n">data_MT_common</span> <span class="o">=</span> <span class="n">dataMT_pivot</span><span class="p">[</span><span class="n">common_columns</span><span class="p">]</span>
+<br/><br/><br/><br/></pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_MG_common</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CategoricalIndex([&#39;Acidimicrobium&#39;, &#39;Acinetobacter&#39;, &#39;Albidiferax&#39;,
+                  &#39;Candidatus Microthrix&#39;, &#39;Chitinophaga pinensis&#39;,
+                  &#39;Haliscomenobacter&#39;, &#39;Intrasporangium&#39;, &#39;Leptospira&#39;,
+                  &#39;Other&#39;, &#39;mean abundance &lt; 2%&#39;],
+                 categories=[&#39;Acidimicrobium&#39;, &#39;Acinetobacter&#39;, &#39;Albidiferax&#39;, &#39;Candidatus Microthrix&#39;, ..., &#39;Leptospira&#39;, &#39;Other&#39;, &#39;Xanthomonas&#39;, &#39;mean abundance &lt; 2%&#39;], ordered=False, dtype=&#39;category&#39;, name=&#39;genus&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now let&#39;s try to infer the var model for both the MG and MT data sets</span>
+
+<span class="n">infer10</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_MG_common</span><span class="p">,</span> <span class="n">dataS</span><span class="o">=</span><span class="n">data_MT_common</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer10</span><span class="o">.</span><span class="n">run_inference_xs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [X0h, S0h, Ah, Bh, sigma]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 03:43<00:00 Sampling 2 chains, 22 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 229 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+           mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]  0.201  0.170  -0.107    0.522      0.003    0.002    2440.0
+Ah[0, 1]  0.027  0.045  -0.057    0.111      0.001    0.001    2705.0
+Ah[0, 2] -0.133  0.172  -0.457    0.187      0.003    0.002    3634.0
+Ah[0, 3]  0.055  0.043  -0.024    0.139      0.001    0.001    2725.0
+Ah[0, 4]  0.155  0.065   0.041    0.278      0.001    0.001    3542.0
+...         ...    ...     ...      ...        ...      ...       ...
+Bh[9, 5] -0.114  0.354  -0.806    0.547      0.007    0.005    2625.0
+Bh[9, 6]  0.152  0.374  -0.621    0.811      0.007    0.005    2515.0
+Bh[9, 7]  0.294  0.461  -0.582    1.179      0.011    0.008    1762.0
+Bh[9, 8] -0.577  0.819  -2.100    0.988      0.012    0.010    4982.0
+Bh[9, 9]  1.053  0.365   0.389    1.764      0.007    0.005    2450.0
+
+          ess_tail  r_hat
+Ah[0, 0]    2852.0    1.0
+Ah[0, 1]    3019.0    1.0
+Ah[0, 2]    3264.0    1.0
+Ah[0, 3]    3035.0    1.0
+Ah[0, 4]    2823.0    1.0
+...            ...    ...
+Bh[9, 5]    2701.0    1.0
+Bh[9, 6]    2379.0    1.0
+Bh[9, 7]    2093.0    1.0
+Bh[9, 8]    3448.0    1.0
+Bh[9, 9]    2343.0    1.0
+
+[200 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (200) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_65_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_65_5.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer10</span><span class="o">.</span><span class="n">posterior_analysis</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+           mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]  0.203  0.172  -0.112    0.536      0.004    0.003    2102.0
+Ah[0, 1]  0.027  0.044  -0.055    0.111      0.001    0.001    1916.0
+Ah[0, 2] -0.136  0.173  -0.479    0.169      0.003    0.002    3299.0
+Ah[0, 3]  0.055  0.044  -0.029    0.137      0.001    0.001    2049.0
+Ah[0, 4]  0.154  0.066   0.027    0.275      0.001    0.001    2760.0
+...         ...    ...     ...      ...        ...      ...       ...
+Bh[9, 5] -0.101  0.360  -0.792    0.572      0.009    0.006    1764.0
+Bh[9, 6]  0.162  0.376  -0.554    0.883      0.008    0.006    2185.0
+Bh[9, 7]  0.323  0.451  -0.497    1.234      0.012    0.008    1473.0
+Bh[9, 8] -0.615  0.822  -2.232    0.857      0.013    0.010    4254.0
+Bh[9, 9]  1.029  0.381   0.287    1.746      0.009    0.007    1647.0
+
+          ess_tail  r_hat
+Ah[0, 0]    2651.0    1.0
+Ah[0, 1]    2722.0    1.0
+Ah[0, 2]    2902.0    1.0
+Ah[0, 3]    2375.0    1.0
+Ah[0, 4]    2758.0    1.0
+...            ...    ...
+Bh[9, 5]    1845.0    1.0
+Bh[9, 6]    2359.0    1.0
+Bh[9, 7]    1417.0    1.0
+Bh[9, 8]    3298.0    1.0
+Bh[9, 9]    2025.0    1.0
+
+[200 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_66_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_66_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_66_2.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_66_2.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now let&#39;s try to infer the var model for both the MG and MT data sets</span>
+
+<span class="n">infer11</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_MG_common</span><span class="p">,</span> <span class="n">dataS</span><span class="o">=</span><span class="n">data_MT_common</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer11</span><span class="o">.</span><span class="n">run_inference_large_xs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [c2_A, tau_A, lam_A, Ah, c2_B, tau_B, lam_B, Bh, sigma]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [24000/24000 09:07<00:00 Sampling 4 chains, 5,490 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 563 seconds.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
+There were 5490 divergences after tuning. Increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+           mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]  0.373  0.113   0.141    0.581      0.004    0.003    1014.0
+Ah[0, 1]  0.035  0.023  -0.007    0.080      0.001    0.000    1312.0
+Ah[0, 2] -0.165  0.104  -0.358    0.017      0.003    0.002    1679.0
+Ah[0, 3]  0.020  0.025  -0.022    0.071      0.001    0.001    1149.0
+Ah[0, 4]  0.184  0.047   0.093    0.265      0.002    0.001     585.0
+...         ...    ...     ...      ...        ...      ...       ...
+Bh[9, 5] -0.002  0.074  -0.152    0.150      0.002    0.001    1344.0
+Bh[9, 6]  0.105  0.116  -0.086    0.338      0.004    0.003    1148.0
+Bh[9, 7]  0.218  0.135  -0.010    0.469      0.007    0.005     441.0
+Bh[9, 8] -0.536  0.540  -1.562    0.198      0.018    0.013    1092.0
+Bh[9, 9]  0.977  0.119   0.714    1.179      0.011    0.008     133.0
+
+          ess_tail  r_hat
+Ah[0, 0]     414.0   1.01
+Ah[0, 1]    1756.0   1.00
+Ah[0, 2]    3785.0   1.01
+Ah[0, 3]    1621.0   1.00
+Ah[0, 4]     954.0   1.00
+...            ...    ...
+Bh[9, 5]    1930.0   1.00
+Bh[9, 6]    1768.0   1.01
+Bh[9, 7]     425.0   1.01
+Bh[9, 8]    2882.0   1.00
+Bh[9, 9]      28.0   1.02
+
+[200 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (200) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_68_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_68_5.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer11</span><span class="o">.</span><span class="n">posterior_analysis</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+           mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]  0.373  0.113   0.141    0.581      0.004    0.003    1014.0
+Ah[0, 1]  0.035  0.023  -0.007    0.080      0.001    0.000    1312.0
+Ah[0, 2] -0.165  0.104  -0.358    0.017      0.003    0.002    1679.0
+Ah[0, 3]  0.020  0.025  -0.022    0.071      0.001    0.001    1149.0
+Ah[0, 4]  0.184  0.047   0.093    0.265      0.002    0.001     585.0
+...         ...    ...     ...      ...        ...      ...       ...
+Bh[9, 5] -0.002  0.074  -0.152    0.150      0.002    0.001    1344.0
+Bh[9, 6]  0.105  0.116  -0.086    0.338      0.004    0.003    1148.0
+Bh[9, 7]  0.218  0.135  -0.010    0.469      0.007    0.005     441.0
+Bh[9, 8] -0.536  0.540  -1.562    0.198      0.018    0.013    1092.0
+Bh[9, 9]  0.977  0.119   0.714    1.179      0.011    0.008     133.0
+
+          ess_tail  r_hat
+Ah[0, 0]     414.0   1.01
+Ah[0, 1]    1756.0   1.00
+Ah[0, 2]    3785.0   1.01
+Ah[0, 3]    1621.0   1.00
+Ah[0, 4]     954.0   1.00
+...            ...    ...
+Bh[9, 5]    1930.0   1.00
+Bh[9, 6]    1768.0   1.01
+Bh[9, 7]     425.0   1.01
+Bh[9, 8]    2882.0   1.00
+Bh[9, 9]      28.0   1.02
+
+[200 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_69_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_69_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_69_2.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_69_2.png" />
+</div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">mimic</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../examples.html">Examples</a><ul>
+      <li>Previous: <a href="../../../examples.html" title="previous chapter">Examples</a></li>
+      <li>Next: <a href="../../gMLV/examples-sim-gMLV.html" title="next chapter">Simulate some time course data from the gMLV</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../../../_sources/notebooks/MultiModel/Herold/examples-Herold.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Bayesian Inference for Vector AutoRegression (VAR) Models &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Repeat Stein et al. 2013 analysis" href="../gLV/examples-Stein.html" />
+    <link rel="prev" title="Vector AutoRegression (VAR) Simulation" href="examples-sim-VAR.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="Bayesian-Inference-for-Vector-AutoRegression-(VAR)-Models">
+<h1>Bayesian Inference for Vector AutoRegression (VAR) Models<a class="headerlink" href="#Bayesian-Inference-for-Vector-AutoRegression-(VAR)-Models" title="Link to this heading">¶</a></h1>
+<section id="Introduction-to-Bayesian-VAR">
+<h2>Introduction to Bayesian VAR<a class="headerlink" href="#Introduction-to-Bayesian-VAR" title="Link to this heading">¶</a></h2>
+<p>Bayesian inference provides a powerful framework for estimating the parameters of <em>Vector AutoRegression</em> (VAR) models, incorporating prior knowledge and uncertainty into the analysis. Unlike classical estimation methods that rely solely on the observed data, Bayesian approaches allow for the integration of prior beliefs about the parameters’ likely values, which can be particularly useful in situations with limited or noisy data.</p>
+<section id="VAR-Process">
+<h3>VAR Process<a class="headerlink" href="#VAR-Process" title="Link to this heading">¶</a></h3>
+<p>The general formulation of a VAR(p) model can be expressed as:</p>
+<div class="math notranslate nohighlight">
+\[X_t = A_1 \cdot X_{t-1} + A_2 \cdot X_{t-2} + \dots + A_p \cdot X_{t-p} + \epsilon_t\]</div>
+<p>where: - $ X_t $ is the vector of variables at time $ t $, - $ A_1, A_2, <span class="math">\dots</span>, A_p $ are the matrices of coefficients for each lag, - $ <span class="math">\epsilon</span>_t $ is the vector of error terms, which are assumed to follow a normal distribution with mean 0 and covariance matrix $ :nbsphinx-math:<a href="#id1"><span class="problematic" id="id2">`</span></a>Sigma <a href="#id3"><span class="problematic" id="id4">`</span></a>$.</p>
+<p>We will focus on a VAR(1) model. In the Bayesian setting, the focus shifts to estimating the posterior distributions of the coefficients $ A_1, A_2, <span class="math">\dots</span>, A_p $ and the error covariance matrix $ :nbsphinx-math:<a href="#id5"><span class="problematic" id="id6">`</span></a>Sigma <a href="#id7"><span class="problematic" id="id8">`</span></a>$ given the observed data and prior distributions for these parameters.</p>
+</section>
+<section id="Implementation-in-infer_VAR_bayes.py">
+<h3>Implementation in <code class="docutils literal notranslate"><span class="pre">infer_VAR_bayes.py</span></code><a class="headerlink" href="#Implementation-in-infer_VAR_bayes.py" title="Link to this heading">¶</a></h3>
+<p>A typical Bayesian VAR model implementation involves:</p>
+<ol class="arabic simple">
+<li><p><strong>Defining Prior Distributions</strong>: Specifying prior distributions for the VAR model parameters based on previous studies, expert knowledge, or other relevant information.</p></li>
+<li><p><strong>Computing Posterior Distributions</strong>: Using Bayes’ theorem to update the prior distributions with information from the observed data, resulting in posterior distributions that reflect both the prior beliefs and the evidence from the data.</p></li>
+<li><p><strong>Parameter Estimation and Inference</strong>: Drawing samples from the posterior distributions of the model parameters to perform inference, estimate model dynamics, and make predictions.</p></li>
+<li><p><strong>Visualization and Analysis</strong>: Generating plots and summaries of the posterior distributions, predicted values, and other quantities of interest to analyze the model results.</p></li>
+</ol>
+</section>
+</section>
+<section id="Notebook-Structure">
+<h2>Notebook Structure<a class="headerlink" href="#Notebook-Structure" title="Link to this heading">¶</a></h2>
+<p>This notebook demonstrates how to run BVAR inference on simulated data using the <code class="docutils literal notranslate"><span class="pre">infer_VAR</span></code> class. We will explore different methodologies for importing data, estimating the posterior distributions of a VAR model, and visualizing the results to gain insights into the dynamics of the system.</p>
+</section>
+<section id="Objective">
+<h2>Objective<a class="headerlink" href="#Objective" title="Link to this heading">¶</a></h2>
+<p>Our goal is to infer the posterior distribution of a VAR model’s parameters using Bayesian methods. By employing the <code class="docutils literal notranslate"><span class="pre">infer_VAR</span></code> class, we aim to visualize the posterior distributions and leverage the <code class="docutils literal notranslate"><span class="pre">plot_posteriors</span></code> method to extract and understand the dynamics inherent in the VAR model process.</p>
+</section>
+<section id="Example-Usage">
+<h2>Example Usage<a class="headerlink" href="#Example-Usage" title="Link to this heading">¶</a></h2>
+<p>The first step is obtaining the data to be used in the analysis. In this example, we will simulate a VAR(1) process with 2 variables and 100 observations. We will then use the <code class="docutils literal notranslate"><span class="pre">infer_VAR</span></code> class to estimate the posterior distributions of the model parameters and visualize the results.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.model_simulate.sim_VAR</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mimic.model_infer.infer_VAR_bayes</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="n">read_parameters</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import parameters from JSON file</span>
+
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">sim_VAR</span><span class="p">()</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">read_parameters</span><span class="p">(</span><span class="s1">&#39;./parameters.json&#39;</span><span class="p">)</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="s2">&quot;VARsim&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using the following parameters for VAR simulation: {&#39;n_obs&#39;: 100, &#39;coefficients&#39;: array([[ 0.8, -0.2],
+       [ 0.3,  0.5]]), &#39;initial_values&#39;: array([[1],
+       [2]]), &#39;noise_stddev&#39;: 1.0, &#39;output&#39;: &#39;show&#39;}
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_3_1.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_3_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="n">infer</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+x0: Shape.0
+data[1:, :]: (99, 2)
+x0: (2,)
+mu: Shape.0
+data: (99, 2)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [x0, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 00:06<00:00 Sampling 2 chains, 0 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 11 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+          mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+x0[0]   -0.057  0.096  -0.232    0.133      0.001    0.001    4777.0
+x0[1]   -0.035  0.103  -0.238    0.147      0.002    0.002    4625.0
+A[0, 0]  0.819  0.078   0.681    0.969      0.001    0.001    4625.0
+A[0, 1] -0.243  0.087  -0.407   -0.084      0.001    0.001    5038.0
+A[1, 0]  0.300  0.082   0.149    0.455      0.001    0.001    4782.0
+A[1, 1]  0.394  0.091   0.220    0.557      0.001    0.001    4976.0
+
+         ess_tail  r_hat
+x0[0]      3059.0    1.0
+x0[1]      3229.0    1.0
+A[0, 0]    3036.0    1.0
+A[0, 1]    3183.0    1.0
+A[1, 0]    3404.0    1.0
+A[1, 1]    3594.0    1.0
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_4_5.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_4_5.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the simulated data on a file:</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="s1">&#39;./simulated_data.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up the inference by importing the simulation data from a file</span>
+
+<span class="c1"># Construct the full path to the CSV file</span>
+<span class="n">csv_file_path</span> <span class="o">=</span> <span class="s1">&#39;./simulated_data.csv&#39;</span>
+
+<span class="c1"># Create an instance of infer_VAR and import the data</span>
+<span class="n">infer2</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">infer2</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">csv_file_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer2</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+x0: Shape.0
+data[1:, :]: (98, 2)
+x0: (2,)
+mu: Shape.0
+data: (98, 2)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [x0, A, noise_chol]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 00:07<00:00 Sampling 2 chains, 0 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 12 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+          mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+x0[0]   -0.030  0.094  -0.214    0.138      0.001    0.001    4812.0
+x0[1]   -0.023  0.103  -0.214    0.166      0.001    0.001    5393.0
+A[0, 0]  0.823  0.075   0.682    0.965      0.001    0.001    4249.0
+A[0, 1] -0.214  0.084  -0.374   -0.062      0.001    0.001    4175.0
+A[1, 0]  0.302  0.079   0.154    0.450      0.001    0.001    4271.0
+A[1, 1]  0.404  0.092   0.226    0.571      0.001    0.001    4292.0
+
+         ess_tail  r_hat
+x0[0]      3051.0    1.0
+x0[1]      3230.0    1.0
+A[0, 0]    3107.0    1.0
+A[0, 1]    3082.0    1.0
+A[1, 0]    3230.0    1.0
+A[1, 1]    3110.0    1.0
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_7_5.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_7_5.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s plot these results in a heatmap with the original coefficients (A) and the inferred coefficients (A_hat</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span>  <span class="mf">0.5</span><span class="p">]])</span>
+
+<span class="n">true_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">A</span><span class="p">]</span>
+
+<span class="n">idata</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">from_netcdf</span><span class="p">(</span><span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
+
+<span class="n">infer2</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span>
+    <span class="n">idata</span><span class="p">,</span> <span class="n">matrices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">],</span> <span class="n">true_values</span><span class="o">=</span><span class="n">true_values</span><span class="p">)</span>
+
+<span class="c1"># infer2.posterior_analysis(A=A)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_8_0.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_8_0.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Bayesian Inference for Vector AutoRegression (VAR) Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Introduction-to-Bayesian-VAR">Introduction to Bayesian VAR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Notebook-Structure">Notebook Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Objective">Objective</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Example-Usage">Example Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../examples.html">Examples</a><ul>
+      <li>Previous: <a href="examples-sim-VAR.html" title="previous chapter">Vector AutoRegression (VAR) Simulation</a></li>
+      <li>Next: <a href="../gLV/examples-Stein.html" title="next chapter">Repeat Stein et al. 2013 analysis</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../../_sources/notebooks/VAR/examples-bayes-VAR.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
