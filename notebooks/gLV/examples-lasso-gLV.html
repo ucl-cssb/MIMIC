@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Comparison of ridge vs lasso regression &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Simulate some time course data from the gLV" href="examples-sim-gLV.html" />
+    <link rel="prev" title="Used Bayesian inference to infer the parameters of a (linearised) gLV model" href="examples-bayes-gLV.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">mimic.model_infer</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mimic.model_simulate</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">odeint</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
+<section id="Comparison-of-ridge-vs-lasso-regression">
+<h1>Comparison of ridge vs lasso regression<a class="headerlink" href="#Comparison-of-ridge-vs-lasso-regression" title="Link to this heading">¶</a></h1>
+<section id="Five-species,-single-time-course.">
+<h2>Five species, single time course.<a class="headerlink" href="#Five-species,-single-time-course." title="Link to this heading">¶</a></h2>
+<p>Note that perturbation not currently implemented in multi penalty lasso</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">set_all_seeds</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="c1"># SETUP MODEL</span>
+<span class="c1"># establish size of model</span>
+<span class="n">num_species</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># construct interaction matrix</span>
+<span class="c1"># TODO do this programmatically</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_species</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.025</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.02</span>
+
+<span class="c1"># construct growth rates matrix</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
+
+<span class="n">epsilon</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.</span><span class="p">],</span>
+           <span class="p">[</span><span class="o">-</span><span class="mf">1.</span><span class="p">],</span>
+           <span class="p">[</span><span class="mf">0.</span><span class="p">],</span>
+           <span class="p">[</span><span class="o">-</span><span class="mf">1.</span><span class="p">],</span>
+           <span class="p">[</span><span class="mf">0.</span><span class="p">]]</span>
+
+<span class="c1"># instantiate simulator</span>
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span>
+                    <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
+
+<span class="c1"># PRODUCE SIMULATED RESULTS</span>
+<span class="c1"># initial conditions</span>
+<span class="n">init_species</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="p">)</span>
+
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">yobs</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">)</span>
+
+<span class="c1"># add some gaussian noise</span>
+<span class="n">yobs</span> <span class="o">=</span> <span class="n">yobs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># plot simulation</span>
+<span class="n">plot_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># linearise</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">linearize_time_course_16S</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n: </span><span class="si">{</span><span class="n">num_species</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, p: </span><span class="si">{</span><span class="n">num_species</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">num_species</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model parameters:
+Model: gLV
+num_species: 5
+mu: [1.28 0.56 2.07 0.86 0.7 ]
+M: [[-0.05  0.   -0.03  0.    0.  ]
+ [ 0.   -0.1   0.    0.05  0.  ]
+ [ 0.    0.   -0.15  0.    0.  ]
+ [ 0.    0.    0.   -0.01  0.  ]
+ [ 0.02  0.    0.    0.   -0.2 ]]
+epsilon: [[0.0], [-1.0], [0.0], [-1.0], [0.0]]
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.27853844, 0.55683415, 2.06752757, 0.86387608, 0.70448068]), &#39;M&#39;: array([[-0.05 ,  0.   , -0.025,  0.   ,  0.   ],
+       [ 0.   , -0.1  ,  0.   ,  0.05 ,  0.   ],
+       [ 0.   ,  0.   , -0.15 ,  0.   ,  0.   ],
+       [ 0.   ,  0.   ,  0.   , -0.01 ,  0.   ],
+       [ 0.02 ,  0.   ,  0.   ,  0.   , -0.2  ]]), &#39;epsilon&#39;: [[0.0], [-1.0], [0.0], [-1.0], [0.0]]}
+n: 245, p: 30
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-lasso-gLV_3_1.png" src="../../_images/notebooks_gLV_examples-lasso-gLV_3_1.png" />
+</div>
+</div>
+</section>
+<section id="Perform-ridge-regression">
+<h2>Perform ridge regression<a class="headerlink" href="#Perform-ridge-regression" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get the best lambda/alpha values on a grid via cross validation</span>
+<span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">fit_alpha_Ridge1</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">n_a0</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n_a1</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># do final fit</span>
+<span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span> <span class="o">=</span> <span class="n">do_final_fit_Ridge1</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="o">=</span><span class="n">a1</span><span class="p">)</span>
+
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">)</span>
+
+<span class="n">yobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">)</span>
+
+<span class="c1"># PLOT RESULTS</span>
+<span class="c1"># plot comparison of simulated and predicted timeseries</span>
+<span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># this does the stem plots with orange crosses the actual parameters</span>
+<span class="n">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">),</span> <span class="n">M</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M_h</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+minimum found: a0/a1/error: 0.06951927961775606 0.0003359818286283781 0.10405332708603166
+unconstrained error        : 0.10508759597522435
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: [3.495273836283104, 1.3752426789124002, 3.7746061360032854, 0.2759617002138839, 12.155875671033527], &#39;M&#39;: [[-0.2860433235152442, -0.1178228593230699, 0.07031626490066856, 0.080489888152254, -0.049681887136713954], [-0.1471772462311094, -0.1776324486328349, 0.08720999680920727, 0.10206563770864818, 0.005410058398354067], [0.24336282352099659, 0.10722167746159528, -0.4722415085278797, -0.0740124667648363, -0.1303213389985629], [0.08799281258887959, 0.059347563956976046, -0.03958183765368517, -0.04866249046833104, -0.014063858132203677], [-0.12368556630732286, -0.07890797235728542, -0.5039787404198037, 0.05371379775258234, -0.6769108529768957]], &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+mu_hat/mu:
+[ 3.49527384  1.37524268  3.77460614  0.2759617  12.15587567]
+[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
+
+M_hat/M:
+[[-0.29 -0.12  0.07  0.08 -0.05]
+ [-0.15 -0.18  0.09  0.1   0.01]
+ [ 0.24  0.11 -0.47 -0.07 -0.13]
+ [ 0.09  0.06 -0.04 -0.05 -0.01]
+ [-0.12 -0.08 -0.5   0.05 -0.68]]
+
+ [[-0.05   0.    -0.025  0.     0.   ]
+ [ 0.    -0.1    0.     0.05   0.   ]
+ [ 0.     0.    -0.15   0.     0.   ]
+ [ 0.     0.     0.    -0.01   0.   ]
+ [ 0.02   0.     0.     0.    -0.2  ]]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-lasso-gLV_5_1.png" src="../../_images/notebooks_gLV_examples-lasso-gLV_5_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-lasso-gLV_5_2.png" src="../../_images/notebooks_gLV_examples-lasso-gLV_5_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-lasso-gLV_5_3.png" src="../../_images/notebooks_gLV_examples-lasso-gLV_5_3.png" />
+</div>
+</div>
+</section>
+<section id="Fit-same-data-with-the-multi-penalty-lasso">
+<h2>Fit same data with the multi-penalty lasso<a class="headerlink" href="#Fit-same-data-with-the-multi-penalty-lasso" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># F = dlnX/dt</span>
+<span class="n">DlnX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">yobs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="p">(</span><span class="n">num_species</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">DlnX</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Dt</span><span class="p">))</span>
+
+<span class="c1"># X matrix: stacked observed counts</span>
+<span class="n">mX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">yobs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">))])</span>
+<span class="n">tX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">mX</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">alphas</span> <span class="o">=</span> <span class="n">fit_alpha_MPLasso</span><span class="p">(</span><span class="n">tX</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="p">)</span><span class="o">*</span><span class="n">alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">alphas</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MultiPenaltyLasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tX</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span>
+
+<span class="n">mu_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+<span class="n">M_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="n">num_species</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)]</span>
+
+<span class="c1"># this does the stem plots with orange crosses the actual parameters</span>
+<span class="n">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">),</span> <span class="n">M</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M_h</span><span class="p">))</span>
+
+<span class="n">rho</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># get prediction</span>
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">)</span>
+
+<span class="n">yobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">)</span>
+
+<span class="c1"># plot comparison of simulated and predicted timeseries</span>
+<span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+minimum found: a/error: [2.78255940e-07 4.64158883e-06] 0.10638224667375122
+mu_hat/mu:
+[ 4.49564272  1.73939019  4.75586439  0.09963634 16.27427325]
+[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
+
+M_hat/M:
+[[-0.34 -0.15  0.07  0.1  -0.08]
+ [-0.18 -0.2   0.1   0.12 -0.  ]
+ [ 0.27  0.12 -0.55 -0.08 -0.18]
+ [ 0.11  0.07 -0.05 -0.06 -0.01]
+ [-0.21 -0.13 -0.65  0.09 -0.84]]
+
+ [[-0.05   0.    -0.025  0.     0.   ]
+ [ 0.    -0.1    0.     0.05   0.   ]
+ [ 0.     0.    -0.15   0.     0.   ]
+ [ 0.     0.     0.    -0.01   0.   ]
+ [ 0.02   0.     0.     0.    -0.2  ]]
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: [4.495642720848084, 1.739390185287246, 4.755864394978705, 0.09963634038666683, 16.274273248244413], &#39;M&#39;: [[-0.3446720335391859, -0.14979599475823313, 0.06743261767426544, 0.10201564369096486, -0.07831787920886549], [-0.18246588542368164, -0.19707724984556318, 0.0983591466211684, 0.11510828050290738, -0.00033206547262519526], [0.2698212258221355, 0.11944239375956854, -0.5504483690551567, -0.08230110532270361, -0.1825046875383202], [0.10530936967909148, 0.06883164686745182, -0.045203656208451605, -0.05503040290300109, -0.011307522645849638], [-0.21080243705646515, -0.12870996598007164, -0.653079501743494, 0.08729427591017563, -0.8415917195849795]], &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-lasso-gLV_7_1.png" src="../../_images/notebooks_gLV_examples-lasso-gLV_7_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-lasso-gLV_7_2.png" src="../../_images/notebooks_gLV_examples-lasso-gLV_7_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-lasso-gLV_7_3.png" src="../../_images/notebooks_gLV_examples-lasso-gLV_7_3.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-lasso-gLV_7_4.png" src="../../_images/notebooks_gLV_examples-lasso-gLV_7_4.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Comparison of ridge vs lasso regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Five-species,-single-time-course.">Five species, single time course.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Perform-ridge-regression">Perform ridge regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Fit-same-data-with-the-multi-penalty-lasso">Fit same data with the multi-penalty lasso</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../examples.html">Examples</a><ul>
+      <li>Previous: <a href="examples-bayes-gLV.html" title="previous chapter">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+      <li>Next: <a href="examples-sim-gLV.html" title="next chapter">Simulate some time course data from the gLV</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../../_sources/notebooks/gLV/examples-lasso-gLV.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

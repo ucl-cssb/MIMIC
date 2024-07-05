@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Using the Data Imputator on a Real Public Dataset - Stein et al. (2013) &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Imputing Missing Values using Gaussian Process" href="examples-impute-GP.html" />
+    <link rel="prev" title="Simulate some time course data and perform ridge regression as in Stein et al. 2013" href="../gLV/examples-ridge-gLV.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="Using-the-Data-Imputator-on-a-Real-Public-Dataset---Stein-et-al.-(2013)">
+<h1>Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)<a class="headerlink" href="#Using-the-Data-Imputator-on-a-Real-Public-Dataset---Stein-et-al.-(2013)" title="Link to this heading">¶</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">mimic.data_imputation.impute_GP</span> <span class="kn">import</span> <span class="n">GPImputer</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+WARNING:tensorflow:From c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+WARNING:tensorflow:From c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\tensorflow_probability\python\internal\backend\numpy\_utils.py:48: The name tf.logging.TaskLevelStatusMessage is deprecated. Please use tf.compat.v1.logging.TaskLevelStatusMessage instead.
+
+WARNING:tensorflow:From c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\tensorflow_probability\python\internal\backend\numpy\_utils.py:48: The name tf.control_flow_v2_enabled is deprecated. Please use tf.compat.v1.control_flow_v2_enabled instead.
+
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;Stein_example_F.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dictionary to hold DataFrames for each unique ID</span>
+<span class="n">sample_dfs</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="c1"># Filter data for each sample ID</span>
+    <span class="n">sample_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">sample_id</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Shift time points to start from 0</span>
+    <span class="n">sample_data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sample_data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+    <span class="c1"># Store DataFrame in dictionary</span>
+    <span class="n">sample_dfs</span><span class="p">[</span><span class="n">sample_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_data</span>
+
+<span class="c1"># Display a sample DataFrame for verification</span>
+<span class="n">sample_dfs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>  <span class="c1"># Display the DataFrame for sample ID 1</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ID</th>
+      <th>time</th>
+      <th>undefined_genus_of_Enterobacteriaceae</th>
+      <th>Blautia</th>
+      <th>Barnesiella</th>
+      <th>undefined_genus_of_unclassified_Mollicutes</th>
+      <th>undefined_genus_of_Lachnospiraceae</th>
+      <th>Akkermansia</th>
+      <th>Clostridium_difficile</th>
+      <th>unclassified_Lachnospiraceae</th>
+      <th>Coprobacillus</th>
+      <th>Enterococcus</th>
+      <th>Other</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>0</td>
+      <td>5.25900</td>
+      <td>-1.536500</td>
+      <td>-3.157200</td>
+      <td>-0.72794</td>
+      <td>-3.778700</td>
+      <td>-2.561400</td>
+      <td>0.0</td>
+      <td>-3.033100</td>
+      <td>0.280350</td>
+      <td>2.07960</td>
+      <td>-1.65810</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>2</td>
+      <td>-0.73919</td>
+      <td>5.195600</td>
+      <td>-0.264510</td>
+      <td>0.42863</td>
+      <td>-0.264520</td>
+      <td>5.569500</td>
+      <td>0.0</td>
+      <td>-0.264720</td>
+      <td>1.967400</td>
+      <td>-0.82412</td>
+      <td>-0.44685</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>3</td>
+      <td>2.50860</td>
+      <td>-0.424610</td>
+      <td>2.907600</td>
+      <td>2.17330</td>
+      <td>2.907600</td>
+      <td>-1.697600</td>
+      <td>0.0</td>
+      <td>2.907600</td>
+      <td>6.399700</td>
+      <td>4.98700</td>
+      <td>5.10480</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1</td>
+      <td>4</td>
+      <td>-2.47510</td>
+      <td>6.226000</td>
+      <td>-1.014700</td>
+      <td>-1.01470</td>
+      <td>-1.014700</td>
+      <td>3.979200</td>
+      <td>0.0</td>
+      <td>-1.014700</td>
+      <td>-6.452700</td>
+      <td>-2.17780</td>
+      <td>-1.54420</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1</td>
+      <td>5</td>
+      <td>-0.58042</td>
+      <td>0.082481</td>
+      <td>-0.217980</td>
+      <td>-0.21801</td>
+      <td>-0.218000</td>
+      <td>-0.484480</td>
+      <td>0.0</td>
+      <td>-0.217620</td>
+      <td>-0.504010</td>
+      <td>-2.52060</td>
+      <td>-1.99110</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>1</td>
+      <td>6</td>
+      <td>-0.52380</td>
+      <td>-3.085500</td>
+      <td>-1.861500</td>
+      <td>2.85240</td>
+      <td>-1.861500</td>
+      <td>-0.092136</td>
+      <td>0.0</td>
+      <td>-1.862000</td>
+      <td>-1.861500</td>
+      <td>1.02880</td>
+      <td>-1.57390</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>1</td>
+      <td>7</td>
+      <td>0.59652</td>
+      <td>-0.038938</td>
+      <td>0.058401</td>
+      <td>0.81097</td>
+      <td>0.058389</td>
+      <td>-3.804400</td>
+      <td>0.0</td>
+      <td>0.058219</td>
+      <td>0.058405</td>
+      <td>-1.04020</td>
+      <td>0.69655</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>1</td>
+      <td>9</td>
+      <td>0.07182</td>
+      <td>0.134260</td>
+      <td>0.149210</td>
+      <td>0.21998</td>
+      <td>0.149210</td>
+      <td>0.149210</td>
+      <td>0.0</td>
+      <td>0.149330</td>
+      <td>0.149210</td>
+      <td>-0.53718</td>
+      <td>-0.18033</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>1</td>
+      <td>12</td>
+      <td>-1.29670</td>
+      <td>-0.889530</td>
+      <td>-0.822160</td>
+      <td>-0.61591</td>
+      <td>-0.822140</td>
+      <td>-0.822150</td>
+      <td>0.0</td>
+      <td>-0.822110</td>
+      <td>-0.822150</td>
+      <td>-0.48064</td>
+      <td>-0.40463</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>1</td>
+      <td>16</td>
+      <td>0.21910</td>
+      <td>0.179860</td>
+      <td>0.120090</td>
+      <td>0.11893</td>
+      <td>0.120090</td>
+      <td>0.120090</td>
+      <td>0.0</td>
+      <td>0.120130</td>
+      <td>0.120090</td>
+      <td>0.12009</td>
+      <td>0.13895</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>1</td>
+      <td>23</td>
+      <td>-0.34909</td>
+      <td>-0.130320</td>
+      <td>-0.160040</td>
+      <td>-0.13692</td>
+      <td>-0.160050</td>
+      <td>-0.160040</td>
+      <td>0.0</td>
+      <td>-0.160100</td>
+      <td>-0.160040</td>
+      <td>-0.00309</td>
+      <td>-0.18936</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process each sample DataFrame to include all time points from 0 to max with NaN for missing rows</span>
+<span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">sample_dfs</span><span class="p">:</span>
+    <span class="c1"># Get the maximum time point for the current sample</span>
+    <span class="n">max_time</span> <span class="o">=</span> <span class="n">sample_dfs</span><span class="p">[</span><span class="n">sample_id</span><span class="p">][</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="c1"># Create a new index that includes all time points from 0 to max_time</span>
+    <span class="n">full_time_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">RangeIndex</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="n">max_time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Reindex the DataFrame using the new full time index</span>
+    <span class="n">sample_dfs</span><span class="p">[</span><span class="n">sample_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_dfs</span><span class="p">[</span><span class="n">sample_id</span><span class="p">]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span>
+        <span class="s1">&#39;time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">full_time_index</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="c1"># Fill in the sample ID for new rows which will be NaN after reindexing</span>
+    <span class="n">sample_dfs</span><span class="p">[</span><span class="n">sample_id</span><span class="p">][</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">sample_id</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Display the adjusted DataFrame for sample ID 1 to verify the changes</span>
+<span class="c1"># Display the first 15 rows to see the complete range including NaNs</span>
+<span class="n">sample_dfs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>index</th>
+      <th>ID</th>
+      <th>undefined_genus_of_Enterobacteriaceae</th>
+      <th>Blautia</th>
+      <th>Barnesiella</th>
+      <th>undefined_genus_of_unclassified_Mollicutes</th>
+      <th>undefined_genus_of_Lachnospiraceae</th>
+      <th>Akkermansia</th>
+      <th>Clostridium_difficile</th>
+      <th>unclassified_Lachnospiraceae</th>
+      <th>Coprobacillus</th>
+      <th>Enterococcus</th>
+      <th>Other</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1.0</td>
+      <td>5.25900</td>
+      <td>-1.536500</td>
+      <td>-3.157200</td>
+      <td>-0.72794</td>
+      <td>-3.778700</td>
+      <td>-2.561400</td>
+      <td>0.0</td>
+      <td>-3.033100</td>
+      <td>0.280350</td>
+      <td>2.07960</td>
+      <td>-1.65810</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>1.0</td>
+      <td>-0.73919</td>
+      <td>5.195600</td>
+      <td>-0.264510</td>
+      <td>0.42863</td>
+      <td>-0.264520</td>
+      <td>5.569500</td>
+      <td>0.0</td>
+      <td>-0.264720</td>
+      <td>1.967400</td>
+      <td>-0.82412</td>
+      <td>-0.44685</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>1.0</td>
+      <td>2.50860</td>
+      <td>-0.424610</td>
+      <td>2.907600</td>
+      <td>2.17330</td>
+      <td>2.907600</td>
+      <td>-1.697600</td>
+      <td>0.0</td>
+      <td>2.907600</td>
+      <td>6.399700</td>
+      <td>4.98700</td>
+      <td>5.10480</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>1.0</td>
+      <td>-2.47510</td>
+      <td>6.226000</td>
+      <td>-1.014700</td>
+      <td>-1.01470</td>
+      <td>-1.014700</td>
+      <td>3.979200</td>
+      <td>0.0</td>
+      <td>-1.014700</td>
+      <td>-6.452700</td>
+      <td>-2.17780</td>
+      <td>-1.54420</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>1.0</td>
+      <td>-0.58042</td>
+      <td>0.082481</td>
+      <td>-0.217980</td>
+      <td>-0.21801</td>
+      <td>-0.218000</td>
+      <td>-0.484480</td>
+      <td>0.0</td>
+      <td>-0.217620</td>
+      <td>-0.504010</td>
+      <td>-2.52060</td>
+      <td>-1.99110</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>1.0</td>
+      <td>-0.52380</td>
+      <td>-3.085500</td>
+      <td>-1.861500</td>
+      <td>2.85240</td>
+      <td>-1.861500</td>
+      <td>-0.092136</td>
+      <td>0.0</td>
+      <td>-1.862000</td>
+      <td>-1.861500</td>
+      <td>1.02880</td>
+      <td>-1.57390</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>1.0</td>
+      <td>0.59652</td>
+      <td>-0.038938</td>
+      <td>0.058401</td>
+      <td>0.81097</td>
+      <td>0.058389</td>
+      <td>-3.804400</td>
+      <td>0.0</td>
+      <td>0.058219</td>
+      <td>0.058405</td>
+      <td>-1.04020</td>
+      <td>0.69655</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>1.0</td>
+      <td>0.07182</td>
+      <td>0.134260</td>
+      <td>0.149210</td>
+      <td>0.21998</td>
+      <td>0.149210</td>
+      <td>0.149210</td>
+      <td>0.0</td>
+      <td>0.149330</td>
+      <td>0.149210</td>
+      <td>-0.53718</td>
+      <td>-0.18033</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>12</td>
+      <td>1.0</td>
+      <td>-1.29670</td>
+      <td>-0.889530</td>
+      <td>-0.822160</td>
+      <td>-0.61591</td>
+      <td>-0.822140</td>
+      <td>-0.822150</td>
+      <td>0.0</td>
+      <td>-0.822110</td>
+      <td>-0.822150</td>
+      <td>-0.48064</td>
+      <td>-0.40463</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>13</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>14</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">sample_dfs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>index</th>
+      <th>ID</th>
+      <th>undefined_genus_of_Enterobacteriaceae</th>
+      <th>Blautia</th>
+      <th>Barnesiella</th>
+      <th>undefined_genus_of_unclassified_Mollicutes</th>
+      <th>undefined_genus_of_Lachnospiraceae</th>
+      <th>Akkermansia</th>
+      <th>Clostridium_difficile</th>
+      <th>unclassified_Lachnospiraceae</th>
+      <th>Coprobacillus</th>
+      <th>Enterococcus</th>
+      <th>Other</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1.0</td>
+      <td>5.25900</td>
+      <td>-1.536500</td>
+      <td>-3.157200</td>
+      <td>-0.72794</td>
+      <td>-3.778700</td>
+      <td>-2.561400</td>
+      <td>0.0</td>
+      <td>-3.033100</td>
+      <td>0.280350</td>
+      <td>2.07960</td>
+      <td>-1.65810</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>1.0</td>
+      <td>-0.73919</td>
+      <td>5.195600</td>
+      <td>-0.264510</td>
+      <td>0.42863</td>
+      <td>-0.264520</td>
+      <td>5.569500</td>
+      <td>0.0</td>
+      <td>-0.264720</td>
+      <td>1.967400</td>
+      <td>-0.82412</td>
+      <td>-0.44685</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>1.0</td>
+      <td>2.50860</td>
+      <td>-0.424610</td>
+      <td>2.907600</td>
+      <td>2.17330</td>
+      <td>2.907600</td>
+      <td>-1.697600</td>
+      <td>0.0</td>
+      <td>2.907600</td>
+      <td>6.399700</td>
+      <td>4.98700</td>
+      <td>5.10480</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>1.0</td>
+      <td>-2.47510</td>
+      <td>6.226000</td>
+      <td>-1.014700</td>
+      <td>-1.01470</td>
+      <td>-1.014700</td>
+      <td>3.979200</td>
+      <td>0.0</td>
+      <td>-1.014700</td>
+      <td>-6.452700</td>
+      <td>-2.17780</td>
+      <td>-1.54420</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>1.0</td>
+      <td>-0.58042</td>
+      <td>0.082481</td>
+      <td>-0.217980</td>
+      <td>-0.21801</td>
+      <td>-0.218000</td>
+      <td>-0.484480</td>
+      <td>0.0</td>
+      <td>-0.217620</td>
+      <td>-0.504010</td>
+      <td>-2.52060</td>
+      <td>-1.99110</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>1.0</td>
+      <td>-0.52380</td>
+      <td>-3.085500</td>
+      <td>-1.861500</td>
+      <td>2.85240</td>
+      <td>-1.861500</td>
+      <td>-0.092136</td>
+      <td>0.0</td>
+      <td>-1.862000</td>
+      <td>-1.861500</td>
+      <td>1.02880</td>
+      <td>-1.57390</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>1.0</td>
+      <td>0.59652</td>
+      <td>-0.038938</td>
+      <td>0.058401</td>
+      <td>0.81097</td>
+      <td>0.058389</td>
+      <td>-3.804400</td>
+      <td>0.0</td>
+      <td>0.058219</td>
+      <td>0.058405</td>
+      <td>-1.04020</td>
+      <td>0.69655</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>1.0</td>
+      <td>0.07182</td>
+      <td>0.134260</td>
+      <td>0.149210</td>
+      <td>0.21998</td>
+      <td>0.149210</td>
+      <td>0.149210</td>
+      <td>0.0</td>
+      <td>0.149330</td>
+      <td>0.149210</td>
+      <td>-0.53718</td>
+      <td>-0.18033</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>12</td>
+      <td>1.0</td>
+      <td>-1.29670</td>
+      <td>-0.889530</td>
+      <td>-0.822160</td>
+      <td>-0.61591</td>
+      <td>-0.822140</td>
+      <td>-0.822150</td>
+      <td>0.0</td>
+      <td>-0.822110</td>
+      <td>-0.822150</td>
+      <td>-0.48064</td>
+      <td>-0.40463</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>13</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>14</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>15</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>16</td>
+      <td>1.0</td>
+      <td>0.21910</td>
+      <td>0.179860</td>
+      <td>0.120090</td>
+      <td>0.11893</td>
+      <td>0.120090</td>
+      <td>0.120090</td>
+      <td>0.0</td>
+      <td>0.120130</td>
+      <td>0.120090</td>
+      <td>0.12009</td>
+      <td>0.13895</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>17</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>18</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>19</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>20</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>21</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>22</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>23</td>
+      <td>1.0</td>
+      <td>-0.34909</td>
+      <td>-0.130320</td>
+      <td>-0.160040</td>
+      <td>-0.13692</td>
+      <td>-0.160050</td>
+      <td>-0.160040</td>
+      <td>0.0</td>
+      <td>-0.160100</td>
+      <td>-0.160040</td>
+      <td>-0.00309</td>
+      <td>-0.18936</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Blautia&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0     False
+1      True
+2     False
+3     False
+4     False
+5     False
+6     False
+7     False
+8      True
+9     False
+10     True
+11     True
+12    False
+13     True
+14     True
+15     True
+16    False
+17     True
+18     True
+19     True
+20     True
+21     True
+22     True
+23    False
+Name: Blautia, dtype: bool
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">new_dataset</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Blautia&#39;</span><span class="p">],</span> <span class="s1">&#39;Blautia&#39;</span><span class="p">)</span>
+<span class="c1"># This is the last version of the imputed data</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: -43.268296620070025
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_GP_examples-impute-GP_Stein_7_1.png" src="../../_images/notebooks_GP_examples-impute-GP_Stein_7_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_dataset2</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Blautia&#39;</span><span class="p">],</span> <span class="s1">&#39;Blautia&#39;</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;RBF&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.SquaredExponential&#39;&gt;
+BIC: -45.666191640980635
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_GP_examples-impute-GP_Stein_8_1.png" src="../../_images/notebooks_GP_examples-impute-GP_Stein_8_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_dataset3</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Blautia&#39;</span><span class="p">],</span> <span class="s1">&#39;Blautia&#39;</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;M32&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.Matern32&#39;&gt;
+BIC: -45.66619187189501
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_GP_examples-impute-GP_Stein_9_1.png" src="../../_images/notebooks_GP_examples-impute-GP_Stein_9_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_dataset3</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Blautia&#39;</span><span class="p">],</span> <span class="s1">&#39;Blautia&#39;</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;M52&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: GPR
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.Matern52&#39;&gt;
+BIC: -45.666191854136706
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_GP_examples-impute-GP_Stein_10_1.png" src="../../_images/notebooks_GP_examples-impute-GP_Stein_10_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Index([&#39;index&#39;, &#39;ID&#39;, &#39;undefined_genus_of_Enterobacteriaceae&#39;, &#39;Blautia&#39;,
+       &#39;Barnesiella&#39;, &#39;undefined_genus_of_unclassified_Mollicutes&#39;,
+       &#39;undefined_genus_of_Lachnospiraceae&#39;, &#39;Akkermansia&#39;,
+       &#39;Clostridium_difficile&#39;, &#39;unclassified_Lachnospiraceae&#39;,
+       &#39;Coprobacillus&#39;, &#39;Enterococcus&#39;, &#39;Other&#39;],
+      dtype=&#39;object&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_dataset3</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Blautia&#39;</span><span class="p">,</span> <span class="s1">&#39;Barnesiella&#39;</span><span class="p">,</span> <span class="s1">&#39;Akkermansia&#39;</span><span class="p">],</span> <span class="s1">&#39;Blautia&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model: VGP
+Best kernel: &lt;class &#39;gpflow.kernels.stationaries.RationalQuadratic&#39;&gt;
+BIC: 7642.923909330112
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_GP_examples-impute-GP_Stein_12_1.png" src="../../_images/notebooks_GP_examples-impute-GP_Stein_12_1.png" />
+</div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../examples.html">Examples</a><ul>
+      <li>Previous: <a href="../gLV/examples-ridge-gLV.html" title="previous chapter">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+      <li>Next: <a href="examples-impute-GP.html" title="next chapter">Imputing Missing Values using Gaussian Process</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../../_sources/notebooks/GP/examples-impute-GP_Stein.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

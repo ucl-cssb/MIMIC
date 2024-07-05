@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Contributing to MIMIC &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="History" href="history.html" />
+    <link rel="prev" title="Credits" href="authors.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="contributing-to-mimic">
+<h1>Contributing to MIMIC<a class="headerlink" href="#contributing-to-mimic" title="Link to this heading">¶</a></h1>
+<p>We’re excited to have you contribute to MIMIC! This document outlines the guidelines for contributing to our project. By following these guidelines, you help us maintain the quality of our project and ensure that everyone’s contributions can be incorporated smoothly.</p>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
+<p>Before you begin:</p>
+<ul class="simple">
+<li><p>Make sure you have a <a class="reference external" href="https://github.com/signup/free">GitHub account</a>.</p></li>
+<li><p>Familiarize yourself with the <a class="reference external" href="https://guides.github.com/introduction/flow/">GitHub flow</a>.</p></li>
+<li><p>Check the issues for any features or bugs you might be interested in, or create a new issue to discuss your own ideas.</p></li>
+</ul>
+</section>
+<section id="making-changes">
+<h2>Making Changes<a class="headerlink" href="#making-changes" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Fork the Repository</strong>
+* Fork the repository on GitHub.</p></li>
+<li><p><strong>Clone the Fork</strong>
+* Clone your fork to your local machine.</p></li>
+<li><p><strong>Create a Branch</strong>
+* Create a new branch for your changes.
+* Name the branch something descriptive (e.g., <cite>add-comment-feature</cite>).</p></li>
+<li><p><strong>Make Your Changes</strong>
+* Follow the coding standards and write quality code.
+* Add comments to your code where necessary.
+* Write tests for your changes.</p></li>
+<li><p><strong>Commit Your Changes</strong>
+* Make sure your commit messages are clear and descriptive.</p></li>
+<li><p><strong>Push to the Branch</strong>
+* Push your changes to your branch in your forked repository.</p></li>
+<li><p><strong>Submit a Pull Request</strong>
+* Open a pull request to the main branch of the original repository.
+* Ensure all actions in the PR checklist are completed before submitting.</p></li>
+</ol>
+</section>
+<section id="pull-request-checklist">
+<h2>Pull Request Checklist<a class="headerlink" href="#pull-request-checklist" title="Link to this heading">¶</a></h2>
+<p>Before submitting your Pull Request, ensure:</p>
+<ul class="simple">
+<li><p>Your branch is re-based on the latest main branch.</p></li>
+<li><p>Necessary documentation is updated or added.</p></li>
+<li><p>Your code is well-commented, especially in complex or critical areas.</p></li>
+<li><p>Your code has been thoroughly tested in your local setup.</p></li>
+<li><p>The PR template questions are filled out to provide context on your changes.</p></li>
+</ul>
+</section>
+<section id="development-workflow">
+<h2>Development Workflow<a class="headerlink" href="#development-workflow" title="Link to this heading">¶</a></h2>
+<p>Our GitHub Actions workflow ensures that every push to <cite>master</cite> and every pull request undergoes rigorous checks to maintain the quality and integrity of the code. Here’s what happens under the hood:</p>
+<ol class="arabic simple">
+<li><p><strong>Automatic Dependency Management</strong>: When changes are pushed to the repository, our workflow automatically updates the <cite>requirements.txt</cite> file to reflect the latest dependencies needed for the project. This ensures that the project always has up-to-date dependencies.</p></li>
+<li><dl class="simple">
+<dt><strong>Continuous Integration Tests</strong>:</dt><dd><ul class="simple">
+<li><p><strong>Build</strong>: The code is built across multiple operating systems (Ubuntu, macOS, and Windows) using different versions of Python to ensure cross-platform compatibility.</p></li>
+<li><p><strong>Code Formatting</strong>: We use <cite>autopep8</cite> to automatically format the code to adhere to PEP 8 standards. This helps in maintaining the readability and consistency of the code.</p></li>
+<li><p><strong>Linting</strong>: The <cite>flake8</cite> tool checks for syntax errors or undefined names in the code. It’s crucial for catching common errors that might otherwise go unnoticed.</p></li>
+<li><p><strong>Type Checking</strong>: <cite>mypy</cite> is used for type checking, ensuring that type hints are used correctly throughout the codebase.</p></li>
+<li><p><strong>Testing</strong>: Our tests are run with <cite>pytest</cite>, which not only checks for correct behavior but also ensures that any new changes do not break existing functionalities.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>Handling Artifacts</strong>: If the <cite>requirements.txt</cite> is updated, it’s uploaded as an artifact to GitHub, which can be used for debugging or direct download from the Actions log.</p></li>
+</ol>
+<p><strong>Why Your PR Might Fail</strong>:</p>
+<ul class="simple">
+<li><p><strong>Dependency Issues</strong>: If <cite>requirements.txt</cite> does not correctly reflect the project’s dependencies due to an incomplete update.</p></li>
+<li><p><strong>Code Non-compliance</strong>: Failing to meet formatting guidelines, having syntax errors, or failing type checks.</p></li>
+<li><p><strong>Test Failures</strong>: Breaking changes that cause unit tests to fail.</p></li>
+</ul>
+<p>Please ensure your code adheres to the guidelines laid out in this document and passes all checks before submitting a pull request.</p>
+</section>
+<section id="code-review-process">
+<h2>Code Review Process<a class="headerlink" href="#code-review-process" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Reviewer Assignment</strong>
+* Once you open a PR, a maintainer will assign a reviewer.</p></li>
+<li><p><strong>Addressing Feedback</strong>
+* If your PR receives comments, address them promptly.
+* Make any requested changes and push them to your branch.</p></li>
+<li><p><strong>Approval and Merge</strong>
+* After your PR is approved by a reviewer, a maintainer will merge it.</p></li>
+</ol>
+</section>
+<section id="reporting-bugs">
+<h2>Reporting Bugs<a class="headerlink" href="#reporting-bugs" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Use the GitHub issues to report bugs.</p></li>
+<li><p>Before creating a new issue, check if it has already been reported.</p></li>
+<li><p>Include detailed instructions on how to reproduce the bug.</p></li>
+<li><p>Add Tags here when implemented.</p></li>
+</ul>
+</section>
+<section id="suggesting-enhancements">
+<h2>Suggesting Enhancements<a class="headerlink" href="#suggesting-enhancements" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Use GitHub issues to suggest enhancements.</p></li>
+<li><p>Be clear and detailed in your suggestion.</p></li>
+</ul>
+</section>
+<section id="additional-notes">
+<h2>Additional Notes<a class="headerlink" href="#additional-notes" title="Link to this heading">¶</a></h2>
+<p>Thank you for contributing to MIMIC!</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">mimic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing to MIMIC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#making-changes">Making Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pull-request-checklist">Pull Request Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development-workflow">Development Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-review-process">Code Review Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reporting-bugs">Reporting Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#suggesting-enhancements">Suggesting Enhancements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="authors.html" title="previous chapter">Credits</a></li>
+      <li>Next: <a href="history.html" title="next chapter">History</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/contributing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

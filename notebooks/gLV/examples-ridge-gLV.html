@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Simulate some time course data and perform ridge regression as in Stein et al. 2013 &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)" href="../GP/examples-impute-GP_Stein.html" />
+    <link rel="prev" title="Simulate some time course data from the gLV" href="examples-sim-gLV.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">mimic.model_infer</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mimic.model_simulate</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">odeint</span>
+<br/></pre></div>
+</div>
+</div>
+<section id="Simulate-some-time-course-data-and-perform-ridge-regression-as-in-Stein-et-al.-2013">
+<h1>Simulate some time course data and perform ridge regression as in Stein et al. 2013<a class="headerlink" href="#Simulate-some-time-course-data-and-perform-ridge-regression-as-in-Stein-et-al.-2013" title="Link to this heading">¶</a></h1>
+<p>We have coded up the Stein model and ridge regression without the perturbation term (Ridge1) and with a single perturbation (Ridge 2). Ridge regression is designed to cause shrinkage to prevent overfitting but it isn’t used for variable selection.</p>
+<section id="Five-species,-single-time-course">
+<h2>Five species, single time course<a class="headerlink" href="#Five-species,-single-time-course" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># In this example n &gt;&gt; p and it it is basically same as standard regression</span>
+<span class="c1"># We have to be careful as most of these gLV models are very weakly identifiable</span>
+
+<span class="n">set_all_seeds</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="c1"># SETUP MODEL</span>
+<span class="c1"># establish size of model</span>
+<span class="n">num_species</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">num_metabolites</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># construct interaction matrix</span>
+<span class="c1"># TODO do this programmatically</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_species</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.025</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.02</span>
+
+<span class="c1"># construct growth rates matrix</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
+
+<span class="c1"># instantiate simulator</span>
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">sim_gMLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                     <span class="n">num_metabolites</span><span class="o">=</span><span class="n">num_metabolites</span><span class="p">,</span>
+                     <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span>
+                     <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">)</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
+
+<span class="c1"># PRODUCE SIMULATED RESULTS</span>
+<span class="c1"># initial conditions</span>
+<span class="n">init_species</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="p">)</span>
+<span class="n">init_metabolites</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_metabolites</span><span class="p">)</span>
+
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">yobs</span><span class="p">,</span> <span class="n">sobs</span><span class="p">,</span> <span class="n">sy0</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span>
+    <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">sy0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">init_species</span><span class="p">,</span> <span class="n">init_metabolites</span><span class="p">)))</span>
+
+<span class="c1"># add some gaussian noise</span>
+<span class="n">yobs</span> <span class="o">=</span> <span class="n">yobs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">sobs</span> <span class="o">=</span> <span class="n">sobs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">sobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># plot simulation</span>
+<span class="c1"># plot_gLV(yobs, sobs, times)</span>
+
+<span class="c1"># PERFORM REGRESSION</span>
+<span class="c1"># linearise</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">linearize_time_course_16S</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+<span class="c1"># print(f&quot;n: {num_species * F.shape[0]}, p: {num_species + num_species ** 2}&quot;)</span>
+
+<span class="c1"># get the best lambda/alpha values on a grid via cross validation</span>
+<span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">fit_alpha_Ridge1</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">n_a0</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n_a1</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># do final fit</span>
+<span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span> <span class="o">=</span> <span class="n">do_final_fit_Ridge1</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">)</span>
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gMLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                     <span class="n">num_metabolites</span><span class="o">=</span><span class="n">num_metabolites</span><span class="p">,</span>
+                     <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="p">,</span>
+                     <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">)</span>
+<span class="n">yobs_h</span><span class="p">,</span> <span class="n">sobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span>
+    <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">sy0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">init_species</span><span class="p">,</span> <span class="n">init_metabolites</span><span class="p">)))</span>
+
+<span class="c1"># PLOT RESULTS</span>
+<span class="c1"># plot comparison of simulated and predicted timeseries</span>
+<span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># this does the stem plots with orange crosses the actual parameters</span>
+<span class="n">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">),</span> <span class="n">M</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M_h</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model parameters:
+Model: gMLV
+num_species: 5
+num_metabolites: 0
+num_perturbations: 0
+mu: [1.28 0.56 2.07 0.86 0.7 ]
+M: [[-0.05  0.   -0.03  0.    0.  ]
+ [ 0.   -0.1   0.    0.05  0.  ]
+ [ 0.    0.   -0.15  0.    0.  ]
+ [ 0.    0.    0.   -0.01  0.  ]
+ [ 0.02  0.    0.    0.   -0.2 ]]
+beta: None
+epsilon: []
+Warning: Missing or None parameters for gMLV simulation. Using default values for: [&#39;beta&#39;]
+Using the following parameters for gMLV simulation: {&#39;num_species&#39;: 5, &#39;num_metabolites&#39;: 0, &#39;num_perturbations&#39;: 0, &#39;mu&#39;: array([1.27853844, 0.55683415, 2.06752757, 0.86387608, 0.70448068]), &#39;M&#39;: array([[-0.05 ,  0.   , -0.025,  0.   ,  0.   ],
+       [ 0.   , -0.1  ,  0.   ,  0.05 ,  0.   ],
+       [ 0.   ,  0.   , -0.15 ,  0.   ,  0.   ],
+       [ 0.   ,  0.   ,  0.   , -0.01 ,  0.   ],
+       [ 0.02 ,  0.   ,  0.   ,  0.   , -0.2  ]]), &#39;beta&#39;: None, &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+minimum found: a0/a1/error: 0.06951927961775606 0.0003359818286283781 0.1040533270860066
+unconstrained error        : 0.10508759597525635
+Warning: Missing or None parameters for gMLV simulation. Using default values for: [&#39;beta&#39;]
+Using the following parameters for gMLV simulation: {&#39;num_species&#39;: 5, &#39;num_metabolites&#39;: 0, &#39;num_perturbations&#39;: 0, &#39;mu&#39;: [3.495273836287863, 1.3752426789429766, 3.774606135972948, 0.27596170020172694, 12.155875670993101], &#39;M&#39;: [[-0.28604332351676337, -0.11782285932386341, 0.07031626490180438, 0.08048988815279538, -0.04968188713638712], [-0.14717724623325015, -0.1776324486340454, 0.08720999680938764, 0.10206563770946256, 0.0054100583977499846], [0.2433628235243928, 0.10722167746340301, -0.47224150852925606, -0.07401246676605251, -0.13032133899815715], [0.0879928125899146, 0.05934756395757884, -0.0395818376537556, -0.048662490468695835, -0.014063858131853724], [-0.12368556630477316, -0.07890797235592878, -0.5039787404198957, 0.05371379775166251, -0.6769108529758052]], &#39;beta&#39;: None, &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+mu_hat/mu:
+[ 3.49527384  1.37524268  3.77460614  0.2759617  12.15587567]
+[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
+
+M_hat/M:
+[[-0.29 -0.12  0.07  0.08 -0.05]
+ [-0.15 -0.18  0.09  0.1   0.01]
+ [ 0.24  0.11 -0.47 -0.07 -0.13]
+ [ 0.09  0.06 -0.04 -0.05 -0.01]
+ [-0.12 -0.08 -0.5   0.05 -0.68]]
+
+ [[-0.05   0.    -0.025  0.     0.   ]
+ [ 0.    -0.1    0.     0.05   0.   ]
+ [ 0.     0.    -0.15   0.     0.   ]
+ [ 0.     0.     0.    -0.01   0.   ]
+ [ 0.02   0.     0.     0.    -0.2  ]]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_3_1.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_3_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_3_2.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_3_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_3_3.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_3_3.png" />
+</div>
+</div>
+</section>
+<section id="Five-species,-lower-number-of-time-points,-multiple-time-course">
+<h2>Five species, lower number of time points, multiple time course<a class="headerlink" href="#Five-species,-lower-number-of-time-points,-multiple-time-course" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">set_all_seeds</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="c1"># SETUP MODEL</span>
+<span class="c1"># establish size of model</span>
+<span class="n">num_species</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">num_metabolites</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># construct interaction matrix</span>
+<span class="c1"># TODO do this programmatically</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_species</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.025</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.02</span>
+
+<span class="c1"># construct growth rates matrix</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
+
+<span class="c1"># instantiate simulator</span>
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">sim_gMLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                     <span class="n">num_metabolites</span><span class="o">=</span><span class="n">num_metabolites</span><span class="p">,</span>
+                     <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span>
+                     <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">)</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
+
+<span class="c1"># PRODUCE SIMULATED RESULTS</span>
+<span class="c1"># data structures for results</span>
+<span class="n">ryobs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">rsobs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">ry0</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">rs0</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
+
+<span class="n">num_timecourses</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">timecourse_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_timecourses</span><span class="p">):</span>
+    <span class="c1"># initial conditions</span>
+    <span class="n">init_species</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_species</span><span class="p">)</span>
+    <span class="n">init_metabolites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_metabolites</span><span class="p">)</span>
+
+    <span class="n">yobs</span><span class="p">,</span> <span class="n">sobs</span><span class="p">,</span> <span class="n">sy0</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span>
+        <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">sy0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">init_species</span><span class="p">,</span> <span class="n">init_metabolites</span><span class="p">)))</span>
+
+    <span class="c1"># add some gaussian noise</span>
+    <span class="n">yobs</span> <span class="o">=</span> <span class="n">yobs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">sobs</span> <span class="o">=</span> <span class="n">sobs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">sobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># append results</span>
+    <span class="n">ryobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yobs</span><span class="p">)</span>
+    <span class="n">rsobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sobs</span><span class="p">)</span>
+    <span class="n">ry0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">init_species</span><span class="p">)</span>
+    <span class="n">rs0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">init_metabolites</span><span class="p">)</span>
+    <span class="n">Xs</span><span class="p">,</span> <span class="n">Fs</span> <span class="o">=</span> <span class="n">linearize_time_course_16S</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">X</span><span class="p">,</span> <span class="n">Xs</span><span class="p">])</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">F</span><span class="p">,</span> <span class="n">Fs</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;X: </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;F: </span><span class="si">{</span><span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n: </span><span class="si">{</span><span class="n">num_species</span><span class="o">*</span><span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, p: </span><span class="si">{</span><span class="n">num_species</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">num_species</span><span class="o">**</span><span class="mi">2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># PERFORM REGRESSION</span>
+<span class="c1"># get the best lambda/alpha values on a grid via cross validation</span>
+<span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">fit_alpha_Ridge1</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">n_a0</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n_a1</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># do final fit</span>
+<span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span> <span class="o">=</span> <span class="n">do_final_fit_Ridge1</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="o">=</span><span class="n">a1</span><span class="p">)</span>
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gMLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                     <span class="n">num_metabolites</span><span class="o">=</span><span class="n">num_metabolites</span><span class="p">,</span>
+                     <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="p">,</span>
+                     <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">)</span>
+
+<span class="c1"># PLOT RESULTS</span>
+<span class="c1"># plot comparison of simulated and predicted timeseries</span>
+<span class="k">for</span> <span class="n">timecourse_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_timecourses</span><span class="p">):</span>
+    <span class="n">yobs_h</span><span class="p">,</span> <span class="n">sobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span>
+        <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">sy0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">ry0</span><span class="p">[</span><span class="n">timecourse_idx</span><span class="p">],</span> <span class="n">rs0</span><span class="p">[</span><span class="n">timecourse_idx</span><span class="p">])))</span>
+    <span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">ryobs</span><span class="p">[</span><span class="n">timecourse_idx</span><span class="p">],</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># this does the stem plots with orange crosses the actual parameters</span>
+<span class="n">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">),</span> <span class="n">M</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M_h</span><span class="p">))</span>
+
+<span class="c1"># ANALYSE RESULTS</span>
+<span class="c1"># do some bootstrapping to help with interpretation of parameters</span>
+<span class="c1"># starred parameters are considered different to zero</span>
+<span class="n">do_bootstrapping</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="n">nboots</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model parameters:
+Model: gMLV
+num_species: 5
+num_metabolites: 0
+num_perturbations: 0
+mu: [1.28 0.56 2.07 0.86 0.7 ]
+M: [[-0.05  0.   -0.03  0.    0.  ]
+ [ 0.   -0.1   0.    0.05  0.  ]
+ [ 0.    0.   -0.15  0.    0.  ]
+ [ 0.    0.    0.   -0.01  0.  ]
+ [ 0.02  0.    0.    0.   -0.2 ]]
+beta: None
+epsilon: []
+Warning: Missing or None parameters for gMLV simulation. Using default values for: [&#39;beta&#39;]
+Using the following parameters for gMLV simulation: {&#39;num_species&#39;: 5, &#39;num_metabolites&#39;: 0, &#39;num_perturbations&#39;: 0, &#39;mu&#39;: array([1.27853844, 0.55683415, 2.06752757, 0.86387608, 0.70448068]), &#39;M&#39;: array([[-0.05 ,  0.   , -0.025,  0.   ,  0.   ],
+       [ 0.   , -0.1  ,  0.   ,  0.05 ,  0.   ],
+       [ 0.   ,  0.   , -0.15 ,  0.   ,  0.   ],
+       [ 0.   ,  0.   ,  0.   , -0.01 ,  0.   ],
+       [ 0.02 ,  0.   ,  0.   ,  0.   , -0.2  ]]), &#39;beta&#39;: None, &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+Warning: Missing or None parameters for gMLV simulation. Using default values for: [&#39;beta&#39;]
+Using the following parameters for gMLV simulation: {&#39;num_species&#39;: 5, &#39;num_metabolites&#39;: 0, &#39;num_perturbations&#39;: 0, &#39;mu&#39;: array([1.27853844, 0.55683415, 2.06752757, 0.86387608, 0.70448068]), &#39;M&#39;: array([[-0.05 ,  0.   , -0.025,  0.   ,  0.   ],
+       [ 0.   , -0.1  ,  0.   ,  0.05 ,  0.   ],
+       [ 0.   ,  0.   , -0.15 ,  0.   ,  0.   ],
+       [ 0.   ,  0.   ,  0.   , -0.01 ,  0.   ],
+       [ 0.02 ,  0.   ,  0.   ,  0.   , -0.2  ]]), &#39;beta&#39;: None, &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+Warning: Missing or None parameters for gMLV simulation. Using default values for: [&#39;beta&#39;]
+Using the following parameters for gMLV simulation: {&#39;num_species&#39;: 5, &#39;num_metabolites&#39;: 0, &#39;num_perturbations&#39;: 0, &#39;mu&#39;: array([1.27853844, 0.55683415, 2.06752757, 0.86387608, 0.70448068]), &#39;M&#39;: array([[-0.05 ,  0.   , -0.025,  0.   ,  0.   ],
+       [ 0.   , -0.1  ,  0.   ,  0.05 ,  0.   ],
+       [ 0.   ,  0.   , -0.15 ,  0.   ,  0.   ],
+       [ 0.   ,  0.   ,  0.   , -0.01 ,  0.   ],
+       [ 0.02 ,  0.   ,  0.   ,  0.   , -0.2  ]]), &#39;beta&#39;: None, &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+X: (12, 6)
+F: (12, 5)
+n: 60, p: 30
+minimum found: a0/a1/error: 1.2742749857031335 3.792690190732254e-05 0.040851666358243804
+unconstrained error        : 0.07450427435040494
+Warning: Missing or None parameters for gMLV simulation. Using default values for: [&#39;beta&#39;]
+Using the following parameters for gMLV simulation: {&#39;num_species&#39;: 5, &#39;num_metabolites&#39;: 0, &#39;num_perturbations&#39;: 0, &#39;mu&#39;: [0.41552427943921244, 0.8869109545599364, 0.40526675820416297, 0.6406298041373665, 0.15583876969141913], &#39;M&#39;: [[-0.02235273814356689, -0.0003863009103320054, 0.00037998076102339917, 0.0007350323562556425, -0.006240995177609149], [-0.015578080277067863, -0.03152617030201347, 0.0016521403887853625, 0.010294125434172845, 0.0017847890452807034], [-0.0007139880453507574, -0.007286575271488957, -0.027814816673743265, 0.004130407977689072, -0.0036159532203242457], [0.004386227224810272, 0.0018242251775943729, -0.005198013755418974, -0.009205568395119986, 0.007372227177549854], [0.004303879975034176, -0.0024082429224774964, -0.00910239251701696, 0.002574175391212613, -0.04259917464073222]], &#39;beta&#39;: None, &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+Warning: Missing or None parameters for gMLV simulation. Using default values for: [&#39;beta&#39;]
+Using the following parameters for gMLV simulation: {&#39;num_species&#39;: 5, &#39;num_metabolites&#39;: 0, &#39;num_perturbations&#39;: 0, &#39;mu&#39;: [0.41552427943921244, 0.8869109545599364, 0.40526675820416297, 0.6406298041373665, 0.15583876969141913], &#39;M&#39;: [[-0.02235273814356689, -0.0003863009103320054, 0.00037998076102339917, 0.0007350323562556425, -0.006240995177609149], [-0.015578080277067863, -0.03152617030201347, 0.0016521403887853625, 0.010294125434172845, 0.0017847890452807034], [-0.0007139880453507574, -0.007286575271488957, -0.027814816673743265, 0.004130407977689072, -0.0036159532203242457], [0.004386227224810272, 0.0018242251775943729, -0.005198013755418974, -0.009205568395119986, 0.007372227177549854], [0.004303879975034176, -0.0024082429224774964, -0.00910239251701696, 0.002574175391212613, -0.04259917464073222]], &#39;beta&#39;: None, &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+Warning: Missing or None parameters for gMLV simulation. Using default values for: [&#39;beta&#39;]
+Using the following parameters for gMLV simulation: {&#39;num_species&#39;: 5, &#39;num_metabolites&#39;: 0, &#39;num_perturbations&#39;: 0, &#39;mu&#39;: [0.41552427943921244, 0.8869109545599364, 0.40526675820416297, 0.6406298041373665, 0.15583876969141913], &#39;M&#39;: [[-0.02235273814356689, -0.0003863009103320054, 0.00037998076102339917, 0.0007350323562556425, -0.006240995177609149], [-0.015578080277067863, -0.03152617030201347, 0.0016521403887853625, 0.010294125434172845, 0.0017847890452807034], [-0.0007139880453507574, -0.007286575271488957, -0.027814816673743265, 0.004130407977689072, -0.0036159532203242457], [0.004386227224810272, 0.0018242251775943729, -0.005198013755418974, -0.009205568395119986, 0.007372227177549854], [0.004303879975034176, -0.0024082429224774964, -0.00910239251701696, 0.002574175391212613, -0.04259917464073222]], &#39;beta&#39;: None, &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+mu_hat/mu:
+[0.41552428 0.88691095 0.40526676 0.6406298  0.15583877]
+[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
+
+M_hat/M:
+[[-0.02 -0.    0.    0.   -0.01]
+ [-0.02 -0.03  0.    0.01  0.  ]
+ [-0.   -0.01 -0.03  0.   -0.  ]
+ [ 0.    0.   -0.01 -0.01  0.01]
+ [ 0.   -0.   -0.01  0.   -0.04]]
+
+ [[-0.05   0.    -0.025  0.     0.   ]
+ [ 0.    -0.1    0.     0.05   0.   ]
+ [ 0.     0.    -0.15   0.     0.   ]
+ [ 0.     0.     0.    -0.01   0.   ]
+ [ 0.02   0.     0.     0.    -0.2  ]]
+examining mu_i
+0 -0.122  -  0.223
+1 -0.125  -  0.821
+2 -0.815  -  0.537
+3 0.029  -  0.609 *
+4 -0.858  -  -0.023 *
+
+examining Mij
+1 (0, 0) -0.001  -  0.0
+2 (0, 1) -0.003  -  0.0
+3 (0, 2) -0.004  -  0.001
+4 (0, 3) -0.001  -  0.002
+5 (0, 4) -0.002  -  0.0
+6 (1, 0) -0.001  -  0.0
+7 (1, 1) -0.007  -  0.0
+8 (1, 2) -0.009  -  0.001
+9 (1, 3) -0.006  -  0.004
+10 (1, 4) -0.004  -  0.001
+11 (2, 0) -0.002  -  0.001
+12 (2, 1) -0.01  -  0.003
+13 (2, 2) -0.023  -  0.0
+14 (2, 3) -0.001  -  0.013
+15 (2, 4) -0.012  -  0.0
+16 (3, 0) 0.0  -  0.0 *
+17 (3, 1) -0.003  -  0.001
+18 (3, 2) 0.0  -  0.004 *
+19 (3, 3) -0.006  -  0.0
+20 (3, 4) 0.0  -  0.002 *
+21 (4, 0) -0.002  -  0.0
+22 (4, 1) -0.006  -  0.004
+23 (4, 2) -0.02  -  -0.0 *
+24 (4, 3) -0.0  -  0.014
+25 (4, 4) -0.01  -  -0.0 *
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_5_1.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_5_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_5_2.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_5_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_5_3.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_5_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_5_4.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_5_4.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_5_5.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_5_5.png" />
+</div>
+</div>
+</section>
+<section id="Five-species,-single-time-course-including-a-perturbation">
+<h2>Five species, single time course including a perturbation<a class="headerlink" href="#Five-species,-single-time-course-including-a-perturbation" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">set_all_seeds</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="c1"># SETUP MODEL</span>
+<span class="c1"># establish size of model</span>
+<span class="n">num_species</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># construct interaction matrix</span>
+<span class="c1"># TODO do this programmatically</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_species</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.025</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.02</span>
+
+<span class="c1"># construct growth rates matrix</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
+
+<span class="c1"># construct perturbation matrix</span>
+<span class="n">num_perturbations</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">epsilon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_perturbations</span><span class="p">])</span>
+<span class="n">epsilon</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">pert_fn</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">if</span> <span class="mf">2.0</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">2.2</span> <span class="ow">or</span> <span class="mf">3.0</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">3.2</span> <span class="ow">or</span> <span class="mf">4.0</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">4.2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># instantiate simulator</span>
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">num_perturbations</span><span class="o">=</span><span class="n">num_perturbations</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span>
+                    <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
+
+<span class="c1"># PRODUCE SIMULATED RESULTS</span>
+<span class="c1"># initial conditions</span>
+<span class="n">init_species</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="p">)</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">yobs</span><span class="p">,</span> <span class="n">init_species</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="n">pert_fn</span><span class="p">)</span>
+
+<span class="c1"># add some gaussian noise</span>
+<span class="n">yobs</span> <span class="o">=</span> <span class="n">yobs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># plot simulation</span>
+<span class="n">plot_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model parameters:
+Model: gLV
+num_species: 5
+mu: [1.28 0.56 2.07 0.86 0.7 ]
+M: [[-0.05  0.   -0.03  0.    0.  ]
+ [ 0.   -0.1   0.    0.05  0.  ]
+ [ 0.    0.   -0.15  0.    0.  ]
+ [ 0.    0.    0.   -0.01  0.  ]
+ [ 0.02  0.    0.    0.   -0.2 ]]
+epsilon: [[ 0.]
+ [-1.]
+ [ 0.]
+ [-1.]
+ [ 0.]]
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.27853844, 0.55683415, 2.06752757, 0.86387608, 0.70448068]), &#39;M&#39;: array([[-0.05 ,  0.   , -0.025,  0.   ,  0.   ],
+       [ 0.   , -0.1  ,  0.   ,  0.05 ,  0.   ],
+       [ 0.   ,  0.   , -0.15 ,  0.   ,  0.   ],
+       [ 0.   ,  0.   ,  0.   , -0.01 ,  0.   ],
+       [ 0.02 ,  0.   ,  0.   ,  0.   , -0.2  ]]), &#39;epsilon&#39;: array([[ 0.],
+       [-1.],
+       [ 0.],
+       [-1.],
+       [ 0.]])}
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_7_1.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_7_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1"># PERFORM REGRESSION</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pert_fn</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">])</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;perturbation:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+
+
+<span class="c1"># linearise</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">linearize_time_course_16S_u</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n: </span><span class="si">{</span><span class="n">num_species</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, p: </span><span class="si">{</span><span class="n">num_species</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">num_species</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># get the best lambda/alpha values on a grid via cross validation</span>
+<span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span> <span class="o">=</span> <span class="n">fit_alpha_Ridge2</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_pert</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_a0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_a1</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_a2</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># do final fit</span>
+<span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span><span class="p">,</span> <span class="n">e_h</span> <span class="o">=</span> <span class="n">do_final_fit_Ridge2</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_pert</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="o">=</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="o">=</span><span class="n">a2</span><span class="p">)</span>
+
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">num_perturbations</span><span class="o">=</span><span class="n">num_perturbations</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">,</span>
+                    <span class="n">epsilon</span><span class="o">=</span><span class="n">e_h</span><span class="p">,</span>
+                    <span class="p">)</span>
+<span class="n">yobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="n">pert_fn</span><span class="p">)</span>
+
+<span class="c1"># PLOT RESULTS</span>
+<span class="c1"># plot comparison of simulated and predicted timeseries</span>
+<span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># this does the stem plots with orange crosses the actual parameters</span>
+<span class="n">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">),</span> <span class="n">M</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M_h</span><span class="p">),</span> <span class="n">e</span><span class="o">=</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">e_h</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+perturbation:
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0
+ 0 0 0 1 1 0 0 0 0 0 0 0 0]
+n: 245, p: 30
+minimum found: a0/a1/a2/error: 0.01 1e-06 1e-06 0.10814280268684331
+unconstrained error        : 0.11073329941242945
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: [3.5411525151892165, 0.07132788854493471, 7.159240378000905, 1.1548830750927708, 15.162442953233509], &#39;M&#39;: [[-0.1978488990767087, -0.06770486233703908, -0.018725399921347034, 0.050978189457053236, -0.07486080985398247], [-0.028695203218483175, -0.1175958443110258, 0.052338471943586144, 0.06119713740768114, 0.033216719844505464], [0.07304419473840096, 0.0002581169775652223, -0.5087087277644965, -0.005206752092147458, -0.22492679134981908], [0.01823922864839476, 0.02610775360126526, -0.024575694761484832, -0.02576324681834709, -0.0373106460143847], [-0.09758290045074763, -0.06214807073065136, -0.6989203012123228, 0.04645458413576269, -0.8231489493342359]], &#39;epsilon&#39;: [array([-0.01591961]), array([-0.96186409]), array([-0.04106974]), array([-0.9740322]), array([0.01459544])]}
+mu_hat/mu:
+[ 3.54115252  0.07132789  7.15924038  1.15488308 15.16244295]
+[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
+
+M_hat/M:
+[[-0.2  -0.07 -0.02  0.05 -0.07]
+ [-0.03 -0.12  0.05  0.06  0.03]
+ [ 0.07  0.   -0.51 -0.01 -0.22]
+ [ 0.02  0.03 -0.02 -0.03 -0.04]
+ [-0.1  -0.06 -0.7   0.05 -0.82]]
+
+ [[-0.05   0.    -0.025  0.     0.   ]
+ [ 0.    -0.1    0.     0.05   0.   ]
+ [ 0.     0.    -0.15   0.     0.   ]
+ [ 0.     0.     0.    -0.01   0.   ]
+ [ 0.02   0.     0.     0.    -0.2  ]]
+
+e_hat/e:
+[[-0.02]
+ [-0.96]
+ [-0.04]
+ [-0.97]
+ [ 0.01]]
+
+ [ 0 -1  0 -1  0]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_8_1.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_8_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_8_2.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_8_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_8_3.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_8_3.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-ridge-gLV_8_4.png" src="../../_images/notebooks_gLV_examples-ridge-gLV_8_4.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Five-species,-single-time-course">Five species, single time course</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Five-species,-lower-number-of-time-points,-multiple-time-course">Five species, lower number of time points, multiple time course</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Five-species,-single-time-course-including-a-perturbation">Five species, single time course including a perturbation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../examples.html">Examples</a><ul>
+      <li>Previous: <a href="examples-sim-gLV.html" title="previous chapter">Simulate some time course data from the gLV</a></li>
+      <li>Next: <a href="../GP/examples-impute-GP_Stein.html" title="next chapter">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../../_sources/notebooks/gLV/examples-ridge-gLV.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

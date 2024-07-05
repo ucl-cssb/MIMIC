@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MVAR Simulation for Microbiota and Metabolites &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Vector AutoRegression (VAR) Simulation" href="../VAR/examples-sim-VAR.html" />
+    <link rel="prev" title="MVAR Simulation for Microbiota and Metabolites" href="examples-infer-MVAR.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="MVAR-Simulation-for-Microbiota-and-Metabolites">
+<h1>MVAR Simulation for Microbiota and Metabolites<a class="headerlink" href="#MVAR-Simulation-for-Microbiota-and-Metabolites" title="Link to this heading">¶</a></h1>
+<section id="MVAR-Process">
+<h2>MVAR Process<a class="headerlink" href="#MVAR-Process" title="Link to this heading">¶</a></h2>
+<p>The MVAR model extends the traditional VAR model used to fit abundances over time, by incorporating metabolites. The model can be expressed as follows:</p>
+<div class="math notranslate nohighlight">
+\[X_t = A \cdot X_{t-1} + \epsilon_{X,t}\]</div>
+<div class="math notranslate nohighlight">
+\[S_t = B \cdot X_{t-1} + \epsilon_{S,t}\]</div>
+<p>where: - <span class="math notranslate nohighlight">\(X_t\)</span> is the vector of microbiota abundances at time <span class="math notranslate nohighlight">\(t\)</span>, - <span class="math notranslate nohighlight">\(S_t\)</span> is the vector of metabolite abundances at time <span class="math notranslate nohighlight">\(t\)</span>, - <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> are matrices representing the interactions within microbiota and between microbiota and metabolites, respectively, - <span class="math notranslate nohighlight">\(\epsilon_{X,t}\)</span> and <span class="math notranslate nohighlight">\(\epsilon_{S,t}\)</span> are vectors of error terms, assumed to be normally distributed with mean 0 and a specific standard deviation.</p>
+</section>
+<section id="Objective">
+<h2>Objective<a class="headerlink" href="#Objective" title="Link to this heading">¶</a></h2>
+<p>The objective of this notebook is to simulate the dynamics between microbiota and metabolites using the MVAR model. Through simulation, we aim to demonstrate how specific interactions can be identified and quantified, providing insights into the causal relationships within these systems.</p>
+</section>
+<section id="Simulation-with-VARsim.py-for-sVAR-Models">
+<h2>Simulation with <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for sVAR Models<a class="headerlink" href="#Simulation-with-VARsim.py-for-sVAR-Models" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> script has been adapted to support MVAR simulation, allowing us to specify metabolite interaction matrices and simulate the dynamics of microbiota and metabolites over time. This section demonstrates how to use the script for simulating and visualizing the interactions captured by our MVAR model.</p>
+</section>
+<section id="Example-Usage-of-VARsim.py-for-MVAR-Simulation">
+<h2>Example Usage of <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for MVAR Simulation<a class="headerlink" href="#Example-Usage-of-VARsim.py-for-MVAR-Simulation" title="Link to this heading">¶</a></h2>
+<p>The implementation of the VAR model in <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> allows for detailed simulation of the dynamic interactions between microbiota and their produced metabolites. The script is designed to facilitate straightforward simulation of these complex biological systems. The following code examples provide a guide on how to leverage the <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> script to simulate these interactions effectively:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importing the libraries</span>
+<span class="kn">from</span> <span class="nn">mimic.model_simulate.sim_VAR</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<p>First, let’s first generate synthetic data for microbiota using the sim_VAR class. We will then simulate the sparse interaction with a given matrix</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate a VAR model</span>
+
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">sim_VAR</span><span class="p">()</span>
+
+<span class="n">simulator</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model parameters:
+Model: VAR
+n_obs: None
+coefficients: None
+initial_values: None
+noise_stddev: None
+output: None
+</pre></div></div>
+</div>
+<p>We can now use the following parameters to generate the metabolic data:</p>
+<p>```json { “coefficientsM”: [ [ 0.0, -0.5, 0.0 ], [ 0.1, 0.1, -0.1 ], [ -0.2, 0.1, 0.3 ] ], “initial_valuesM”: [ [ 2 ], [ 0 ], [ 0 ] ] }</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">simulator</span><span class="o">.</span><span class="n">read_parameters</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;parametersS.json&#39;</span><span class="p">)</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model parameters:
+Model: VAR
+n_obs: 97
+coefficients: [[ 0.8 -0.2  0.3]
+ [ 0.3  0.5 -1. ]
+ [ 0.2 -0.1  0.4]]
+initial_values: [[1]
+ [2]
+ [0]]
+noise_stddev: 1.2
+output: show
+coefficientsM: [[ 0.  -0.5  0. ]
+ [ 0.1  0.1 -0.1]
+ [-0.2  0.1  0.3]]
+initial_valuesM: [[2]
+ [0]
+ [0]]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="s1">&#39;MVARsim&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using the following parameters for sVAR simulation: {&#39;n_obs&#39;: 97, &#39;coefficients&#39;: array([[ 0.8, -0.2,  0.3],
+       [ 0.3,  0.5, -1. ],
+       [ 0.2, -0.1,  0.4]]), &#39;initial_values&#39;: array([[1],
+       [2],
+       [0]]), &#39;noise_stddev&#39;: 1.2, &#39;output&#39;: &#39;show&#39;, &#39;coefficientsM&#39;: array([[ 0. , -0.5,  0. ],
+       [ 0.1,  0.1, -0.1],
+       [-0.2,  0.1,  0.3]]), &#39;initial_valuesM&#39;: array([[2],
+       [0],
+       [0]])}
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_MVAR_examples-sim-MVAR_8_1.png" src="../../_images/notebooks_MVAR_examples-sim-MVAR_8_1.png" />
+</div>
+</div>
+</section>
+<section id="Visualization">
+<h2>Visualization<a class="headerlink" href="#Visualization" title="Link to this heading">¶</a></h2>
+<p>To better understand the interactions and dynamics modeled by the MVAR process, we utilize specialized plotting functions within the <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> script. These functions allow us to visualize the simulated abundance and metabolite time series data through heatmaps.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Call the make_plot_stacked() method</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">make_plot_stacked</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">simulator</span><span class="o">.</span><span class="n">dataM</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_MVAR_examples-sim-MVAR_10_0.png" src="../../_images/notebooks_MVAR_examples-sim-MVAR_10_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">data</span>
+<span class="c1"># print(data)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(97, 3)
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">MVAR Simulation for Microbiota and Metabolites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#MVAR-Process">MVAR Process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Objective">Objective</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Simulation-with-VARsim.py-for-sVAR-Models">Simulation with <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for sVAR Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Example-Usage-of-VARsim.py-for-MVAR-Simulation">Example Usage of <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for MVAR Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Visualization">Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../examples.html">Examples</a><ul>
+      <li>Previous: <a href="examples-infer-MVAR.html" title="previous chapter">MVAR Simulation for Microbiota and Metabolites</a></li>
+      <li>Next: <a href="../VAR/examples-sim-VAR.html" title="next chapter">Vector AutoRegression (VAR) Simulation</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../../_sources/notebooks/MVAR/examples-sim-MVAR.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,20 @@
+Examples
+========
+
+.. toctree::
+   :maxdepth: 2
+
+   notebooks/MultiModel/Herold/examples-Herold
+   notebooks/gMLV/examples-sim-gMLV
+   notebooks/gMLV/examples-ridge-lasso-gMLV
+   notebooks/MVAR/examples-infer-MVAR
+   notebooks/MVAR/examples-sim-MVAR
+   notebooks/VAR/examples-sim-VAR
+   notebooks/VAR/examples-bayes-VAR
+   notebooks/gLV/examples-Stein
+   notebooks/gLV/examples-bayes-gLV
+   notebooks/gLV/examples-lasso-gLV
+   notebooks/gLV/examples-sim-gLV
+   notebooks/gLV/examples-ridge-gLV
+   notebooks/GP/examples-impute-GP_Stein
+   notebooks/GP/examples-impute-GP

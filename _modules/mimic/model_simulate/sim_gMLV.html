@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mimic.model_simulate.sim_gMLV &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for mimic.model_simulate.sim_gMLV</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>  <span class="c1"># do not change this to np, it will break the code</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">odeint</span>
+
+<span class="kn">from</span> <span class="nn">mimic.model_simulate.base_model</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+
+<div class="viewcode-block" id="sim_gMLV">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_gMLV.sim_gMLV">[docs]</a>
+<span class="k">class</span> <span class="nc">sim_gMLV</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simulation class for generalized Lotka-Volterra (gMLV) models with metabolite production.</span>
+
+<span class="sd">    This class extends the BaseModel to support simulations of ecological systems or microbial communities</span>
+<span class="sd">    described by the gMLV model, which can include interactions between species, production of metabolites,</span>
+<span class="sd">    and responses to external perturbations.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        num_species (int): The number of species in the simulation.</span>
+<span class="sd">        num_metabolites (int): The number of metabolites produced by the species.</span>
+<span class="sd">        num_perturbations (int): The number of external perturbations applied to the system.</span>
+<span class="sd">        mu (numpy.ndarray): Vector of intrinsic growth rates of the species.</span>
+<span class="sd">        M (numpy.ndarray): Interaction matrix describing the effects of species on each other.</span>
+<span class="sd">        beta (numpy.ndarray): Metabolite production matrix describing the production rates of metabolites by species.</span>
+<span class="sd">        epsilon (numpy.ndarray): Perturbation matrix describing the effects of external perturbations on species.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        set_parameters: Sets or updates the parameters for the simulation.</span>
+<span class="sd">        simulate: Runs the gMLV simulation over a specified time course and initial conditions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">num_species</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">num_metabolites</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">num_perturbations</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">M</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">beta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">epsilon</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the gMLV simulation with given parameters or defaults.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            num_species (int, optional): The number of species. Defaults to 2.</span>
+<span class="sd">            num_metabolites (int, optional): The number of metabolites. Defaults to 0.</span>
+<span class="sd">            num_perturbations (int, optional): The number of perturbations. Defaults to 0.</span>
+<span class="sd">            mu (numpy.ndarray, optional): Intrinsic growth rates. Random lognormal values by default.</span>
+<span class="sd">            M (numpy.ndarray, optional): Interaction matrix. Random values with self-repression on diagonal by default.</span>
+<span class="sd">            beta (numpy.ndarray, optional): Metabolite production rates. Zeros by default or random values if num_metabolites &gt; 0.</span>
+<span class="sd">            epsilon (numpy.ndarray, optional): Perturbation effects. Zeros by default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;gMLV&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span> <span class="o">=</span> <span class="n">num_species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nm</span> <span class="o">=</span> <span class="n">num_metabolites</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="n">num_perturbations</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span>
+            <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">)</span> <span class="k">if</span> <span class="n">mu</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">mu</span>
+        <span class="k">if</span> <span class="n">M</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">))</span>
+            <span class="c1"># add self repression on the diagonal</span>
+            <span class="k">for</span> <span class="n">species_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">[</span><span class="n">species_idx</span><span class="p">,</span> <span class="n">species_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+            <span class="c1"># add random interactions</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">tau</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">halfcauchy</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+                    <span class="n">lam</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">halfcauchy</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">M</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">tau</span> <span class="o">*</span> <span class="n">lam</span><span class="p">)</span>
+                    <span class="c1"># if i == j:</span>
+                    <span class="c1">#     self.M[i, j] = -abs(M)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span>
+                    <span class="c1"># i = random.randint(0, self.nsp-1)</span>
+                    <span class="c1"># j = random.randint(0, self.nsp-1)</span>
+                    <span class="c1"># self.M[i, j] = random.normalvariate(mu=0, sigma=0.1)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">M</span>
+
+        <span class="k">if</span> <span class="n">beta</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">nm</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nm</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nm</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+
+        <span class="k">if</span> <span class="n">epsilon</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">))</span>
+
+            <span class="c1"># add random interactions</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">):</span>
+                    <span class="n">tau</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">halfcauchy</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">lam</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">halfcauchy</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">epsilon</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">tau</span> <span class="o">*</span> <span class="n">lam</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="nb">abs</span><span class="p">(</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;num_species&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">,</span>
+            <span class="s2">&quot;num_metabolites&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span>
+            <span class="s2">&quot;num_perturbations&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">,</span>
+            <span class="s2">&quot;mu&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span>
+            <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span>
+            <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span>
+            <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">}</span>
+
+<div class="viewcode-block" id="sim_gMLV.set_parameters">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_gMLV.sim_gMLV.set_parameters">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">num_species</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">num_metabolites</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">num_perturbations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">mu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                                          <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">M</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+                                         <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">beta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+                                            <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">epsilon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+                                               <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the simulation parameters. Only provided values are updated; others remain unchanged.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            num_species (Optional[int]): Number of species.</span>
+<span class="sd">            num_metabolites (Optional[int]): Number of metabolites.</span>
+<span class="sd">            num_perturbations (Optional[int]): Number of perturbations.</span>
+<span class="sd">            mu (Optional[Union[List[float], numpy.ndarray]]): Growth rates.</span>
+<span class="sd">            M (Optional[Union[List[List[float]], numpy.ndarray]]): Interaction matrix.</span>
+<span class="sd">            beta (Optional[Union[List[List[float]], numpy.ndarray]]): Metabolite production rates.</span>
+<span class="sd">            epsilon (Optional[Union[List[List[float]], numpy.ndarray]]): Perturbation effects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">num_species</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span> <span class="o">=</span> <span class="n">num_species</span>
+        <span class="k">if</span> <span class="n">num_metabolites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nm</span> <span class="o">=</span> <span class="n">num_metabolites</span>
+        <span class="k">if</span> <span class="n">num_perturbations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="n">num_perturbations</span>
+        <span class="k">if</span> <span class="n">mu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span>
+        <span class="k">if</span> <span class="n">M</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">beta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">epsilon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;num_species&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">,</span>
+            <span class="s2">&quot;num_metabolites&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nm</span><span class="p">,</span>
+            <span class="s2">&quot;num_perturbations&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">,</span>
+            <span class="s2">&quot;mu&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span>
+            <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span>
+            <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span>
+            <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">}</span></div>
+
+
+    <span class="c1"># HACK: this is a hack to avoid PyLint&#39;s arguments-differ error, but maybe we should change it so that the simulate method in the base class has the same signature as this one</span>
+    <span class="c1"># pylint: disable=arguments-differ</span>
+
+<div class="viewcode-block" id="sim_gMLV.simulate">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_gMLV.sim_gMLV.simulate">[docs]</a>
+    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">times</span><span class="p">,</span>
+                 <span class="n">sy0</span><span class="p">,</span>
+                 <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                  <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                  <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                  <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                  <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                  <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the gMLV simulation over the specified time course with given initial conditions and optional perturbations.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            times (numpy.ndarray): Array of time points at which to simulate.</span>
+<span class="sd">            sy0 (numpy.ndarray): Initial conditions for species and metabolites.</span>
+<span class="sd">            u (callable, optional): Function representing the external perturbation signal over time.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: Tuple containing the simulation results for species (yobs), metabolites (sobs),</span>
+<span class="sd">            initial conditions (sy0), growth rates (mu), interaction matrix (M), and metabolite production rates (beta).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="s1">&#39;gMLV&#39;</span><span class="p">)</span>
+        <span class="n">syobs</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">gMLV</span><span class="p">,</span> <span class="n">sy0</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">,</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">u</span><span class="p">))</span>
+        <span class="n">yobs</span> <span class="o">=</span> <span class="n">syobs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">]</span>
+        <span class="n">sobs</span> <span class="o">=</span> <span class="n">syobs</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsp</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">yobs</span>  <span class="c1"># QUESTION: should this be yobs or sobs?</span>
+        <span class="k">return</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">sobs</span><span class="p">,</span> <span class="n">sy0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="gMLV">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_gMLV.gMLV">[docs]</a>
+<span class="k">def</span> <span class="nf">gMLV</span><span class="p">(</span><span class="n">sy</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">nsp</span><span class="p">,</span> <span class="n">np</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Differential equations for the generalized Lotka-Volterra model with metabolite production.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        sy (numpy.ndarray): Combined vector of species and metabolites at the current time.</span>
+<span class="sd">        t (float): Current time point.</span>
+<span class="sd">        nsp (int): Number of species.</span>
+<span class="sd">        np (int): Number of perturbations.</span>
+<span class="sd">        mu (numpy.ndarray): Specific growth rates vector.</span>
+<span class="sd">        M (numpy.ndarray): Interaction matrix.</span>
+<span class="sd">        beta (numpy.ndarray): Metabolite production rate matrix.</span>
+<span class="sd">        epsilon (numpy.ndarray): Perturbation matrix.</span>
+<span class="sd">        u (callable): Function to compute the perturbation signal at time t.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: The derivative of the combined species and metabolites vector.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># separate species and metabolites</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">sy</span><span class="p">[:</span><span class="n">nsp</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">sy</span><span class="p">[</span><span class="n">nsp</span><span class="p">:]</span>
+
+    <span class="c1"># if np &gt; 0:</span>
+    <span class="c1">#    for p_i in range(np):</span>
+    <span class="c1">#        if tp[p_i][0] &lt;= t &lt; tp[p_i][1]:</span>
+    <span class="c1">#            instantaneous_growth = mu + M @ y + epsilon[:, p_i]</span>
+    <span class="c1">#       else:</span>
+    <span class="c1">#            instantaneous_growth = mu + M @ y</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#    instantaneous_growth = mu + M @ y</span>
+
+    <span class="n">instantaneous_growth</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">+</span> \
+        <span class="n">M</span> <span class="o">@</span> <span class="n">y</span> <span class="k">if</span> <span class="n">u</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">M</span> <span class="o">@</span> <span class="n">y</span> <span class="o">+</span> <span class="n">epsilon</span> <span class="o">@</span> <span class="n">u</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">dN</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">instantaneous_growth</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">beta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dS</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># this is simple production</span>
+        <span class="c1"># dS = beta @ y</span>
+
+        <span class="c1"># metabolite production as in Clark et al., 2021: eqs(4 &amp; 5)</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">beta</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">instantaneous_growth</span><span class="p">)</span>
+        <span class="n">dS</span> <span class="o">=</span> <span class="n">q</span> <span class="o">@</span> <span class="n">y</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">dN</span><span class="p">,</span> <span class="n">dS</span><span class="p">))</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">mimic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

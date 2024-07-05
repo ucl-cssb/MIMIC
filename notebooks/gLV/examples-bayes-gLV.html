@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Used Bayesian inference to infer the parameters of a (linearised) gLV model &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Comparison of ridge vs lasso regression" href="examples-lasso-gLV.html" />
+    <link rel="prev" title="Repeat Stein et al. 2013 analysis" href="examples-Stein.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.utilities</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">mimic.model_infer.infer_gLV_bayes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mimic.model_infer</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mimic.model_simulate</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mimic.model_simulate.sim_gLV</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
+<section id="Used-Bayesian-inference-to-infer-the-parameters-of-a-(linearised)-gLV-model">
+<h1>Used Bayesian inference to infer the parameters of a (linearised) gLV model<a class="headerlink" href="#Used-Bayesian-inference-to-infer-the-parameters-of-a-(linearised)-gLV-model" title="Link to this heading">¶</a></h1>
+<p>The generalized Lotka-Volterra equation takes the form</p>
+<div class="math notranslate nohighlight">
+\[\frac{dX_i}{dt} = \mu_i X_i + X_i M_{ij} X_j + X_i \epsilon_{il} u_l\]</div>
+<p>where: - <span class="math notranslate nohighlight">\(X_i\)</span> is the concentration of a species - <span class="math notranslate nohighlight">\(\mu_i\)</span> is its specific growth rate - <span class="math notranslate nohighlight">\(M_{ij}\)</span> is the effect of the interaction of species <span class="math notranslate nohighlight">\(i\)</span> on species <span class="math notranslate nohighlight">\(j\)</span> - <span class="math notranslate nohighlight">\(\epsilon_{il}\)</span> is the susceptibility to the time-dependent perturbation <span class="math notranslate nohighlight">\(u_l\)</span></p>
+<section id="Five-species,-single-time-course">
+<h2>Five species, single time course<a class="headerlink" href="#Five-species,-single-time-course" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># In this example n &gt;&gt; p and it it is basically same as standard regression</span>
+<span class="c1"># We have to be careful as most of these gLV models are very weakly identifiable</span>
+
+<span class="n">set_all_seeds</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="c1"># SETUP MODEL</span>
+<span class="c1"># establish size of model</span>
+<span class="n">num_species</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># construct interaction matrix</span>
+<span class="c1"># TODO do this programmatically</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_species</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.025</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">M</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.02</span>
+
+<span class="c1"># construct growth rates matrix</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mu</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># instantiate simulator</span>
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">)</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
+
+<span class="c1"># PRODUCE SIMULATED RESULTS</span>
+<span class="c1"># initial conditions</span>
+<span class="n">init_species</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="p">)</span>
+
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">yobs</span><span class="p">,</span> <span class="n">init_species</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">_</span>  <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">)</span>
+
+<span class="c1"># add some gaussian noise</span>
+<span class="n">yobs</span> <span class="o">=</span> <span class="n">yobs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># plot simulation</span>
+<span class="n">plot_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(5,)
+Model parameters:
+Model: gLV
+num_species: 5
+mu: [1.28 0.56 2.07 0.86 0.7 ]
+M: [[-0.05  0.   -0.03  0.    0.  ]
+ [ 0.   -0.1   0.    0.05  0.  ]
+ [ 0.    0.   -0.15  0.    0.  ]
+ [ 0.    0.    0.   -0.01  0.  ]
+ [ 0.02  0.    0.    0.   -0.2 ]]
+epsilon: []
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.27853844, 0.55683415, 2.06752757, 0.86387608, 0.70448068]), &#39;M&#39;: array([[-0.05 ,  0.   , -0.025,  0.   ,  0.   ],
+       [ 0.   , -0.1  ,  0.   ,  0.05 ,  0.   ],
+       [ 0.   ,  0.   , -0.15 ,  0.   ,  0.   ],
+       [ 0.   ,  0.   ,  0.   , -0.01 ,  0.   ],
+       [ 0.02 ,  0.   ,  0.   ,  0.   , -0.2  ]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_3_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_3_1.png" />
+</div>
+</div>
+</section>
+<section id="Bayesian-inference-(no-shrinkage)">
+<h2>Bayesian inference (no shrinkage)<a class="headerlink" href="#Bayesian-inference-(no-shrinkage)" title="Link to this heading">¶</a></h2>
+<p>First we will do Bayesian inference without any shrinkage priors</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pymc</span> <span class="k">as</span> <span class="nn">pm</span>
+<span class="kn">import</span> <span class="nn">pytensor.tensor</span> <span class="k">as</span> <span class="nn">at</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">cloudpickle</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">linearize_time_course_16S</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">10</span><span class="p">,:])</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(49, 6)
+(49, 5)
+[[ 9.87310057  9.91611571 10.05539213  9.94959573  9.92115598  1.        ]
+ [10.67466151 10.09378207 10.57170942 10.87624681  9.0862456   1.        ]
+ [11.13574566 10.21567292 11.21428947 11.58346636  8.3845881   1.        ]
+ [11.51931019 10.25272867 11.42118538 12.45709839  7.81338749  1.        ]
+ [12.08503303 10.49451077 11.88191256 13.51880084  7.33290388  1.        ]
+ [12.38707075 10.66317103 11.90895485 14.64997559  7.01681764  1.        ]
+ [12.8360788  10.81884958 12.60273316 15.53265942  6.71496677  1.        ]
+ [13.31012198 11.31034032 12.58874581 16.80695512  6.49405924  1.        ]
+ [13.79124977 11.545218   12.81691228 17.7406583   6.2643849   1.        ]
+ [14.0736579  11.98497742 12.99564456 19.41650831  5.95973998  1.        ]]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Perform Bayesian inference</span>
+
+<span class="n">inference</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+<span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_bayes_gLV</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "ebfcf451416c406e95c2d687f4c6b982"}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 107 seconds.
+There were 4 divergences after tuning. Increase `target_accept` or reparameterize.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_7_5.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_7_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_7_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_7_6.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_7_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_7_7.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print summary</span>
+
+<span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ii_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ij_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">[[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;r_hat&quot;</span><span class="p">]])</span>
+
+<span class="c1"># Save posterior samples to file</span>
+<span class="n">az</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+                 mean     sd  r_hat
+mu_hat[0, 0]    0.838  0.569    1.0
+mu_hat[0, 1]    0.700  0.516    1.0
+mu_hat[0, 2]    0.913  0.609    1.0
+mu_hat[0, 3]    0.753  0.547    1.0
+mu_hat[0, 4]    1.114  0.107    1.0
+M_ii_hat[0]    -0.081  0.060    1.0
+M_ii_hat[1]    -0.080  0.061    1.0
+M_ii_hat[2]    -0.081  0.061    1.0
+M_ii_hat[3]    -0.079  0.061    1.0
+M_ii_hat[4]    -0.211  0.018    1.0
+M_ij_hat[0, 0] -0.073  0.062    1.0
+M_ij_hat[0, 1] -0.009  0.060    1.0
+M_ij_hat[0, 2]  0.059  0.062    1.0
+M_ij_hat[0, 3]  0.018  0.061    1.0
+M_ij_hat[1, 0] -0.004  0.039    1.0
+M_ij_hat[1, 1] -0.097  0.040    1.0
+M_ij_hat[1, 2]  0.025  0.040    1.0
+M_ij_hat[1, 3]  0.020  0.040    1.0
+M_ij_hat[2, 0]  0.026  0.061    1.0
+M_ij_hat[2, 1]  0.005  0.059    1.0
+M_ij_hat[2, 2] -0.142  0.061    1.0
+M_ij_hat[2, 3] -0.005  0.059    1.0
+M_ij_hat[3, 0]  0.004  0.025    1.0
+M_ij_hat[3, 1]  0.048  0.025    1.0
+M_ij_hat[3, 2] -0.017  0.025    1.0
+M_ij_hat[3, 3] -0.022  0.026    1.0
+M_ij_hat[4, 0]  0.010  0.043    1.0
+M_ij_hat[4, 1] -0.013  0.041    1.0
+M_ij_hat[4, 2]  0.040  0.043    1.0
+M_ij_hat[4, 3] -0.012  0.044    1.0
+M_hat[0, 0]    -0.073  0.062    1.0
+M_hat[0, 1]    -0.009  0.060    1.0
+M_hat[0, 2]     0.059  0.062    1.0
+M_hat[0, 3]     0.018  0.061    1.0
+M_hat[0, 4]     0.000  0.000    NaN
+M_hat[1, 0]    -0.004  0.039    1.0
+M_hat[1, 1]    -0.097  0.040    1.0
+M_hat[1, 2]     0.025  0.040    1.0
+M_hat[1, 3]     0.020  0.040    1.0
+M_hat[1, 4]     0.000  0.000    NaN
+M_hat[2, 0]     0.026  0.061    1.0
+M_hat[2, 1]     0.005  0.059    1.0
+M_hat[2, 2]    -0.142  0.061    1.0
+M_hat[2, 3]    -0.005  0.059    1.0
+M_hat[2, 4]     0.000  0.000    NaN
+M_hat[3, 0]     0.004  0.025    1.0
+M_hat[3, 1]     0.048  0.025    1.0
+M_hat[3, 2]    -0.017  0.025    1.0
+M_hat[3, 3]    -0.022  0.026    1.0
+M_hat[3, 4]     0.000  0.000    NaN
+M_hat[4, 0]     0.010  0.043    1.0
+M_hat[4, 1]    -0.013  0.041    1.0
+M_hat[4, 2]     0.040  0.043    1.0
+M_hat[4, 3]    -0.012  0.044    1.0
+M_hat[4, 4]    -0.211  0.018    1.0
+sigma[0]        0.129  0.006    1.0
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;model_posterior.nc&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 4 chains x 100 draws x 5 x 5 species</span>
+<span class="nb">print</span><span class="p">(</span> <span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;M_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span> <span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+
+<span class="c1"># # get median posterior values</span>
+<span class="n">M_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;M_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">mu_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">mu_h</span> <span class="o">=</span> <span class="n">mu_h</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span>
+                 <span class="p">)</span>
+<span class="n">yobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">)</span>
+
+<span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+<span class="n">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">),</span> <span class="n">M</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M_h</span><span class="p">)</span> <span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(4, 1000, 5, 5)
+(4, 1000, 1, 5)
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([0.75816452, 0.59185543, 0.81924395, 0.65531003, 1.11578933]), &#39;M&#39;: array([[-0.07287711, -0.00800594,  0.05881338,  0.01787411,  0.        ],
+       [-0.00314961, -0.09733548,  0.02519653,  0.01962812,  0.        ],
+       [ 0.02754037,  0.00484975, -0.1417304 , -0.00558107,  0.        ],
+       [ 0.00316543,  0.04861419, -0.01789472, -0.02200499,  0.        ],
+       [ 0.01082258, -0.01228828,  0.04099088, -0.01154591, -0.21079663]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+mu_hat/mu:
+[0.75816452 0.59185543 0.81924395 0.65531003 1.11578933]
+[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
+
+M_hat/M:
+[[-0.07 -0.01  0.06  0.02  0.  ]
+ [-0.   -0.1   0.03  0.02  0.  ]
+ [ 0.03  0.   -0.14 -0.01  0.  ]
+ [ 0.    0.05 -0.02 -0.02  0.  ]
+ [ 0.01 -0.01  0.04 -0.01 -0.21]]
+
+ [[-0.05   0.    -0.025  0.     0.   ]
+ [ 0.    -0.1    0.     0.05   0.   ]
+ [ 0.     0.    -0.15   0.     0.   ]
+ [ 0.     0.     0.    -0.01   0.   ]
+ [ 0.02   0.     0.     0.    -0.2  ]]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_9_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_9_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_9_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_9_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_9_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_9_3.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot_interaction_matrix(M_h)</span>
+
+<span class="n">infer_h</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">(</span><span class="n">M_h</span><span class="p">)</span>
+<span class="n">matrix</span> <span class="o">=</span> <span class="n">infer_h</span><span class="o">.</span><span class="n">plot_interaction_matrix</span><span class="p">(</span><span class="n">M</span> <span class="o">=</span> <span class="n">M</span><span class="p">,</span> <span class="n">M_h</span> <span class="o">=</span><span class="n">M_h</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_10_0.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_10_0.png" />
+</div>
+</div>
+</section>
+<section id="Bayesian-inference-with-shrinkage">
+<h2>Bayesian inference with shrinkage<a class="headerlink" href="#Bayesian-inference-with-shrinkage" title="Link to this heading">¶</a></h2>
+<p>Now we will do inference with the Horseshoe prior</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nX</span> <span class="o">=</span> <span class="n">num_species</span>
+<span class="n">n_obs</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">noise_stddev</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="c1"># Params for shrinkage on M_ij (non diagonal elements)</span>
+<span class="n">DA</span> <span class="o">=</span> <span class="n">nX</span><span class="o">*</span><span class="n">nX</span> <span class="o">-</span> <span class="n">nX</span>
+<span class="n">DA0</span> <span class="o">=</span> <span class="mi">3</span>     <span class="c1"># expected number of non zero entries in M_ij</span>
+<span class="n">N</span> <span class="o">=</span> <span class="n">n_obs</span> <span class="o">-</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inference</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">DA</span><span class="o">=</span><span class="n">DA</span><span class="p">,</span> <span class="n">DA0</span><span class="o">=</span><span class="n">DA0</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">noise_stddev</span><span class="o">=</span><span class="n">noise_stddev</span><span class="p">)</span>
+<span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_bayes_gLV_shrinkage</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [sigma, mu_hat, M_ii_hat, c2, tau, lam, M_ij_hat]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "55552fd90f12477ead8de8d7db31bfcf"}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+IOPub message rate exceeded.
+The Jupyter server will temporarily stop sending output
+to the client in order to avoid crashing it.
+To change this limit, set the config variable
+`--ServerApp.iopub_msg_rate_limit`.
+
+Current values:
+ServerApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
+ServerApp.rate_limit_window=3.0 (secs)
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 1_000 draw iterations (8_000 + 4_000 draws total) took 122 seconds.
+There were 1009 divergences after tuning. Increase `target_accept` or reparameterize.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_6.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_7.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_8.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_8.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print summary</span>
+<span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ii_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ij_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">[[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;r_hat&quot;</span><span class="p">]])</span>
+
+<span class="c1"># Write posterior samples to file</span>
+<span class="n">az</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+                 mean     sd  r_hat
+mu_hat[0, 0]    0.891  0.287   1.10
+mu_hat[0, 1]    0.674  0.280   1.21
+mu_hat[0, 2]    1.489  0.417   1.08
+mu_hat[0, 3]    0.883  0.214   1.10
+mu_hat[0, 4]    1.141  0.098   1.22
+M_ii_hat[0]    -0.123  0.075   1.13
+M_ii_hat[1]    -0.111  0.085   1.23
+M_ii_hat[2]    -0.117  0.077   1.06
+M_ii_hat[3]    -0.124  0.073   1.26
+M_ii_hat[4]    -0.215  0.016   1.24
+M_ij_hat[0, 0] -0.040  0.022   1.20
+M_ij_hat[0, 1]  0.003  0.014   1.25
+M_ij_hat[0, 2] -0.004  0.019   1.06
+M_ij_hat[0, 3] -0.002  0.011   1.12
+M_ij_hat[1, 0]  0.001  0.007   1.07
+M_ij_hat[1, 1] -0.080  0.032   1.06
+M_ij_hat[1, 2]  0.001  0.007   1.06
+M_ij_hat[1, 3] -0.004  0.008   1.14
+M_ij_hat[2, 0] -0.007  0.020   1.05
+M_ij_hat[2, 1] -0.001  0.013   1.06
+M_ij_hat[2, 2] -0.105  0.039   1.24
+M_ij_hat[2, 3] -0.001  0.011   1.02
+M_ij_hat[3, 0] -0.002  0.004   1.03
+M_ij_hat[3, 1]  0.038  0.018   1.05
+M_ij_hat[3, 2] -0.001  0.004   1.21
+M_ij_hat[3, 3] -0.008  0.005   1.05
+M_ij_hat[4, 0]  0.003  0.013   1.06
+M_ij_hat[4, 1] -0.022  0.040   1.07
+M_ij_hat[4, 2]  0.010  0.020   1.10
+M_ij_hat[4, 3]  0.001  0.011   1.06
+M_hat[0, 0]    -0.040  0.022   1.20
+M_hat[0, 1]     0.003  0.014   1.25
+M_hat[0, 2]    -0.004  0.019   1.06
+M_hat[0, 3]    -0.002  0.011   1.12
+M_hat[0, 4]     0.000  0.000    NaN
+M_hat[1, 0]     0.001  0.007   1.07
+M_hat[1, 1]    -0.080  0.032   1.06
+M_hat[1, 2]     0.001  0.007   1.06
+M_hat[1, 3]    -0.004  0.008   1.14
+M_hat[1, 4]     0.000  0.000    NaN
+M_hat[2, 0]    -0.007  0.020   1.05
+M_hat[2, 1]    -0.001  0.013   1.06
+M_hat[2, 2]    -0.105  0.039   1.24
+M_hat[2, 3]    -0.001  0.011   1.02
+M_hat[2, 4]     0.000  0.000    NaN
+M_hat[3, 0]    -0.002  0.004   1.03
+M_hat[3, 1]     0.038  0.018   1.05
+M_hat[3, 2]    -0.001  0.004   1.21
+M_hat[3, 3]    -0.008  0.005   1.05
+M_hat[3, 4]     0.000  0.000    NaN
+M_hat[4, 0]     0.003  0.013   1.06
+M_hat[4, 1]    -0.022  0.040   1.07
+M_hat[4, 2]     0.010  0.020   1.10
+M_hat[4, 3]     0.001  0.011   1.06
+M_hat[4, 4]    -0.215  0.016   1.24
+sigma[0]        0.127  0.008   1.29
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;model_posterior.nc&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get posterior medians</span>
+<span class="n">M_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;M_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">mu_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">mu_h</span> <span class="o">=</span> <span class="n">mu_h</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="c1"># compare median posterior values to true values</span>
+<span class="n">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">),</span> <span class="n">M</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M_h</span><span class="p">)</span> <span class="p">)</span>
+
+
+<span class="c1">#plot_interaction_matrix(M_h)</span>
+
+<span class="n">infer_h</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">(</span><span class="n">M_h</span><span class="p">)</span>
+<span class="n">matrix</span> <span class="o">=</span> <span class="n">infer_h</span><span class="o">.</span><span class="n">plot_interaction_matrix</span><span class="p">(</span><span class="n">M</span> <span class="o">=</span> <span class="n">M</span><span class="p">,</span> <span class="n">M_h</span> <span class="o">=</span><span class="n">M_h</span><span class="p">)</span>
+
+
+<span class="c1"># Assess fit</span>
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span>
+                 <span class="p">)</span>
+<span class="n">yobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">)</span>
+<span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+mu_hat/mu:
+[0.8587488  0.66145033 1.59609534 0.86140082 1.1341146 ]
+[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
+
+M_hat/M:
+[[-0.04  0.   -0.   -0.    0.  ]
+ [ 0.   -0.09 -0.   -0.    0.  ]
+ [-0.   -0.   -0.11  0.    0.  ]
+ [-0.    0.04 -0.   -0.01  0.  ]
+ [ 0.   -0.    0.    0.   -0.22]]
+
+ [[-0.05   0.    -0.025  0.     0.   ]
+ [ 0.    -0.1    0.     0.05   0.   ]
+ [ 0.     0.    -0.15   0.     0.   ]
+ [ 0.     0.     0.    -0.01   0.   ]
+ [ 0.02   0.     0.     0.    -0.2  ]]
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([0.8587488 , 0.66145033, 1.59609534, 0.86140082, 1.1341146 ]), &#39;M&#39;: array([[-3.98187137e-02,  6.39105165e-05, -2.16950259e-03,
+        -1.98006389e-05,  0.00000000e+00],
+       [ 2.48445861e-04, -8.89157125e-02, -2.01827651e-04,
+        -1.09870002e-03,  0.00000000e+00],
+       [-5.94317268e-04, -7.60239675e-04, -1.13599146e-01,
+         3.25230235e-04,  0.00000000e+00],
+       [-1.24465973e-03,  4.37263741e-02, -2.32610594e-05,
+        -9.26386095e-03,  0.00000000e+00],
+       [ 8.22445701e-04, -2.34651993e-03,  2.63116546e-03,
+         8.06624143e-04, -2.15126685e-01]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_15_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_15_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_15_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_15_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_15_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_15_3.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_15_4.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_15_4.png" />
+</div>
+</div>
+</section>
+<section id="Bayesian-inference-with-shrinkage-and-a-perturbation-with-unknown-interactions">
+<h2>Bayesian inference with shrinkage and a perturbation with unknown interactions<a class="headerlink" href="#Bayesian-inference-with-shrinkage-and-a-perturbation-with-unknown-interactions" title="Link to this heading">¶</a></h2>
+<p>Now we will do inference with the Horseshoe prior for shrinkage but now we include a perturbation (assuming unknown interaction terms). This gives more identifiability</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># use all previous definitions of mu, M etc</span>
+
+<span class="c1"># construct perturbation matrix</span>
+<span class="n">num_perturbations</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">epsilon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_perturbations</span><span class="p">])</span>
+<span class="n">epsilon</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">pert_fn</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">if</span> <span class="mf">2.0</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">2.2</span> <span class="ow">or</span> <span class="mf">3.0</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">3.2</span> <span class="ow">or</span> <span class="mf">4.0</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">4.2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># relinearise</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pert_fn</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">])</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;perturbation:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">linearize_time_course_16S_u</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+
+<span class="c1"># instantiate simulator</span>
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">num_perturbations</span><span class="o">=</span><span class="n">num_perturbations</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span>
+                    <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
+
+<span class="n">yobs</span><span class="p">,</span> <span class="n">init_species</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">_</span>  <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="n">pert_fn</span><span class="p">)</span>
+
+<span class="c1"># add some gaussian noise</span>
+<span class="n">yobs</span> <span class="o">=</span> <span class="n">yobs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># plot simulation</span>
+<span class="n">plot_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+perturbation:
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0
+ 0 0 0 1 1 0 0 0 0 0 0 0 0]
+Model parameters:
+Model: gLV
+num_species: 5
+mu: [1.28 0.56 2.07 0.86 0.7 ]
+M: [[-0.05  0.   -0.03  0.    0.  ]
+ [ 0.   -0.1   0.    0.05  0.  ]
+ [ 0.    0.   -0.15  0.    0.  ]
+ [ 0.    0.    0.   -0.01  0.  ]
+ [ 0.02  0.    0.    0.   -0.2 ]]
+epsilon: [[ 1.]
+ [-1.]
+ [ 1.]
+ [-1.]
+ [ 1.]]
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.27853844, 0.55683415, 2.06752757, 0.86387608, 0.70448068]), &#39;M&#39;: array([[-0.05 ,  0.   , -0.025,  0.   ,  0.   ],
+       [ 0.   , -0.1  ,  0.   ,  0.05 ,  0.   ],
+       [ 0.   ,  0.   , -0.15 ,  0.   ,  0.   ],
+       [ 0.   ,  0.   ,  0.   , -0.01 ,  0.   ],
+       [ 0.02 ,  0.   ,  0.   ,  0.   , -0.2  ]]), &#39;epsilon&#39;: array([[ 1.],
+       [-1.],
+       [ 1.],
+       [-1.],
+       [ 1.]])}
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_17_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_17_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nX</span> <span class="o">=</span> <span class="n">num_species</span>
+<span class="n">n_obs</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">noise_stddev</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="c1"># Params for shrinkage on M_ij (non diagonal elements)</span>
+<span class="n">DA</span> <span class="o">=</span> <span class="n">nX</span><span class="o">*</span><span class="n">nX</span> <span class="o">-</span> <span class="n">nX</span>
+<span class="n">DA0</span> <span class="o">=</span> <span class="mi">3</span>     <span class="c1"># expected number of non zero entries in M_ij</span>
+<span class="n">N</span> <span class="o">=</span> <span class="n">n_obs</span> <span class="o">-</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inference</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">DA</span><span class="o">=</span><span class="n">DA</span><span class="p">,</span> <span class="n">DA0</span><span class="o">=</span><span class="n">DA0</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">noise_stddev</span><span class="o">=</span><span class="n">noise_stddev</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+<span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_bayes_gLV_shrinkage_pert</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [sigma, mu_hat, epsilon_hat, M_ii_hat, c2, tau, lam, M_ij_hat]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "42e03528752a4451a5051502066176e9"}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+</pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 2_000 tune and 1_000 draw iterations (8_000 + 4_000 draws total) took 109 seconds.
+There were 471 divergences after tuning. Increase `target_accept` or reparameterize.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_19_5.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_19_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_19_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_19_6.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_19_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_19_7.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_19_8.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_19_8.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print summary</span>
+<span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;epsilon_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">[[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;r_hat&quot;</span><span class="p">]])</span>
+
+<span class="c1"># Write posterior samples to file</span>
+<span class="n">az</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:592: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+                    mean     sd  r_hat
+mu_hat[0, 0]       1.184  0.218   1.00
+mu_hat[0, 1]       0.572  0.177   1.00
+mu_hat[0, 2]       1.666  0.301   1.01
+mu_hat[0, 3]       0.885  0.137   1.01
+mu_hat[0, 4]       1.163  0.121   1.00
+M_hat[0, 0]       -0.057  0.021   1.00
+M_hat[0, 1]        0.003  0.010   1.01
+M_hat[0, 2]       -0.008  0.022   1.01
+M_hat[0, 3]       -0.002  0.008   1.01
+M_hat[0, 4]        0.000  0.000    NaN
+M_hat[1, 0]        0.002  0.007   1.00
+M_hat[1, 1]       -0.071  0.036   1.01
+M_hat[1, 2]        0.002  0.007   1.01
+M_hat[1, 3]       -0.003  0.010   1.01
+M_hat[1, 4]        0.000  0.000    NaN
+M_hat[2, 0]       -0.014  0.030   1.00
+M_hat[2, 1]        0.002  0.013   1.00
+M_hat[2, 2]       -0.113  0.039   1.01
+M_hat[2, 3]       -0.001  0.010   1.01
+M_hat[2, 4]        0.000  0.000    NaN
+M_hat[3, 0]        0.000  0.004   1.00
+M_hat[3, 1]        0.034  0.018   1.01
+M_hat[3, 2]       -0.000  0.004   1.01
+M_hat[3, 3]       -0.008  0.005   1.01
+M_hat[3, 4]        0.000  0.000    NaN
+M_hat[4, 0]        0.004  0.010   1.00
+M_hat[4, 1]       -0.016  0.028   1.01
+M_hat[4, 2]        0.002  0.010   1.00
+M_hat[4, 3]        0.002  0.010   1.00
+M_hat[4, 4]       -0.214  0.019   1.00
+epsilon_hat[0, 0]  0.953  0.050   1.00
+epsilon_hat[0, 1] -1.002  0.052   1.00
+epsilon_hat[0, 2]  0.822  0.051   1.00
+epsilon_hat[0, 3] -0.993  0.052   1.00
+epsilon_hat[0, 4]  0.938  0.050   1.00
+sigma[0]           0.115  0.005   1.00
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;model_posterior.nc&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get posterior medians</span>
+<span class="n">M_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;M_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">mu_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">mu_h</span> <span class="o">=</span> <span class="n">mu_h</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="n">e_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;epsilon_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="c1"># reshape e_h so it is the same shape as epsilon</span>
+<span class="n">e_h</span> <span class="o">=</span> <span class="n">e_h</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">epsilon</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># compare median posterior values to true values</span>
+<span class="n">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">),</span> <span class="n">M</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M_h</span><span class="p">),</span> <span class="n">e</span><span class="o">=</span><span class="p">(</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">e_h</span><span class="p">))</span>
+
+<span class="c1">#plot_interaction_matrix(M_h)</span>
+
+<span class="n">infer_h</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">(</span><span class="n">M_h</span><span class="p">)</span>
+<span class="n">matrix</span> <span class="o">=</span> <span class="n">infer_h</span><span class="o">.</span><span class="n">plot_interaction_matrix</span><span class="p">(</span><span class="n">M</span> <span class="o">=</span> <span class="n">M</span><span class="p">,</span> <span class="n">M_h</span> <span class="o">=</span><span class="n">M_h</span><span class="p">)</span>
+
+<span class="c1"># Assess fit</span>
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">num_perturbations</span><span class="o">=</span><span class="n">num_perturbations</span><span class="p">,</span>
+                    <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="p">,</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">,</span>
+                    <span class="n">epsilon</span><span class="o">=</span><span class="n">e_h</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;epsilon:&#39;</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;epsilon_h:&#39;</span><span class="p">,</span> <span class="n">e_h</span><span class="p">)</span>
+
+<span class="n">yobs</span><span class="p">,</span> <span class="n">init_species</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">_</span>  <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="n">pert_fn</span><span class="p">)</span>
+<span class="n">yobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">init_species</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="n">pert_fn</span><span class="p">)</span>
+<span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+mu_hat/mu:
+[0.94218262 0.64424149 1.50283656 0.89883375 1.10383288]
+[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
+
+M_hat/M:
+[[-0.04  0.   -0.   -0.    0.  ]
+ [ 0.   -0.07  0.   -0.    0.  ]
+ [-0.   -0.   -0.11 -0.    0.  ]
+ [-0.    0.04 -0.   -0.01  0.  ]
+ [ 0.   -0.01  0.   -0.   -0.21]]
+
+ [[-0.05   0.    -0.025  0.     0.   ]
+ [ 0.    -0.1    0.     0.05   0.   ]
+ [ 0.     0.    -0.15   0.     0.   ]
+ [ 0.     0.     0.    -0.01   0.   ]
+ [ 0.02   0.     0.     0.    -0.2  ]]
+
+e_hat/e:
+[[ 0.01]
+ [ 0.04]
+ [-0.02]
+ [-0.01]
+ [ 0.08]]
+
+ [[ 1.]
+ [-1.]
+ [ 1.]
+ [-1.]
+ [ 1.]]
+epsilon: [[ 1.]
+ [-1.]
+ [ 1.]
+ [-1.]
+ [ 1.]]
+epsilon_h: [[ 0.00673812]
+ [ 0.03888195]
+ [-0.02260897]
+ [-0.00662845]
+ [ 0.08341004]]
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.27853844, 0.55683415, 2.06752757, 0.86387608, 0.70448068]), &#39;M&#39;: array([[-0.05 ,  0.   , -0.025,  0.   ,  0.   ],
+       [ 0.   , -0.1  ,  0.   ,  0.05 ,  0.   ],
+       [ 0.   ,  0.   , -0.15 ,  0.   ,  0.   ],
+       [ 0.   ,  0.   ,  0.   , -0.01 ,  0.   ],
+       [ 0.02 ,  0.   ,  0.   ,  0.   , -0.2  ]]), &#39;epsilon&#39;: array([[ 1.],
+       [-1.],
+       [ 1.],
+       [-1.],
+       [ 1.]])}
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([0.94218262, 0.64424149, 1.50283656, 0.89883375, 1.10383288]), &#39;M&#39;: array([[-4.45472256e-02,  1.31865689e-03, -2.79795293e-04,
+        -5.81944628e-04,  0.00000000e+00],
+       [ 1.67323148e-04, -7.49099576e-02,  2.45631580e-05,
+        -1.80065411e-03,  0.00000000e+00],
+       [-1.14268189e-03, -7.39764954e-05, -1.09520015e-01,
+        -4.35810565e-04,  0.00000000e+00],
+       [-4.19679074e-04,  3.58534155e-02, -2.06313862e-04,
+        -8.43987213e-03,  0.00000000e+00],
+       [ 5.32555204e-04, -1.00365886e-02,  3.80905094e-03,
+        -6.40410749e-05, -2.10260444e-01]]), &#39;epsilon&#39;: array([[ 0.00673812],
+       [ 0.03888195],
+       [-0.02260897],
+       [-0.00662845],
+       [ 0.08341004]])}
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_4.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_4.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_5.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_5.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Five-species,-single-time-course">Five species, single time course</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Bayesian-inference-(no-shrinkage)">Bayesian inference (no shrinkage)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Bayesian-inference-with-shrinkage">Bayesian inference with shrinkage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Bayesian-inference-with-shrinkage-and-a-perturbation-with-unknown-interactions">Bayesian inference with shrinkage and a perturbation with unknown interactions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../examples.html">Examples</a><ul>
+      <li>Previous: <a href="examples-Stein.html" title="previous chapter">Repeat Stein et al. 2013 analysis</a></li>
+      <li>Next: <a href="examples-lasso-gLV.html" title="next chapter">Comparison of ridge vs lasso regression</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../../_sources/notebooks/gLV/examples-bayes-gLV.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
