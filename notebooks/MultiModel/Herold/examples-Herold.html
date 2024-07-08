@@ -17,7 +17,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Simulate some time course data from the gMLV" href="../../gMLV/examples-sim-gMLV.html" />
+    <link rel="next" title="&lt;no title&gt;" href="examples_impute_data.html" />
     <link rel="prev" title="Examples" href="../../../examples.html" />
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -323,7 +323,7 @@ memory usage: 15.3 KB
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-C:\Users\User\AppData\Local\Temp\ipykernel_33876\1446871442.py:4: SettingWithCopyWarning:
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\1446871442.py:4: SettingWithCopyWarning:
 A value is trying to be set on a copy of a slice from a DataFrame.
 Try using .loc[row_indexer,col_indexer] = value instead
 
@@ -369,7 +369,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: 
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pivot the data so each &#39;genus&#39; is a column</span>
@@ -3355,7 +3355,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 
 <span class="c1"># Change the &#39;genus&#39; column to a categorical column</span>
 <span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
-<br/><br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -3363,7 +3363,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-C:\Users\User\AppData\Local\Temp\ipykernel_33876\3985596422.py:5: SettingWithCopyWarning:
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\2794291335.py:5: SettingWithCopyWarning:
 A value is trying to be set on a copy of a slice from a DataFrame.
 Try using .loc[row_indexer,col_indexer] = value instead
 
@@ -3416,7 +3416,7 @@ Text(0.5, 0, &#39;Days&#39;)
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pivot the data so each &#39;genus&#39; is a column</span>
@@ -3439,7 +3439,7 @@ Text(0.5, 0, &#39;Days&#39;)
 
 <span class="n">data_MG_common</span> <span class="o">=</span> <span class="n">dataMG_pivot</span><span class="p">[</span><span class="n">common_columns</span><span class="p">]</span>
 <span class="n">data_MT_common</span> <span class="o">=</span> <span class="n">dataMT_pivot</span><span class="p">[</span><span class="n">common_columns</span><span class="p">]</span>
-<br/><br/><br/><br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -3795,6 +3795,1008 @@ Bh[9, 9]      28.0   1.02
 <img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_69_2.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_69_2.png" />
 </div>
 </div>
+<p>Now we are goint to import the metabolite data and do a sparse VAR inference method to infer the causal relationships between the variables (relative abundances and metabolite concentrations) in the time series.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metabolites</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Source Data/fig4.tsv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This dataset contains several columns, each representing different attributes related to microbial activity and metabolite concentrations. Here is a detailed explanation of each column:</p>
+<ul class="simple">
+<li><p><strong>date</strong>: The date when the sample was collected.</p></li>
+<li><p><strong>L1</strong>: The functional category or pathway associated with the data point.</p></li>
+<li><p><strong>mp_tot</strong>: Total metaproteomic count for that date and pathway.</p></li>
+<li><p><strong>mt_tot</strong>: Total metatranscriptomic count for that date and pathway.</p></li>
+<li><p><strong>L1sum_MP</strong>: Sum of metaproteomic counts for that specific functional category (L1).</p></li>
+<li><p><strong>L1sum_MT</strong>: Sum of metatranscriptomic counts for that specific functional category (L1).</p></li>
+<li><p><strong>L1rel_MP</strong>: Relative abundance of metaproteomic counts within the functional category.</p></li>
+<li><p><strong>L1rel_MT</strong>: Relative abundance of metatranscriptomic counts within the functional category.</p></li>
+<li><p><strong>MP_std_L1</strong>: Standard deviation of metaproteomic counts for that functional category.</p></li>
+<li><p><strong>MT_std_L1</strong>: Standard deviation of metatranscriptomic counts for that functional category.</p></li>
+<li><p><strong>cor</strong>: Correlation value between metaproteomic and metatranscriptomic data for that pathway.</p></li>
+<li><p><strong>newL1</strong>: A reformatted version of the functional category name, often including a correlation coefficient (r value) for easier readability in the figure.</p></li>
+</ul>
+<p>We will be using the <code class="docutils literal notranslate"><span class="pre">L1rel_MP</span></code> and <code class="docutils literal notranslate"><span class="pre">L1rel_MT</span></code> columns in this example to use it with the VAR inference method to infer the causal relationships between the variables in the time series with the meta transcriptomics (MT) and meta genomics (MG) data.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Letr&#39;s create 2 dataframes, one for the L1rel_MP and the other for the L1rel_MT data, using the date, L1 and L2tel values</span>
+
+<span class="n">dataL1_MP</span> <span class="o">=</span> <span class="n">metabolites</span><span class="p">[[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L1rel_MP&#39;</span><span class="p">]]</span>
+
+<span class="n">dataL1_MT</span> <span class="o">=</span> <span class="n">metabolites</span><span class="p">[[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="s1">&#39;L1rel_MT&#39;</span><span class="p">]]</span>
+<span class="n">dataL1_MP</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>date</th>
+      <th>L1</th>
+      <th>L1rel_MP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2011-03-21</td>
+      <td>01_Fermentation</td>
+      <td>0.096899</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2011-03-21</td>
+      <td>02_Homoacetogenesis</td>
+      <td>0.009890</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2011-03-21</td>
+      <td>03_Superpathway of thiosulfate metabolism (Des...</td>
+      <td>0.000579</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2011-03-21</td>
+      <td>04_Utililization of sugar, conversion of pento...</td>
+      <td>0.000535</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2011-03-21</td>
+      <td>05_Fatty acid oxidation</td>
+      <td>0.025483</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2011-03-21</td>
+      <td>06_Amino acid utilization biosynthesis metabolism</td>
+      <td>0.122784</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2011-03-21</td>
+      <td>07_Nucleic acid metabolism</td>
+      <td>0.119531</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2011-03-21</td>
+      <td>08_Hydrocarbon degradation</td>
+      <td>0.005524</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2011-03-21</td>
+      <td>09_Carbohydrate Active enzyme - CAZy</td>
+      <td>0.003921</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2011-03-21</td>
+      <td>10_TCA cycle</td>
+      <td>0.045398</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>2011-03-21</td>
+      <td>11_Nitrogen cycle</td>
+      <td>0.026063</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2011-03-21</td>
+      <td>12_Transporters</td>
+      <td>0.015593</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>2011-03-21</td>
+      <td>13_Hydrogen metabolism</td>
+      <td>0.000846</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>2011-03-21</td>
+      <td>14_Methanogenesis</td>
+      <td>0.003520</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>2011-03-21</td>
+      <td>15_Methylotrophy</td>
+      <td>0.009267</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now let&#39;s visualize the data</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;L1rel_MP&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dataL1_MP</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Metaproteomic Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Relative Abundance&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_74_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_74_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Same for the metatranscriptomic data</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;L1rel_MT&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dataL1_MT</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Metatranscriptomic Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Relative Abundance&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_75_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_75_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># And do the same as we did for the MG and MT data sets</span>
+
+<span class="c1"># Rename Nan in the L1 column to &#39;Other&#39;</span>
+
+<span class="n">dataL1_MP</span><span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataL1_MP</span><span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">)</span>
+
+<span class="c1"># Change relative Date columns to days</span>
+<span class="n">dataL1_MP</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dataL1_MP</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">dataL1_MP</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dataL1_MP</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataL1_MP</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days</span>
+
+<span class="c1"># Change the &#39;L1&#39; column to a categorical column</span>
+<span class="n">dataL1_MP</span><span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataL1_MP</span><span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\300627487.py:5: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataL1_MP[&#39;L1&#39;] = dataL1_MP[&#39;L1&#39;].replace(np.nan, &#39;Other&#39;)
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\300627487.py:8: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataL1_MP[&#39;date&#39;] = pd.to_datetime(dataL1_MP[&#39;date&#39;])
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\300627487.py:9: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataL1_MP[&#39;date&#39;] = (dataL1_MP[&#39;date&#39;] - dataL1_MP[&#39;date&#39;].min()).dt.days
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\300627487.py:12: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataL1_MP[&#39;L1&#39;] = dataL1_MP[&#39;L1&#39;].astype(&#39;category&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># do the same for the L1rel_MT data set</span>
+
+<span class="c1"># Rename Nan in the L1 column to &#39;Other&#39;</span>
+
+<span class="n">dataL1_MT</span><span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataL1_MT</span><span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">)</span>
+
+<span class="c1"># Change relative Date columns to days</span>
+<span class="n">dataL1_MT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dataL1_MT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">dataL1_MT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dataL1_MT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataL1_MT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days</span>
+
+<span class="c1"># Change the &#39;L1&#39; column to a categorical column</span>
+<span class="n">dataL1_MT</span><span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataL1_MT</span><span class="p">[</span><span class="s1">&#39;L1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot the data, relative abundance (value) vs. days (date) for each L1</span>
+
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;L1rel_MP&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dataL1_MP</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Metaproteomic Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Relative Abundance&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\4211173979.py:5: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataL1_MT[&#39;L1&#39;] = dataL1_MT[&#39;L1&#39;].replace(np.nan, &#39;Other&#39;)
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\4211173979.py:8: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataL1_MT[&#39;date&#39;] = pd.to_datetime(dataL1_MT[&#39;date&#39;])
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\4211173979.py:9: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataL1_MT[&#39;date&#39;] = (dataL1_MT[&#39;date&#39;] - dataL1_MT[&#39;date&#39;].min()).dt.days
+C:\Users\User\AppData\Local\Temp\ipykernel_34184\4211173979.py:12: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  dataL1_MT[&#39;L1&#39;] = dataL1_MT[&#39;L1&#39;].astype(&#39;category&#39;)
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: FutureWarning: use_inf_as_na option is deprecated and will be removed in a future version. Convert inf values to NaN before operating instead.
+  with pd.option_context(&#39;mode.use_inf_as_na&#39;, True):
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  grouped_data = data.groupby(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_77_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_77_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># And now pivot the data so each &#39;L1&#39; is a column for each data set</span>
+
+<span class="n">dataL1_MP_pivot</span> <span class="o">=</span> <span class="n">dataL1_MP</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+    <span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;L1rel_MP&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">dataL1_MT_pivot</span> <span class="o">=</span> <span class="n">dataL1_MT</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+    <span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;L1rel_MT&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now let&#39;s try to infer the var model for both the L1rel_MP or L1rel_MT data sets with the MG or MT data sets</span>
+<span class="c1"># So we will have 4 combinations to try</span>
+<span class="c1"># 1. L1rel_MP with MG</span>
+<span class="c1"># 2. L1rel_MP with MT</span>
+<span class="c1"># 3. L1rel_MT with MG</span>
+<span class="c1"># 4. L1rel_MT with MT</span>
+
+<span class="n">infer12</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">dataMG_pivot</span><span class="p">,</span> <span class="n">dataS</span><span class="o">=</span><span class="n">dataL1_MP_pivot</span><span class="p">)</span>
+
+<span class="n">infer12</span><span class="o">.</span><span class="n">run_inference_xs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [X0h, S0h, Ah, Bh, sigma]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 09:33<00:00 Sampling 2 chains, 770 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 580 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]   -0.000  0.090  -0.091    0.092      0.064    0.054       3.0
+Ah[0, 1]    0.057  0.000   0.057    0.057      0.000    0.000       3.0
+Ah[0, 2]    0.033  0.016   0.017    0.050      0.011    0.009       2.0
+Ah[0, 3]    0.075  0.015   0.060    0.089      0.010    0.009       3.0
+Ah[0, 4]    0.038  0.009   0.029    0.048      0.006    0.005       3.0
+...           ...    ...     ...      ...        ...      ...       ...
+Bh[20, 7]  -0.557  0.576  -1.151    0.024      0.406    0.344       3.0
+Bh[20, 8]  -0.407  0.100  -0.538   -0.274      0.070    0.059       3.0
+Bh[20, 9]   0.511  0.245   0.215    0.760      0.172    0.146       3.0
+Bh[20, 10] -0.194  0.091  -0.290   -0.085      0.064    0.054       3.0
+Bh[20, 11]  0.293  0.315  -0.035    0.631      0.222    0.188       3.0
+
+            ess_tail  r_hat
+Ah[0, 0]        12.0   2.24
+Ah[0, 1]        49.0   1.76
+Ah[0, 2]        13.0   2.51
+Ah[0, 3]        19.0   2.02
+Ah[0, 4]        16.0   2.15
+...              ...    ...
+Bh[20, 7]       12.0   2.23
+Bh[20, 8]       24.0   2.22
+Bh[20, 9]       12.0   1.86
+Bh[20, 10]      20.0   1.88
+Bh[20, 11]      26.0   1.91
+
+[396 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (396) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_79_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_79_5.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer12</span><span class="o">.</span><span class="n">posterior_analysis</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]   -0.000  0.090  -0.091    0.092      0.064    0.054       3.0
+Ah[0, 1]    0.057  0.000   0.057    0.057      0.000    0.000       3.0
+Ah[0, 2]    0.033  0.016   0.017    0.050      0.011    0.009       2.0
+Ah[0, 3]    0.075  0.015   0.060    0.089      0.010    0.009       3.0
+Ah[0, 4]    0.038  0.009   0.029    0.048      0.006    0.005       3.0
+...           ...    ...     ...      ...        ...      ...       ...
+Bh[20, 7]  -0.557  0.576  -1.151    0.024      0.406    0.344       3.0
+Bh[20, 8]  -0.407  0.100  -0.538   -0.274      0.070    0.059       3.0
+Bh[20, 9]   0.511  0.245   0.215    0.760      0.172    0.146       3.0
+Bh[20, 10] -0.194  0.091  -0.290   -0.085      0.064    0.054       3.0
+Bh[20, 11]  0.293  0.315  -0.035    0.631      0.222    0.188       3.0
+
+            ess_tail  r_hat
+Ah[0, 0]        12.0   2.24
+Ah[0, 1]        49.0   1.76
+Ah[0, 2]        13.0   2.51
+Ah[0, 3]        19.0   2.02
+Ah[0, 4]        16.0   2.15
+...              ...    ...
+Bh[20, 7]       12.0   2.23
+Bh[20, 8]       24.0   2.22
+Bh[20, 9]       12.0   1.86
+Bh[20, 10]      20.0   1.88
+Bh[20, 11]      26.0   1.91
+
+[396 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_80_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_80_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_80_2.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_80_2.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer13</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">dataMT_pivot</span><span class="p">,</span> <span class="n">dataS</span><span class="o">=</span><span class="n">dataL1_MP_pivot</span><span class="p">)</span>
+
+<span class="n">infer13</span><span class="o">.</span><span class="n">run_inference_xs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [X0h, S0h, Ah, Bh, sigma]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 09:43<00:00 Sampling 2 chains, 179 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 599 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]    0.026  0.022   0.003    0.048      0.016    0.013       2.0
+Ah[0, 1]    0.137  0.030   0.106    0.167      0.021    0.018       2.0
+Ah[0, 2]    0.018  0.002   0.016    0.021      0.002    0.001       2.0
+Ah[0, 3]    0.238  0.046   0.190    0.290      0.033    0.028       2.0
+Ah[0, 4]    0.095  0.046   0.050    0.141      0.032    0.027       3.0
+...           ...    ...     ...      ...        ...      ...       ...
+Bh[20, 6]  -0.080  0.122  -0.207    0.046      0.086    0.073       3.0
+Bh[20, 7]  -0.418  0.227  -0.654   -0.185      0.160    0.136       3.0
+Bh[20, 8]   0.535  0.918  -0.400    1.470      0.648    0.549       3.0
+Bh[20, 9]   0.235  0.079   0.154    0.317      0.056    0.047       3.0
+Bh[20, 10]  0.202  0.028   0.170    0.240      0.020    0.017       3.0
+
+            ess_tail  r_hat
+Ah[0, 0]        11.0   2.47
+Ah[0, 1]        12.0   2.92
+Ah[0, 2]        12.0   2.70
+Ah[0, 3]        11.0   2.79
+Ah[0, 4]        11.0   2.24
+...              ...    ...
+Bh[20, 6]       15.0   2.18
+Bh[20, 7]       21.0   2.04
+Bh[20, 8]       26.0   2.10
+Bh[20, 9]       33.0   2.20
+Bh[20, 10]      26.0   2.27
+
+[352 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (352) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_81_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_81_5.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer13</span><span class="o">.</span><span class="n">posterior_analysis</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]    0.026  0.022   0.003    0.048      0.016    0.013       2.0
+Ah[0, 1]    0.137  0.030   0.106    0.167      0.021    0.018       2.0
+Ah[0, 2]    0.018  0.002   0.016    0.021      0.002    0.001       2.0
+Ah[0, 3]    0.238  0.046   0.190    0.290      0.033    0.028       2.0
+Ah[0, 4]    0.095  0.046   0.050    0.141      0.032    0.027       3.0
+...           ...    ...     ...      ...        ...      ...       ...
+Bh[20, 6]  -0.080  0.122  -0.207    0.046      0.086    0.073       3.0
+Bh[20, 7]  -0.418  0.227  -0.654   -0.185      0.160    0.136       3.0
+Bh[20, 8]   0.535  0.918  -0.400    1.470      0.648    0.549       3.0
+Bh[20, 9]   0.235  0.079   0.154    0.317      0.056    0.047       3.0
+Bh[20, 10]  0.202  0.028   0.170    0.240      0.020    0.017       3.0
+
+            ess_tail  r_hat
+Ah[0, 0]        11.0   2.47
+Ah[0, 1]        12.0   2.92
+Ah[0, 2]        12.0   2.70
+Ah[0, 3]        11.0   2.79
+Ah[0, 4]        11.0   2.24
+...              ...    ...
+Bh[20, 6]       15.0   2.18
+Bh[20, 7]       21.0   2.04
+Bh[20, 8]       26.0   2.10
+Bh[20, 9]       33.0   2.20
+Bh[20, 10]      26.0   2.27
+
+[352 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_82_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_82_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_82_2.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_82_2.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer14</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">dataMG_pivot</span><span class="p">,</span> <span class="n">dataS</span><span class="o">=</span><span class="n">dataL1_MT_pivot</span><span class="p">)</span>
+
+<span class="n">infer14</span><span class="o">.</span><span class="n">run_inference_xs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [X0h, S0h, Ah, Bh, sigma]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 09:09<00:00 Sampling 2 chains, 49 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 558 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]    0.094  0.035   0.058    0.130      0.025    0.021       2.0
+Ah[0, 1]    0.013  0.047  -0.036    0.060      0.033    0.028       3.0
+Ah[0, 2]    0.007  0.103  -0.102    0.111      0.073    0.061       2.0
+Ah[0, 3]    0.078  0.011   0.067    0.089      0.007    0.006       3.0
+Ah[0, 4]    0.047  0.036   0.011    0.082      0.025    0.021       3.0
+...           ...    ...     ...      ...        ...      ...       ...
+Bh[20, 7]  -0.108  0.165  -0.282    0.060      0.117    0.099       3.0
+Bh[20, 8]  -0.061  0.103  -0.165    0.044      0.073    0.062       3.0
+Bh[20, 9]   0.111  0.172  -0.089    0.285      0.121    0.103       3.0
+Bh[20, 10] -0.121  0.110  -0.231   -0.004      0.077    0.065       2.0
+Bh[20, 11]  0.041  0.082  -0.043    0.126      0.058    0.049       3.0
+
+            ess_tail  r_hat
+Ah[0, 0]        12.0   2.53
+Ah[0, 1]        11.0   2.16
+Ah[0, 2]        11.0   2.81
+Ah[0, 3]        37.0   2.05
+Ah[0, 4]        25.0   2.07
+...              ...    ...
+Bh[20, 7]       14.0   2.02
+Bh[20, 8]       21.0   2.18
+Bh[20, 9]       11.0   2.15
+Bh[20, 10]      11.0   2.49
+Bh[20, 11]      30.0   1.85
+
+[396 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (396) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_83_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_83_5.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer14</span><span class="o">.</span><span class="n">posterior_analysis</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]    0.094  0.035   0.058    0.130      0.025    0.021       2.0
+Ah[0, 1]    0.013  0.047  -0.036    0.060      0.033    0.028       3.0
+Ah[0, 2]    0.007  0.103  -0.102    0.111      0.073    0.061       2.0
+Ah[0, 3]    0.078  0.011   0.067    0.089      0.007    0.006       3.0
+Ah[0, 4]    0.047  0.036   0.011    0.082      0.025    0.021       3.0
+...           ...    ...     ...      ...        ...      ...       ...
+Bh[20, 7]  -0.108  0.165  -0.282    0.060      0.117    0.099       3.0
+Bh[20, 8]  -0.061  0.103  -0.165    0.044      0.073    0.062       3.0
+Bh[20, 9]   0.111  0.172  -0.089    0.285      0.121    0.103       3.0
+Bh[20, 10] -0.121  0.110  -0.231   -0.004      0.077    0.065       2.0
+Bh[20, 11]  0.041  0.082  -0.043    0.126      0.058    0.049       3.0
+
+            ess_tail  r_hat
+Ah[0, 0]        12.0   2.53
+Ah[0, 1]        11.0   2.16
+Ah[0, 2]        11.0   2.81
+Ah[0, 3]        37.0   2.05
+Ah[0, 4]        25.0   2.07
+...              ...    ...
+Bh[20, 7]       14.0   2.02
+Bh[20, 8]       21.0   2.18
+Bh[20, 9]       11.0   2.15
+Bh[20, 10]      11.0   2.49
+Bh[20, 11]      30.0   1.85
+
+[396 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_84_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_84_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_84_2.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_84_2.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer15</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">dataMT_pivot</span><span class="p">,</span> <span class="n">dataS</span><span class="o">=</span><span class="n">dataL1_MT_pivot</span><span class="p">)</span>
+
+<span class="n">infer15</span><span class="o">.</span><span class="n">run_inference_xs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [X0h, S0h, Ah, Bh, sigma]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 08:48<00:00 Sampling 2 chains, 0 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 535 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]    0.143  0.033   0.110    0.176      0.023    0.020       3.0
+Ah[0, 1]    0.025  0.010   0.015    0.036      0.007    0.006       2.0
+Ah[0, 2]   -0.040  0.017  -0.058   -0.022      0.012    0.010       3.0
+Ah[0, 3]    0.022  0.065  -0.044    0.088      0.046    0.039       3.0
+Ah[0, 4]    0.162  0.024   0.138    0.186      0.017    0.014       3.0
+...           ...    ...     ...      ...        ...      ...       ...
+Bh[20, 6]   0.089  0.313  -0.227    0.422      0.221    0.187       3.0
+Bh[20, 7]   0.146  0.478  -0.334    0.642      0.337    0.286       2.0
+Bh[20, 8]   0.113  0.319  -0.210    0.447      0.225    0.190       2.0
+Bh[20, 9]   0.055  0.618  -0.572    0.694      0.436    0.369       2.0
+Bh[20, 10]  0.108  0.227  -0.123    0.336      0.160    0.136       2.0
+
+            ess_tail  r_hat
+Ah[0, 0]        12.0   2.08
+Ah[0, 1]        12.0   2.92
+Ah[0, 2]        24.0   2.31
+Ah[0, 3]        11.0   2.25
+Ah[0, 4]        42.0   2.28
+...              ...    ...
+Bh[20, 6]       12.0   2.28
+Bh[20, 7]       13.0   2.60
+Bh[20, 8]       20.0   2.42
+Bh[20, 9]       11.0   2.79
+Bh[20, 10]      11.0   2.65
+
+[352 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:271: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (352) in plot_posterior, generating only 40 plots
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_85_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_85_5.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer15</span><span class="o">.</span><span class="n">posterior_analysis</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
+Ah[0, 0]    0.143  0.033   0.110    0.176      0.023    0.020       3.0
+Ah[0, 1]    0.025  0.010   0.015    0.036      0.007    0.006       2.0
+Ah[0, 2]   -0.040  0.017  -0.058   -0.022      0.012    0.010       3.0
+Ah[0, 3]    0.022  0.065  -0.044    0.088      0.046    0.039       3.0
+Ah[0, 4]    0.162  0.024   0.138    0.186      0.017    0.014       3.0
+...           ...    ...     ...      ...        ...      ...       ...
+Bh[20, 6]   0.089  0.313  -0.227    0.422      0.221    0.187       3.0
+Bh[20, 7]   0.146  0.478  -0.334    0.642      0.337    0.286       2.0
+Bh[20, 8]   0.113  0.319  -0.210    0.447      0.225    0.190       2.0
+Bh[20, 9]   0.055  0.618  -0.572    0.694      0.436    0.369       2.0
+Bh[20, 10]  0.108  0.227  -0.123    0.336      0.160    0.136       2.0
+
+            ess_tail  r_hat
+Ah[0, 0]        12.0   2.08
+Ah[0, 1]        12.0   2.92
+Ah[0, 2]        24.0   2.31
+Ah[0, 3]        11.0   2.25
+Ah[0, 4]        42.0   2.28
+...              ...    ...
+Bh[20, 6]       12.0   2.28
+Bh[20, 7]       13.0   2.60
+Bh[20, 8]       20.0   2.42
+Bh[20, 9]       11.0   2.79
+Bh[20, 10]      11.0   2.65
+
+[352 rows x 9 columns]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_86_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_86_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold_86_2.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold_86_2.png" />
+</div>
+</div>
 </section>
 
 
@@ -3823,6 +4825,8 @@ Bh[9, 9]      28.0   1.02
 <li class="toctree-l1 current"><a class="reference internal" href="../../../examples.html">Examples</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-Herold-Metabolites.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-Herold-Metabolites.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
@@ -3849,7 +4853,7 @@ Bh[9, 9]      28.0   1.02
   <li><a href="../../../index.html">Documentation overview</a><ul>
   <li><a href="../../../examples.html">Examples</a><ul>
       <li>Previous: <a href="../../../examples.html" title="previous chapter">Examples</a></li>
-      <li>Next: <a href="../../gMLV/examples-sim-gMLV.html" title="next chapter">Simulate some time course data from the gMLV</a></li>
+      <li>Next: <a href="examples_impute_data.html" title="next chapter">&lt;no title&gt;</a></li>
   </ul></li>
   </ul></li>
 </ul>
