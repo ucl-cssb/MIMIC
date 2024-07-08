@@ -15,6 +15,7 @@ Examples
    notebooks/GP/examples-impute-GP_Stein
    notebooks/MultiModel/Herold/examples-Herold-Metabolites
    notebooks/MultiModel/Herold/examples-Herold
+   notebooks/MultiModel/Herold/examples_impute_data
    notebooks/MVAR/examples-infer-MVAR
    notebooks/MVAR/examples-sim-MVAR
    notebooks/VAR/examples-bayes-VAR
