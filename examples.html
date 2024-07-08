@@ -16,7 +16,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)" href="notebooks/MultiModel/Herold/examples-Herold.html" />
+    <link rel="next" title="VAR inference on a Real Public Dataset, Herold et al. (2020)" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html" />
     <link rel="prev" title="mimic.utilities package" href="mimic.utilities.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -39,13 +39,14 @@
 <h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-Metabolites.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-Metabolites.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-Metabolites.html#Reducing-number-of-variables-(to-the-3-or-5-most-abundant)-to-reduce-the-computational-cost-and-simplify-the-analysis">Reducing number of variables (to the 3 or 5 most abundant) to reduce the computational cost and simplify the analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html#Reducing-number-of-variables-(to-the-3-or-5-most-abundant)-to-reduce-the-computational-cost-and-simplify-the-analysis">Reducing number of variables (to the 3 or 5 most abundant) to reduce the computational cost and simplify the analysis</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html#Five-species,-six-metabolites,-single-time-course">Five species, six metabolites, single time course</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html#Five-species,-single-time-course,-with-a-perturbation">Five species, single time course, with a perturbation</a></li>
@@ -140,10 +141,11 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">mimic</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-Metabolites.html">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-Metabolites.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
@@ -169,7 +171,7 @@
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="mimic.utilities.html" title="previous chapter">mimic.utilities package</a></li>
-      <li>Next: <a href="notebooks/MultiModel/Herold/examples-Herold.html" title="next chapter">Using the Data Imputator on a Real Public Dataset, Herold et al. (2020)</a></li>
+      <li>Next: <a href="notebooks/MultiModel/Herold/examples-Herold-VAR.html" title="next chapter">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
   </ul></li>
 </ul>
 </div>

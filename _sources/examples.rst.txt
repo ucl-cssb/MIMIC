@@ -4,9 +4,9 @@ Examples
 .. toctree::
    :maxdepth: 2
 
-   notebooks/MultiModel/Herold/examples-Herold
+   notebooks/MultiModel/Herold/examples-Herold-VAR
+   notebooks/MultiModel/Herold/examples-Herold-sVAR
    notebooks/MultiModel/Herold/examples_impute_data
-   notebooks/MultiModel/Herold/examples-Herold-Metabolites
    notebooks/gMLV/examples-sim-gMLV
    notebooks/gMLV/examples-ridge-lasso-gMLV
    notebooks/MVAR/examples-infer-MVAR
