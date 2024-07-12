@@ -293,6 +293,31 @@ class GPImputer(BaseImputer):
             kernels = self.generate_kernel_library()
         elif isinstance(kernel, Kernel):
             kernels = [kernel]
+        elif isinstance(kernel, list) and all(isinstance(k, str) for k in kernel):
+            kernel_map = {
+                'RBF': "SquaredExponential",
+                'M32': "Matern32",
+                'RQ': "RationalQuadratic",
+                'Exp': "Exponential",
+                'Lin': "Linear",
+                'Cos': "Cosine",
+                'Poly': "Polynomial",
+                'M12': "Matern12",
+                'M52': "Matern52",
+                'White': "White"
+            }
+            kernel_library = {
+                k.__name__: k for k in self.generate_kernel_library()}
+            kernels = []
+            for k in kernel:
+                if k not in kernel_map:
+                    raise ValueError(f"Invalid kernel '{k}' provided.")
+                kernel_name = kernel_map[k]
+                if kernel_name in kernel_library:
+                    kernels.append(kernel_library[kernel_name])
+                else:
+                    raise ValueError(
+                        f"Unknown kernel '{k}'. Available options: {list(kernel_map.keys())}")
         elif isinstance(kernel, str):
             kernel_map = {
                 'RBF': "SquaredExponential",
