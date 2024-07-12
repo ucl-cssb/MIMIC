@@ -13,7 +13,9 @@ Examples
    notebooks/gMLV/examples-sim-gMLV
    notebooks/GP/examples-impute-GP
    notebooks/GP/examples-impute-GP_Stein
-   notebooks/MultiModel/Herold/examples-Herold
+   notebooks/MultiModel/Herold/examples-Herold-sVAR
+   notebooks/MultiModel/Herold/examples-Herold-VAR
+   notebooks/MultiModel/Herold/examples_impute_data
    notebooks/MVAR/examples-infer-MVAR
    notebooks/MVAR/examples-sim-MVAR
    notebooks/VAR/examples-bayes-VAR

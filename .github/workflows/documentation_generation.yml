@@ -1,0 +1,44 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc
+        run: sudo apt-get -y install pandoc
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.1.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install documentation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install sphinx sphinx-rtd-theme nbsphinx ipykernel furo sphinx-autoapi recommonmark
+
+      - name: Install project dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate API documentation
+        run: sphinx-apidoc -o docs/source/ ./ setup.py
+
+      - name: Build Sphinx documentation
+        run: |
+          cd docs
+          make clean
+          make html
+          touch build/html/.nojekyll  # Create the .nojekyll file
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build/html
