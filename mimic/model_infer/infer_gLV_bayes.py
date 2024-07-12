@@ -111,7 +111,14 @@ class infergLVbayes:
             #sigma = pm.HalfNormal('sigma', sigma=1, shape=(num_species,))  # A separate sigma for each response
             sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
 
-            mu_hat = pm.HalfNormal('mu_hat', sigma=1, shape=(1, num_species))
+            # If mu_value is provided, use it as a fixed value; otherwise, define it as a prior
+            if mu is not None:
+                mu = mu
+            else:
+                mu = pm.Uniform('mu', lower=0.0, upper=0.05)
+
+            # mu_hat = pm.HalfNormal('mu_hat', sigma=1, shape=(1, 5))
+            mu_hat = pm.TruncatedNormal('mu_hat', mu=mu, sigma=0.5, lower=0, shape=(1, num_species))
 
             #M_hat = pm.Normal('M_hat', mu=0, sigma=0.1, shape=(num_species, num_species))  #
             # tighter prior for the slopes
@@ -206,11 +213,10 @@ class infergLVbayes:
             sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
 
             # If mu_value is provided, use it as a fixed value; otherwise, define it as a prior
-            if mu is not None:
-                mu = mu
+            if mu_value is not None:
+                mu = mu_value
             else:
                 mu = pm.Uniform('mu', lower=0.0, upper=0.05)
-
 
             # mu_hat = pm.HalfNormal('mu_hat', sigma=1, shape=(1, 5))
             mu_hat = pm.TruncatedNormal('mu_hat',mu=mu,sigma=0.5,lower=0,shape=(1,num_species))
