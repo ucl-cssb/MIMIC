@@ -340,7 +340,7 @@ class infergLVbayes:
             ##print(f"Initial logp values: {initial_logp}")
 
             # Posterior distribution
-            idata = pm.sample(500, tune=500, chains=2, cores=1)
+            idata = pm.sample(100, tune=100, chains=2, cores=1)
 
 
         #print(f"idata type inside function: {type(idata)}")
@@ -351,12 +351,14 @@ class infergLVbayes:
         print(f"mu_hat_np shape: {mu_hat_np.shape}")
         print(f"M_hat_np shape: {M_hat_np.shape}")
 
+        var_names = diagonal_var_names + off_diagonal_var_names
+
         # Plot and save posterior results
         self.plot_posterior_a(idata, mu_hat_np, M_hat_np, diagonal_var_names, off_diagonal_var_names)
 
         print(f"idata type after posterior extraction: {type(idata)}")
 
-        return idata
+        return idata, var_names
 
 
 
