@@ -53,7 +53,7 @@ body:
     id: optional-labels
     attributes:
       label: Optional Labels
-      description: If any of these optional labels are necessary, please select them.
+      description: If any of these optional labels are necessary, please select them and make sure to add them from the sidebar.
       options:
         - label: HIGH priority
         - label: LOW priority
