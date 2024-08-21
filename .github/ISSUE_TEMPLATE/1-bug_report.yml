@@ -1,0 +1,87 @@
+name: Bug Report
+description: File a bug report to help us improve.
+title: "[Bug]: "
+labels: ["bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+        Please fill out the following sections to report a bug.
+
+  - type: input
+    id: bug-title
+    attributes:
+      label: Bug Title
+      description: Provide a brief summary of the bug.
+      placeholder: "Brief summary of the bug"
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+      placeholder: "Describe the bug in detail"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Please list the steps to reproduce the bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "Describe the expected behavior"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: "Describe the actual behavior"
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Please describe the environment in which the bug occurred (OS, browser, etc.).
+      placeholder: "OS: [e.g., iOS]\nBrowser: [e.g., Chrome]\nVersion: [e.g., 22]"
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
+      placeholder: "Any other details or attachments?"
+
+  - type: checkboxes
+    id: optional-labels
+    attributes:
+      label: Optional Labels
+      description: If any of these optional labels are necessary, please select them and make sure to add them from the sidebar.
+      options:
+        - label: HIGH priority
+        - label: LOW priority
+        - label: good first issue
+        - label: help wanted
+        - label: wontfix
+        - label: question/discussion
