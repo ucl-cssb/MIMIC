@@ -23,7 +23,7 @@ body:
     id: feature-description
     attributes:
       label: Is your feature request related to a problem?
-      description: Describe the problem you are facing. Example: I'm always frustrated when...
+      description: "Describe the problem you are facing. Example: 'I'm always frustrated when...'"
       placeholder: "Describe the problem"
 
   - type: textarea
