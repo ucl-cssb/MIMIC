@@ -8,7 +8,7 @@
     <title>Sparse VAR on a Real Public Dataset, Herold et al. (2020) &#8212; MIMIC 0.1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <script src="../../../_static/documentation_options.js?v=01f34227"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -17,8 +17,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Data imputation on a Real Public Dataset, Herold et al. (2020)" href="examples_impute_data.html" />
-    <link rel="prev" title="VAR inference on a Real Public Dataset, Herold et al. (2020)" href="examples-Herold-VAR.html" />
+    <link rel="next" title="Bayesian Inference for Vector AutoRegression (VAR) Models" href="../../VAR/examples-bayes-VAR.html" />
+    <link rel="prev" title="Data imputation on a Real Public Dataset, Herold et al. (2020)" href="examples_impute_data.html" />
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -3800,7 +3800,7 @@ Warning: Not all samples are stable.
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="../../../index.html">MIMIC</a></h1>
 
@@ -3821,25 +3821,25 @@ Warning: Not all samples are stable.
 <li class="toctree-l1 current"><a class="reference internal" href="../../../examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Reducing-number-of-variables-(to-the-3-or-5-most-abundant)-to-reduce-the-computational-cost-and-simplify-the-analysis">Reducing number of variables (to the 3 or 5 most abundant) to reduce the computational cost and simplify the analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
@@ -3852,8 +3852,8 @@ Warning: Not all samples are stable.
 <ul>
   <li><a href="../../../index.html">Documentation overview</a><ul>
   <li><a href="../../../examples.html">Examples</a><ul>
-      <li>Previous: <a href="examples-Herold-VAR.html" title="previous chapter">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
-      <li>Next: <a href="examples_impute_data.html" title="next chapter">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
+      <li>Previous: <a href="examples_impute_data.html" title="previous chapter">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
+      <li>Next: <a href="../../VAR/examples-bayes-VAR.html" title="next chapter">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -3884,7 +3884,7 @@ Warning: Not all samples are stable.
       &#169;2024, Pedro Fontanarrosa.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |
