@@ -34,13 +34,6 @@ body:
       placeholder: "Describe the solution"
 
   - type: textarea
-    id: feature-alternatives
-    attributes:
-      label: Describe alternatives you've considered
-      description: A clear and concise description of any alternative solutions or features you've considered.
-      placeholder: "Describe alternatives"
-
-  - type: textarea
     id: additional-context
     attributes:
       label: Additional Context
