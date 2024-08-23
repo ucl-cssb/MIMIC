@@ -118,8 +118,10 @@ class infergLVbayes:
                 mu_hat = pm.TruncatedNormal('mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=(1, num_species))
                 print(f"Manually determined mu prior")
             else:
-                mu_hat = pm.TruncatedNormal('mu_hat', mu=pm.Uniform('mu', lower=0.0, upper=0.05), sigma=0.5, lower=0,
-                                            shape=(1, num_species))
+                #mu_hat = pm.TruncatedNormal('mu_hat', mu=pm.Uniform('mu', lower=0.0, upper=0.05), sigma=0.5, lower=0,
+                #                            shape=(1, num_species))
+
+                mu_hat = pm.TruncatedNormal('mu_hat', mu=1.0, sigma=0.5, lower=0, shape=(1, num_species))
                 print(f"Automatically determined mu prior")
 
 
@@ -134,34 +136,6 @@ class infergLVbayes:
                 print(f"Automatically determined M prior")
 
 
-            # M_ii is self-interaction, so constrained to be negative
-            #M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p', sigma=0.1, shape=(num_species,))
-            #M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
-
-            # M_ij is unconstrained
-            #M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=0.1, shape=(num_species, num_species - 1))  # different shape for off-diagonal
-
-            # Combine values
-            # start with an all-zero matrix of the correct shape
-            #M_hat_vals = at.zeros((num_species, num_species))
-            #M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
-
-            # Create the index arrays for setting off-diagonal values
-            #row_indices = np.arange(num_species)[:, None]
-            #col_indices = np.delete(np.arange(num_species), -1)
-
-            #M_hat_vals = at.set_subtensor(M_hat_vals[row_indices, col_indices], M_ij_hat)  # set off-diagonal
-
-            # Generate variable names
-            #diagonal_var_names = [f'M_ii_hat']
-            #off_diagonal_var_names = [f'M_ij_hat']
-
-            #M_hat_vals = at.zeros((num_species, num_species))
-            #M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species), at.arange(num_species)], M_ii_hat)
-
-            # Construct the off-diagonal matrix:
-            #off_diag_mask = ~np.eye(num_species, dtype=bool)
-            #M_hat_vals = at.set_subtensor(M_hat_vals[off_diag_mask], M_ij_hat.flatten())
 
             # M_ii is constrained to be negative
             M_ii_hat_p = pm.HalfNormal('M_ii_hat_p', sigma=0.1, shape=(num_species,))
@@ -228,177 +202,6 @@ class infergLVbayes:
         # print(f"idata type after posterior extraction: {type(idata)}")
 
         return idata
-
-
-
-    def run_bayes_gLV_test_log(self) -> None:
-        """
-        This function infers the parameters for the Bayesian gLV model
-
-        Returns:
-            idata: The posterior inference data
-
-
-        """
-
-        #if self.X is None or self.F is None or self.mu is None or self.M is None:
-        #    raise ValueError("X, F, mu, and M must all be provided.")
-
-        # data = self.data
-        X = self.X
-        F = self.F
-        mu = self.mu
-        M = self.M
-
-        num_species = F.shape[1]
-
-        # ensure F values are positive and non-zero
-        F = np.where(F <= 0, 1e-6, F)
-
-        # Print shapes for debugging
-        print(f"X shape: {X.shape}")
-        print(f"F shape: {F.shape}")
-        print(f"Number of species: {num_species}")
-
-        bayes_model = pm.Model()
-        with bayes_model:
-            # Priors for unknown model parameters
-            #sigma = pm.HalfNormal('sigma', sigma=1, shape=(num_species,))  # A separate sigma for each response
-            sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
-
-            # Use provided mu as fixed value or define as prior
-            if mu is not None:
-                mu_hat = pm.TruncatedNormal('mu_hat', mu=mu, sigma=0.5, lower=0, shape=(1, num_species))
-                print(f"Used manually determined mu")
-            else:
-                mu_hat = pm.TruncatedNormal('mu_hat', mu=pm.Uniform('mu', lower=0.0, upper=0.05), sigma=0.5, lower=0,
-                                            shape=(1, num_species))
-
-                print(f"Used automatically determined mu")
-
-            # Use provided M as fixed values or define as priors
-            if M is not None:
-                    # Initialize an empty tensor of the same shape as prior
-                    M_hat_vals = at.zeros((num_species, num_species))
-                    print(f"Used manually determined M")
-
-                    diagonal_var_names = []
-                    off_diagonal_var_names = []
-
-                    for i in range(num_species):
-                        for j in range(num_species):
-                            if i == j:
-                                # Diagonal elements
-                                M_ii_hat_prior = M[i, j]  # Original value from prior matrix
-                                M_ii_hat = pm.Deterministic(f'M_{i}_{j}_hat',
-                                                            -pm.Normal(f'M_{i}_{j}_hat_prior', mu=M_ii_hat_prior, sigma=0.1))
-
-                                # Insert into the tensor
-                                M_hat_vals = at.set_subtensor(M_hat_vals[i, j], M_ii_hat)
-                                diagonal_var_names.append(f'M_{i}_{j}_hat')
-                            else:
-                                # Off-diagonal elements
-                                M_ij_hat_prior = M[i, j]
-                                M_ij_hat = pm.Normal(f'M_{i}_{j}_hat_prior', mu=M_ij_hat_prior, sigma=0.1)
-
-                                # Insert into the tensor
-                                M_hat_vals = at.set_subtensor(M_hat_vals[i, j], M_ij_hat)
-                                off_diagonal_var_names.append(f'M_{i}_{j}_hat_prior')
-
-
-
-
-            else:
-                # M_ii is constrained to be negative
-                M_ii_hat_p = pm.HalfNormal('M_ii_hat_p', sigma=0.1, shape=(num_species,))
-                M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
-
-                # M_ij is unconstrained
-                M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=0.1,
-                                     shape=(num_species, num_species - 1))  # different shape for off-diagonal
-
-                # Combine values
-                # start with an all-zero matrix of the correct shape
-                M_hat_vals = at.zeros((num_species, num_species))
-                M_hat_vals = at.set_subtensor(
-                    M_hat_vals[at.arange(num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
-
-                # Create the index arrays for setting off-diagonal values
-                row_indices = np.arange(num_species)[:, None]
-                col_indices = np.delete(np.arange(num_species), -1)
-
-                M_hat_vals = at.set_subtensor(M_hat_vals[row_indices, col_indices], M_ij_hat)  # set off-diagonal
-
-                # Generate variable names
-                diagonal_var_names = [f'M_ii_hat']
-                off_diagonal_var_names = [f'M_ij_hat']
-
-                print(f"Used automatically determined M")
-
-
-            # Save the combined matrix as a deterministic variable
-            M_hat = pm.Deterministic('M_hat', M_hat_vals)
-
-            print(f"mu_hat: {mu_hat.eval()}")
-            print(f"M_hat_vals: {M_hat_vals.eval()}")
-            print(f"M_hat: {M_hat.eval()}")
-
-            # Expected value of outcome (linear model)
-            model_mean = pm.math.dot(
-                X, pm.math.concatenate([M_hat, mu_hat], axis=0))
-
-
-
-            print(f"model mean before: {model_mean.eval()}")
-
-            log_model_mean = at.log(model_mean)
-
-            print(f"log model mean after: {log_model_mean.eval()}")
-
-
-
-            # Likelihood (sampling distribution) of observations
-            Y_obs = pm.Lognormal('Y_obs', mu=log_model_mean, sigma=sigma, observed=F)
-            #Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
-
-            ##print(f"Y_obs logged: {Y_obs.eval()}")
-            print(f"Y_obs: {Y_obs.eval()}")
-
-            # Print initial parameter values and logp values for debugging
-            initial_values = bayes_model.initial_point()
-            ##initial_logp = bayes_model.logp(initial_values)
-
-            print(f"Initial parameter values: {initial_values}")
-            ##print(f"Initial logp values: {initial_logp}")
-
-            # Posterior distribution
-            idata = pm.sample(100, tune=100, chains=2, cores=1)
-
-
-        #print(f"idata type inside function: {type(idata)}")
-
-        mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
-        M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
-
-        print(f"mu_hat_np shape: {mu_hat_np.shape}")
-        print(f"M_hat_np shape: {M_hat_np.shape}")
-
-        var_names = diagonal_var_names + off_diagonal_var_names
-
-        # Plot and save posterior results
-        self.plot_posterior_a(idata, mu_hat_np, M_hat_np, diagonal_var_names, off_diagonal_var_names)
-
-        print(f"idata type after posterior extraction: {type(idata)}")
-
-        return idata, var_names
-
-
-
-
-
-
-
-
 
 
 
