@@ -5,9 +5,10 @@ import pandas as pd
 import pymc as pm
 import pytensor.tensor as at
 import seaborn as sns
+from mimic.model_infer.base_infer import BaseInfer
 
 
-class infer_VAR:
+class infer_VAR(BaseInfer):
     """
     infer_VAR class for performing inference on VAR models.
 
@@ -43,6 +44,7 @@ class infer_VAR:
             intercepts=None,
             covariance_matrix=None,
             dataS=None):
+        super().__init__()
         self.data = self._validate_data(data)
         self.dataS = self._validate_data(dataS) if dataS is not None else None
         self.coefficients = coefficients
@@ -99,13 +101,17 @@ class infer_VAR:
                 f"Failed to import data from {file_path}: {e}") from e
 
     # sourcery skip: extract-method
-    def run_inference(self, samples=2000, tune=1000, cores=2) -> None:
+    def run_inference(self, **kwargs) -> None:
         """
         Runs the inference process for the VAR model.
 
         Returns:
         None
         """
+        samples = kwargs.get('samples', 2000)
+        tune = kwargs.get('tune', 1000)
+        cores = kwargs.get('cores', 2)
+
         if self.data is None:
             print("Error: No data to perform inference on.")
             return
@@ -387,14 +393,14 @@ class infer_VAR:
             c2_A = pm.InverseGamma("c2_A", 2, 1)
             tau_A = pm.HalfCauchy("tau_A", beta=tau0_A)
             lam_A = pm.HalfCauchy("lam_A", beta=1, shape=(nX, nX))
-            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=tau_A * lam_A * \
+            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=tau_A * lam_A *
                            at.sqrt(c2_A / (c2_A + tau_A**2 * lam_A**2)), shape=(nX, nX))
 
             tau0_B = (DB0 / (DB - DB0)) * 0.1 / np.sqrt(N)
             c2_B = pm.InverseGamma("c2_B", 2, 1)
             tau_B = pm.HalfCauchy("tau_B", beta=tau0_B)
             lam_B = pm.HalfCauchy("lam_B", beta=1, shape=(nS, nX))
-            Bh = pm.Normal('Bh', mu=0, sigma=tau_B * lam_B * \
+            Bh = pm.Normal('Bh', mu=0, sigma=tau_B * lam_B *
                            at.sqrt(c2_B / (c2_B + tau_B**2 * lam_B**2)), shape=(nS, nX))
 
             if noise_cov_prior is not None:
