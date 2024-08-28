@@ -14,14 +14,15 @@ class BaseInfer(ABC):
     Attributes:
         priors (dict): Dictionary holding prior distributions for model parameters.
         data (np.ndarray | None): The data on which inference is performed.
+        dataS (np.ndarray | None): The secondary data (e.g., metabolite data).
         model (object | None): Placeholder for the specific model used in inference.
         results (Any | None): Results of the inference process.
     """
 
     def __init__(self):
-        self.priors: Optional[Dict[str, Any]] = None
+        # Initialize priors as an empty dictionary
+        self.priors: Dict[str, Any] = {}
         self.data: Optional[np.ndarray] = None
-        # For secondary data like metabolites
         self.dataS: Optional[np.ndarray] = None
         self.model: Optional[object] = None
         self.results: Optional[Any] = None
@@ -90,7 +91,7 @@ class BaseInfer(ABC):
         Parameters:
             priors (dict): A dictionary where keys are parameter names and values are the prior distributions.
         """
-        self.priors = priors
+        self.priors.update(priors)  # Update existing priors with new values
 
     @abstractmethod
     def run_inference(self, **kwargs) -> None:
