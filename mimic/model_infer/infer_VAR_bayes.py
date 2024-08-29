@@ -18,9 +18,6 @@ class infer_VAR(BaseInfer):
         data (numpy.ndarray): The data to perform inference on.
 
     Methods:
-        import_data(file_path, index_col=None, parse_dates=False):
-            Imports data from a .csv file.
-
         run_inference():
             Runs the inference process for the VAR model.
 
@@ -44,63 +41,13 @@ class infer_VAR(BaseInfer):
             intercepts=None,
             covariance_matrix=None,
             dataS=None):
-        super().__init__()
+        super().__init__()  # Call base class constructor
         self.data = self._validate_data(data)
         self.dataS = self._validate_data(dataS) if dataS is not None else None
         self.coefficients = coefficients
         self.intercepts = intercepts
         self.covariance_matrix = covariance_matrix
 
-    def _validate_data(self, data):
-        if data is None:
-            return None
-        elif isinstance(data, pd.DataFrame):
-            return data.values
-        elif isinstance(data, np.ndarray):
-            return data
-        elif isinstance(data, (list, tuple)):
-            try:
-                return np.array(data)
-            except Exception as e:
-                raise TypeError(
-                    f"Data could not be converted to a numpy array: {e}"
-                ) from e
-        else:
-            raise TypeError(
-                "Unsupported data type. Data must be a DataFrame, ndarray, list, or tuple.")
-
-    def import_data(
-            self,
-            file_path,
-            index_col=None,
-            parse_dates=False,
-            data_type='X') -> None:
-        """
-        Imports data from a .csv file.
-
-        Args:
-        file_path (str): The path to the .csv file.
-        index_col (int, optional): Column to use as the row labels of the DataFrame.
-        parse_dates (bool, optional): Parse dates as datetime.
-        data_type (str): Specify whether the data is for 'X' (abundance) or 'S' (metabolite).
-
-        Returns:
-        None
-        """
-        try:
-            data = pd.read_csv(file_path, index_col=index_col,
-                               parse_dates=parse_dates)
-            if data_type == 'X':
-                self.data = self._validate_data(data)
-            elif data_type == 'S':
-                self.dataS = self._validate_data(data)
-            else:
-                raise ValueError("data_type must be either 'X' or 'S'.")
-        except Exception as e:
-            raise ValueError(
-                f"Failed to import data from {file_path}: {e}") from e
-
-    # sourcery skip: extract-method
     def run_inference(self, **kwargs) -> None:
         """
         Runs the inference process for the VAR model.
@@ -130,11 +77,14 @@ class infer_VAR(BaseInfer):
 
         # PyMC3 model
         # Set priors if provided, else default to zero mean and unit variance
-        x0_prior_mu = self.intercepts.flatten(
-        ) if self.intercepts is not None else np.zeros(dim)
-        A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
-            (dim, dim))
-        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
+        x0_prior_mu = self.priors.get('intercepts', self.intercepts.flatten(
+        )) if self.intercepts is not None else np.zeros(dim)
+        A_prior_mu = self.priors.get(
+            'coefficients', self.coefficients) if self.coefficients is not None else np.zeros((dim, dim))
+        noise_cov_prior = self.priors.get(
+            'covariance_matrix', self.covariance_matrix) if self.covariance_matrix is not None else None
+
+        # PyMC3 model
         with pm.Model() as var_model:
             # Priors for x0 and sigma
             # QUESTION: should the sigma be the noise_stddev from the
@@ -158,20 +108,13 @@ class infer_VAR(BaseInfer):
                     "noise_chol", eta=1.0, n=dim, sd_dist=pm.HalfNormal.dist(sigma=1.0))
 
             # VAR(1) process likelihood
-            print("x0:", x0.shape)
-            # print("A:",A.shape)
-            # print("data[:-1, :]:", data[:-1, :].shape)
-            print("data[1:, :]:", data[1:, :].shape)
             x0_obs = data[0, :].copy().reshape(-1)
-            print("x0:", x0_obs.shape)
-
             mu = x0[:, np.newaxis] + pm.math.dot(A, data[:-1, :].T)
-            print("mu:", mu.T.shape)
-            print("data:", data[1:, :].shape)
 
             # obs_chol = np.diag(np.full(dim,sigma))
 
             # *pm.Normal('likelihood_0', mu=x0, sigma=1.0, observed=x0_obs)
+
             likelihood = pm.MvNormal(
                 'likelihood_t', mu=mu.T, chol=noise_chol, observed=data[1:, :])
 
