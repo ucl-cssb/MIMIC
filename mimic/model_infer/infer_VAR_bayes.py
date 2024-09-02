@@ -87,9 +87,13 @@ class infer_VAR(BaseInfer):
         x0_prior_mu = self.priors.get('intercepts', self.intercepts.flatten(
         )) if self.intercepts is not None else np.zeros(dim)
         A_prior_mu = self.priors.get(
-            'coefficients', self.coefficients) if self.coefficients is not None else np.zeros((dim, dim))
+            'coefficients',
+            self.coefficients) if self.coefficients is not None else np.zeros(
+            (dim,
+             dim))
         noise_cov_prior = self.priors.get(
-            'covariance_matrix', self.covariance_matrix) if self.covariance_matrix is not None else None
+            'covariance_matrix',
+            self.covariance_matrix) if self.covariance_matrix is not None else None
 
         # PyMC3 model
         with pm.Model() as var_model:
@@ -177,9 +181,13 @@ class infer_VAR(BaseInfer):
         x0_prior_mu = self.priors.get('intercepts', self.intercepts.flatten(
         )) if self.intercepts is not None else np.zeros(ndim)
         A_prior_mu = self.priors.get(
-            'coefficients', self.coefficients) if self.coefficients is not None else np.zeros((ndim, ndim))
+            'coefficients',
+            self.coefficients) if self.coefficients is not None else np.zeros(
+            (ndim,
+             ndim))
         noise_cov_prior = self.priors.get(
-            'covariance_matrix', self.covariance_matrix) if self.covariance_matrix is not None else None
+            'covariance_matrix',
+            self.covariance_matrix) if self.covariance_matrix is not None else None
 
         # create and fit PyMC model
         with pm.Model() as var_model:
@@ -249,9 +257,13 @@ class infer_VAR(BaseInfer):
         x0_prior_mu = self.priors.get('intercepts', self.intercepts.flatten(
         )) if self.intercepts is not None else np.zeros(nX)
         A_prior_mu = self.priors.get(
-            'coefficients', self.coefficients) if self.coefficients is not None else np.zeros((nX, nX))
+            'coefficients',
+            self.coefficients) if self.coefficients is not None else np.zeros(
+            (nX,
+             nX))
         noise_cov_prior = self.priors.get(
-            'covariance_matrix', self.covariance_matrix) if self.covariance_matrix is not None else None
+            'covariance_matrix',
+            self.covariance_matrix) if self.covariance_matrix is not None else None
 
         # PyMC3 model
         with pm.Model() as var_model:
@@ -319,9 +331,13 @@ class infer_VAR(BaseInfer):
         x0_prior_mu = self.priors.get('intercepts', self.intercepts.flatten(
         )) if self.intercepts is not None else np.zeros(nX)
         A_prior_mu = self.priors.get(
-            'coefficients', self.coefficients) if self.coefficients is not None else np.zeros((nX, nX))
+            'coefficients',
+            self.coefficients) if self.coefficients is not None else np.zeros(
+            (nX,
+             nX))
         noise_cov_prior = self.priors.get(
-            'covariance_matrix', self.covariance_matrix) if self.covariance_matrix is not None else None
+            'covariance_matrix',
+            self.covariance_matrix) if self.covariance_matrix is not None else None
 
         with pm.Model() as var_model:
             tau0_A = (DA0 / (DA - DA0)) * 0.1 / np.sqrt(N)
@@ -369,7 +385,12 @@ class infer_VAR(BaseInfer):
         # Save results to unique filenames
         self._save_results(trace, (dataX, dataS), method='large_xs')
 
-    def posterior_analysis(self, data_filename=None, netcdf_filename=None, A=None, B=None):
+    def posterior_analysis(
+            self,
+            data_filename=None,
+            netcdf_filename=None,
+            A=None,
+            B=None):
         """
         Performs posterior analysis and visualizes the results.
 

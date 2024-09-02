@@ -8,7 +8,7 @@ class BaseInfer(ABC):
     """
     Abstract base class for inference models.
 
-    This class provides a structure for setting priors, managing data, and handling 
+    This class provides a structure for setting priors, managing data, and handling
     the inference process. Specific inference methods should be implemented in subclasses.
 
     Attributes:
