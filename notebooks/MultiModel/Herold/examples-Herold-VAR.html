@@ -323,7 +323,7 @@ memory usage: 15.3 KB
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-C:\Users\User\AppData\Local\Temp\ipykernel_34184\1446871442.py:4: SettingWithCopyWarning:
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\1446871442.py:4: SettingWithCopyWarning:
 A value is trying to be set on a copy of a slice from a DataFrame.
 Try using .loc[row_indexer,col_indexer] = value instead
 
@@ -332,7 +332,7 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the data, relative abundance (value) vs. days (date) for each genus</span>
@@ -369,7 +369,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: 
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pivot the data so each &#39;genus&#39; is a column</span>
@@ -397,7 +397,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: 
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1"># Create a DataFrame with a complete range of days</span>
@@ -412,7 +412,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: 
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -694,7 +694,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: 
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">complete_dataMG</span><span class="o">.</span><span class="n">columns</span>
@@ -702,7 +702,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: 
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -716,7 +716,7 @@ CategoricalIndex([&#39;Acidimicrobium&#39;, &#39;Acinetobacter&#39;, &#39;Albidi
 </div>
 <p>If we pick one column, say ‘Acinetobacter’, we can see that there are missing values in the dataset. We will use the GP imputator to fill in the missing values.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">complete_dataMG</span><span class="p">[</span><span class="s1">&#39;Acinetobacter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -724,7 +724,7 @@ CategoricalIndex([&#39;Acidimicrobium&#39;, &#39;Acinetobacter&#39;, &#39;Albidi
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -733,7 +733,7 @@ CategoricalIndex([&#39;Acidimicrobium&#39;, &#39;Acinetobacter&#39;, &#39;Albidi
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset the index</span>
@@ -745,7 +745,7 @@ CategoricalIndex([&#39;Acidimicrobium&#39;, &#39;Acinetobacter&#39;, &#39;Albidi
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now &#39;days&#39; is a regular column and you can use it as a feature</span>
@@ -774,7 +774,7 @@ BIC: 236147.03324540867
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_dataset</span><span class="p">[</span><span class="s1">&#39;Acinetobacter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -782,7 +782,7 @@ BIC: 236147.03324540867
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -793,7 +793,7 @@ BIC: 236147.03324540867
 <p>We can see now that the data imputator calculated the missing values for the ‘Acinetobacter’ column. However, as we can see fro the graph, the imputed values are not great. This can be caused by multiple factors, so we are going to explore different methods to better impute the missing values.</p>
 <p>We are first going to try to do imputation using VGP imputation. This is a variational Gaussian process imputation method that is more robust to missing data and uses multiple imputs to calculate the missing values. However, as we will see, this method creates an imputation that is heavily biased by other imputs, so it doesn’t work in our case to determine the missing values of the ‘Acinetobacter’ column.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now &#39;days&#39; is a regular column and you can use it as a feature</span>
@@ -825,7 +825,7 @@ BIC: 4811115.618247565
 </div>
 <p>If we, isntead, do a single imputation using only a GPR model with a single imput (‘Acinetobacter’), we can see that the imputation is much better. This is because the imputation is not biased by other imputs, and the model can better predict the missing values.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now &#39;days&#39; is a regular column and you can use it as a feature</span>
@@ -853,7 +853,7 @@ BIC: -248.40300696649717
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the dataset (new_dataset2) to a csv file</span>
@@ -863,7 +863,7 @@ BIC: -248.40300696649717
 </div>
 <p>So we will proceed to do a single imput GPR model for all the columns in the dataset. We will then use the VAR inference method to infer the causal relationships between the variables in the time series.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># do the imputation for each column (genus) in the dataset</span>
@@ -1089,7 +1089,7 @@ BIC: -178.35294381418785
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reload the imputed data into a new DataFrame</span>
@@ -1101,7 +1101,7 @@ BIC: -178.35294381418785
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1385,25 +1385,13 @@ BIC: -178.35294381418785
 </div>
 <p>And we can run the VAR inference method to infer the causal relationships between the variables in the time series.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data</span><span class="p">)</span>
 <span class="n">infer</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-x0: Shape.0
-data[1:, :]: (409, 13)
-x0: (13,)
-mu: Shape.0
-data: (409, 13)
-</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1434,7 +1422,7 @@ NUTS: [x0, A, noise_chol]
         }
     </style>
   <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [6000/6000 07:55<00:00 Sampling 2 chains, 4,000 divergences]
+  100.00% [6000/6000 36:03<00:00 Sampling 2 chains, 0 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1442,7 +1430,7 @@ NUTS: [x0, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 479 seconds.
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 2168 seconds.
 We recommend running at least 4 chains for robust computation of convergence diagnostics
 </pre></div></div>
 </div>
@@ -1453,29 +1441,29 @@ We recommend running at least 4 chains for robust computation of convergence dia
 <div class="highlight"><pre>
             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
 x0[0]      1.000  0.000   1.000    1.000      0.000    0.000       3.0
-x0[1]      0.578  0.101   0.477    0.679      0.071    0.060       3.0
-x0[2]     -0.344  0.190  -0.534   -0.154      0.134    0.114       3.0
-x0[3]     -0.158  0.525  -0.682    0.367      0.370    0.313       3.0
-x0[4]      0.911  0.027   0.884    0.938      0.019    0.016       2.0
+x0[1]      0.040  0.351  -0.311    0.392      0.248    0.210       3.0
+x0[2]      0.189  0.139   0.050    0.328      0.098    0.083       3.0
+x0[3]      0.854  0.051   0.803    0.904      0.036    0.030       3.0
+x0[4]      0.450  0.473  -0.023    0.923      0.334    0.283       2.0
 ...          ...    ...     ...      ...        ...      ...       ...
-A[12, 8]   0.013  0.007   0.006    0.020      0.005    0.004       3.0
-A[12, 9]   0.022  0.004   0.018    0.026      0.003    0.002       2.0
-A[12, 10] -0.223  0.108  -0.330   -0.115      0.076    0.064       3.0
-A[12, 11] -0.072  0.117  -0.188    0.045      0.082    0.070       3.0
-A[12, 12]  1.033  0.029   1.005    1.062      0.020    0.017       3.0
+A[12, 8]  -0.167  0.128  -0.294   -0.039      0.090    0.076       3.0
+A[12, 9]  -0.030  0.038  -0.069    0.008      0.027    0.023       2.0
+A[12, 10]  0.105  0.729  -0.624    0.834      0.515    0.436       3.0
+A[12, 11] -1.459  1.413  -2.873   -0.046      0.997    0.845       2.0
+A[12, 12]  0.814  0.081   0.733    0.895      0.057    0.049       3.0
 
            ess_tail  r_hat
-x0[0]          22.0   2.10
-x0[1]          13.0   2.21
-x0[2]          11.0   2.25
-x0[3]          13.0   2.20
-x0[4]          21.0   2.59
+x0[0]          23.0   2.22
+x0[1]          21.0   2.01
+x0[2]          13.0   2.17
+x0[3]          25.0   1.90
+x0[4]          11.0   2.68
 ...             ...    ...
-A[12, 8]       20.0   1.97
-A[12, 9]       10.0   2.94
-A[12, 10]      13.0   2.33
-A[12, 11]      25.0   2.15
-A[12, 12]      11.0   2.23
+A[12, 8]       11.0   2.24
+A[12, 9]       15.0   2.34
+A[12, 10]      15.0   2.04
+A[12, 11]      17.0   2.57
+A[12, 12]      25.0   2.17
 
 [182 rows x 9 columns]
 </pre></div></div>
@@ -1493,12 +1481,12 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_28_6.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_28_6.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_28_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_28_5.png" />
 </div>
 </div>
 <p>However, since the results are not great, we can try running run_inference_large() which uses parameter shrinkage and other prior assumptions to try and improve the inference results.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data</span><span class="p">)</span>
@@ -1535,7 +1523,7 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
         }
     </style>
   <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [24000/24000 46:28<00:00 Sampling 4 chains, 3,216 divergences]
+  100.00% [24000/24000 37:26<00:00 Sampling 4 chains, 3,325 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1543,8 +1531,10 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 2796 seconds.
-There were 3216 divergences after tuning. Increase `target_accept` or reparameterize.
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 2254 seconds.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
+There were 3325 divergences after tuning. Increase `target_accept` or reparameterize.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1553,30 +1543,30 @@ There were 3216 divergences after tuning. Increase `target_accept` or reparamete
 <div class="output_area docutils container">
 <div class="highlight"><pre>
             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-A[0, 0]    1.000  0.000   1.000    1.000        0.0      0.0    3027.0
-A[0, 1]    0.011  0.001   0.009    0.012        0.0      0.0    3972.0
-A[0, 2]    0.010  0.000   0.010    0.011        0.0      0.0    4760.0
-A[0, 3]    0.008  0.001   0.007    0.010        0.0      0.0    2474.0
-A[0, 4]    0.010  0.000   0.010    0.011        0.0      0.0    3249.0
+A[0, 0]    1.000  0.000   1.000    1.000        0.0      0.0    1310.0
+A[0, 1]    0.011  0.001   0.009    0.012        0.0      0.0    3280.0
+A[0, 2]    0.010  0.000   0.010    0.011        0.0      0.0    1047.0
+A[0, 3]    0.008  0.001   0.007    0.010        0.0      0.0    4577.0
+A[0, 4]    0.010  0.000   0.010    0.011        0.0      0.0    2265.0
 ...          ...    ...     ...      ...        ...      ...       ...
-A[12, 8]   0.006  0.004  -0.001    0.013        0.0      0.0    2510.0
-A[12, 9]   0.015  0.003   0.010    0.020        0.0      0.0    3846.0
-A[12, 10] -0.100  0.020  -0.138   -0.065        0.0      0.0    3502.0
-A[12, 11]  0.003  0.012  -0.017    0.030        0.0      0.0    2665.0
-A[12, 12]  1.009  0.006   0.999    1.022        0.0      0.0    2273.0
+A[12, 8]   0.005  0.004  -0.002    0.013        0.0      0.0     363.0
+A[12, 9]   0.015  0.003   0.010    0.020        0.0      0.0     803.0
+A[12, 10] -0.100  0.019  -0.135   -0.063        0.0      0.0    2057.0
+A[12, 11]  0.004  0.011  -0.018    0.028        0.0      0.0    3054.0
+A[12, 12]  1.009  0.006   0.998    1.020        0.0      0.0     639.0
 
            ess_tail  r_hat
-A[0, 0]      3965.0    1.0
-A[0, 1]      5416.0    1.0
-A[0, 2]      3997.0    1.0
-A[0, 3]      1469.0    1.0
-A[0, 4]      3313.0    1.0
+A[0, 0]      4371.0   1.01
+A[0, 1]      5214.0   1.00
+A[0, 2]       752.0   1.01
+A[0, 3]      8320.0   1.01
+A[0, 4]      3982.0   1.00
 ...             ...    ...
-A[12, 8]     1694.0    1.0
-A[12, 9]     6715.0    1.0
-A[12, 10]    6884.0    1.0
-A[12, 11]    1860.0    1.0
-A[12, 12]    5136.0    1.0
+A[12, 8]      180.0   1.01
+A[12, 9]     6103.0   1.01
+A[12, 10]    5488.0   1.00
+A[12, 11]    2602.0   1.00
+A[12, 12]    3024.0   1.01
 
 [169 rows x 9 columns]
 </pre></div></div>
@@ -1600,7 +1590,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 <p>The results show an improvement (as seen by the r_hat values). However, if we look at the posterior distributions, some of them are wide, others are skewed, and some are multimodal. This indicates that the model is not a good fit for the data. Therefore, we are going to try different methods to improve the inference results.</p>
 <p>First of all, we are going to see if we normalize the data, if the inference results improve. We can see that the results even worse than before. This is because the data is already normalized, so normalizing it again is not a good idea.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standardize data</span>
@@ -1642,7 +1632,7 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
         }
     </style>
   <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [24000/24000 1:38:36<00:00 Sampling 4 chains, 0 divergences]
+  100.00% [24000/24000 1:57:47<00:00 Sampling 4 chains, 0 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1650,7 +1640,7 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 5923 seconds.
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 7075 seconds.
 The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
 The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
 Chain 0 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
@@ -1666,29 +1656,29 @@ Chain 3 reached the maximum tree depth. Increase `max_treedepth`, increase `targ
 <div class="highlight"><pre>
             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
 A[0, 0]    1.000  0.000   1.000    1.000      0.000    0.000       5.0
-A[0, 1]    0.000  0.000  -0.000    0.000      0.000    0.000       5.0
+A[0, 1]    0.000  0.000   0.000    0.000      0.000    0.000       5.0
 A[0, 2]    0.000  0.000  -0.000    0.000      0.000    0.000       5.0
 A[0, 3]   -0.000  0.000  -0.000    0.000      0.000    0.000       5.0
 A[0, 4]    0.000  0.000  -0.000    0.000      0.000    0.000       5.0
 ...          ...    ...     ...      ...        ...      ...       ...
-A[12, 8]  -0.080  0.215  -0.448    0.088      0.107    0.082       4.0
-A[12, 9]  -0.166  0.272  -0.498    0.254      0.136    0.104       4.0
-A[12, 10]  0.035  0.113  -0.061    0.228      0.056    0.043       4.0
-A[12, 11]  0.053  0.186  -0.111    0.368      0.093    0.071       4.0
-A[12, 12]  0.543  0.542  -0.280    1.100      0.271    0.207       4.0
+A[12, 8]  -0.236  0.294  -0.630    0.197      0.147    0.113       4.0
+A[12, 9]  -0.091  0.266  -0.326    0.345      0.133    0.102       4.0
+A[12, 10]  0.032  0.137  -0.108    0.229      0.068    0.052       4.0
+A[12, 11]  0.360  0.170   0.110    0.591      0.085    0.065       4.0
+A[12, 12]  0.235  0.313  -0.198    0.570      0.156    0.120       4.0
 
            ess_tail  r_hat
-A[0, 0]        26.0   2.71
-A[0, 1]        26.0   2.84
-A[0, 2]        26.0   2.80
-A[0, 3]        27.0   2.84
+A[0, 0]        26.0   2.84
+A[0, 1]        26.0   2.59
+A[0, 2]        26.0   2.84
+A[0, 3]        26.0   2.84
 A[0, 4]        26.0   2.84
 ...             ...    ...
-A[12, 8]       12.0   3.42
-A[12, 9]       14.0   3.71
-A[12, 10]      13.0   3.28
-A[12, 11]      13.0   3.60
-A[12, 12]      13.0   3.35
+A[12, 8]       11.0   3.44
+A[12, 9]       13.0   3.38
+A[12, 10]      11.0   3.37
+A[12, 11]      11.0   3.80
+A[12, 12]      11.0   4.01
 
 [169 rows x 9 columns]
 </pre></div></div>
@@ -1711,7 +1701,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 </div>
 <p>We are then going to try and reduce the number of variables to infer relationships between. We are going to use the top 3 (most abundant) genus that have the highest abundance in the dataset.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># try reducing the number of columns to 3 for imputed_data for the most abundant genera</span>
@@ -1754,7 +1744,7 @@ Index([&#39;days&#39;, &#39;Candidatus Microthrix&#39;, &#39;mean abundance &lt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now do the inference with only the most abundant genera</span>
@@ -1793,7 +1783,7 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
         }
     </style>
   <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [24000/24000 02:02<00:00 Sampling 4 chains, 1,235 divergences]
+  100.00% [24000/24000 02:56<00:00 Sampling 4 chains, 967 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1801,10 +1791,8 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 128 seconds.
-The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
-The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
-There were 1235 divergences after tuning. Increase `target_accept` or reparameterize.
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 185 seconds.
+There were 967 divergences after tuning. Increase `target_accept` or reparameterize.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1813,26 +1801,26 @@ There were 1235 divergences after tuning. Increase `target_accept` or reparamete
 <div class="output_area docutils container">
 <div class="highlight"><pre>
           mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-A[0, 0]  1.001  0.000   1.001    1.001        0.0      0.0    2676.0
-A[0, 1]  0.009  0.001   0.008    0.011        0.0      0.0    1723.0
-A[0, 2]  0.044  0.001   0.041    0.047        0.0      0.0    5325.0
-A[1, 0]  0.000  0.000  -0.000    0.001        0.0      0.0     598.0
-A[1, 1]  0.997  0.003   0.991    1.003        0.0      0.0     854.0
-A[1, 2]  0.001  0.005  -0.008    0.011        0.0      0.0    9286.0
-A[2, 0] -0.000  0.000  -0.000    0.000        0.0      0.0     377.0
-A[2, 1]  0.000  0.001  -0.001    0.002        0.0      0.0    4995.0
-A[2, 2]  1.000  0.002   0.997    1.003        0.0      0.0    8429.0
+A[0, 0]  1.001  0.000   1.001    1.001        0.0      0.0    5500.0
+A[0, 1]  0.009  0.001   0.008    0.011        0.0      0.0    9441.0
+A[0, 2]  0.044  0.001   0.042    0.047        0.0      0.0   10888.0
+A[1, 0]  0.000  0.000  -0.000    0.001        0.0      0.0   10791.0
+A[1, 1]  0.997  0.003   0.991    1.003        0.0      0.0    7398.0
+A[1, 2]  0.001  0.005  -0.009    0.010        0.0      0.0    9774.0
+A[2, 0] -0.000  0.000  -0.000    0.000        0.0      0.0    9025.0
+A[2, 1]  0.000  0.001  -0.001    0.002        0.0      0.0    8757.0
+A[2, 2]  1.000  0.002   0.997    1.003        0.0      0.0   11333.0
 
          ess_tail  r_hat
-A[0, 0]    5892.0   1.00
-A[0, 1]    7871.0   1.00
-A[0, 2]    8881.0   1.00
-A[1, 0]    5876.0   1.01
-A[1, 1]    6294.0   1.01
-A[1, 2]   10128.0   1.00
-A[2, 0]      70.0   1.01
-A[2, 1]    7872.0   1.00
-A[2, 2]    6627.0   1.00
+A[0, 0]    7951.0    1.0
+A[0, 1]   10085.0    1.0
+A[0, 2]    9678.0    1.0
+A[1, 0]    9103.0    1.0
+A[1, 1]    9516.0    1.0
+A[1, 2]   10021.0    1.0
+A[2, 0]    9135.0    1.0
+A[2, 1]   10191.0    1.0
+A[2, 2]   10580.0    1.0
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1844,7 +1832,7 @@ A[2, 2]    6627.0   1.00
 </div>
 <p>We can see that the results much better, though we had to reduce the complexity. Therefore, how can we improve the inference results without reducing the complexity of the model? First of all, we are going to try and remove the days column from the dataset. This is because the days column is not a variable, but a time index.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do the same, but excluding the &#39;days&#39; column as a feature</span>
@@ -1885,7 +1873,7 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
         }
     </style>
   <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [24000/24000 01:19<00:00 Sampling 4 chains, 521 divergences]
+  100.00% [24000/24000 01:42<00:00 Sampling 4 chains, 478 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1893,8 +1881,8 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 86 seconds.
-There were 521 divergences after tuning. Increase `target_accept` or reparameterize.
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 110 seconds.
+There were 478 divergences after tuning. Increase `target_accept` or reparameterize.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1903,16 +1891,16 @@ There were 521 divergences after tuning. Increase `target_accept` or reparameter
 <div class="output_area docutils container">
 <div class="highlight"><pre>
           mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-A[0, 0]  1.000  0.003   0.995    1.005        0.0      0.0    7136.0
-A[0, 1]  0.001  0.005  -0.009    0.012        0.0      0.0    7001.0
-A[1, 0] -0.000  0.001  -0.002    0.001        0.0      0.0    5779.0
-A[1, 1]  1.000  0.002   0.997    1.003        0.0      0.0    5726.0
+A[0, 0]  1.000  0.003   0.995    1.005        0.0      0.0    6443.0
+A[0, 1]  0.001  0.005  -0.009    0.012        0.0      0.0    6066.0
+A[1, 0] -0.000  0.001  -0.002    0.001        0.0      0.0    7214.0
+A[1, 1]  1.000  0.002   0.997    1.003        0.0      0.0    6895.0
 
          ess_tail  r_hat
-A[0, 0]    9383.0    1.0
-A[0, 1]    8889.0    1.0
-A[1, 0]    5165.0    1.0
-A[1, 1]    4610.0    1.0
+A[0, 0]    6927.0    1.0
+A[0, 1]    7149.0    1.0
+A[1, 0]    8227.0    1.0
+A[1, 1]    8608.0    1.0
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1923,7 +1911,7 @@ A[1, 1]    4610.0    1.0
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># try reducing the number of columns to 3 for imputed_data for the most abundant genera</span>
@@ -1969,7 +1957,7 @@ Index([&#39;days&#39;, &#39;Candidatus Microthrix&#39;, &#39;mean abundance &lt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">infer5</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">imputed_data_reduced</span><span class="p">)</span>
@@ -2006,7 +1994,7 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
         }
     </style>
   <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [24000/24000 02:48<00:00 Sampling 4 chains, 1,736 divergences]
+  100.00% [24000/24000 03:15<00:00 Sampling 4 chains, 1,731 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -2014,8 +2002,8 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 175 seconds.
-There were 1736 divergences after tuning. Increase `target_accept` or reparameterize.
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 203 seconds.
+There were 1731 divergences after tuning. Increase `target_accept` or reparameterize.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -2024,40 +2012,40 @@ There were 1736 divergences after tuning. Increase `target_accept` or reparamete
 <div class="output_area docutils container">
 <div class="highlight"><pre>
           mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-A[0, 0]  1.001  0.000   1.001    1.001        0.0      0.0    2076.0
-A[0, 1]  0.010  0.001   0.008    0.011        0.0      0.0    1868.0
-A[0, 2]  0.045  0.002   0.042    0.049        0.0      0.0    2212.0
-A[0, 3] -0.002  0.002  -0.007    0.002        0.0      0.0    1987.0
-A[1, 0]  0.000  0.000  -0.000    0.001        0.0      0.0    2132.0
-A[1, 1]  0.999  0.004   0.992    1.006        0.0      0.0    4607.0
-A[1, 2]  0.003  0.006  -0.006    0.016        0.0      0.0    3793.0
-A[1, 3] -0.007  0.008  -0.024    0.007        0.0      0.0    2733.0
-A[2, 0] -0.000  0.000  -0.000    0.000        0.0      0.0    4507.0
-A[2, 1]  0.001  0.001  -0.001    0.003        0.0      0.0    3247.0
-A[2, 2]  1.002  0.002   0.998    1.006        0.0      0.0    3279.0
-A[2, 3] -0.002  0.003  -0.008    0.002        0.0      0.0    2918.0
-A[3, 0] -0.000  0.000  -0.000    0.000        0.0      0.0    3716.0
-A[3, 1]  0.005  0.002   0.000    0.009        0.0      0.0    3130.0
-A[3, 2]  0.006  0.004  -0.001    0.014        0.0      0.0    3340.0
-A[3, 3]  0.987  0.006   0.975    0.998        0.0      0.0    2176.0
+A[0, 0]  1.001  0.000   1.001    1.001        0.0      0.0    3302.0
+A[0, 1]  0.010  0.001   0.008    0.011        0.0      0.0    3026.0
+A[0, 2]  0.045  0.002   0.042    0.049        0.0      0.0    5996.0
+A[0, 3] -0.002  0.002  -0.007    0.002        0.0      0.0    4812.0
+A[1, 0]  0.000  0.000  -0.000    0.001        0.0      0.0    2373.0
+A[1, 1]  0.999  0.004   0.992    1.006        0.0      0.0    6422.0
+A[1, 2]  0.003  0.006  -0.006    0.016        0.0      0.0    3234.0
+A[1, 3] -0.007  0.009  -0.025    0.006        0.0      0.0    3923.0
+A[2, 0] -0.000  0.000  -0.000    0.000        0.0      0.0    4446.0
+A[2, 1]  0.001  0.001  -0.001    0.003        0.0      0.0    3489.0
+A[2, 2]  1.002  0.002   0.998    1.006        0.0      0.0    3718.0
+A[2, 3] -0.002  0.003  -0.008    0.002        0.0      0.0    3148.0
+A[3, 0] -0.000  0.000  -0.000    0.000        0.0      0.0    2888.0
+A[3, 1]  0.005  0.002   0.000    0.009        0.0      0.0    2622.0
+A[3, 2]  0.006  0.004  -0.001    0.014        0.0      0.0    3256.0
+A[3, 3]  0.987  0.006   0.976    0.998        0.0      0.0    3832.0
 
          ess_tail  r_hat
-A[0, 0]    1998.0    1.0
-A[0, 1]    1565.0    1.0
-A[0, 2]    1511.0    1.0
-A[0, 3]    2186.0    1.0
-A[1, 0]    3291.0    1.0
-A[1, 1]    7209.0    1.0
-A[1, 2]    6502.0    1.0
-A[1, 3]    4613.0    1.0
-A[2, 0]    2654.0    1.0
-A[2, 1]    2439.0    1.0
-A[2, 2]    4918.0    1.0
-A[2, 3]    4017.0    1.0
-A[3, 0]    6567.0    1.0
-A[3, 1]    2106.0    1.0
-A[3, 2]    6713.0    1.0
-A[3, 3]    5626.0    1.0
+A[0, 0]    1477.0    1.0
+A[0, 1]    1473.0    1.0
+A[0, 2]    8272.0    1.0
+A[0, 3]    6371.0    1.0
+A[1, 0]    1781.0    1.0
+A[1, 1]    8272.0    1.0
+A[1, 2]    6207.0    1.0
+A[1, 3]    6023.0    1.0
+A[2, 0]    8695.0    1.0
+A[2, 1]    3645.0    1.0
+A[2, 2]    4941.0    1.0
+A[2, 3]    3078.0    1.0
+A[3, 0]    3385.0    1.0
+A[3, 1]    5967.0    1.0
+A[3, 2]    7330.0    1.0
+A[3, 3]    6473.0    1.0
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -2068,7 +2056,7 @@ A[3, 3]    5626.0    1.0
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do the same, but excluding the &#39;days&#39; column as a feature from the impuuted data set</span>
@@ -2109,7 +2097,7 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
         }
     </style>
   <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [24000/24000 18:00<00:00 Sampling 4 chains, 3,689 divergences]
+  100.00% [24000/24000 24:37<00:00 Sampling 4 chains, 3,733 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -2117,8 +2105,9 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 1088 seconds.
-There were 3689 divergences after tuning. Increase `target_accept` or reparameterize.
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 1485 seconds.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+There were 3733 divergences after tuning. Increase `target_accept` or reparameterize.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -2127,30 +2116,30 @@ There were 3689 divergences after tuning. Increase `target_accept` or reparamete
 <div class="output_area docutils container">
 <div class="highlight"><pre>
             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-A[0, 0]    0.985  0.008   0.967    0.999      0.000    0.000    1434.0
-A[0, 1]    0.004  0.002   0.001    0.008      0.000    0.000    1558.0
-A[0, 2]   -0.025  0.009  -0.042   -0.008      0.000    0.000    2561.0
-A[0, 3]    0.001  0.002  -0.002    0.005      0.000    0.000    1517.0
-A[0, 4]    0.007  0.003   0.001    0.013      0.000    0.000    2533.0
+A[0, 0]    0.985  0.008   0.969    1.000        0.0      0.0    2461.0
+A[0, 1]    0.004  0.002   0.001    0.007        0.0      0.0    1742.0
+A[0, 2]   -0.024  0.009  -0.041   -0.006        0.0      0.0     898.0
+A[0, 3]    0.001  0.002  -0.003    0.005        0.0      0.0    2060.0
+A[0, 4]    0.007  0.003   0.001    0.013        0.0      0.0    2167.0
 ...          ...    ...     ...      ...        ...      ...       ...
-A[11, 7]   0.006  0.004  -0.001    0.014      0.000    0.000    1776.0
-A[11, 8]   0.015  0.003   0.010    0.021      0.000    0.000    2799.0
-A[11, 9]  -0.100  0.021  -0.139   -0.061      0.001    0.001    1051.0
-A[11, 10]  0.003  0.012  -0.018    0.029      0.000    0.000    4343.0
-A[11, 11]  1.009  0.006   0.998    1.019      0.000    0.000    1851.0
+A[11, 7]   0.006  0.004  -0.001    0.013        0.0      0.0    1116.0
+A[11, 8]   0.015  0.003   0.010    0.020        0.0      0.0    3508.0
+A[11, 9]  -0.102  0.019  -0.138   -0.066        0.0      0.0    4823.0
+A[11, 10]  0.003  0.011  -0.017    0.029        0.0      0.0    2548.0
+A[11, 11]  1.009  0.005   0.998    1.019        0.0      0.0    1548.0
 
            ess_tail  r_hat
-A[0, 0]       393.0    1.0
-A[0, 1]      3529.0    1.0
-A[0, 2]      3237.0    1.0
-A[0, 3]       562.0    1.0
-A[0, 4]      4754.0    1.0
+A[0, 0]      1395.0    1.0
+A[0, 1]      1154.0    1.0
+A[0, 2]      2303.0    1.0
+A[0, 3]      1470.0    1.0
+A[0, 4]      5871.0    1.0
 ...             ...    ...
-A[11, 7]     3418.0    1.0
-A[11, 8]     2034.0    1.0
-A[11, 9]      318.0    1.0
-A[11, 10]    5675.0    1.0
-A[11, 11]    3160.0    1.0
+A[11, 7]     1943.0    1.0
+A[11, 8]     6566.0    1.0
+A[11, 9]     5770.0    1.0
+A[11, 10]    1219.0    1.0
+A[11, 11]    1288.0    1.0
 
 [144 rows x 9 columns]
 </pre></div></div>
@@ -2174,7 +2163,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 <p>Not necessarily better, but we can see that the results are different. This is because the days column was removed from the dataset, so the model is now inferring the relationships between the variables without the time as a feature. If time as a feauture affects the results, this means that the data is not stationary. We can try to make the data stationary by differencing the data.</p>
 <p>First, we will test to see if the data is stationary or not using the <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> package.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now we are going to check for stationarity in the data using adf and kpss tests from stasmodels library</span>
@@ -2226,7 +2215,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check for stationarity in the data imputed_dataset (without the &#39;days&#39; column)</span>
@@ -2527,35 +2516,35 @@ KPSS test: Data is not stationary
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is greater than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is greater than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is greater than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is smaller than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is smaller than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is smaller than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is greater than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is smaller than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
@@ -2565,7 +2554,7 @@ look-up table. The actual p-value is smaller than the p-value returned.
 <p>To change this, we will be using a detrending method to make the data stationary by differencing the data. This will allow us to use the VAR inference method to impute the parameters of interaction.</p>
 <p>It is one of the simplest methods for detrending a time series. A new series is constructed where the value at the current time step is calculated as the difference between the original observation and the observation at the previous time step.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Differencing the imputed data set to make it stationary</span>
@@ -2612,6 +2601,28 @@ KPSS test: Data is stationary
 
 Acinetobacter
 Results of Dickey-Fuller Test:
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
 Test Statistic                  -4.592770
 p-value                          0.000133
 #Lags Used                      17.000000
@@ -2750,48 +2761,6 @@ KPSS test: Data is stationary
 
 Intrasporangium
 Results of Dickey-Fuller Test:
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
-look-up table. The actual p-value is greater than the p-value returned.
-
-  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
-look-up table. The actual p-value is greater than the p-value returned.
-
-  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
-look-up table. The actual p-value is greater than the p-value returned.
-
-  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
-look-up table. The actual p-value is greater than the p-value returned.
-
-  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
-look-up table. The actual p-value is greater than the p-value returned.
-
-  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
-look-up table. The actual p-value is greater than the p-value returned.
-
-  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
-look-up table. The actual p-value is greater than the p-value returned.
-
-  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
 Test Statistic                  -4.181869
 p-value                          0.000707
 #Lags Used                      16.000000
@@ -2912,30 +2881,50 @@ KPSS test: Data is stationary
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is greater than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is greater than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is greater than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is greater than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
-C:\Users\User\AppData\Local\Temp\ipykernel_13288\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
+look-up table. The actual p-value is greater than the p-value returned.
+
+  kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
+C:\Users\User\AppData\Local\Temp\ipykernel_27368\3039934652.py:33: InterpolationWarning: The test statistic is outside of the range of p-values available in the
 look-up table. The actual p-value is greater than the p-value returned.
 
   kpsstest = kpss(timeseries, regression=&#34;c&#34;, nlags=&#34;auto&#34;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now we are going to to the VAR inference with the differenced data set</span>
@@ -2974,7 +2963,7 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
         }
     </style>
   <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [24000/24000 19:49<00:00 Sampling 4 chains, 6,152 divergences]
+  100.00% [24000/24000 26:24<00:00 Sampling 4 chains, 6,249 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -2982,10 +2971,10 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 1196 seconds.
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 1592 seconds.
 The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
 The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
-There were 6152 divergences after tuning. Increase `target_accept` or reparameterize.
+There were 6249 divergences after tuning. Increase `target_accept` or reparameterize.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -2994,30 +2983,30 @@ There were 6152 divergences after tuning. Increase `target_accept` or reparamete
 <div class="output_area docutils container">
 <div class="highlight"><pre>
             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-A[0, 0]    0.927  0.020   0.891    0.970      0.001    0.001     707.0
-A[0, 1]    0.001  0.003  -0.004    0.008      0.000    0.000     278.0
-A[0, 2]   -0.066  0.021  -0.107   -0.026      0.001    0.000    1348.0
-A[0, 3]    0.007  0.005  -0.002    0.017      0.000    0.000     197.0
-A[0, 4]    0.012  0.009  -0.003    0.028      0.001    0.001     145.0
+A[0, 0]    0.927  0.019   0.891    0.965      0.001    0.000     890.0
+A[0, 1]    0.001  0.003  -0.005    0.008      0.000    0.000    2333.0
+A[0, 2]   -0.059  0.025  -0.102   -0.021      0.006    0.005      15.0
+A[0, 3]    0.007  0.005  -0.003    0.016      0.000    0.000    1355.0
+A[0, 4]    0.009  0.009  -0.004    0.026      0.001    0.001      64.0
 ...          ...    ...     ...      ...        ...      ...       ...
-A[11, 7]   0.007  0.017  -0.028    0.041      0.001    0.000     294.0
-A[11, 8]  -0.003  0.011  -0.027    0.013      0.001    0.001      52.0
-A[11, 9]   0.179  0.113  -0.017    0.367      0.004    0.003     674.0
-A[11, 10]  0.027  0.047  -0.048    0.124      0.005    0.003      72.0
-A[11, 11]  0.846  0.029   0.792    0.905      0.001    0.000    2210.0
+A[11, 7]   0.007  0.017  -0.023    0.045      0.001    0.001      88.0
+A[11, 8]  -0.000  0.015  -0.023    0.030      0.005    0.004      10.0
+A[11, 9]   0.177  0.115  -0.015    0.373      0.020    0.014      49.0
+A[11, 10]  0.022  0.045  -0.057    0.119      0.001    0.001     208.0
+A[11, 11]  0.853  0.032   0.792    0.907      0.006    0.004      33.0
 
            ess_tail  r_hat
-A[0, 0]       248.0   1.07
-A[0, 1]      3640.0   1.02
-A[0, 2]      1592.0   1.08
-A[0, 3]      1939.0   1.02
-A[0, 4]      2107.0   1.03
+A[0, 0]      4519.0   1.05
+A[0, 1]      3923.0   1.12
+A[0, 2]       106.0   1.17
+A[0, 3]      4146.0   1.12
+A[0, 4]      3827.0   1.05
 ...             ...    ...
-A[11, 7]     2287.0   1.02
-A[11, 8]     4935.0   1.05
-A[11, 9]     2297.0   1.07
-A[11, 10]    1043.0   1.04
-A[11, 11]    4760.0   1.05
+A[11, 7]      760.0   1.03
+A[11, 8]       14.0   1.29
+A[11, 9]     4218.0   1.06
+A[11, 10]    1619.0   1.02
+A[11, 11]    2764.0   1.08
 
 [144 rows x 9 columns]
 </pre></div></div>
@@ -3040,7 +3029,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 </div>
 <p>We can see the results of inferring the differenciated data. The results are not much better than before. So now, we are going to try one last method to improve the inference results. We are going use <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> to infer the relationships between the variables in the time series using a VAR model, then use the predicted posterior distributions as priors for the inference method and observe the results.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">statsmodels.tsa.api</span> <span class="kn">import</span> <span class="n">VAR</span>
@@ -3048,7 +3037,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a pandas dataframe of the original imputed data_set with days as the index</span>
@@ -3057,7 +3046,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make VAR model with the imputed data set and statsmodels library</span>
@@ -3076,7 +3065,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\statsmodels\tsa\base\tsa_m
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coefficients</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">params</span>
@@ -3091,7 +3080,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\statsmodels\tsa\base\tsa_m
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># now use the VAR model with these as priors</span>
@@ -3099,18 +3088,6 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\statsmodels\tsa\base\tsa_m
 <span class="n">infer8</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-x0: Shape.0
-data[1:, :]: (409, 12)
-x0: (12,)
-mu: Shape.0
-data: (409, 12)
-</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -3141,7 +3118,7 @@ NUTS: [x0, A]
         }
     </style>
   <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [6000/6000 13:08<00:00 Sampling 2 chains, 0 divergences]
+  100.00% [6000/6000 19:34<00:00 Sampling 2 chains, 0 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -3149,7 +3126,7 @@ NUTS: [x0, A]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 792 seconds.
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 1179 seconds.
 We recommend running at least 4 chains for robust computation of convergence diagnostics
 </pre></div></div>
 </div>
@@ -3159,30 +3136,30 @@ We recommend running at least 4 chains for robust computation of convergence dia
 <div class="output_area docutils container">
 <div class="highlight"><pre>
             mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-x0[0]      1.004  0.492   0.036    1.886      0.011    0.008    1978.0
-x0[1]      7.629  0.927   5.861    9.258      0.014    0.010    4299.0
-x0[2]      0.647  0.422  -0.133    1.451      0.009    0.006    2292.0
-x0[3]      4.921  0.899   3.188    6.541      0.015    0.011    3442.0
-x0[4]      4.059  0.727   2.691    5.407      0.014    0.010    2686.0
+x0[0]      1.016  0.495   0.156    2.012      0.011    0.008    2104.0
+x0[1]      7.663  0.903   6.024    9.347      0.014    0.010    3884.0
+x0[2]      0.647  0.423  -0.160    1.430      0.010    0.007    1878.0
+x0[3]      4.886  0.901   3.112    6.504      0.015    0.011    3458.0
+x0[4]      4.070  0.736   2.747    5.486      0.014    0.010    2763.0
 ...          ...    ...     ...      ...        ...      ...       ...
-A[11, 7]   0.020  0.007   0.006    0.033      0.000    0.000    2050.0
-A[11, 8]   0.027  0.006   0.015    0.038      0.000    0.000    1841.0
-A[11, 9]  -0.101  0.023  -0.144   -0.060      0.000    0.000    5176.0
-A[11, 10]  0.020  0.021  -0.018    0.060      0.000    0.000    4905.0
-A[11, 11]  1.020  0.010   1.001    1.038      0.000    0.000    2471.0
+A[11, 7]   0.020  0.007   0.008    0.034      0.000    0.000    2517.0
+A[11, 8]   0.027  0.006   0.015    0.038      0.000    0.000    2289.0
+A[11, 9]  -0.100  0.023  -0.144   -0.058      0.000    0.000    4257.0
+A[11, 10]  0.020  0.021  -0.020    0.059      0.000    0.000    4652.0
+A[11, 11]  1.020  0.010   1.001    1.038      0.000    0.000    2882.0
 
            ess_tail  r_hat
-x0[0]        2358.0    1.0
-x0[1]        2684.0    1.0
-x0[2]        2479.0    1.0
-x0[3]        3014.0    1.0
-x0[4]        2990.0    1.0
+x0[0]        2729.0    1.0
+x0[1]        3114.0    1.0
+x0[2]        2220.0    1.0
+x0[3]        2953.0    1.0
+x0[4]        2705.0    1.0
 ...             ...    ...
-A[11, 7]     2822.0    1.0
-A[11, 8]     2507.0    1.0
-A[11, 9]     3666.0    1.0
-A[11, 10]    3373.0    1.0
-A[11, 11]    2560.0    1.0
+A[11, 7]     3146.0    1.0
+A[11, 8]     3128.0    1.0
+A[11, 9]     3166.0    1.0
+A[11, 10]    3785.0    1.0
+A[11, 11]    2767.0    1.0
 
 [156 rows x 9 columns]
 </pre></div></div>
@@ -3200,16 +3177,23 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_54_6.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_54_6.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_54_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_54_5.png" />
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">posterior</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">from_netcdf</span><span class="p">(</span><span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
 <span class="n">infer8</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span><span class="n">idata</span><span class="o">=</span><span class="n">posterior</span><span class="p">,</span> <span class="n">matrices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">])</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_55_0.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_55_0.png" />
 </div>
 </div>
 <p>As we can see, the results are much better than before. This is because bayesian VAR inference method works much better with the predicted posterior distributions as priors. This is because the predicted posterior distributions offer a better estimate of the parameters of interaction between the variables in the time series which the bayesian VAR inference method can use to infer the causal relationships between the variables in the time series.</p>
@@ -3252,7 +3236,7 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A]
         }
     </style>
   <progress value='24000' class='' max='24000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [24000/24000 50:10<00:00 Sampling 4 chains, 3,298 divergences]
+  100.00% [24000/24000 1:39:26<00:00 Sampling 4 chains, 3,408 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -3260,10 +3244,10 @@ NUTS: [noise_stddev, x0, c2, tau, lam, A]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 3017 seconds.
+Sampling 4 chains for 2_000 tune and 4_000 draw iterations (8_000 + 16_000 draws total) took 5973 seconds.
 The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
 The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
-There were 3298 divergences after tuning. Increase `target_accept` or reparameterize.
+There were 3408 divergences after tuning. Increase `target_accept` or reparameterize.
 Chain 0 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
 Chain 1 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
 Chain 2 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
@@ -3276,30 +3260,30 @@ Chain 3 reached the maximum tree depth. Increase `max_treedepth`, increase `targ
 <div class="output_area docutils container">
 <div class="highlight"><pre>
             mean   sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-A[0, 0]    0.963  0.0   0.963    0.963        0.0      0.0     295.0
-A[0, 1]   -0.005  0.0  -0.005   -0.005        0.0      0.0      16.0
-A[0, 2]   -0.033  0.0  -0.033   -0.033        0.0      0.0     492.0
-A[0, 3]   -0.008  0.0  -0.008   -0.008        0.0      0.0     652.0
-A[0, 4]   -0.004  0.0  -0.004   -0.004        0.0      0.0     320.0
+A[0, 0]    0.963  0.0   0.963    0.963        0.0      0.0      89.0
+A[0, 1]   -0.005  0.0  -0.005   -0.005        0.0      0.0     503.0
+A[0, 2]   -0.033  0.0  -0.033   -0.033        0.0      0.0     125.0
+A[0, 3]   -0.008  0.0  -0.008   -0.008        0.0      0.0     236.0
+A[0, 4]   -0.004  0.0  -0.004   -0.004        0.0      0.0     935.0
 ...          ...  ...     ...      ...        ...      ...       ...
-A[11, 7]   0.020  0.0   0.020    0.020        0.0      0.0      27.0
-A[11, 8]   0.027  0.0   0.027    0.027        0.0      0.0    1651.0
-A[11, 9]  -0.101  0.0  -0.101   -0.101        0.0      0.0     323.0
-A[11, 10]  0.020  0.0   0.020    0.020        0.0      0.0     363.0
-A[11, 11]  1.020  0.0   1.020    1.020        0.0      0.0     371.0
+A[11, 7]   0.020  0.0   0.020    0.020        0.0      0.0     700.0
+A[11, 8]   0.027  0.0   0.027    0.027        0.0      0.0     938.0
+A[11, 9]  -0.101  0.0  -0.101   -0.101        0.0      0.0     599.0
+A[11, 10]  0.020  0.0   0.020    0.020        0.0      0.0     718.0
+A[11, 11]  1.020  0.0   1.020    1.020        0.0      0.0     394.0
 
            ess_tail  r_hat
-A[0, 0]       124.0   1.06
-A[0, 1]        27.0   1.30
-A[0, 2]       182.0   1.06
-A[0, 3]       241.0   1.03
-A[0, 4]        80.0   1.05
+A[0, 0]        13.0   1.14
+A[0, 1]       254.0   1.05
+A[0, 2]        26.0   1.06
+A[0, 3]        79.0   1.09
+A[0, 4]       160.0   1.06
 ...             ...    ...
-A[11, 7]       16.0   1.13
-A[11, 8]      800.0   1.04
-A[11, 9]      121.0   1.08
-A[11, 10]     192.0   1.04
-A[11, 11]     142.0   1.08
+A[11, 7]      105.0   1.07
+A[11, 8]      151.0   1.07
+A[11, 9]       58.0   1.07
+A[11, 10]     268.0   1.04
+A[11, 11]      97.0   1.05
 
 [144 rows x 9 columns]
 </pre></div></div>
@@ -3313,15 +3297,188 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\plots\plot_utils.py:
   warnings.warn(
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-intense-fg ansi-bold">---------------------------------------------------------------------------</span>
+<span class="ansi-red-intense-fg ansi-bold">KeyError</span>                                  Traceback (most recent call last)
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\backends\file_manager.py:211</span>, in <span class="ansi-cyan-fg">CachingFileManager._acquire_with_cache_info</span><span class="ansi-blue-intense-fg ansi-bold">(self, needs_lock)</span>
+<span class="ansi-green-fg">    210</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 211</span>     file <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_cache[<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_key]
+<span class="ansi-green-fg">    212</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>:
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\backends\lru_cache.py:56</span>, in <span class="ansi-cyan-fg">LRUCache.__getitem__</span><span class="ansi-blue-intense-fg ansi-bold">(self, key)</span>
+<span class="ansi-green-fg">     55</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_lock:
+<span class="ansi-green-intense-fg ansi-bold">---&gt; 56</span>     value <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_cache[key]
+<span class="ansi-green-fg">     57</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_cache<span style="color: rgb(98,98,98)">.</span>move_to_end(key)
+
+<span class="ansi-red-intense-fg ansi-bold">KeyError</span>: [&lt;class &#39;h5netcdf.core.File&#39;&gt;, (&#39;c:\\Users\\User\\Documents\\GitHub\\MIMIC\\examples\\MultiModel\\Herold\\model_posterior.nc&#39;,), &#39;a&#39;, ((&#39;decode_vlen_strings&#39;, True), (&#39;invalid_netcdf&#39;, None)), &#39;3f4ff88b-3ef3-4ca2-abc6-04c4fa211604&#39;]
+
+During handling of the above exception, another exception occurred:
+
+<span class="ansi-red-intense-fg ansi-bold">OSError</span>                                   Traceback (most recent call last)
+Cell <span class="ansi-green-intense-fg ansi-bold">In[37], line 3</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># do the same for run_inference_large</span>
+<span class="ansi-green-fg">      2</span> infer9 <span style="color: rgb(98,98,98)">=</span> infer_VAR(imputed_data, coefficients, intercepts, covariance_matrix)
+<span class="ansi-green-intense-fg ansi-bold">----&gt; 3</span> infer9<span style="color: rgb(98,98,98)">.</span>run_inference_large()
+
+File <span class="ansi-green-intense-fg ansi-bold">~\Documents\GitHub\MIMIC\mimic\model_infer\infer_VAR_bayes.py:237</span>, in <span class="ansi-cyan-fg">infer_VAR.run_inference_large</span><span class="ansi-blue-intense-fg ansi-bold">(self, samples, tune, cores)</span>
+<span class="ansi-green-fg">    234</span> az<span style="color: rgb(98,98,98)">.</span>plot_posterior(trace, var_names<span style="color: rgb(98,98,98)">=</span>[
+<span class="ansi-green-fg">    235</span>     <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">A</span><span style="color: rgb(175,0,0)">&#34;</span>])
+<span class="ansi-green-fg">    236</span> plt<span style="color: rgb(98,98,98)">.</span>savefig(<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">plot-posterior.pdf</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 237</span> az<span style="color: rgb(98,98,98)">.</span>to_netcdf(trace, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">model_posterior.nc</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-fg">    238</span> np<span style="color: rgb(98,98,98)">.</span>savez(<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">data.npz</span><span style="color: rgb(175,0,0)">&#34;</span>, dataX<span style="color: rgb(98,98,98)">=</span>data)
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\data\io_netcdf.py:67</span>, in <span class="ansi-cyan-fg">to_netcdf</span><span class="ansi-blue-intense-fg ansi-bold">(data, filename, group, engine, coords, dims)</span>
+<span class="ansi-green-fg">     42</span> <span style="color: rgb(175,0,0)">&#34;&#34;&#34;Save dataset as a netcdf file.</span>
+<span class="ansi-green-fg">     43</span>
+<span class="ansi-green-fg">     44</span> <span style="color: rgb(175,0,0)">WARNING: Only idempotent in case `data` is InferenceData</span>
+<span class="ansi-green-intense-fg ansi-bold">   (...)</span>
+<span class="ansi-green-fg">     64</span> <span style="color: rgb(175,0,0)">    filename saved to</span>
+<span class="ansi-green-fg">     65</span> <span style="color: rgb(175,0,0)">&#34;&#34;&#34;</span>
+<span class="ansi-green-fg">     66</span> inference_data <span style="color: rgb(98,98,98)">=</span> convert_to_inference_data(data, group<span style="color: rgb(98,98,98)">=</span>group, coords<span style="color: rgb(98,98,98)">=</span>coords, dims<span style="color: rgb(98,98,98)">=</span>dims)
+<span class="ansi-green-intense-fg ansi-bold">---&gt; 67</span> file_name <span style="color: rgb(98,98,98)">=</span> inference_data<span style="color: rgb(98,98,98)">.</span>to_netcdf(filename, engine<span style="color: rgb(98,98,98)">=</span>engine)
+<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> file_name
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\arviz\data\inference_data.py:497</span>, in <span class="ansi-cyan-fg">InferenceData.to_netcdf</span><span class="ansi-blue-intense-fg ansi-bold">(self, filename, compress, groups, engine, base_group, overwrite_existing)</span>
+<span class="ansi-green-fg">    491</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> compress:
+<span class="ansi-green-fg">    492</span>     kwargs[<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">encoding</span><span style="color: rgb(175,0,0)">&#34;</span>] <span style="color: rgb(98,98,98)">=</span> {
+<span class="ansi-green-fg">    493</span>         var_name: {<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">zlib</span><span style="color: rgb(175,0,0)">&#34;</span>: <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>}
+<span class="ansi-green-fg">    494</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> var_name, values <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> data<span style="color: rgb(98,98,98)">.</span>variables<span style="color: rgb(98,98,98)">.</span>items()
+<span class="ansi-green-fg">    495</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> _compressible_dtype(values<span style="color: rgb(98,98,98)">.</span>dtype)
+<span class="ansi-green-fg">    496</span>     }
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 497</span> data<span style="color: rgb(98,98,98)">.</span>to_netcdf(filename, mode<span style="color: rgb(98,98,98)">=</span>mode, group<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>base_group<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">/</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>group<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">&#34;</span>, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>kwargs)
+<span class="ansi-green-fg">    498</span> data<span style="color: rgb(98,98,98)">.</span>close()
+<span class="ansi-green-fg">    499</span> mode <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">a</span><span style="color: rgb(175,0,0)">&#34;</span>
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\core\dataset.py:1957</span>, in <span class="ansi-cyan-fg">Dataset.to_netcdf</span><span class="ansi-blue-intense-fg ansi-bold">(self, path, mode, format, group, engine, encoding, unlimited_dims, compute, invalid_netcdf)</span>
+<span class="ansi-green-fg">   1954</span>     encoding <span style="color: rgb(98,98,98)">=</span> {}
+<span class="ansi-green-fg">   1955</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">xarray</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">backends</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">api</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> to_netcdf
+<span class="ansi-green-intense-fg ansi-bold">-&gt; 1957</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> to_netcdf(  <span style="color: rgb(95,135,135)"># type: ignore  # mypy cannot resolve the overloads:(</span>
+<span class="ansi-green-fg">   1958</span>     <span style="color: rgb(0,135,0)">self</span>,
+<span class="ansi-green-fg">   1959</span>     path,
+<span class="ansi-green-fg">   1960</span>     mode<span style="color: rgb(98,98,98)">=</span>mode,
+<span class="ansi-green-fg">   1961</span>     <span style="color: rgb(0,135,0)">format</span><span style="color: rgb(98,98,98)">=</span><span style="color: rgb(0,135,0)">format</span>,
+<span class="ansi-green-fg">   1962</span>     group<span style="color: rgb(98,98,98)">=</span>group,
+<span class="ansi-green-fg">   1963</span>     engine<span style="color: rgb(98,98,98)">=</span>engine,
+<span class="ansi-green-fg">   1964</span>     encoding<span style="color: rgb(98,98,98)">=</span>encoding,
+<span class="ansi-green-fg">   1965</span>     unlimited_dims<span style="color: rgb(98,98,98)">=</span>unlimited_dims,
+<span class="ansi-green-fg">   1966</span>     compute<span style="color: rgb(98,98,98)">=</span>compute,
+<span class="ansi-green-fg">   1967</span>     multifile<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">False</span>,
+<span class="ansi-green-fg">   1968</span>     invalid_netcdf<span style="color: rgb(98,98,98)">=</span>invalid_netcdf,
+<span class="ansi-green-fg">   1969</span> )
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\backends\api.py:1255</span>, in <span class="ansi-cyan-fg">to_netcdf</span><span class="ansi-blue-intense-fg ansi-bold">(dataset, path_or_file, mode, format, group, engine, encoding, unlimited_dims, compute, multifile, invalid_netcdf)</span>
+<span class="ansi-green-fg">   1251</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">   1252</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
+<span class="ansi-green-fg">   1253</span>             <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">unrecognized option </span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">invalid_netcdf</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)"> for engine </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>engine<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-fg">   1254</span>         )
+<span class="ansi-green-intense-fg ansi-bold">-&gt; 1255</span> store <span style="color: rgb(98,98,98)">=</span> store_open(target, mode, <span style="color: rgb(0,135,0)">format</span>, group, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>kwargs)
+<span class="ansi-green-fg">   1257</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> unlimited_dims <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">   1258</span>     unlimited_dims <span style="color: rgb(98,98,98)">=</span> dataset<span style="color: rgb(98,98,98)">.</span>encoding<span style="color: rgb(98,98,98)">.</span>get(<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">unlimited_dims</span><span style="color: rgb(175,0,0)">&#34;</span>, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>)
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\backends\h5netcdf_.py:176</span>, in <span class="ansi-cyan-fg">H5NetCDFStore.open</span><span class="ansi-blue-intense-fg ansi-bold">(cls, filename, mode, format, group, lock, autoclose, invalid_netcdf, phony_dims, decode_vlen_strings)</span>
+<span class="ansi-green-fg">    173</span>         lock <span style="color: rgb(98,98,98)">=</span> combine_locks([HDF5_LOCK, get_write_lock(filename)])
+<span class="ansi-green-fg">    175</span> manager <span style="color: rgb(98,98,98)">=</span> CachingFileManager(h5netcdf<span style="color: rgb(98,98,98)">.</span>File, filename, mode<span style="color: rgb(98,98,98)">=</span>mode, kwargs<span style="color: rgb(98,98,98)">=</span>kwargs)
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 176</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">cls</span>(manager, group<span style="color: rgb(98,98,98)">=</span>group, mode<span style="color: rgb(98,98,98)">=</span>mode, lock<span style="color: rgb(98,98,98)">=</span>lock, autoclose<span style="color: rgb(98,98,98)">=</span>autoclose)
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\backends\h5netcdf_.py:127</span>, in <span class="ansi-cyan-fg">H5NetCDFStore.__init__</span><span class="ansi-blue-intense-fg ansi-bold">(self, manager, group, mode, lock, autoclose)</span>
+<span class="ansi-green-fg">    124</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>format <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
+<span class="ansi-green-fg">    125</span> <span style="color: rgb(95,135,135)"># todo: utilizing find_root_and_group seems a bit clunky</span>
+<span class="ansi-green-fg">    126</span> <span style="color: rgb(95,135,135)">#  making filename available on h5netcdf.Group seems better</span>
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 127</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_filename <span style="color: rgb(98,98,98)">=</span> find_root_and_group(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>ds)[<span style="color: rgb(98,98,98)">0</span>]<span style="color: rgb(98,98,98)">.</span>filename
+<span class="ansi-green-fg">    128</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>is_remote <span style="color: rgb(98,98,98)">=</span> is_remote_uri(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_filename)
+<span class="ansi-green-fg">    129</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>lock <span style="color: rgb(98,98,98)">=</span> ensure_lock(lock)
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\backends\h5netcdf_.py:187</span>, in <span class="ansi-cyan-fg">H5NetCDFStore.ds</span><span class="ansi-blue-intense-fg ansi-bold">(self)</span>
+<span class="ansi-green-fg">    185</span> <span style="color: rgb(175,0,255)">@property</span>
+<span class="ansi-green-fg">    186</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">ds</span>(<span style="color: rgb(0,135,0)">self</span>):
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 187</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_acquire()
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\backends\h5netcdf_.py:179</span>, in <span class="ansi-cyan-fg">H5NetCDFStore._acquire</span><span class="ansi-blue-intense-fg ansi-bold">(self, needs_lock)</span>
+<span class="ansi-green-fg">    178</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">_acquire</span>(<span style="color: rgb(0,135,0)">self</span>, needs_lock<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>):
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 179</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_manager<span style="color: rgb(98,98,98)">.</span>acquire_context(needs_lock) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> root:
+<span class="ansi-green-fg">    180</span>         ds <span style="color: rgb(98,98,98)">=</span> _nc4_require_group(
+<span class="ansi-green-fg">    181</span>             root, <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_group, <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_mode, create_group<span style="color: rgb(98,98,98)">=</span>_h5netcdf_create_group
+<span class="ansi-green-fg">    182</span>         )
+<span class="ansi-green-fg">    183</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> ds
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\contextlib.py:137</span>, in <span class="ansi-cyan-fg">_GeneratorContextManager.__enter__</span><span class="ansi-blue-intense-fg ansi-bold">(self)</span>
+<span class="ansi-green-fg">    135</span> <span class="ansi-bold" style="color: rgb(0,135,0)">del</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>args, <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>kwds, <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>func
+<span class="ansi-green-fg">    136</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 137</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">next</span>(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>gen)
+<span class="ansi-green-fg">    138</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">StopIteration</span>:
+<span class="ansi-green-fg">    139</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">RuntimeError</span>(<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">generator didn</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">t yield</span><span style="color: rgb(175,0,0)">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\backends\file_manager.py:199</span>, in <span class="ansi-cyan-fg">CachingFileManager.acquire_context</span><span class="ansi-blue-intense-fg ansi-bold">(self, needs_lock)</span>
+<span class="ansi-green-fg">    196</span> <span style="color: rgb(175,0,255)">@contextlib</span><span style="color: rgb(98,98,98)">.</span>contextmanager
+<span class="ansi-green-fg">    197</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">acquire_context</span>(<span style="color: rgb(0,135,0)">self</span>, needs_lock<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>):
+<span class="ansi-green-fg">    198</span> <span style="color: rgb(188,188,188)">    </span><span style="color: rgb(175,0,0)">&#34;&#34;&#34;Context manager for acquiring a file.&#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 199</span>     file, cached <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_acquire_with_cache_info(needs_lock)
+<span class="ansi-green-fg">    200</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">    201</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">yield</span> file
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\xarray\backends\file_manager.py:217</span>, in <span class="ansi-cyan-fg">CachingFileManager._acquire_with_cache_info</span><span class="ansi-blue-intense-fg ansi-bold">(self, needs_lock)</span>
+<span class="ansi-green-fg">    215</span>     kwargs <span style="color: rgb(98,98,98)">=</span> kwargs<span style="color: rgb(98,98,98)">.</span>copy()
+<span class="ansi-green-fg">    216</span>     kwargs[<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">mode</span><span style="color: rgb(175,0,0)">&#34;</span>] <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_mode
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 217</span> file <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_opener(<span style="color: rgb(98,98,98)">*</span><span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_args, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>kwargs)
+<span class="ansi-green-fg">    218</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_mode <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">w</span><span style="color: rgb(175,0,0)">&#34;</span>:
+<span class="ansi-green-fg">    219</span>     <span style="color: rgb(95,135,135)"># ensure file doesn&#39;t get overridden when opened again</span>
+<span class="ansi-green-fg">    220</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_mode <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">a</span><span style="color: rgb(175,0,0)">&#34;</span>
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\h5netcdf\core.py:1051</span>, in <span class="ansi-cyan-fg">File.__init__</span><span class="ansi-blue-intense-fg ansi-bold">(self, path, mode, invalid_netcdf, phony_dims, **kwargs)</span>
+<span class="ansi-green-fg">   1049</span>         <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_preexisting_file <span style="color: rgb(98,98,98)">=</span> os<span style="color: rgb(98,98,98)">.</span>path<span style="color: rgb(98,98,98)">.</span>exists(path) <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> mode <span style="color: rgb(98,98,98)">!=</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">w</span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-fg">   1050</span>         <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_h5py <span style="color: rgb(98,98,98)">=</span> h5py
+<span class="ansi-green-intense-fg ansi-bold">-&gt; 1051</span>         <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_h5file <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_h5py<span style="color: rgb(98,98,98)">.</span>File(
+<span class="ansi-green-fg">   1052</span>             path, mode, track_order<span style="color: rgb(98,98,98)">=</span>track_order, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>kwargs
+<span class="ansi-green-fg">   1053</span>         )
+<span class="ansi-green-fg">   1054</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:  <span style="color: rgb(95,135,135)"># file-like object</span>
+<span class="ansi-green-fg">   1055</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_preexisting_file <span style="color: rgb(98,98,98)">=</span> mode <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> {<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">r</span><span style="color: rgb(175,0,0)">&#34;</span>, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">r+</span><span style="color: rgb(175,0,0)">&#34;</span>, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">a</span><span style="color: rgb(175,0,0)">&#34;</span>}
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\h5py\_hl\files.py:562</span>, in <span class="ansi-cyan-fg">File.__init__</span><span class="ansi-blue-intense-fg ansi-bold">(self, name, mode, driver, libver, userblock_size, swmr, rdcc_nslots, rdcc_nbytes, rdcc_w0, track_order, fs_strategy, fs_persist, fs_threshold, fs_page_size, page_buf_size, min_meta_keep, min_raw_keep, locking, alignment_threshold, alignment_interval, meta_block_size, **kwds)</span>
+<span class="ansi-green-fg">    553</span>     fapl <span style="color: rgb(98,98,98)">=</span> make_fapl(driver, libver, rdcc_nslots, rdcc_nbytes, rdcc_w0,
+<span class="ansi-green-fg">    554</span>                      locking, page_buf_size, min_meta_keep, min_raw_keep,
+<span class="ansi-green-fg">    555</span>                      alignment_threshold<span style="color: rgb(98,98,98)">=</span>alignment_threshold,
+<span class="ansi-green-fg">    556</span>                      alignment_interval<span style="color: rgb(98,98,98)">=</span>alignment_interval,
+<span class="ansi-green-fg">    557</span>                      meta_block_size<span style="color: rgb(98,98,98)">=</span>meta_block_size,
+<span class="ansi-green-fg">    558</span>                      <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>kwds)
+<span class="ansi-green-fg">    559</span>     fcpl <span style="color: rgb(98,98,98)">=</span> make_fcpl(track_order<span style="color: rgb(98,98,98)">=</span>track_order, fs_strategy<span style="color: rgb(98,98,98)">=</span>fs_strategy,
+<span class="ansi-green-fg">    560</span>                      fs_persist<span style="color: rgb(98,98,98)">=</span>fs_persist, fs_threshold<span style="color: rgb(98,98,98)">=</span>fs_threshold,
+<span class="ansi-green-fg">    561</span>                      fs_page_size<span style="color: rgb(98,98,98)">=</span>fs_page_size)
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 562</span>     fid <span style="color: rgb(98,98,98)">=</span> make_fid(name, mode, userblock_size, fapl, fcpl, swmr<span style="color: rgb(98,98,98)">=</span>swmr)
+<span class="ansi-green-fg">    564</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">isinstance</span>(libver, <span style="color: rgb(0,135,0)">tuple</span>):
+<span class="ansi-green-fg">    565</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_libver <span style="color: rgb(98,98,98)">=</span> libver
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\h5py\_hl\files.py:241</span>, in <span class="ansi-cyan-fg">make_fid</span><span class="ansi-blue-intense-fg ansi-bold">(name, mode, userblock_size, fapl, fcpl, swmr)</span>
+<span class="ansi-green-fg">    239</span>     fid <span style="color: rgb(98,98,98)">=</span> h5f<span style="color: rgb(98,98,98)">.</span>create(name, h5f<span style="color: rgb(98,98,98)">.</span>ACC_EXCL, fapl<span style="color: rgb(98,98,98)">=</span>fapl, fcpl<span style="color: rgb(98,98,98)">=</span>fcpl)
+<span class="ansi-green-fg">    240</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> mode <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">w</span><span style="color: rgb(175,0,0)">&#39;</span>:
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 241</span>     fid <span style="color: rgb(98,98,98)">=</span> h5f<span style="color: rgb(98,98,98)">.</span>create(name, h5f<span style="color: rgb(98,98,98)">.</span>ACC_TRUNC, fapl<span style="color: rgb(98,98,98)">=</span>fapl, fcpl<span style="color: rgb(98,98,98)">=</span>fcpl)
+<span class="ansi-green-fg">    242</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> mode <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">a</span><span style="color: rgb(175,0,0)">&#39;</span>:
+<span class="ansi-green-fg">    243</span>     <span style="color: rgb(95,135,135)"># Open in append mode (read/write).</span>
+<span class="ansi-green-fg">    244</span>     <span style="color: rgb(95,135,135)"># If that fails, create a new file only if it won&#39;t clobber an</span>
+<span class="ansi-green-fg">    245</span>     <span style="color: rgb(95,135,135)"># existing one (ACC_EXCL)</span>
+<span class="ansi-green-fg">    246</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+
+File <span class="ansi-green-intense-fg ansi-bold">h5py\_objects.pyx:54</span>, in <span class="ansi-cyan-fg">h5py._objects.with_phil.wrapper</span><span class="ansi-blue-intense-fg ansi-bold">()</span>
+
+File <span class="ansi-green-intense-fg ansi-bold">h5py\_objects.pyx:55</span>, in <span class="ansi-cyan-fg">h5py._objects.with_phil.wrapper</span><span class="ansi-blue-intense-fg ansi-bold">()</span>
+
+File <span class="ansi-green-intense-fg ansi-bold">h5py\h5f.pyx:122</span>, in <span class="ansi-cyan-fg">h5py.h5f.create</span><span class="ansi-blue-intense-fg ansi-bold">()</span>
+
+<span class="ansi-red-intense-fg ansi-bold">OSError</span>: Unable to synchronously create file (unable to truncate a file which is already open)
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_57_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_57_5.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_57_6.png" src="../../../_images/notebooks_MultiModel_Herold_examples-Herold-VAR_57_6.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">posterior2</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">from_netcdf</span><span class="p">(</span><span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
