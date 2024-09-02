@@ -106,6 +106,7 @@ ENV/
 # Additional and miscellaneous files
 *.pdf
 
-# Ignore all .nc files
+# Ignore all files created during inference
 *.nc
+*.npz
 
