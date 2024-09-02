@@ -131,18 +131,6 @@ Using the following parameters for VAR simulation: {&#39;n_obs&#39;: 100, &#39;c
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-x0: Shape.0
-data[1:, :]: (99, 2)
-x0: (2,)
-mu: Shape.0
-data: (99, 2)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Auto-assigning NUTS sampler...
@@ -169,7 +157,7 @@ NUTS: [x0, A, noise_chol]
         }
     </style>
   <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [6000/6000 00:06<00:00 Sampling 2 chains, 0 divergences]
+  100.00% [6000/6000 00:05<00:00 Sampling 2 chains, 0 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -177,7 +165,7 @@ NUTS: [x0, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 11 seconds.
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 9 seconds.
 We recommend running at least 4 chains for robust computation of convergence diagnostics
 </pre></div></div>
 </div>
@@ -187,27 +175,27 @@ We recommend running at least 4 chains for robust computation of convergence dia
 <div class="output_area docutils container">
 <div class="highlight"><pre>
           mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-x0[0]   -0.057  0.096  -0.232    0.133      0.001    0.001    4777.0
-x0[1]   -0.035  0.103  -0.238    0.147      0.002    0.002    4625.0
-A[0, 0]  0.819  0.078   0.681    0.969      0.001    0.001    4625.0
-A[0, 1] -0.243  0.087  -0.407   -0.084      0.001    0.001    5038.0
-A[1, 0]  0.300  0.082   0.149    0.455      0.001    0.001    4782.0
-A[1, 1]  0.394  0.091   0.220    0.557      0.001    0.001    4976.0
+x0[0]    0.097  0.101  -0.089    0.285      0.001    0.001    5305.0
+x0[1]    0.009  0.094  -0.173    0.187      0.001    0.001    5418.0
+A[0, 0]  0.573  0.095   0.400    0.751      0.001    0.001    4665.0
+A[0, 1] -0.035  0.078  -0.173    0.116      0.001    0.001    4746.0
+A[1, 0]  0.441  0.088   0.270    0.598      0.001    0.001    4351.0
+A[1, 1]  0.528  0.075   0.383    0.660      0.001    0.001    4691.0
 
          ess_tail  r_hat
-x0[0]      3059.0    1.0
-x0[1]      3229.0    1.0
-A[0, 0]    3036.0    1.0
-A[0, 1]    3183.0    1.0
-A[1, 0]    3404.0    1.0
-A[1, 1]    3594.0    1.0
+x0[0]      3211.0    1.0
+x0[1]      3285.0    1.0
+A[0, 0]    3091.0    1.0
+A[0, 1]    3019.0    1.0
+A[1, 0]    2972.0    1.0
+A[1, 1]    2931.0    1.0
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_4_5.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_4_5.png" />
+<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_4_4.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_4_4.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -245,18 +233,6 @@ A[1, 1]    3594.0    1.0
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-x0: Shape.0
-data[1:, :]: (98, 2)
-x0: (2,)
-mu: Shape.0
-data: (98, 2)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 Auto-assigning NUTS sampler...
@@ -283,7 +259,7 @@ NUTS: [x0, A, noise_chol]
         }
     </style>
   <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [6000/6000 00:07<00:00 Sampling 2 chains, 0 divergences]
+  100.00% [6000/6000 00:05<00:00 Sampling 2 chains, 0 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -291,7 +267,7 @@ NUTS: [x0, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 12 seconds.
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 9 seconds.
 We recommend running at least 4 chains for robust computation of convergence diagnostics
 </pre></div></div>
 </div>
@@ -301,31 +277,31 @@ We recommend running at least 4 chains for robust computation of convergence dia
 <div class="output_area docutils container">
 <div class="highlight"><pre>
           mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-x0[0]   -0.030  0.094  -0.214    0.138      0.001    0.001    4812.0
-x0[1]   -0.023  0.103  -0.214    0.166      0.001    0.001    5393.0
-A[0, 0]  0.823  0.075   0.682    0.965      0.001    0.001    4249.0
-A[0, 1] -0.214  0.084  -0.374   -0.062      0.001    0.001    4175.0
-A[1, 0]  0.302  0.079   0.154    0.450      0.001    0.001    4271.0
-A[1, 1]  0.404  0.092   0.226    0.571      0.001    0.001    4292.0
+x0[0]    0.089  0.102  -0.099    0.282      0.001    0.001    5369.0
+x0[1]    0.011  0.096  -0.160    0.202      0.001    0.002    5370.0
+A[0, 0]  0.573  0.094   0.403    0.754      0.001    0.001    4995.0
+A[0, 1] -0.044  0.076  -0.192    0.099      0.001    0.001    4913.0
+A[1, 0]  0.442  0.090   0.278    0.621      0.001    0.001    4795.0
+A[1, 1]  0.534  0.073   0.406    0.682      0.001    0.001    4937.0
 
          ess_tail  r_hat
-x0[0]      3051.0    1.0
-x0[1]      3230.0    1.0
-A[0, 0]    3107.0    1.0
-A[0, 1]    3082.0    1.0
-A[1, 0]    3230.0    1.0
-A[1, 1]    3110.0    1.0
+x0[0]      3182.0    1.0
+x0[1]      2936.0    1.0
+A[0, 0]    3262.0    1.0
+A[0, 1]    3217.0    1.0
+A[1, 0]    3089.0    1.0
+A[1, 1]    3023.0    1.0
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_7_5.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_7_5.png" />
+<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_7_4.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_7_4.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s plot these results in a heatmap with the original coefficients (A) and the inferred coefficients (A_hat</span>
