@@ -36,11 +36,26 @@ def test_initialization(clv_model, example_data):
     assert clv_model.denom is not None
     expected_no_effects = U is None or np.all([np.all(u == 0) for u in U])
 
-    # Add print statements for debugging
-    print(f"Expected no_effects: {expected_no_effects}")
-    print(f"Actual no_effects: {clv_model.no_effects}")
-
     assert clv_model.no_effects == expected_no_effects
+
+
+def test_predict_function(mocker):
+    mock_compute_rel_abun = mocker.patch(
+        'mimic.model_infer.cLV.compute_rel_abun', return_value=np.array([[0.1, 0.9, 0.0]]))
+    mock_solve_ivp = mocker.patch(
+        'scipy.integrate.solve_ivp', return_value=mocker.Mock(y=np.array([[0.2, 0.8, 0.0]])))
+
+    x = np.array([[0.1, 0.9]])
+    p = np.array([[0.1, 0.9, 0.0]])
+    u = np.array([[0]])
+    times = np.array([0, 1])
+
+    A = np.array([[0.1, 0.2, 0.0]])
+    g = np.array([0.1])
+    B = np.array([[0.1]])
+
+    pred = predict(x, p, u, times, A, g, B, denom=0)
+    assert pred.shape == (2, 3)
 
 
 def test_get_set_regularizers(clv_model):
@@ -49,7 +64,6 @@ def test_get_set_regularizers(clv_model):
 
 
 def test_train(mocker, clv_model):
-    # Adjusted to include more than one sample
     P = [
         np.array([[0.1, 0.3, 0.6], [0.2, 0.3, 0.5], [0.1, 0.4, 0.5]]),
         np.array([[0.2, 0.2, 0.6], [0.1, 0.4, 0.5], [0.3, 0.3, 0.4]])
@@ -73,20 +87,6 @@ def test_train(mocker, clv_model):
     assert clv_model.A is not None
     assert clv_model.g is not None
     assert clv_model.B is not None
-
-
-def test_predict(clv_model):
-    p0 = np.array([0.1, 0.3, 0.6])
-    times = np.array([0, 1, 2])
-    u = np.array([[0], [0], [0]])
-
-    # Adjusted model parameters to match the shapes required by the model
-    clv_model.A = np.array([[0.1, 0.2, 0.3], [0.3, 0.4, 0.5]])
-    clv_model.g = np.array([0.1, 0.2])
-    clv_model.B = np.array([[0.1], [0.2]])
-
-    pred = clv_model.predict(p0, times, u=u)
-    assert pred.shape == (3, 3)
 
 
 def test_get_params(clv_model):
@@ -114,7 +114,6 @@ def test_construct_alr():
 
 
 def test_estimate_elastic_net_regularizers_cv(mocker):
-    # Adjusted to include more than one sample
     P = [
         np.array([[0.1, 0.3, 0.6], [0.2, 0.3, 0.5], [0.1, 0.4, 0.5]]),
         np.array([[0.2, 0.2, 0.6], [0.1, 0.4, 0.5], [0.3, 0.3, 0.4]])
@@ -157,31 +156,12 @@ def test_ridge_regression_clv():
     assert B.shape == (2, 1)
 
 
-def test_predict_function(mocker):
-    mock_compute_rel_abun = mocker.patch(
-        'mimic.model_infer.cLV.compute_rel_abun', return_value=np.array([[0.1, 0.9]]))
-    mock_solve_ivp = mocker.patch(
-        'scipy.integrate.solve_ivp', return_value=mocker.Mock(y=np.array([[0.2, 0.8]])))
-
-    x = np.array([[0.1, 0.9]])
-    p = np.array([[0.1, 0.9]])
-    u = np.array([[0]])
-    times = np.array([0, 1])
-    A = np.array([[0.1, 0.2]])  # Adjust A to have the correct dimensions
-    g = np.array([0.1])  # Adjust g to match dimensions
-    B = np.array([[0.1]])  # Adjust B to match dimensions
-
-    pred = predict(x, p, u, times, A, g, B, denom=0)
-    assert pred.shape == (2, 2)
-
-
 def test_compute_prediction_error(example_data):
     P, T, U = example_data
     X = construct_alr(P, denom=0)
-    # Adjust A to have the correct dimensions
     A = np.array([[0.1, 0.2, 0.3], [0.3, 0.4, 0.5]])
-    g = np.array([0.1, 0.2])  # Adjust g to match dimensions
-    B = np.array([[0.1], [0.2]])  # Adjust B to match dimensions
+    g = np.array([0.1, 0.2])
+    B = np.array([[0.1], [0.2]])
     err = compute_prediction_error(X, P, U, T, A, g, B, denom_ids=0)
     assert isinstance(err, float)
 
