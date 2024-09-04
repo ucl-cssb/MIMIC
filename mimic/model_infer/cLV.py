@@ -48,7 +48,7 @@ class CompositionalLotkaVolterra:
             self.no_effects = True
         else:
             self.U = U
-            self.no_effects = False
+            self.no_effects = U is not None and all(np.all(u == 0) for u in U)
 
         # Parameter estimates
         self.A: Optional[NDArray] = None
