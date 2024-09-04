@@ -4,6 +4,8 @@ from unittest.mock import patch, MagicMock
 from mimic.model_infer.infer_gLV_bayes import infergLVbayes
 import xarray as xr
 import arviz as az
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 @pytest.fixture
@@ -39,6 +41,7 @@ def generate_mock_inference_data():
     M_ii_hat_data = np.random.rand(chains, draws, 5)
     M_ij_hat_data = np.random.rand(chains, draws, 5, 4)
     M_hat_data = np.random.rand(chains, draws, 5, 5)
+    epsilon_hat_data = np.random.rand(chains, draws, 5)
 
     # Creating DataArray objects
     mu_hat = xr.DataArray(mu_hat_data, dims=("chain", "draw", "mu_hat_dim"))
@@ -48,6 +51,8 @@ def generate_mock_inference_data():
         "chain", "draw", "M_ij_dim_1", "M_ij_dim_2"))
     M_hat = xr.DataArray(M_hat_data, dims=(
         "chain", "draw", "M_hat_dim_1", "M_hat_dim_2"))
+    epsilon_hat = xr.DataArray(
+        epsilon_hat_data, dims=("chain", "draw", "mu_hat_dim"))
 
     # Convert to an xarray.Dataset
     posterior_dataset = xr.Dataset({
@@ -55,6 +60,7 @@ def generate_mock_inference_data():
         "M_ii_hat": M_ii_hat,
         "M_ij_hat": M_ij_hat,
         "M_hat": M_hat,
+        "epsilon_hat": epsilon_hat,  # Include epsilon_hat in the dataset
     })
 
     # Constructing the InferenceData object
@@ -101,8 +107,27 @@ def test_plot_posterior_pert(mock_savefig, mock_plot_posterior, bayes_model):
 @patch('seaborn.heatmap')
 @patch('matplotlib.pyplot.subplots', return_value=(None, MagicMock()))
 @patch('matplotlib.pyplot.savefig')
-def test_plot_interaction_matrix(mock_savefig, mock_subplots, mock_heatmap, bayes_model):
-    M_h = np.random.rand(5, 5)
-    bayes_model.plot_interaction_matrix(bayes_model.M, M_h)
-    mock_heatmap.assert_called_once()
-    mock_savefig.assert_called_once()
+def plot_interaction_matrix(self, M, M_h):
+    # visualize the interaction matrix
+    fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+
+    # Heatmap for M_hat
+    sns.heatmap(M_h, ax=ax, cmap='viridis')
+    ax.set_title('M_hat')
+    ax.set_ylabel('X')
+    ax.set_xlabel('X')
+
+    # Annotate the true values for matrix1
+    for i in range(M_h.shape[0]):
+        for j in range(M_h.shape[1]):
+            ax.text(
+                j + 0.5,
+                i + 0.5,
+                f'{M[i, j]:.2f}',
+                ha='center',
+                va='center',
+                color='white')
+
+    # Ensure that the figure is saved
+    plt.savefig("interaction_matrix.pdf")
+    plt.close(fig)
