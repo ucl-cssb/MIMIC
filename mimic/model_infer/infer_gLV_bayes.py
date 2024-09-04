@@ -13,6 +13,50 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
+def get_data(input_data):
+    # Read the CSV file
+    d = pd.read_csv(input_data)
+
+    # Calculate the mean of columns 2 to 5 (index 1 to 4) for each row
+    # Take only time course up to t=400
+    X1_bar = d.iloc[1:21, 1:5].mean(axis=1)
+
+    # Calculate the mean of columns 6 to 9 (index 5 to 8) for each row
+    X2_bar = d.iloc[1:21, 5:9].mean(axis=1)
+
+    # Combine the first column with the calculated means
+    obs = pd.DataFrame({
+        'time': d.iloc[1:21, 0],
+        'X1_bar': X1_bar,
+        'X2_bar': X2_bar
+    })
+
+    # Replace negative values with 0
+    obs[obs < 0] = 0
+
+    return obs
+
+def plot_growth_curves(data):
+    plt.figure(figsize=(10, 6))
+
+    # Plotting X1_bar
+    plt.plot(data['time'], data['X1_bar'], label='X1_bar')
+
+    # Plotting X2_bar
+    plt.plot(data['time'], data['X2_bar'], label='X2_bar')
+
+    # Adding labels and title
+    plt.xlabel('Time')
+    plt.ylabel('Value')
+    plt.title('Growth Curves of X1_bar and X2_bar')
+
+    # Adding a legend
+    plt.legend()
+
+    # Display the plot
+    plt.show()
+
+
 class infergLVbayes:
     """
     bayes_gLV class for Bayesian inference of gLV models without shrinkage priors
@@ -30,6 +74,10 @@ class infergLVbayes:
     Returns:
         None
     """
+
+
+
+
 
     def __init__(
             self,
