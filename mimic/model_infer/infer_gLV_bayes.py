@@ -90,7 +90,9 @@ class infergLVbayes:
             DA0=None,
             N=None,
             noise_stddev=None,
-            epsilon=None):
+            epsilon=None,
+            sim_glv=None):
+
         # self.data = data  # data to do inference on
         self.X = X
         self.F = F
@@ -102,10 +104,8 @@ class infergLVbayes:
         self.N = N
         self.noise_stddev = noise_stddev
         self.epsilon = epsilon
+        self.sim_glv = sim_glv
 
-        # self.X: Optional[np.ndarray] = None
-
-        # import data from a .csv file
 
     def import_data(self, file_path) -> None:
         """
@@ -576,3 +576,34 @@ class infergLVbayes:
                     ha='center',
                     va='center',
                     color='white')
+
+
+def param_data_compare(self, idata, F, times, yobs, sim_gLV_class):
+        az.to_netcdf(idata, 'model_posterior.nc')
+        # %%
+        # Compare model parameters to the data
+        num_species = F.shape[1]
+        # init_species = 10 * np.ones(num_species)
+        init_species = 0.01 * np.ones(num_species)
+
+        print(idata.posterior["M_hat"].values.shape)
+
+        print(idata.posterior["mu_hat"].values.shape)
+
+        # # get median posterior values
+        M_h = np.median(idata.posterior["M_hat"].values, axis=(0, 1))
+
+        mu_h = np.median(idata.posterior["mu_hat"].values, axis=(0, 1))
+        mu_h = mu_h.flatten()
+
+        # mu_h = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
+        # M_h= idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
+
+        predictor = sim_gLV_class.sim_gLV(num_species=num_species,
+                            M=M_h,
+                            mu=mu_h
+                            )
+        yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=init_species)
+
+        sim_gLV_class.plot_fit_gLV(yobs, yobs_h, times)
+        # compare_params(mu=(mu, mu_h), M=(M, M_h) )
