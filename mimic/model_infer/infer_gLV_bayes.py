@@ -6,6 +6,9 @@ import pytensor.tensor as at
 import pickle
 import cloudpickle
 
+from mimic.utilities import *
+from mimic.model_simulate.sim_gLV import *
+
 
 import pandas as pd
 import numpy as np
@@ -578,13 +581,13 @@ class infergLVbayes:
                     color='white')
 
 
-def param_data_compare(self, idata, F, times, yobs, sim_gLV_class):
-        az.to_netcdf(idata, 'model_posterior.nc')
-        # %%
+
+def param_data_compare(idata, F, mu, M, times, yobs, init_species_start, sim_gLV_class):
+        # az.to_netcdf(idata, 'model_posterior.nc')
         # Compare model parameters to the data
         num_species = F.shape[1]
-        # init_species = 10 * np.ones(num_species)
-        init_species = 0.01 * np.ones(num_species)
+        init_species = init_species_start * np.ones(num_species)
+        #init_species = 0.01 * np.ones(num_species)
 
         print(idata.posterior["M_hat"].values.shape)
 
@@ -596,14 +599,66 @@ def param_data_compare(self, idata, F, times, yobs, sim_gLV_class):
         mu_h = np.median(idata.posterior["mu_hat"].values, axis=(0, 1))
         mu_h = mu_h.flatten()
 
+        infer_h = infergLVbayes(M_h)
+        matrix = infer_h.plot_interaction_matrix(M=M, M_h=M_h)
+
         # mu_h = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
         # M_h= idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
-        predictor = sim_gLV_class.sim_gLV(num_species=num_species,
-                            M=M_h,
-                            mu=mu_h
-                            )
+        predictor = sim_gLV(num_species=num_species, M=M_h, mu=mu_h)
         yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=init_species)
 
-        sim_gLV_class.plot_fit_gLV(yobs, yobs_h, times)
-        # compare_params(mu=(mu, mu_h), M=(M, M_h) )
+        plot_fit_gLV(yobs, yobs_h, times)
+        compare_params(mu=(mu, mu_h), M=(M, M_h) )
+
+
+def pert_fn(t):
+    if 2.0 <= t < 2.2 or 3.0 <= t < 3.2 or 4.0 <= t < 4.2:
+        return np.array([1])
+    else:
+        return np.array([0])
+
+def param_data_compare_pert(idata, F, mu, M, epsilon, num_perturbations, times, yobs, init_species_start, sim_gLV_class):
+    # az.to_netcdf(idata, 'model_posterior.nc')
+    # Compare model parameters to the data
+    num_species = F.shape[1]
+    init_species = init_species_start * np.ones(num_species)
+    # init_species = 0.01 * np.ones(num_species)
+
+    print(idata.posterior["M_hat"].values.shape)
+
+    print(idata.posterior["mu_hat"].values.shape)
+
+    # # get median posterior values
+    M_h = np.median(idata.posterior["M_hat"].values, axis=(0, 1))
+
+    mu_h = np.median(idata.posterior["mu_hat"].values, axis=(0, 1))
+    mu_h = mu_h.flatten()
+
+    e_h = np.median(idata.posterior["epsilon_hat"].values, axis=(0, 1))
+    # reshape e_h so it is the same shape as epsilon
+    e_h = e_h.reshape(epsilon.shape)
+
+    infer_h = infergLVbayes(M_h)
+    matrix = infer_h.plot_interaction_matrix(M=M, M_h=M_h)
+
+    # mu_h = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
+    # M_h= idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
+
+    predictor = sim_gLV(num_species=num_species, M=M_h, mu=mu_h, epsilon=e_h)
+    simulator = sim_gLV(num_species=num_species, num_perturbations=num_perturbations, M=M, mu=mu, epsilon=epsilon)
+
+    yobs, init_species, mu, M, _ = simulator.simulate(times=times, init_species=init_species, u=pert_fn)
+    yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=init_species, u=pert_fn)
+
+
+    plot_fit_gLV(yobs, yobs_h, times)
+
+    # compare median posterior values to true values
+    compare_params(mu=(mu, mu_h), M=(M, M_h), e=(epsilon, e_h))
+
+
+
+
+
+
