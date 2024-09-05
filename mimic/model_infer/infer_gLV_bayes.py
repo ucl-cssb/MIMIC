@@ -16,6 +16,29 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
+# Used in examples-Stein.ipynb
+def plot_params(mu_h, M_h, e_h, nsp):
+    print("\ninferred params:")
+    print("mu_hat/mu:")
+    print(np.array(mu_h))
+    print("\nM_hat/M:")
+    print(np.round(np.array(M_h), decimals=2))
+    print("e_hat/e:")
+    print(np.array(e_h))
+
+    # plot the params
+    plt.figure(figsize=(6.4*3, 4.8))
+    plt.subplot(1, 3, 1)
+    plt.stem(np.arange(0, nsp, dtype="int32"), np.array(mu_h), markerfmt="D")
+
+    plt.subplot(1, 3, 2)
+    plt.stem(np.arange(0, nsp*nsp), np.array(M_h).flatten(), markerfmt="D")
+
+    plt.subplot(1, 3, 3)
+    plt.stem(np.arange(0, nsp), np.array(e_h), markerfmt="D")
+
+
+
 def get_data(input_data):
     # Read the CSV file
     d = pd.read_csv(input_data)
@@ -188,9 +211,7 @@ class infergLVbayes:
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ij is unconstrained
-            M_ij_hat = pm.Normal(
-                    'M_ij_hat', mu=M_prior, sigma=0.1, shape=(
-                        num_species, num_species-1))  # different shape for off-diagonal
+            M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=0.1, shape=(num_species, num_species-1))  # different shape for off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
@@ -232,7 +253,7 @@ class infergLVbayes:
 
 
         # Plot and save posterior results
-        self.plot_posterior_b(idata, mu_hat_np, M_hat_np)
+        self.plot_posterior(idata, mu_hat_np, M_hat_np)
 
 
         return idata
@@ -344,7 +365,7 @@ class infergLVbayes:
 
 
         # Plot and save posterior results
-        self.plot_posterior_b(idata, mu_hat_np, M_hat_np)
+        self.plot_posterior(idata, mu_hat_np, M_hat_np)
 
         return idata
 
@@ -460,36 +481,8 @@ class infergLVbayes:
 
 
 
-    def plot_posterior(self, idata, mu, M):
-        """
-                Plots the posterior distributions and saves the plots to files.
 
-                Args:
-                    idata: The posterior inference data.
-                    mu (np.ndarray): The growth rates matrix.
-                    M (np.ndarray): The interaction matrix.
-                """
-        az.plot_posterior(
-            idata,
-            var_names=["mu_hat"],
-            ref_val=mu.flatten().tolist())
-        plt.savefig("plot-posterior-mu.pdf")
-
-        az.plot_posterior(
-            idata,
-            var_names=["M_ii_hat"],
-            ref_val=np.diag(M).tolist())
-        plt.savefig("plot-posterior-Mii.pdf")
-
-        mask = ~np.eye(M.shape[0], dtype=bool)
-        M_ij = M[mask]
-        az.plot_posterior(
-            idata,
-            var_names=["M_ij_hat"],
-            ref_val=M_ij.flatten().tolist())
-        plt.savefig("plot-posterior-Mij.pdf")
-
-    def plot_posterior_b(self, idata, mu_hat_np, M_hat_np):
+    def plot_posterior(self, idata, mu_hat_np, M_hat_np):
         az.plot_posterior(
             idata,
             var_names=["mu_hat"],
@@ -585,7 +578,9 @@ class infergLVbayes:
 def param_data_compare(idata, F, mu, M, times, yobs, init_species_start, sim_gLV_class):
         # az.to_netcdf(idata, 'model_posterior.nc')
         # Compare model parameters to the data
+
         num_species = F.shape[1]
+        print(num_species)
         init_species = init_species_start * np.ones(num_species)
         #init_species = 0.01 * np.ones(num_species)
 
@@ -610,6 +605,79 @@ def param_data_compare(idata, F, mu, M, times, yobs, init_species_start, sim_gLV
 
         plot_fit_gLV(yobs, yobs_h, times)
         compare_params(mu=(mu, mu_h), M=(M, M_h) )
+
+
+def curve_compare(idata, F, mu, M, times, yobs, init_species_start, sim_gLV_class):
+    # Compare model parameters to the data
+    num_species = F.shape[1]
+    # init_species = 10 * np.ones(num_species)
+    init_species = 0.01 * np.ones(num_species)
+
+    print(idata.posterior["M_hat"].values.shape)
+
+    print(idata.posterior["mu_hat"].values.shape)
+
+    # # get median posterior values
+    M_h = np.median(idata.posterior["M_hat"].values, axis=(0, 1))
+
+    mu_h = np.median(idata.posterior["mu_hat"].values, axis=(0, 1))
+    mu_h = mu_h.flatten()
+
+    # mu_h = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
+    # M_h= idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
+
+    predictor = sim_gLV(num_species=num_species,
+                        M=M_h,
+                        mu=mu_h
+                        )
+    yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=init_species)
+
+    plot_fit_gLV(yobs, yobs_h, times)
+
+
+
+def generate_5_species_data(sim_gLV_class):
+    # In this example n >> p and it is basically same as standard regression
+    # We have to be careful as most of these gLV models are very weakly identifiable
+
+    set_all_seeds(1234)
+
+    # SETUP MODEL
+    # establish size of model
+    num_species = 5
+
+    # construct interaction matrix
+    # TODO do this programmatically
+    M = np.zeros((num_species, num_species))
+    np.fill_diagonal(M, [-0.05, -0.1, -0.15, -0.01, -0.2])
+    M[0, 2] = -0.025
+    M[1, 3] = 0.05
+    M[4, 0] = 0.02
+
+    # construct growth rates matrix
+    mu = np.random.lognormal(0.01, 0.5, num_species)
+    print(mu.shape)
+
+    # instantiate simulator
+    simulator = sim_gLV(num_species=num_species,
+                        M=M,
+                        mu=mu)
+    simulator.print_parameters()
+
+    # PRODUCE SIMULATED RESULTS
+    # initial conditions
+    init_species = 10 * np.ones(num_species)
+
+    times = np.arange(0, 5, 0.1)
+    yobs, init_species, mu, M, _ = simulator.simulate(times=times, init_species=init_species)
+
+    # add some gaussian noise
+    yobs = yobs + np.random.normal(loc=0, scale=0.1, size=yobs.shape)
+
+    # plot simulation
+    plot_gLV(yobs, times)
+
+    return yobs, times, mu, M
 
 
 def pert_fn(t):
