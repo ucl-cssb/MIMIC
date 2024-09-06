@@ -4,19 +4,20 @@ Examples
 .. toctree::
    :maxdepth: 2
 
-   notebooks/MultiModel/Herold/examples-Herold-VAR
-   notebooks/MultiModel/Herold/examples_impute_data
-   notebooks/MultiModel/Herold/examples-Herold-sVAR
-   notebooks/VAR/examples-bayes-VAR
    notebooks/VAR/examples-sim-VAR
-   notebooks/gLV/examples-sim-gLV
-   notebooks/gLV/examples-bayes-gLV
-   notebooks/gLV/examples-Stein
+   notebooks/VAR/examples-bayes-VAR
    notebooks/gLV/examples-lasso-gLV
+   notebooks/gLV/examples-Rutter-Dekker
+   notebooks/gLV/examples-Stein
+   notebooks/gLV/examples-bayes-gLV
    notebooks/gLV/examples-ridge-gLV
-   notebooks/gMLV/examples-sim-gMLV
-   notebooks/gMLV/examples-ridge-lasso-gMLV
-   notebooks/GP/examples-impute-GP_Stein
+   notebooks/gLV/examples-sim-gLV
    notebooks/GP/examples-impute-GP
-   notebooks/MVAR/examples-infer-MVAR
+   notebooks/GP/examples-impute-GP_Stein
+   notebooks/gMLV/examples-ridge-lasso-gMLV
+   notebooks/gMLV/examples-sim-gMLV
    notebooks/MVAR/examples-sim-MVAR
+   notebooks/MVAR/examples-infer-MVAR
+   notebooks/MultiModel/Herold/examples_impute_data
+   notebooks/MultiModel/Herold/examples-Herold-VAR
+   notebooks/MultiModel/Herold/examples-Herold-sVAR
