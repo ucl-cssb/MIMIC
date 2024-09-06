@@ -17,8 +17,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Comparison of ridge vs lasso regression" href="examples-lasso-gLV.html" />
-    <link rel="prev" title="Used Bayesian inference to infer the parameters of a (linearised) gLV model" href="examples-bayes-gLV.html" />
+    <link rel="next" title="Used Bayesian inference to infer the parameters of a (linearised) gLV model" href="examples-bayes-gLV.html" />
+    <link rel="prev" title="Repeat Rutter &amp; Dekker et al 2024 analysis" href="examples-Rutter-Dekker.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -36,12 +36,16 @@
 
           <div class="body" role="main">
             
-  <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+  <div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="n">set_all_seeds</span>
 <span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="n">plot_gLV</span>
+
+<span class="kn">from</span> <span class="nn">mimic.utilities</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mimic.model_infer.infer_gLV_bayes</span> <span class="kn">import</span> <span class="o">*</span>
+
 <span class="kn">from</span> <span class="nn">mimic.model_infer</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">mimic.model_simulate</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -53,48 +57,19 @@
 <br/></pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># some plotting functions</span>
-<span class="k">def</span> <span class="nf">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">nsp</span><span class="p">,</span> <span class="n">m_h</span><span class="p">,</span> <span class="n">M_h</span><span class="p">):</span>
-    <span class="c1"># plot the fit</span>
-    <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;royalblue&quot;</span><span class="p">,</span> <span class="s2">&quot;black&quot;</span><span class="p">]</span>
-    <span class="c1"># cols = [1,2,3,4,5]</span>
-    <span class="n">yobs_pred</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">gLV</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">nsp</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsp</span><span class="p">):</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">yobs</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">yobs_pred</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-
-
-<span class="k">def</span> <span class="nf">plot_params</span><span class="p">(</span><span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span><span class="p">,</span> <span class="n">e_h</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">inferred params:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mu_hat/mu:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu_h</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">M_hat/M:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M_h</span><span class="p">),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;e_hat/e:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e_h</span><span class="p">))</span>
-
-    <span class="c1"># plot the params</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.4</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nsp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu_h</span><span class="p">),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nsp</span><span class="o">*</span><span class="n">nsp</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M_h</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nsp</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e_h</span><span class="p">),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
 </div>
 <section id="Repeat-Stein-et-al.-2013-analysis">
 <h1>Repeat Stein et al. 2013 analysis<a class="headerlink" href="#Repeat-Stein-et-al.-2013-analysis" title="Link to this heading">¶</a></h1>
 <p><a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003388">https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003388</a></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nsp</span> <span class="o">=</span> <span class="mi">11</span>
@@ -128,7 +103,7 @@
                      <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">,</span>
                      <span class="n">epsilon</span><span class="o">=</span><span class="n">e_h</span><span class="p">)</span>
 
-<span class="n">plot_params</span><span class="p">(</span><span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span><span class="p">,</span> <span class="n">e_h</span><span class="p">)</span>
+<span class="n">plot_params</span><span class="p">(</span><span class="n">mu_h</span><span class="p">,</span> <span class="n">M_h</span><span class="p">,</span> <span class="n">e_h</span><span class="p">,</span> <span class="n">nsp</span><span class="p">)</span>
 
 <span class="c1"># plot interaction matrix</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.4</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mf">6.4</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span>
@@ -143,42 +118,42 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-minimum found: a0/a1/a2/error: 10.0 10.0 1e-06 1.4690699442465054
-unconstrained error        : 1.6228149213798244
+minimum found: a0/a1/a2/error: 10.0 100.0 0.1 1.4610188814553737
+unconstrained error        : 1.605624304155753
 
 inferred params:
 mu_hat/mu:
-[0.25690182 0.65817874 0.31354597 0.4392043  0.25732104 0.21627062
- 0.35990734 0.28629651 0.63850793 0.2180557  0.44677433]
+[0.08569458 0.21260378 0.09957381 0.14174852 0.08153396 0.06956413
+ 0.11654101 0.09155915 0.20665831 0.07143957 0.1436991 ]
 
 M_hat/M:
-[[-0.35  0.09 -0.22  0.04  0.14 -0.12  0.22  0.06 -0.23 -0.02 -0.08]
- [ 0.11 -0.58 -0.15 -0.   -0.08 -0.34  0.05 -0.02  0.31  0.06  0.  ]
- [-0.25 -0.11 -0.12  0.02  0.02 -0.3   0.24  0.03 -0.22 -0.01 -0.08]
- [-0.24  0.19 -0.06 -0.31 -0.03 -0.07  0.14 -0.02 -0.24 -0.02 -0.03]
- [-0.18 -0.14  0.01  0.03 -0.08 -0.28  0.2  -0.02 -0.23 -0.   -0.08]
- [-0.04  0.14 -0.07 -0.09 -0.11 -0.61 -0.16 -0.04  0.77  0.07  0.17]
- [-0.01 -0.09 -0.04  0.02 -0.03 -0.1  -0.04 -0.02 -0.16 -0.   -0.07]
- [-0.19 -0.13  0.05  0.02 -0.12 -0.29  0.21 -0.03 -0.42 -0.02 -0.08]
- [-0.25 -0.32 -0.06  0.15 -0.01 -0.34  0.32  0.01 -2.35 -0.13 -0.32]
- [-0.01 -0.21 -0.03  0.02 -0.    0.01  0.07  0.01 -1.13 -0.08 -0.1 ]
- [-0.38 -0.07  0.09  0.13  0.04 -0.16  0.37 -0.   -0.58 -0.03 -0.43]]
+[[-0.31  0.12 -0.2   0.03  0.16 -0.07  0.21  0.07 -0.2  -0.01 -0.05]
+ [ 0.22 -0.5  -0.11 -0.01 -0.01 -0.21  0.01  0.01  0.37  0.07  0.08]
+ [-0.19 -0.07 -0.11  0.02  0.06 -0.24  0.22  0.04 -0.19 -0.   -0.04]
+ [-0.17  0.25 -0.04 -0.31  0.01  0.02  0.12  0.   -0.2  -0.02  0.03]
+ [-0.14 -0.11  0.02  0.02 -0.06 -0.22  0.19 -0.01 -0.21 -0.   -0.04]
+ [-0.01  0.17 -0.05 -0.09 -0.09 -0.57 -0.17 -0.03  0.79  0.07  0.19]
+ [ 0.05 -0.05 -0.02  0.02  0.   -0.03 -0.06 -0.   -0.13 -0.   -0.03]
+ [-0.14 -0.09  0.07  0.02 -0.09 -0.24  0.19 -0.02 -0.4  -0.01 -0.04]
+ [-0.14 -0.24 -0.02  0.14  0.05 -0.22  0.28  0.04 -2.3  -0.13 -0.24]
+ [ 0.02 -0.18 -0.02  0.02  0.02  0.06  0.06  0.02 -1.11 -0.08 -0.08]
+ [-0.3  -0.02  0.11  0.12  0.09 -0.07  0.35  0.02 -0.55 -0.03 -0.37]]
 e_hat/e:
-[[ 3.84802051]
- [-1.39111413]
- [-3.42841261]
- [-1.12676102]
- [-3.11220995]
- [-0.93537049]
- [-0.3000622 ]
- [-2.09524753]
- [-0.68770171]
- [ 1.16486783]
- [-1.94411325]]
+[[ 3.92331602]
+ [-1.00106518]
+ [-3.19413233]
+ [-0.86300239]
+ [-2.91470832]
+ [-0.79882324]
+ [-0.09484666]
+ [-1.89946928]
+ [-0.32090827]
+ [ 1.26560162]
+ [-1.66182533]]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -190,14 +165,22 @@ e_hat/e:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Stein_3_2.png" src="../../_images/notebooks_gLV_examples-Stein_3_2.png" />
+<img alt="../../_images/notebooks_gLV_examples-Stein_2_2.png" src="../../_images/notebooks_gLV_examples-Stein_2_2.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Stein_3_3.png" src="../../_images/notebooks_gLV_examples-Stein_3_3.png" />
+<img alt="../../_images/notebooks_gLV_examples-Stein_2_3.png" src="../../_images/notebooks_gLV_examples-Stein_2_3.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
 </div>
 </div>
 </section>
@@ -226,24 +209,26 @@ e_hat/e:
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
@@ -256,8 +241,8 @@ e_hat/e:
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../../examples.html">Examples</a><ul>
-      <li>Previous: <a href="examples-bayes-gLV.html" title="previous chapter">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
-      <li>Next: <a href="examples-lasso-gLV.html" title="next chapter">Comparison of ridge vs lasso regression</a></li>
+      <li>Previous: <a href="examples-Rutter-Dekker.html" title="previous chapter">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
+      <li>Next: <a href="examples-bayes-gLV.html" title="next chapter">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
   </ul></li>
   </ul></li>
 </ul>

@@ -16,7 +16,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="VAR inference on a Real Public Dataset, Herold et al. (2020)" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html" />
+    <link rel="next" title="Vector AutoRegression (VAR) Simulation" href="notebooks/VAR/examples-sim-VAR.html" />
     <link rel="prev" title="mimic.utilities package" href="mimic.utilities.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -39,12 +39,10 @@
 <h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html#Reducing-number-of-variables-(to-the-3-or-5-most-abundant)-to-reduce-the-computational-cost-and-simplify-the-analysis">Reducing number of variables (to the 3 or 5 most abundant) to reduce the computational cost and simplify the analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html#Introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html#Notebook-Structure">Notebook Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html#Objective">Objective</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a><ul>
@@ -54,29 +52,20 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-bayes-VAR.html#Example-Usage">Example Usage</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html#Introduction">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html#Notebook-Structure">Notebook Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html#Objective">Objective</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html#Five-species,-single-time-course.">Five species, single time course.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html#Perform-ridge-regression">Perform ridge regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html#Fit-same-data-with-the-multi-penalty-lasso">Fit same data with the multi-penalty lasso</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-sim-gLV.html#Five-species,-single-time-course">Five species, single time course</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-sim-gLV.html#Same-model-but-now-include-a-single-perturbation">Same model but now include a single perturbation</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-bayes-gLV.html#Five-species,-single-time-course">Five species, single time course</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-bayes-gLV.html#Bayesian-inference-(no-shrinkage)">Bayesian inference (no shrinkage)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-bayes-gLV.html#Bayesian-inference-with-shrinkage">Bayesian inference with shrinkage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-bayes-gLV.html#Bayesian-inference-with-shrinkage-and-a-perturbation-with-unknown-interactions">Bayesian inference with shrinkage and a perturbation with unknown interactions</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html#Five-species,-single-time-course.">Five species, single time course.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html#Perform-ridge-regression">Perform ridge regression</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html#Fit-same-data-with-the-multi-penalty-lasso">Fit same data with the multi-penalty lasso</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a><ul>
@@ -85,24 +74,22 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-ridge-gLV.html#Five-species,-single-time-course-including-a-perturbation">Five species, single time course including a perturbation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html#Five-species,-six-metabolites,-single-time-course">Five species, six metabolites, single time course</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html#Five-species,-single-time-course,-with-a-perturbation">Five species, single time course, with a perturbation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-sim-gLV.html#Five-species,-single-time-course">Five species, single time course</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-sim-gLV.html#Same-model-but-now-include-a-single-perturbation">Same model but now include a single perturbation</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-ridge-lasso-gMLV.html#Five-species,-six-metabolites,-single-time-course">Five species, six metabolites, single time course</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-ridge-lasso-gMLV.html#Perform-ridge-regression-to-get-the-abundance-model">Perform ridge regression to get the abundance model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-ridge-lasso-gMLV.html#Perform-lasso-regression-to-obtain-interactions-between-X-and-S">Perform lasso regression to obtain interactions between X and S</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html#MVAR-Process">MVAR Process</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html#Objective">Objective</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html#Simulation-with-VARsim.py-for-sVAR-Models">Simulation with <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for sVAR Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html#Example-Usage-of-VARsim.py-for-MVAR-Simulation">Example Usage of <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for MVAR Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html#Five-species,-six-metabolites,-single-time-course">Five species, six metabolites, single time course</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html#Five-species,-single-time-course,-with-a-perturbation">Five species, single time course, with a perturbation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a><ul>
@@ -111,6 +98,21 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-sim-MVAR.html#Simulation-with-VARsim.py-for-sVAR-Models">Simulation with <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for sVAR Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-sim-MVAR.html#Example-Usage-of-VARsim.py-for-MVAR-Simulation">Example Usage of <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for MVAR Simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-sim-MVAR.html#Visualization">Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html#MVAR-Process">MVAR Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html#Objective">Objective</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html#Simulation-with-VARsim.py-for-sVAR-Models">Simulation with <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for sVAR Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html#Example-Usage-of-VARsim.py-for-MVAR-Simulation">Example Usage of <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> for MVAR Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html#Reducing-number-of-variables-(to-the-3-or-5-most-abundant)-to-reduce-the-computational-cost-and-simplify-the-analysis">Reducing number of variables (to the 3 or 5 most abundant) to reduce the computational cost and simplify the analysis</a></li>
 </ul>
 </li>
 </ul>
@@ -141,24 +143,26 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">mimic</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
@@ -171,7 +175,7 @@
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="mimic.utilities.html" title="previous chapter">mimic.utilities package</a></li>
-      <li>Next: <a href="notebooks/MultiModel/Herold/examples-Herold-VAR.html" title="next chapter">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
+      <li>Next: <a href="notebooks/VAR/examples-sim-VAR.html" title="next chapter">Vector AutoRegression (VAR) Simulation</a></li>
   </ul></li>
 </ul>
 </div>
