@@ -35,11 +35,11 @@ def test_run_inference(example_data):
 
     # Create a mock trace object that mimics the structure expected by arviz
     mock_trace = MagicMock()
-
+    
     # Mock pymc's sample method to return the mock trace
     with patch.object(pm, 'sample', return_value=mock_trace) as mock_sample, \
-            patch.object(az, 'summary'), patch.object(az, 'plot_posterior'), \
-            patch.object(az, 'to_netcdf'):
+         patch.object(az, 'summary'), patch.object(az, 'plot_posterior'), \
+         patch.object(az, 'to_netcdf'):
         model.run_inference(samples=500, tune=200, cores=2)
         mock_sample.assert_called_once_with(500, tune=200, cores=2)
 
@@ -56,8 +56,8 @@ def test_run_inference_large(example_data):
 
     # Mock pymc's sample method
     with patch.object(pm, 'sample', return_value=mock_trace) as mock_sample, \
-            patch.object(az, 'summary'), patch.object(az, 'plot_posterior'), \
-            patch.object(az, 'to_netcdf'):
+         patch.object(az, 'summary'), patch.object(az, 'plot_posterior'), \
+         patch.object(az, 'to_netcdf'):
         model.run_inference_large(samples=1000, tune=500, cores=4)
         mock_sample.assert_called_once_with(1000, tune=500, cores=4)
 
@@ -71,8 +71,8 @@ def test_run_inference_xs(example_data, example_metabolite_data):
 
     # Mock pymc's sample method
     with patch.object(pm, 'sample', return_value=mock_trace) as mock_sample, \
-            patch.object(az, 'summary'), patch.object(az, 'plot_posterior'), \
-            patch.object(az, 'to_netcdf'):
+         patch.object(az, 'summary'), patch.object(az, 'plot_posterior'), \
+         patch.object(az, 'to_netcdf'):
         model.run_inference_xs(samples=500, tune=200, cores=2)
         mock_sample.assert_called_once_with(500, tune=200, cores=2)
 
@@ -83,15 +83,24 @@ def test_run_inference_xs(example_data, example_metabolite_data):
 
 
 def test_posterior_analysis(mocker, example_data, example_metabolite_data):
-    # Mock arviz.from_netcdf
-    mocker.patch('arviz.from_netcdf', return_value='mock_inference_data')
+    # Mock arviz.from_netcdf to return a mock inference data object
+    mock_inference_data = MagicMock()
+    mocker.patch('arviz.from_netcdf', return_value=mock_inference_data)
 
     model = infer_VAR(data=example_data, dataS=example_metabolite_data)
 
     # Mock plotting and saving methods
     mock_plot_heatmap = mocker.patch.object(model, 'plot_heatmap')
-    mocker.patch.object(np, 'load', return_value={
-                        'dataX': example_data, 'dataS': example_metabolite_data})
+
+    # Mock np.load to return a context manager with example data
+    mock_np_load = MagicMock()
+    mock_np_load.__enter__.return_value = {
+        'dataX': example_data, 'dataS': example_metabolite_data}
+    mocker.patch('numpy.load', return_value=mock_np_load)
+
+    # Ensure that the trace exists in model to avoid loading errors
+    model.last_trace = mock_inference_data
+    model.last_data = (example_data, example_metabolite_data)
 
     model.posterior_analysis(netcdf_filename="mock.nc")
 
