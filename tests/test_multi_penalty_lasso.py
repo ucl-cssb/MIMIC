@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from multi_penalty_lasso import MultiPenaltyLasso, fit_alpha_MPLasso
+from mimic.model_infer.multi_penalty_lasso import MultiPenaltyLasso, fit_alpha_MPLasso
 from unittest.mock import patch
 
 
@@ -39,8 +39,9 @@ def test_penalised_lasso(mock_data):
     model = MultiPenaltyLasso(alpha=alpha)
     model.fit(X, y)
     assert model.coef_ is not None
-    # Ensure correct coefficient shapes
-    assert model.coef_.shape == (y.shape[1], X.shape[1])
+    # Ensure correct coefficient shapes (features x targets)
+    # Adjusted to (features, targets)
+    assert model.coef_.shape == (X.shape[1], y.shape[1])
 
 
 def test_predict(mock_data):
@@ -62,7 +63,7 @@ def test_predict_not_fitted_error(mock_data):
         model.predict(X)
 
 
-@patch('multi_penalty_lasso.cross_val_score')
+@patch('mimic.model_infer.multi_penalty_lasso.cross_val_score')
 def test_fit_alpha_MPLasso(mock_cross_val_score, mock_data):
     """Test the alpha fitting function for MultiPenaltyLasso."""
     X, y = mock_data
