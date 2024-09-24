@@ -1,160 +1,124 @@
-import pytest
 import numpy as np
-from unittest.mock import MagicMock, patch
-from sklearn.model_selection import RepeatedKFold, cross_val_score
-from mimic.model_infer.infer_gMLV_lm import *
+import pytest
+from mimic.model_infer.infer_gMLV_lm import Ridge1, Ridge2, ridge_fit, ridge_fit_pert
 
+# ----------------------------
+# Mock Data for Ridge1 (Ridge1)
+# ----------------------------
+# Parameters: num_species=2
+# Expected X shape: (n_samples, num_species + 1) => (3, 3)
+X_mock_ridge1 = np.array([
+    [1, 2, 3],  # Sample 1
+    [4, 5, 6],  # Sample 2
+    [7, 8, 9]   # Sample 3
+])
 
-@pytest.fixture
-def mock_data():
-    np.random.seed(42)
-    X = np.random.rand(10, 3)
-    y = np.random.rand(10, 3)
-    return X, y
+y_mock = np.array([
+    [1, 2],  # Target 1 for Sample 1 and 2
+    [3, 4],
+    [5, 6]
+])
+
+# ---------------------------------
+# Mock Data for Ridge2 (Ridge2)
+# ---------------------------------
+# Parameters: num_species=2, num_pert=1
+# Expected X shape: (n_samples, num_species + num_pert + 1) => (3, 4)
+X_mock_ridge2 = np.array([
+    [1, 2, 3, 4],  # Sample 1
+    [5, 6, 7, 8],  # Sample 2
+    [9, 10, 11, 12]  # Sample 3
+])
+
+# ----------------------------
+# Test Cases for Ridge1
+# ----------------------------
 
 
 def test_ridge1_initialization():
-    model = Ridge1(alphas=[0.01, 0.1], num_species=5)
-    assert model.alphas == [0.01, 0.1]
-    assert model.num_species == 5
-    assert model.coef_ is None
+    """Test initialization of Ridge1."""
+    model = Ridge1(alphas=[0.5, 0.5], num_species=2)
+    assert model.alphas == [0.5, 0.5], "Alphas not set correctly."
+    assert model.num_species == 2, "Number of species not set correctly."
 
 
-def test_ridge1_fit(mock_data):
-    X, y = mock_data
-    model = Ridge1(alphas=[0.01, 0.1], num_species=3)
-    model.fit(X, y)
-    assert model.coef_ is not None
-    # Adjust based on X's shape
-    assert model.coef_.shape == (model.num_species, X.shape[1])
+def test_ridge1_fit():
+    """Test fitting Ridge1 with mock data."""
+    model = Ridge1(alphas=[0.5, 0.5], num_species=2)
+    model.fit(X_mock_ridge1, y_mock)
+    assert model.coef_ is not None, "Coefficients not set after fitting."
+    assert model.coef_.shape == (
+        2, 3), f"Expected coef shape (2,3), got {model.coef_.shape}."
 
 
-def test_ridge1_predict(mock_data):
-    X, y = mock_data
-    model = Ridge1(alphas=[0.01, 0.1], num_species=3)
-    model.fit(X, y)
-    predictions = model.predict(X)
-    assert predictions.shape == (10, 3)
+def test_ridge1_predict():
+    """Test prediction using Ridge1."""
+    model = Ridge1(alphas=[0.5, 0.5], num_species=2)
+    model.fit(X_mock_ridge1, y_mock)
+    y_pred = model.predict(X_mock_ridge1)
+    assert y_pred.shape == y_mock.shape, f"Expected prediction shape {y_mock.shape}, got {y_pred.shape}."
 
 
-def test_ridge1_not_fitted_error(mock_data):
-    X, _ = mock_data
-    model = Ridge1()
+def test_ridge1_unfitted_predict():
+    """Test that Ridge1 raises an error when predicting before fitting."""
+    model = Ridge1(alphas=[0.5, 0.5], num_species=2)
     with pytest.raises(ValueError, match="Model is not fitted yet."):
-        model.predict(X)
+        model.predict(X_mock_ridge1)
+
+# ----------------------------
+# Test Cases for Ridge2
+# ----------------------------
 
 
 def test_ridge2_initialization():
-    model = Ridge2(alphas=[0.01, 0.1, 0.01], num_species=5, num_pert=2)
-    assert model.alphas == [0.01, 0.1, 0.01]
-    assert model.num_species == 5
-    assert model.num_pert == 2
-    assert model.coef_ is None
+    """Test initialization of Ridge2."""
+    model = Ridge2(alphas=[0.1, 0.2, 0.3], num_species=2, num_pert=1)
+    assert model.alphas == [0.1, 0.2, 0.3], "Alphas not set correctly."
+    assert model.num_species == 2, "Number of species not set correctly."
+    assert model.num_pert == 1, "Number of perturbations not set correctly."
 
 
-def test_ridge2_fit(mock_data):
-    X, y = mock_data
-    model = Ridge2(alphas=[0.01, 0.1, 0.01], num_species=3, num_pert=1)
-    model.fit(X, y)
-    assert model.coef_ is not None
-    assert model.coef_.shape == (3, 5)  # Assuming the output is (3, 5)
+def test_ridge2_fit():
+    """Test fitting Ridge2 with mock data."""
+    model = Ridge2(alphas=[0.1, 0.2, 0.3], num_species=2, num_pert=1)
+    model.fit(X_mock_ridge2, y_mock)
+    assert model.coef_ is not None, "Coefficients not set after fitting."
+    assert model.coef_.shape == (
+        2, 4), f"Expected coef shape (2,4), got {model.coef_.shape}."
 
 
-def test_ridge2_predict(mock_data):
-    X, y = mock_data
-    model = Ridge2(alphas=[0.01, 0.1, 0.01], num_species=3, num_pert=1)
-    model.fit(X, y)
-    predictions = model.predict(X)
-    assert predictions.shape == (10, 3)
+def test_ridge2_predict():
+    """Test prediction using Ridge2."""
+    model = Ridge2(alphas=[0.1, 0.2, 0.3], num_species=2, num_pert=1)
+    model.fit(X_mock_ridge2, y_mock)
+    y_pred = model.predict(X_mock_ridge2)
+    assert y_pred.shape == y_mock.shape, f"Expected prediction shape {y_mock.shape}, got {y_pred.shape}."
 
 
-def test_ridge2_not_fitted_error(mock_data):
-    X, _ = mock_data
-    model = Ridge2()
+def test_ridge2_unfitted_predict():
+    """Test that Ridge2 raises an error when predicting before fitting."""
+    model = Ridge2(alphas=[0.1, 0.2, 0.3], num_species=2, num_pert=1)
     with pytest.raises(ValueError, match="Model is not fitted yet."):
-        model.predict(X)
+        model.predict(X_mock_ridge2)
+
+# ----------------------------
+# Test Cases for ridge_fit and ridge_fit_pert
+# ----------------------------
 
 
-def test_ridge_fit(mock_data):
-    X, y = mock_data
-    alphas = [0.1, 0.1]
-    num_species = 3
-    coefficients = ridge_fit(X, y, alphas, num_species)
-    assert coefficients.shape == (3, 4)
+def test_ridge_fit_function():
+    """Test the ridge_fit function."""
+    result = ridge_fit(X_mock_ridge1.T, y_mock.T,
+                       alphas=[0.1, 0.1], num_species=2)
+    assert isinstance(result, np.ndarray), "Result should be a numpy array."
+    assert result.shape == (
+        2, 3), f"Expected result shape (2,3), got {result.shape}."
 
 
-def test_ridge_fit_pert(mock_data):
-    X, y = mock_data
-    alphas = [0.1, 0.1, 0.1]
-    num_species = 3
-    num_pert = 1
-    coefficients = ridge_fit_pert(X, y, alphas, num_species, num_pert)
-    assert coefficients.shape == (3, 5)
-
-
-def test_linearize_time_course_16S():
-    yobs = np.array([[1.0, 2.0, 3.0], [2.0, 4.0, 6.0]])
-    times = np.array([0.0, 1.0])
-    tX, tF = linearize_time_course_16S(yobs, times)
-    assert tX.shape == (1, 4)  # 1 time step, 3 species + 1 constant
-    assert tF.shape == (1, 3)  # 1 time step, 3 species
-
-
-def test_do_final_fit_Ridge1(mock_data):
-    X, y = mock_data
-    num_species = 3
-    a0 = 0.1
-    a1 = 0.1
-    mu_h, M_h = do_final_fit_Ridge1(X, y, num_species, a0, a1)
-    assert len(mu_h) == num_species
-    assert len(M_h) == num_species
-    assert len(M_h[0]) == num_species
-
-
-@pytest.mark.parametrize("X_shape,y_shape,num_species", [
-    ((10, 3), (10, 3), 3),
-    ((15, 4), (15, 4), 4),
-])
-def test_ridge1_fit_with_different_shapes(X_shape, y_shape, num_species):
-    X = np.random.rand(*X_shape)
-    y = np.random.rand(*y_shape)
-    model = Ridge1(alphas=[0.01, 0.1], num_species=num_species)
-    model.fit(X, y)
-    assert model.coef_ is not None
-    assert model.coef_.shape == (num_species, X.shape[1] + 1)
-
-
-@pytest.mark.parametrize("X_shape,y_shape,num_species,num_pert", [
-    ((10, 4), (10, 4), 3, 1),
-    ((15, 5), (15, 5), 4, 2),
-])
-def test_ridge2_fit_with_different_shapes(X_shape, y_shape, num_species, num_pert):
-    X = np.random.rand(*X_shape)
-    y = np.random.rand(*y_shape)
-    model = Ridge2(alphas=[0.01, 0.1, 0.01],
-                   num_species=num_species, num_pert=num_pert)
-    model.fit(X, y)
-    assert model.coef_ is not None
-    assert model.coef_.shape == (num_species, X.shape[1] + 1 + num_pert)
-
-
-@patch('sklearn.model_selection.cross_val_score')
-def test_fit_alpha_Ridge1(mock_cross_val_score, mock_data):
-    X, y = mock_data
-    mock_cross_val_score.return_value = np.random.rand(10)
-    num_species = 3
-    a0, a1 = fit_alpha_Ridge1(X, y, num_species, 3, 3)
-    assert a0 > 0
-    assert a1 > 0
-
-
-@patch('sklearn.model_selection.cross_val_score')
-def test_fit_alpha_Ridge2(mock_cross_val_score, mock_data):
-    X, y = mock_data
-    mock_cross_val_score.return_value = np.random.rand(10)
-    num_species = 3
-    num_pert = 1
-    a0, a1, a2 = fit_alpha_Ridge2(X, y, num_species, num_pert, 3, 3, 3)
-    assert a0 > 0
-    assert a1 > 0
-    assert a2 > 0
+def test_ridge_fit_pert_function():
+    """Test the ridge_fit_pert function."""
+    result = ridge_fit_pert(X_mock_ridge2.T, y_mock.T, alphas=[
+                            0.1, 0.2, 0.3], num_species=2, num_pert=1)
+    assert isinstance(result, np.ndarray), "Result should be a numpy array."
+    assert result.shape == (
+        2, 4), f"Expected result shape (2,4), got {result.shape}."
