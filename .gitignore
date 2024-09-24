@@ -99,6 +99,9 @@ ENV/
 # mypy
 .mypy_cache/
 
+# Mac OS X files
+.DS_Store
+
 # IDE settings
 .vscode/
 .idea/
