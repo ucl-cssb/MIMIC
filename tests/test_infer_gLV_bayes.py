@@ -45,14 +45,10 @@ def generate_mock_inference_data():
 
     # Creating DataArray objects
     mu_hat = xr.DataArray(mu_hat_data, dims=("chain", "draw", "mu_hat_dim"))
-    M_ii_hat = xr.DataArray(M_ii_hat_data, dims=(
-        "chain", "draw", "mu_hat_dim"))
-    M_ij_hat = xr.DataArray(M_ij_hat_data, dims=(
-        "chain", "draw", "M_ij_dim_1", "M_ij_dim_2"))
-    M_hat = xr.DataArray(M_hat_data, dims=(
-        "chain", "draw", "M_hat_dim_1", "M_hat_dim_2"))
-    epsilon_hat = xr.DataArray(
-        epsilon_hat_data, dims=("chain", "draw", "mu_hat_dim"))
+    M_ii_hat = xr.DataArray(M_ii_hat_data, dims=("chain", "draw", "mu_hat_dim"))
+    M_ij_hat = xr.DataArray(M_ij_hat_data, dims=("chain", "draw", "M_ij_dim_1", "M_ij_dim_2"))
+    M_hat = xr.DataArray(M_hat_data, dims=("chain", "draw", "M_hat_dim_1", "M_hat_dim_2"))
+    epsilon_hat = xr.DataArray(epsilon_hat_data, dims=("chain", "draw", "mu_hat_dim"))
 
     # Convert to an xarray.Dataset
     posterior_dataset = xr.Dataset({
@@ -67,67 +63,66 @@ def generate_mock_inference_data():
     return az.InferenceData(posterior=posterior_dataset)
 
 
+@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
 @patch('pymc.sample', return_value=generate_mock_inference_data())
-def test_run_bayes_gLV(mock_sample, bayes_model):
+def test_run_bayes_gLV(mock_sample, mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
     bayes_model.run_bayes_gLV()
     mock_sample.assert_called_once()
 
 
+@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
 @patch('pymc.sample', return_value=generate_mock_inference_data())
-def test_run_bayes_gLV_shrinkage(mock_sample, bayes_model):
+def test_run_bayes_gLV_shrinkage(mock_sample, mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
     bayes_model.run_bayes_gLV_shrinkage()
     mock_sample.assert_called_once()
 
 
+@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
 @patch('pymc.sample', return_value=generate_mock_inference_data())
-def test_run_bayes_gLV_shrinkage_pert(mock_sample, bayes_model):
+def test_run_bayes_gLV_shrinkage_pert(mock_sample, mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
     bayes_model.run_bayes_gLV_shrinkage_pert()
     mock_sample.assert_called_once()
 
 
-@patch('arviz.plot_posterior')
-@patch('matplotlib.pyplot.savefig')
-def test_plot_posterior(mock_savefig, mock_plot_posterior, bayes_model):
+@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
+def test_plot_posterior(mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
     idata = generate_mock_inference_data()
     bayes_model.plot_posterior(idata, bayes_model.mu, bayes_model.M)
     assert mock_plot_posterior.call_count == 3
     assert mock_savefig.call_count == 3
 
 
-@patch('arviz.plot_posterior')
-@patch('matplotlib.pyplot.savefig')
-def test_plot_posterior_pert(mock_savefig, mock_plot_posterior, bayes_model):
+@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
+def test_plot_posterior_pert(mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
     idata = generate_mock_inference_data()
-    bayes_model.plot_posterior_pert(
-        idata, bayes_model.mu, bayes_model.M, bayes_model.epsilon)
+    bayes_model.plot_posterior_pert(idata, bayes_model.mu, bayes_model.M, bayes_model.epsilon)
     assert mock_plot_posterior.call_count == 4
     assert mock_savefig.call_count == 4
 
 
-@patch('seaborn.heatmap')
-@patch('matplotlib.pyplot.subplots', return_value=(None, MagicMock()))
-@patch('matplotlib.pyplot.savefig')
-def plot_interaction_matrix(self, M, M_h):
-    # visualize the interaction matrix
-    fig, ax = plt.subplots(1, 1, figsize=(7, 7))
-
-    # Heatmap for M_hat
-    sns.heatmap(M_h, ax=ax, cmap='viridis')
-    ax.set_title('M_hat')
-    ax.set_ylabel('X')
-    ax.set_xlabel('X')
-
-    # Annotate the true values for matrix1
-    for i in range(M_h.shape[0]):
-        for j in range(M_h.shape[1]):
-            ax.text(
-                j + 0.5,
-                i + 0.5,
-                f'{M[i, j]:.2f}',
-                ha='center',
-                va='center',
-                color='white')
-
-    # Ensure that the figure is saved
-    plt.savefig("interaction_matrix.pdf")
-    plt.close(fig)
+@patch('mimic.model_infer.infer_gLV_bayes.sns.heatmap')
+@patch('mimic.model_infer.infer_gLV_bayes.plt.subplots')
+def test_plot_interaction_matrix(mock_subplots, mock_heatmap, bayes_model):
+    # Set up the return value for plt.subplots
+    fig_mock = MagicMock()
+    ax_mock = MagicMock()
+    mock_subplots.return_value = (fig_mock, ax_mock)
+    M = np.random.rand(5, 5)
+    M_h = np.random.rand(5, 5)
+    bayes_model.plot_interaction_matrix(M, M_h)
+    mock_heatmap.assert_called_once_with(M_h, ax=ax_mock, cmap='viridis')
