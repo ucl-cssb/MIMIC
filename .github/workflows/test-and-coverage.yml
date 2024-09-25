@@ -2,9 +2,11 @@ name: Test and Coverage
 
 on:
   push:
-    branches: [ '*' ]
+    branches: 
+      - '**'  # This runs the workflow on push to any branch
   pull_request:
-    branches: [ master ]
+    branches: 
+      - '**'  # This runs the workflow on a pull request to any branch
 
 jobs:
   test-and-coverage:
