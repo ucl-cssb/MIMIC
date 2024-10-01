@@ -17,7 +17,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Comparison of ridge vs lasso regression" href="examples-lasso-gLV.html" />
+    <link rel="next" title="&lt;no title&gt;" href="examples-lasso-gLV.html" />
     <link rel="prev" title="Repeat Rutter &amp; Dekker et al 2024 analysis" href="examples-Rutter-Dekker.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -36,8 +36,8 @@
 
           <div class="body" role="main">
             
-  <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+  <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="n">set_all_seeds</span>
@@ -57,19 +57,11 @@
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
-</pre></div></div>
-</div>
 <section id="Repeat-Stein-et-al.-2013-analysis">
 <h1>Repeat Stein et al. 2013 analysis<a class="headerlink" href="#Repeat-Stein-et-al.-2013-analysis" title="Link to this heading">¶</a></h1>
 <p><a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003388">https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003388</a></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nsp</span> <span class="o">=</span> <span class="mi">11</span>
@@ -118,42 +110,42 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-minimum found: a0/a1/a2/error: 10.0 100.0 0.1 1.4610188814553737
-unconstrained error        : 1.605624304155753
+minimum found: a0/a1/a2/error: 10.0 100.0 1e-06 1.4615329563004673
+unconstrained error        : 1.6261046781774224
 
 inferred params:
 mu_hat/mu:
-[0.08569458 0.21260378 0.09957381 0.14174852 0.08153396 0.06956413
- 0.11654101 0.09155915 0.20665831 0.07143957 0.1436991 ]
+[0.0832295  0.21323277 0.10158073 0.14229075 0.08336531 0.07006605
+ 0.1166006  0.09275261 0.20685994 0.07064437 0.14474325]
 
 M_hat/M:
-[[-0.31  0.12 -0.2   0.03  0.16 -0.07  0.21  0.07 -0.2  -0.01 -0.05]
- [ 0.22 -0.5  -0.11 -0.01 -0.01 -0.21  0.01  0.01  0.37  0.07  0.08]
- [-0.19 -0.07 -0.11  0.02  0.06 -0.24  0.22  0.04 -0.19 -0.   -0.04]
+[[-0.31  0.12 -0.21  0.03  0.16 -0.07  0.21  0.07 -0.2  -0.01 -0.05]
+ [ 0.22 -0.5  -0.11 -0.01 -0.02 -0.21  0.01  0.01  0.37  0.07  0.08]
+ [-0.19 -0.07 -0.1   0.02  0.05 -0.24  0.22  0.04 -0.19 -0.   -0.04]
  [-0.17  0.25 -0.04 -0.31  0.01  0.02  0.12  0.   -0.2  -0.02  0.03]
- [-0.14 -0.11  0.02  0.02 -0.06 -0.22  0.19 -0.01 -0.21 -0.   -0.04]
+ [-0.14 -0.11  0.03  0.02 -0.06 -0.23  0.19 -0.01 -0.21 -0.   -0.04]
  [-0.01  0.17 -0.05 -0.09 -0.09 -0.57 -0.17 -0.03  0.79  0.07  0.19]
  [ 0.05 -0.05 -0.02  0.02  0.   -0.03 -0.06 -0.   -0.13 -0.   -0.03]
- [-0.14 -0.09  0.07  0.02 -0.09 -0.24  0.19 -0.02 -0.4  -0.01 -0.04]
+ [-0.15 -0.09  0.07  0.02 -0.1  -0.24  0.19 -0.02 -0.4  -0.01 -0.04]
  [-0.14 -0.24 -0.02  0.14  0.05 -0.22  0.28  0.04 -2.3  -0.13 -0.24]
  [ 0.02 -0.18 -0.02  0.02  0.02  0.06  0.06  0.02 -1.11 -0.08 -0.08]
  [-0.3  -0.02  0.11  0.12  0.09 -0.07  0.35  0.02 -0.55 -0.03 -0.37]]
 e_hat/e:
-[[ 3.92331602]
- [-1.00106518]
- [-3.19413233]
- [-0.86300239]
- [-2.91470832]
- [-0.79882324]
- [-0.09484666]
- [-1.89946928]
- [-0.32090827]
- [ 1.26560162]
- [-1.66182533]]
+[[ 3.99329576]
+ [-1.01892107]
+ [-3.2511057 ]
+ [-0.87839567]
+ [-2.96669764]
+ [-0.81307176]
+ [-0.09653843]
+ [-1.9333499 ]
+ [-0.32663228]
+ [ 1.28817601]
+ [-1.69146712]]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -226,7 +218,6 @@ e_hat/e:
 <li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
 </ul>
@@ -242,7 +233,7 @@ e_hat/e:
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../../examples.html">Examples</a><ul>
       <li>Previous: <a href="examples-Rutter-Dekker.html" title="previous chapter">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
-      <li>Next: <a href="examples-lasso-gLV.html" title="next chapter">Comparison of ridge vs lasso regression</a></li>
+      <li>Next: <a href="examples-lasso-gLV.html" title="next chapter">&lt;no title&gt;</a></li>
   </ul></li>
   </ul></li>
 </ul>
