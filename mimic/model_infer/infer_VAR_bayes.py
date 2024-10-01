@@ -133,7 +133,7 @@ class infer_VAR(BaseInfer):
         with var_model:
             # FIXME: #38 make these arguments specifiable in the
             # parameters.json file file
-            trace = pm.sample(samples, tune=tune, cores=cores)
+            trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
         # Plotting the posterior distributions
         # pm.plot_posterior(trace, var_names=['x0', 'A'])
@@ -218,7 +218,7 @@ class infer_VAR(BaseInfer):
 
         # Sampling from the posterior
         with var_model:
-            trace = pm.sample(samples, tune=tune, cores=cores)
+            trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
         print(az.summary(trace, var_names=["A"]))
 
@@ -289,7 +289,7 @@ class infer_VAR(BaseInfer):
                                    sigma=sigma, observed=data[2:, :])
 
         with var_model:
-            idata = pm.sample(samples, tune=tune, cores=cores)
+            idata = pm.sample(draws=samples, tune=tune, cores=cores)
 
         print(az.summary(idata, var_names=["Ah", "Bh"]))
 
@@ -372,7 +372,7 @@ class infer_VAR(BaseInfer):
                                    sigma=sigma, observed=data[2:, :])
 
         with var_model:
-            trace = pm.sample(samples, tune=tune, cores=cores)
+            trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
         print(az.summary(trace, var_names=["Ah", "Bh"]))
 
