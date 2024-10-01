@@ -36,7 +36,7 @@
 
           <div class="body" role="main">
             
-  <div class="nbinput docutils container">
+  <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -47,21 +47,18 @@
 <span class="kn">from</span> <span class="nn">mimic.model_simulate</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">mimic.model_simulate.sim_gLV</span> <span class="kn">import</span> <span class="o">*</span>
 
-
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-</pre></div>
+
+<span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
+<span class="kn">import</span> <span class="nn">pymc</span> <span class="k">as</span> <span class="nn">pm</span>
+<span class="kn">import</span> <span class="nn">pytensor.tensor</span> <span class="k">as</span> <span class="nn">at</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">cloudpickle</span>
+<br/></pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
-</pre></div></div>
 </div>
 <section id="Used-Bayesian-inference-to-infer-the-parameters-of-a-(linearised)-gLV-model">
 <h1>Used Bayesian inference to infer the parameters of a (linearised) gLV model<a class="headerlink" href="#Used-Bayesian-inference-to-infer-the-parameters-of-a-(linearised)-gLV-model" title="Link to this heading">¶</a></h1>
@@ -69,6 +66,259 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <div class="math notranslate nohighlight">
 \[\frac{dX_i}{dt} = \mu_i X_i + X_i M_{ij} X_j + X_i \epsilon_{il} u_l\]</div>
 <p>where: - <span class="math notranslate nohighlight">\(X_i\)</span> is the concentration of a species - <span class="math notranslate nohighlight">\(\mu_i\)</span> is its specific growth rate - <span class="math notranslate nohighlight">\(M_{ij}\)</span> is the effect of the interaction of species <span class="math notranslate nohighlight">\(i\)</span> on species <span class="math notranslate nohighlight">\(j\)</span> - <span class="math notranslate nohighlight">\(\epsilon_{il}\)</span> is the susceptibility to the time-dependent perturbation <span class="math notranslate nohighlight">\(u_l\)</span></p>
+<section id="Bayesian-inference-with-no-shrinkage">
+<h2>Bayesian inference with no shrinkage<a class="headerlink" href="#Bayesian-inference-with-no-shrinkage" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in pickled simulated parameters, mu, M, epsilon</span>
+<span class="n">num_species</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;params-s5.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">]</span>
+<span class="n">epsilon</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;epsilon&quot;</span><span class="p">]</span>
+
+<span class="c1"># read in the data</span>
+<span class="n">num_timecourses</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data-s5-r3.csv&quot;</span><span class="p">)</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="n">yobs_1</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:(</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">yobs_2</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">):(</span><span class="mi">2</span><span class="o">*</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">yobs_3</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">):(</span><span class="mi">3</span><span class="o">*</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">ryobs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">yobs_1</span><span class="p">,</span> <span class="n">yobs_2</span><span class="p">,</span> <span class="n">yobs_3</span><span class="p">])</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">timecourse_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_timecourses</span><span class="p">):</span>
+    <span class="n">Xs</span><span class="p">,</span> <span class="n">Fs</span> <span class="o">=</span> <span class="n">linearize_time_course_16S</span><span class="p">(</span><span class="n">ryobs</span><span class="p">[</span><span class="n">timecourse_idx</span><span class="p">],</span> <span class="n">times</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">X</span><span class="p">,</span> <span class="n">Xs</span><span class="p">])</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">F</span><span class="p">,</span> <span class="n">Fs</span><span class="p">])</span>
+
+<span class="c1"># Set priors</span>
+<span class="n">mu_prior</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.28</span><span class="p">,</span> <span class="mf">0.56</span><span class="p">,</span> <span class="mf">2.07</span><span class="p">,</span> <span class="mf">0.86</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
+<span class="n">M_prior</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="c1"># Do inference</span>
+<span class="n">inference</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">mu_prior</span><span class="p">,</span> <span class="n">M_prior</span><span class="p">)</span>
+<span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_bayes_gLV</span><span class="p">()</span>
+
+<span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ii_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ij_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
+<span class="c1">#print(summary[[&quot;mean&quot;, &quot;sd&quot;, &quot;r_hat&quot;]])</span>
+
+<span class="c1"># Save posterior samples to file</span>
+<span class="n">az</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+X shape: (297, 6)
+F shape: (297, 5)
+Number of species: 5
+Manually determined mu prior
+Manually determined M prior
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9a7040d9211f4283800d3710d3572992", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 500 tune and 1_000 draw iterations (1_000 + 2_000 draws total) took 93 seconds.
+There were 33 divergences after tuning. Increase `target_accept` or reparameterize.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_3_5.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_3_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_3_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_3_6.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_3_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_3_7.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/cbarnes-home/Desktop/project-MIMIC/env/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/cbarnes-home/Desktop/project-MIMIC/env/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/cbarnes-home/Desktop/project-MIMIC/env/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/cbarnes-home/Desktop/project-MIMIC/env/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;model_posterior.nc&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get median mu_hat and M_hat</span>
+<span class="n">mu_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">M_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;M_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">)</span>
+
+<span class="c1"># plot comparison of simulated and predicted timeseries</span>
+<span class="k">for</span> <span class="n">timecourse_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_timecourses</span><span class="p">):</span>
+    <span class="n">yobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">ryobs</span><span class="p">[</span><span class="n">timecourse_idx</span><span class="p">,</span><span class="mi">0</span><span class="p">,:])</span>
+    <span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">ryobs</span><span class="p">[</span><span class="n">timecourse_idx</span><span class="p">],</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+
+
+<span class="c1">#init_species_start = 10</span>
+<span class="c1">#sim_gLV_class = sim_gLV()</span>
+<span class="c1">#param_data_compare(idata, F, mu, M, times, yobs, init_species_start, sim_gLV_class)</span>
+
+<span class="c1"># alphas = fit_alpha_MPLasso(X, F, 10)</span>
+
+<span class="c1"># alpha = np.append(np.ones(num_species)*alphas[0], alphas[1])</span>
+<span class="c1"># model = MultiPenaltyLasso(alpha=alpha)</span>
+<span class="c1"># model.fit(X, F)</span>
+
+<span class="c1"># mu_h = [model.coef_[i][-1] for i in range(0, num_species)]</span>
+<span class="c1"># M_h = [model.coef_[i][:num_species].tolist() for i in range(0, num_species)]</span>
+
+<span class="c1"># predictor = sim_gLV(num_species=num_species, M=M_h, mu=mu_h)</span>
+
+<span class="c1"># # plot comparison of simulated and predicted timeseries</span>
+<span class="c1"># for timecourse_idx in range(num_timecourses):</span>
+<span class="c1">#     yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=ryobs[timecourse_idx,0,:])</span>
+<span class="c1">#     plot_fit_gLV(ryobs[timecourse_idx], yobs_h, times)</span>
+
+<span class="c1"># # this does the stem plots with orange crosses the actual parameters</span>
+<span class="n">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">mu_h</span><span class="p">),</span> <span class="n">M</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">M_h</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.45552524, 0.62505663, 2.06316306, 0.92157947, 0.80543274]), &#39;M&#39;: array([[-0.05776115,  0.0023451 , -0.00823157, -0.00149734,  0.        ],
+       [ 0.00294919, -0.09103324,  0.00266988,  0.00019529,  0.        ],
+       [-0.02767681, -0.00992753, -0.13856065, -0.00413258,  0.        ],
+       [-0.00182989,  0.04492617, -0.00162471, -0.00998152,  0.        ],
+       [ 0.00284718,  0.00524584,  0.00324652,  0.00083013, -0.15181302]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.45552524, 0.62505663, 2.06316306, 0.92157947, 0.80543274]), &#39;M&#39;: array([[-0.05776115,  0.0023451 , -0.00823157, -0.00149734,  0.        ],
+       [ 0.00294919, -0.09103324,  0.00266988,  0.00019529,  0.        ],
+       [-0.02767681, -0.00992753, -0.13856065, -0.00413258,  0.        ],
+       [-0.00182989,  0.04492617, -0.00162471, -0.00998152,  0.        ],
+       [ 0.00284718,  0.00524584,  0.00324652,  0.00083013, -0.15181302]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.45552524, 0.62505663, 2.06316306, 0.92157947, 0.80543274]), &#39;M&#39;: array([[-0.05776115,  0.0023451 , -0.00823157, -0.00149734,  0.        ],
+       [ 0.00294919, -0.09103324,  0.00266988,  0.00019529,  0.        ],
+       [-0.02767681, -0.00992753, -0.13856065, -0.00413258,  0.        ],
+       [-0.00182989,  0.04492617, -0.00162471, -0.00998152,  0.        ],
+       [ 0.00284718,  0.00524584,  0.00324652,  0.00083013, -0.15181302]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
+mu_hat/mu:
+[1.45552524 0.62505663 2.06316306 0.92157947 0.80543274]
+[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
+
+M_hat/M:
+[[-0.06  0.   -0.01 -0.    0.  ]
+ [ 0.   -0.09  0.    0.    0.  ]
+ [-0.03 -0.01 -0.14 -0.    0.  ]
+ [-0.    0.04 -0.   -0.01  0.  ]
+ [ 0.    0.01  0.    0.   -0.15]]
+
+ [[-0.05   0.    -0.025  0.     0.   ]
+ [ 0.    -0.1    0.     0.05   0.   ]
+ [ 0.     0.    -0.15   0.     0.   ]
+ [ 0.     0.     0.    -0.01   0.   ]
+ [ 0.02   0.     0.     0.    -0.2  ]]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_4_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_4_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_4_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_4_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_4_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_4_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_4_4.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_4_4.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_4_5.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_4_5.png" />
+</div>
+</div>
+</section>
 <section id="Five-species,-single-time-course">
 <h2>Five species, single time course<a class="headerlink" href="#Five-species,-single-time-course" title="Link to this heading">¶</a></h2>
 <div class="nbinput docutils container">
@@ -110,7 +360,7 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_3_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_3_1.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_6_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_6_1.png" />
 </div>
 </div>
 </section>
@@ -121,14 +371,8 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pymc</span> <span class="k">as</span> <span class="nn">pm</span>
-<span class="kn">import</span> <span class="nn">pytensor.tensor</span> <span class="k">as</span> <span class="nn">at</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">cloudpickle</span>
-<br/></pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -225,7 +469,7 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "b951f313b245411e94cefa6c726c3dac"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b951f313b245411e94cefa6c726c3dac", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -253,21 +497,21 @@ We recommend running at least 4 chains for robust computation of convergence dia
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_8_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_8_6.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_11_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_11_6.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_8_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_8_7.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_11_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_11_7.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_8_8.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_8_8.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_11_8.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_11_8.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -417,28 +661,28 @@ M_hat/M:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_10_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_10_1.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_1.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_10_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_10_2.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_2.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_10_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_10_3.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_3.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_10_4.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_10_4.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_4.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_4.png" />
 </div>
 </div>
 </section>
@@ -494,7 +738,7 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "8fe90f9b2c394a378020c691ed07a307"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8fe90f9b2c394a378020c691ed07a307", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -523,21 +767,21 @@ The rhat statistic is larger than 1.01 for some parameters. This indicates probl
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_6.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_16_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_16_6.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_7.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_16_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_16_7.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_13_8.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_13_8.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_16_8.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_16_8.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -685,28 +929,28 @@ M_hat/M:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_15_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_15_1.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_18_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_18_1.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_15_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_15_2.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_18_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_18_2.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_15_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_15_3.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_18_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_18_3.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_15_4.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_15_4.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_18_4.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_18_4.png" />
 </div>
 </div>
 </section>
@@ -792,7 +1036,7 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_17_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_17_1.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_20_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_20_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -844,7 +1088,7 @@ NUTS: [sigma, epsilon_hat, mu_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "f088f7f91193477883da499fe1316516"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f088f7f91193477883da499fe1316516", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -873,28 +1117,28 @@ The rhat statistic is larger than 1.01 for some parameters. This indicates probl
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_19_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_19_6.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_22_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_22_6.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_19_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_19_7.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_22_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_22_7.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_19_8.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_19_8.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_22_8.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_22_8.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_19_9.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_19_9.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_22_9.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_22_9.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -1025,35 +1269,35 @@ e_hat/e:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_1.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_24_1.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_24_1.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_2.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_24_2.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_24_2.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_3.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_24_3.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_24_3.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_4.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_4.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_24_4.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_24_4.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_21_5.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_21_5.png" />
+<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_24_5.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_24_5.png" />
 </div>
 </div>
 </section>
@@ -1097,6 +1341,7 @@ e_hat/e:
 <li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Bayesian-inference-with-no-shrinkage">Bayesian inference with no shrinkage</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Five-species,-single-time-course">Five species, single time course</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Bayesian-inference-(no-shrinkage)">Bayesian inference (no shrinkage)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Bayesian-inference-with-shrinkage">Bayesian inference with shrinkage</a></li>
@@ -1106,7 +1351,6 @@ e_hat/e:
 <li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-lasso-gLV.html">Comparison of ridge vs lasso regression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
 </ul>
