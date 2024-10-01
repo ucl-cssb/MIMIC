@@ -7,6 +7,7 @@ Examples
    notebooks/gLV/examples-bayes-gLV
    notebooks/gLV/examples-lasso-gLV
    notebooks/gLV/examples-ridge-gLV
+   notebooks/gLV/examples-Rutter-Dekker
    notebooks/gLV/examples-sim-gLV
    notebooks/gLV/examples-Stein
    notebooks/gMLV/examples-ridge-lasso-gMLV
