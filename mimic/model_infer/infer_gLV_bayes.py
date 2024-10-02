@@ -180,40 +180,19 @@ class infergLVbayes:
             # Priors for unknown model parameters
             # sigma = pm.HalfNormal('sigma', sigma=1, shape=(num_species,))  #
             # A separate sigma for each response
-            sigma = pm.HalfNormal(
-                'sigma', sigma=1, shape=(
-                    1,))  # Same sigma for all responses
+            sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
 
-            # If available, define mu as prior
-            if mu_prior is not None:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=(
-                        1, num_species))
+            # Define mu as prior
+            mu_hat = pm.TruncatedNormal('mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=( 1, num_species))
                 print(f"Manually determined mu prior")
-            else:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=1.0, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Automatically determined mu prior")
 
-            # Use provided M as priors
-            if M_prior is not None:
-                M_prior = M_prior
-                print(f"Manually determined M prior")
-
-            else:
-                M_prior = 0
-                print(f"Automatically determined M prior")
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.HalfNormal(
-                'M_ii_hat_p', sigma=0.1, shape=(
-                    num_species,))
+            M_ii_hat_p = pm.HalfNormal('M_ii_hat_p', sigma=0.1, shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ij is unconstrained
-            M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=0.1, shape=(
-                num_species, num_species - 1))  # different shape for off-diagonal
+            M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=0.1, shape=(num_species, num_species - 1))  # different shape for off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
@@ -228,8 +207,7 @@ class infergLVbayes:
 
             # Expected value of outcome (linear model)
             # model_mean = pm.math.dot(X, pm.math.concatenate([M_hat_vals, mu_hat], axis=0))
-            model_mean = pm.math.dot(
-                X, pm.math.concatenate([M_hat, mu_hat], axis=0))
+            model_mean = pm.math.dot(X, pm.math.concatenate([M_hat, mu_hat], axis=0))
 
             # Likelihood (sampling distribution) of observations
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
@@ -247,8 +225,7 @@ class infergLVbayes:
             idata = pm.sample(500, tune=500, chains=2, cores=2)
 
         # Assemble posterior values for mu and M for plotting and assessment
-        mu_hat_np = idata.posterior['mu_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
+        mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
         M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
         # Plot and save posterior results
@@ -288,35 +265,18 @@ class infergLVbayes:
                 'sigma', sigma=1, shape=(
                     1,))  # Same sigma for all responses
 
-            # If available, define mu as prior
-            if mu_prior is not None:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Manually determined mu prior")
-            else:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=1.0, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Automatically determined mu prior")
+            # Define mu as prior
+            mu_hat = pm.TruncatedNormal(
+                    'mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=( 1, num_species))
+
 
             # Set constraints for horseshoe prior
             # M_ij is is unconstrained but placed under horseshoe prior to
             # apply to sigma for M_ij
 
-            # Use provided M as priors
-            if M_prior is not None:
-                M_prior = M_prior
-                print(f"Manually determined M prior")
-
-            else:
-                M_prior = 0
-                print(f"Automatically determined M prior")
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.HalfNormal(
-                'M_ii_hat_p', sigma=0.1, shape=(
-                    num_species,))
+            M_ii_hat_p = pm.HalfNormal('M_ii_hat_p', sigma=0.1, shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
@@ -404,43 +364,21 @@ class infergLVbayes:
             # Priors for unknown model parameters
             # sigma = pm.HalfNormal('sigma', sigma=1, shape=(num_species,))  #
             # A separate sigma for each response
-            sigma = pm.HalfNormal(
-                'sigma', sigma=1, shape=(
-                    1,))  # Same sigma for all responses
+            sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
 
-            epsilon_hat = pm.Normal(
-                'epsilon_hat', mu=0, sigma=1.0, shape=(
-                    1, num_species))
+            epsilon_hat = pm.Normal('epsilon_hat', mu=0, sigma=1.0, shape=(1, num_species))
 
-            # If available, define mu as prior
-            if mu_prior is not None:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Manually determined mu prior")
-            else:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=1.0, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Automatically determined mu prior")
+            # Define mu as prior
+            mu_hat = pm.TruncatedNormal('mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=(1, num_species))
+
 
             # Set constraints for horseshoe prior
             # M_ij is is unconstrained but placed under horseshoe prior to
             # apply to sigma for M_ij
 
-            # Use provided M as priors
-            if M_prior is not None:
-                M_prior = M_prior
-                print(f"Manually determined M prior")
-
-            else:
-                M_prior = 0
-                print(f"Automatically determined M prior")
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.HalfNormal(
-                'M_ii_hat_p', sigma=0.1, shape=(
-                    num_species,))
+            M_ii_hat_p = pm.HalfNormal('M_ii_hat_p', sigma=0.1, shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
@@ -532,39 +470,24 @@ class infergLVbayes:
         plt.close()
 
     def plot_posterior_pert(self, idata, mu_hat_np, M_hat_np, epsilon):
-        az.plot_posterior(
-            idata,
-            var_names=["mu_hat"],
-            ref_val=mu_hat_np.tolist()
-        )
+        az.plot_posterior(idata, var_names=["mu_hat"], ref_val=mu_hat_np.tolist())
         plt.savefig("plot-posterior-mu.pdf")
         plt.show()
         plt.close()
 
-        az.plot_posterior(
-            idata,
-            var_names=["M_ii_hat"],
-            ref_val=np.diag(M_hat_np).tolist()
-        )
+        az.plot_posterior(idata, var_names=["M_ii_hat"], ref_val=np.diag(M_hat_np).tolist())
         plt.savefig("plot-posterior-Mii.pdf")
         plt.show()
         plt.close()
 
         mask = ~np.eye(M_hat_np.shape[0], dtype=bool)
         M_ij = M_hat_np[mask]
-        az.plot_posterior(
-            idata,
-            var_names=["M_ij_hat"],
-            ref_val=M_ij.flatten().tolist()
-        )
+        az.plot_posterior(idata, var_names=["M_ij_hat"], ref_val=M_ij.flatten().tolist())
         plt.savefig("plot-posterior-Mij.pdf")
         plt.show()
         plt.close()
 
-        az.plot_posterior(
-            idata,
-            var_names=["epsilon_hat"],
-            ref_val=epsilon.flatten().tolist())
+        az.plot_posterior(idata, var_names=["epsilon_hat"], ref_val=epsilon.flatten().tolist())
         plt.savefig("plot-posterior-eps.pdf")
         plt.show()
         plt.close()
@@ -591,15 +514,7 @@ class infergLVbayes:
                     color='white')
 
 
-def param_data_compare(
-        idata,
-        F,
-        mu,
-        M,
-        times,
-        yobs,
-        init_species_start,
-        sim_gLV_class):
+def param_data_compare(idata, F, mu, M, times, yobs, init_species_start, sim_gLV_class):
     # az.to_netcdf(idata, 'model_posterior.nc')
     # Compare model parameters to the data
 
@@ -632,15 +547,7 @@ def param_data_compare(
     compare_params(mu=(mu, mu_h), M=(M, M_h))
 
 
-def curve_compare(
-        idata,
-        F,
-        mu,
-        M,
-        times,
-        yobs,
-        init_species_start,
-        sim_gLV_class):
+def curve_compare(idata, F, mu, M, times, yobs, init_species_start, sim_gLV_class):
     # Compare model parameters to the data
     num_species = F.shape[1]
     # init_species = 10 * np.ones(num_species)
@@ -722,17 +629,7 @@ def pert_fn(t):
         return np.array([0])
 
 
-def param_data_compare_pert(
-        idata,
-        F,
-        mu,
-        M,
-        epsilon,
-        num_perturbations,
-        times,
-        yobs,
-        init_species_start,
-        sim_gLV_class):
+def param_data_compare_pert( idata, F, mu, M, epsilon, num_perturbations, times, yobs, init_species_start, sim_gLV_class):
     # az.to_netcdf(idata, 'model_posterior.nc')
     # Compare model parameters to the data
     num_species = F.shape[1]
