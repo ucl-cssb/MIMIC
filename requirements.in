@@ -1,2 +1,3 @@
-pymc
+pymc>=5
 pytensor
+gpflow
