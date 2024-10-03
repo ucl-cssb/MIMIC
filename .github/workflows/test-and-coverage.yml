@@ -2,10 +2,10 @@ name: Test and Coverage
 
 on:
   push:
-    branches: 
+    branches:
       - '**'  # This runs the workflow on push to any branch
   pull_request:
-    branches: 
+    branches:
       - '**'  # This runs the workflow on a pull request to any branch
 
 jobs:
@@ -16,20 +16,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+      - name: Set up Miniconda
+        uses: goanpeca/setup-miniconda@v1
         with:
-          python-version: '3.10'
+          auto-update-conda: true
+          environment-file: environment.yml
+          activate-environment: mimic_env
+          condarc-file: |
+            channels:
+              - conda-forge
+              - defaults
 
-      - name: Install dependencies
+      - name: Install Dependencies
+        shell: bash
         run: |
-          python -m pip install --upgrade pip
+          conda activate mimic_env
+          # Install dependencies via conda
+          conda install -c conda-forge pymc>=5 pytensor seaborn scikit-learn scipy numpy ipykernel ipywidgets
+          # Install any pip-only dependencies if needed
           pip install -r requirements.txt
+          # Install testing tools
           pip install pytest pytest-cov
+          # Install your package in editable mode
           pip install -e .
 
       - name: Run tests with coverage
+        shell: bash
         run: |
+          conda activate mimic_env
           pytest --cov=mimic --cov-report=xml --cov-report=html
 
       - name: Upload coverage report
