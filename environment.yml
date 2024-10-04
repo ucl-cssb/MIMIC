@@ -4,9 +4,9 @@ channels:
 dependencies:
   - python=3.10
   - pymc>=5
-  - gpflow>=2.9,<2.10  # Allow some flexibility while specifying compatibility
-  - tensorflow>=2.16,<2.17  # Leave room for patch updates but stay compatible
-  - tensorflow-probability>=0.24,<0.25  # Ensure compatibility but allow minor patch updates
+  - gpflow>=2.9,<2.10
+  - tensorflow>=2.16,<2.17
+  - tensorflow-probability>=0.24,<0.25
   - pytensor
   - seaborn
   - scikit-learn
@@ -14,6 +14,10 @@ dependencies:
   - numpy
   - ipykernel
   - ipywidgets
+  - matplotlib
+  - pandas
+  - arviz
+  - cloudpickle
   - pip
   - pip:
       - pytest
