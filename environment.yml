@@ -1,7 +1,18 @@
-# environment.yml
 name: mimic_env
 channels:
   - conda-forge
 dependencies:
   - python=3.10
+  - pymc>=5
+  - gpflow
+  - pytensor
+  - seaborn
+  - scikit-learn
+  - scipy
+  - numpy
+  - ipykernel
+  - ipywidgets
   - pip
+  - pip:
+      - pytest
+      - pytest-cov
