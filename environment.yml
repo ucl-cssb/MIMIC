@@ -18,3 +18,4 @@ dependencies:
   - pip:
       - pytest
       - pytest-cov
+      - pytest-mock
