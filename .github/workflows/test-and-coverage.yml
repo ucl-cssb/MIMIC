@@ -13,9 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set up Miniconda and create the environment from environment.yml
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -24,21 +26,15 @@ jobs:
           environment-file: environment.yml
           python-version: "3.10"
 
-      - name: Install Dependencies
+      # Install your package in editable mode
+      - name: Install Your Package
         shell: bash -l {0}
         run: |
-          # Initialize conda for bash shell
           eval "$(conda shell.bash hook)"
           conda activate mimic_env
-          # Install dependencies via conda
-          conda install -y -c conda-forge pymc>=5 pytensor seaborn scikit-learn scipy numpy ipykernel ipywidgets
-          # Install any pip-only dependencies if needed
-          pip install -r requirements.txt
-          # Install testing tools
-          pip install pytest pytest-cov
-          # Install your package in editable mode
           pip install -e .
 
+      # Run tests with coverage reporting
       - name: Run tests with coverage
         shell: bash -l {0}
         run: |
@@ -46,6 +42,7 @@ jobs:
           conda activate mimic_env
           pytest --cov=mimic --cov-report=xml --cov-report=html
 
+      # Upload the coverage report as an artifact
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
         with:
