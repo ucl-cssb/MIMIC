@@ -7,6 +7,9 @@ here = pathlib.Path(__file__).parent
 readme = (here / 'README.rst').read_text()
 history = (here / 'HISTORY.rst').read_text()
 
+# Read the requirements from requirements.txt
+with open(here / 'requirements.txt') as f:
+    requirements = f.read().splitlines()
 
 setup(
     name='MIMIC',
@@ -19,10 +22,9 @@ setup(
     author='Pedro Fontanarrosa',
     author_email='pfontanarrosa@gmail.com',
     license='MIT license',
-    packages=find_packages(
-        include=[
-            'mimic',
-            'mimic.*']),
+    packages=find_packages(include=['mimic', 'mimic.*']),
     test_suite='tests',
     url='https://github.com/ucl-cssb/MIMIC',
-    zip_safe=False)
+    zip_safe=False,
+    install_requires=requirements,
+)
