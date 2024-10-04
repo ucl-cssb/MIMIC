@@ -1,3 +1,8 @@
 pymc>=5
-pytensor
 gpflow
+seaborn
+scikit-learn
+scipy
+numpy
+ipykernel
+ipywidgets
