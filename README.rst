@@ -28,7 +28,6 @@ microbial ecology and microbiome research. This software package contributes to
 microbial ecology research and supports ecological predictions and applications, 
 benefiting the scientific and applied microbiology communities.
 
-
 Structure
 -----------
 
@@ -43,7 +42,9 @@ The repository is organized into the following main directories:
 - `LICENSE`: The license for the project.
 - `mimic/`: The main directory for the project's source code.
 - `README.rst`: The main README file for the project, providing an overview and basic usage examples.
-- `requirements.txt`: A list of Python dependencies required to run the project.
+- `environment.yml`: The Conda environment file containing all dependencies.
+- `requirements.in`: The pip requirements input file.
+- `requirements.txt`: The compiled list of Python dependencies.
 - `setup.py`: The build script for the project.
 - `tests/`: Contains unit tests for the project's code.
 
@@ -52,15 +53,68 @@ Installation
 
 Prerequisites
 ^^^^^^^^^^^^^
-Conda package manager is recommended due to dependencies on PyMC.
 
-Python Packages
-""""""""""""""""
-The Python packages needed to run this package are listed in the requirements.txt file in the same workspace. To install them, run:
+- **Conda Package Manager**: We recommend using Conda to manage the environment due to dependencies that may not be available via pip.
+
+Steps
+^^^^^
+
+1. **Clone the Repository**
+
+   Clone the repository to your local machine:
+
+   .. code-block:: bash
+
+      git clone https://github.com/yourusername/yourrepository.git
+      cd yourrepository
+
+2. **Create the Conda Environment**
+
+   Create a new conda environment using the `environment.yml` file:
+
+   .. code-block:: bash
+
+      conda env create -f environment.yml
+
+3. **Activate the Environment**
+
+   Activate the newly created environment:
+
+   .. code-block:: bash
+
+      conda activate mimic_env
+
+4. **Install the Package**
+
+   Install the package in editable mode:
+
+   .. code-block:: bash
+
+      pip install -e .
+
+5. **Run the Code**
+
+   Refer to the `Usage`_ section below for instructions on how to run the code.
+
+6. **Deactivate the Environment**
+
+   When you are finished, you can deactivate the environment:
+
+   .. code-block:: bash
+
+      conda deactivate
+
+Alternative Installation Using Pip Only
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you prefer to use pip without Conda, you can install the package and its dependencies using `requirements.txt`:
 
 .. code-block:: bash
 
    pip install -r requirements.txt
+   pip install -e .
+
+**Note**: This method may not install all dependencies correctly, especially if there are packages that are only available via Conda. We recommend using the Conda installation method for full functionality.
 
 Compilers
 """"""""""
@@ -71,17 +125,6 @@ Compilers
 .. * Solver 1
 .. * Solver 2
 
-Steps
-^^^^^
-
-#. Clone the repository.
-#. Create a new conda environment using the `environment.yml` file.
-#. Activate the new environment.
-#. Install required packages using `pip install -r requirements.txt` from the root directory of the repository.
-#. Install the package using `pip install -e .` from the root directory of the repository.
-#. Run the code using the instructions below.
-#. Deactivate the environment when finished.
-
 Usage
 -------
 
@@ -91,7 +134,6 @@ To get started with MIMIC, you can explore a variety of detailed examples and co
 - **Examples**: Check out our [Examples Directory](https://yourdocumentationurl.com/examples) which includes Jupyter notebooks demonstrating how to use MIMIC for different applications and scenarios.
 
 The documentation is regularly updated with the latest information on usage, features, and examples to help you effectively utilize the MIMIC package in your research or applications.
-
 
 Contributing
 -------------
