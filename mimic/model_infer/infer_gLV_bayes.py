@@ -257,7 +257,7 @@ class infergLVbayes:
         M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
         # Plot and save posterior results
-        self.plot_posterior(idata, mu_hat_np, M_hat_np)
+        #self.plot_posterior(idata, mu_hat_np, M_hat_np)
 
         return idata
 
@@ -349,14 +349,6 @@ class infergLVbayes:
 
             # Posterior distribution
             idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores)
-
-            # Assemble posterior values for mu and M for plotting and
-            # assessment
-        mu_hat_np = idata.posterior['mu_hat'].mean( dim=('chain', 'draw')).values.flatten()
-        M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
-
-        # Plot and save posterior results
-        self.plot_posterior(idata, mu_hat_np, M_hat_np)
 
         return idata
 
@@ -460,15 +452,19 @@ class infergLVbayes:
 
             # Assemble posterior values for mu and M for plotting and
             # assessment
-        mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
-        M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
+        #mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
+        #M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
         # Plot and save posterior results
-        self.plot_posterior_pert(idata, mu_hat_np, M_hat_np, epsilon)
+        #self.plot_posterior_pert(idata, mu_hat_np, M_hat_np, epsilon)
 
         return idata
 
-    def plot_posterior(self, idata, mu_hat_np, M_hat_np):
+    def plot_posterior(self, idata):
+
+        mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
+        M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
+
         az.plot_posterior(
             idata,
             var_names=["mu_hat"],
@@ -498,7 +494,11 @@ class infergLVbayes:
         plt.show()
         plt.close()
 
-    def plot_posterior_pert(self, idata, mu_hat_np, M_hat_np, epsilon):
+    def plot_posterior_pert(self, idata):
+        mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
+        M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
+        epsilon_hat_np = idata.posterior['epsilon_hat'].mean(dim=('chain','draw')).values
+
         az.plot_posterior(idata, var_names=["mu_hat"], ref_val=mu_hat_np.tolist())
         plt.savefig("plot-posterior-mu.pdf")
         plt.show()
@@ -516,7 +516,7 @@ class infergLVbayes:
         plt.show()
         plt.close()
 
-        az.plot_posterior(idata, var_names=["epsilon_hat"], ref_val=epsilon.flatten().tolist())
+        az.plot_posterior(idata, var_names=["epsilon_hat"], ref_val=epsilon_hat_np.flatten().tolist())
         plt.savefig("plot-posterior-eps.pdf")
         plt.show()
         plt.close()
@@ -576,15 +576,15 @@ def param_data_compare(idata, F, mu, M, times, yobs, init_species_start, sim_gLV
     compare_params(mu=(mu, mu_h), M=(M, M_h))
 
 
-def curve_compare(idata, F, mu, M, times, yobs, init_species_start, sim_gLV_class):
+def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
     # Compare model parameters to the data
     num_species = F.shape[1]
     # init_species = 10 * np.ones(num_species)
-    init_species = 0.01 * np.ones(num_species)
+    #init_species = 0.01 * np.ones(num_species)
+    init_species = init_species_start * np.ones(num_species)
 
-    print(idata.posterior["M_hat"].values.shape)
+    #print(idata.posterior["M_hat"].values.shape)
 
-    print(idata.posterior["mu_hat"].values.shape)
 
     # # get median posterior values
     M_h = np.median(idata.posterior["M_hat"].values, axis=(0, 1))
