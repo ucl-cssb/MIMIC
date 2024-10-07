@@ -1,7 +1,7 @@
 pymc>=5
 gpflow>=2.9,<2.10
-tensorflow>=2.16,<2.17
-tensorflow-probability>=0.24,<0.25
+tensorflow==2.13.0
+tensorflow-probability==0.21.0
 pytensor
 seaborn
 scikit-learn
