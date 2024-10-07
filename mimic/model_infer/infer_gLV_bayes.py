@@ -109,8 +109,8 @@ class infergLVbayes:
             M=None,
             prior_mu_mean = None,
             prior_mu_sigma = None,
+            prior_Mii_mean=None,
             prior_Mii_sigma = None,
-            prior_Mij_mean = None,
             prior_Mij_sigma = None,
             prior_eps_mean = None,
             prior_eps_sigma = None,
@@ -133,8 +133,8 @@ class infergLVbayes:
         self.M = M
         self.prior_mu_mean = prior_mu_mean
         self.prior_mu_sigma = prior_mu_sigma
+        self.prior_Mii_mean = prior_Mii_mean
         self.prior_Mii_sigma = prior_Mii_sigma
-        self.prior_Mij_mean = prior_Mij_mean
         self.prior_Mij_sigma = prior_Mij_sigma
         self.prior_eps_mean = prior_eps_mean
         self.prior_eps_sigma = prior_eps_sigma
@@ -189,8 +189,8 @@ class infergLVbayes:
         F = self.F
         prior_mu_mean = self.prior_mu_mean
         prior_mu_sigma = self.prior_mu_sigma
+        prior_Mii_mean = self.prior_Mii_mean
         prior_Mii_sigma = self.prior_Mii_sigma
-        prior_Mij_mean = self.prior_Mij_mean
         prior_Mij_sigma = self.prior_Mij_sigma
         draws = self.draws
         tune = self.tune
@@ -215,14 +215,12 @@ class infergLVbayes:
             # Define mu as prior
             mu_hat = pm.TruncatedNormal('mu_hat', mu=prior_mu_mean, sigma=prior_mu_sigma, lower=0, shape=( 1, num_species))
 
-
-
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.HalfNormal('M_ii_hat_p', sigma= prior_Mii_sigma, shape=(num_species,))
+            M_ii_hat_p = pm.Normal('M_ii_hat_p',mu=prior_Mii_mean, sigma=prior_Mii_sigma, shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ij is unconstrained
-            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_mean, sigma= prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
+            M_ij_hat = pm.HalfNormal('M_ij_hat', sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
@@ -276,8 +274,8 @@ class infergLVbayes:
         F = self.F
         prior_mu_mean = self.prior_mu_mean
         prior_mu_sigma = self.prior_mu_sigma
+        prior_Mii_mean = self.prior_Mii_mean
         prior_Mii_sigma = self.prior_Mii_sigma
-        prior_Mij_mean = self.prior_Mij_mean
         prior_Mij_sigma = self.prior_Mij_sigma
         DA = self.DA
         DA0 = self.DA0
@@ -305,8 +303,9 @@ class infergLVbayes:
                                         shape=(1, num_species))
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.HalfNormal('M_ii_hat_p', sigma=prior_Mii_sigma, shape=(num_species,))
+            M_ii_hat_p = pm.Normal('M_ii_hat_p', mu=prior_Mii_mean, sigma=prior_Mii_sigma, shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
+
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
 
@@ -320,8 +319,7 @@ class infergLVbayes:
             # M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=tau * lam *
             # at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
             # num_species-1))
-            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_mean, sigma=prior_Mij_sigma, shape=(
-                    num_species, num_species - 1))
+            M_ij_hat = pm.HalfNormal('M_ij_hat', sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
@@ -374,8 +372,8 @@ class infergLVbayes:
         F = self.F
         prior_mu_mean = self.prior_mu_mean
         prior_mu_sigma = self.prior_mu_sigma
+        prior_Mii_mean = self.prior_Mii_mean
         prior_Mii_sigma = self.prior_Mii_sigma
-        prior_Mij_mean = self.prior_Mij_mean
         prior_Mij_sigma = self.prior_Mij_sigma
         prior_eps_mean = self.prior_eps_mean
         prior_eps_sigma = self.prior_eps_sigma
@@ -412,7 +410,7 @@ class infergLVbayes:
             # apply to sigma for M_ij
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.HalfNormal('M_ii_hat_p', sigma=prior_Mii_sigma, shape=(num_species,))
+            M_ii_hat_p = pm.Normal('M_ii_hat_p', mu=prior_Mii_mean, sigma=prior_Mii_sigma, shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
@@ -427,9 +425,7 @@ class infergLVbayes:
             # M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=tau * lam *
             # at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
             # num_species-1))
-            M_ij_hat = pm.Normal(
-                'M_ij_hat', mu=prior_Mij_mean, sigma=prior_Mij_sigma, shape=(
-                    num_species, num_species - 1))
+            M_ij_hat = pm.HalfNormal('M_ij_hat', sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))
 
             # Combine values
             # start with an all-zero matrix of the correct shape
