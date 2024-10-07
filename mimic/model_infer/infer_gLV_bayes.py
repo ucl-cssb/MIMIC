@@ -216,11 +216,11 @@ class infergLVbayes:
             mu_hat = pm.TruncatedNormal('mu_hat', mu=prior_mu_mean, sigma=prior_mu_sigma, lower=0, shape=( 1, num_species))
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.Normal('M_ii_hat_p',mu=prior_Mii_mean, sigma=prior_Mii_sigma, shape=(num_species,))
+            M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p',mu=prior_Mii_mean, sigma=prior_Mii_sigma, lower=0, shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ij is unconstrained
-            M_ij_hat = pm.HalfNormal('M_ij_hat', sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
+            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
@@ -229,12 +229,12 @@ class infergLVbayes:
                 num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
             M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species)[:, None], np.delete(
                 np.arange(num_species), -1)], M_ij_hat)  # set off-diagonal
+            print(M_hat_vals)
 
             # Save the combined matrix as a deterministic variable
             M_hat = pm.Deterministic('M_hat', M_hat_vals)
 
             # Expected value of outcome (linear model)
-            # model_mean = pm.math.dot(X, pm.math.concatenate([M_hat_vals, mu_hat], axis=0))
             model_mean = pm.math.dot(X, pm.math.concatenate([M_hat, mu_hat], axis=0))
 
             # Likelihood (sampling distribution) of observations
@@ -252,12 +252,6 @@ class infergLVbayes:
             # Posterior distribution
             idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores)
 
-        # Assemble posterior values for mu and M for plotting and assessment
-        mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
-        M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
-
-        # Plot and save posterior results
-        #self.plot_posterior(idata, mu_hat_np, M_hat_np)
 
         return idata
 
@@ -303,7 +297,7 @@ class infergLVbayes:
                                         shape=(1, num_species))
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.Normal('M_ii_hat_p', mu=prior_Mii_mean, sigma=prior_Mii_sigma, shape=(num_species,))
+            M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p', mu=prior_Mii_mean, sigma=prior_Mii_sigma, lower=0, shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
 
@@ -313,13 +307,11 @@ class infergLVbayes:
             tau0 = (DA0 / (DA - DA0)) * noise_stddev / np.sqrt(N)
             c2 = pm.InverseGamma("c2", 2, 1)
             tau = pm.HalfCauchy("tau", beta=tau0)
-            lam = pm.HalfCauchy(
-                "lam", beta=1, shape=(
-                    num_species, num_species - 1))
-            # M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=tau * lam *
-            # at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
-            # num_species-1))
-            M_ij_hat = pm.HalfNormal('M_ij_hat', sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
+            lam = pm.HalfCauchy("lam", beta=1, shape=(num_species, num_species - 1))
+            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_sigma, sigma=tau * lam *
+                at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
+                num_species-1))
+            #M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
@@ -402,7 +394,7 @@ class infergLVbayes:
             # apply to sigma for M_ij
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.Normal('M_ii_hat_p', mu=prior_Mii_mean, sigma=prior_Mii_sigma, shape=(num_species,))
+            M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p', mu=prior_Mii_mean, sigma=prior_Mii_sigma, shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
@@ -417,7 +409,7 @@ class infergLVbayes:
             # M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=tau * lam *
             # at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
             # num_species-1))
-            M_ij_hat = pm.HalfNormal('M_ij_hat', sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))
+            M_ij_hat = pm.Normal('M_ij_hat',mu=0, sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))
 
             # Combine values
             # start with an all-zero matrix of the correct shape
