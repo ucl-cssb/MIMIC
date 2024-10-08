@@ -56,8 +56,8 @@ Prerequisites
 
 - **Conda Package Manager**: We recommend using Conda to manage the environment due to dependencies that may not be available via pip.
 
-Steps
-^^^^^
+Installation Steps
+^^^^^^^^^^^^^^^^^^^
 
 1. **Clone the Repository**
 
@@ -70,7 +70,7 @@ Steps
 
 2. **Create the Conda Environment**
 
-   Create a new conda environment using the `environment.yml` file:
+   Create a new Conda environment using the `environment.yml` file:
 
    .. code-block:: bash
 
@@ -84,7 +84,15 @@ Steps
 
       conda activate mimic_env
 
-4. **Install the Package**
+4. **Install TensorFlow (Windows Only)**
+
+   On Windows, additional steps may be needed to install TensorFlow and TensorFlow Probability:
+
+   .. code-block:: bash
+
+      pip install tensorflow==2.16 tensorflow-probability==0.24
+
+5. **Install the Package**
 
    Install the package in editable mode:
 
@@ -92,11 +100,11 @@ Steps
 
       pip install -e .
 
-5. **Run the Code**
+6. **Run the Code**
 
    Refer to the `Usage`_ section below for instructions on how to run the code.
 
-6. **Deactivate the Environment**
+7. **Deactivate the Environment**
 
    When you are finished, you can deactivate the environment:
 
@@ -118,12 +126,7 @@ If you prefer to use pip without Conda, you can install the package and its depe
 
 Compilers
 """"""""""
-* g++ compiler is needed for the PyMC3 package.
-
-.. Solvers
-.. """"""""
-.. * Solver 1
-.. * Solver 2
+A g++ compiler is required for the PyMC3 package.
 
 Usage
 -------
