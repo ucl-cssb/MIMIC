@@ -28,15 +28,18 @@ jobs:
           fi
           git checkout $BRANCH_NAME
 
-      # Set up Conda environment
+      # Set up Conda
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          environment-file: environment.yml
           auto-update-conda: true
           python-version: "3.10"
 
-      # Activate environment and install autopep8
+      # Create mimic_env from environment.yml
+      - name: Create mimic_env from environment.yml
+        run: conda env create -f environment.yml
+
+      # Activate mimic_env and install autopep8
       - name: Activate mimic_env and install autopep8
         shell: bash -l {0}
         run: |
@@ -51,7 +54,7 @@ jobs:
           conda activate mimic_env
           autopep8 --in-place --aggressive --aggressive --recursive mimic/
 
-      # Install pip-tools and compile requirements.txt
+      # Activate mimic_env, install pip-tools, and compile requirements.txt
       - name: Install pip-tools and compile requirements.txt
         shell: bash -l {0}
         run: |
@@ -96,11 +99,14 @@ jobs:
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          environment-file: environment.yml
           auto-update-conda: true
           python-version: "3.10"
+
+      # Create mimic_env from environment.yml
+      - name: Create mimic_env from environment.yml
+        run: conda env create -f environment.yml
       
-      # Optional: Install dependencies only to check compatibility
+      # Activate mimic_env and install the package for compatibility check
       - name: Install dependencies for compatibility check
         shell: bash -l {0}
         run: |

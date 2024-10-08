@@ -17,12 +17,16 @@ jobs:
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          environment-file: environment.yml  # Pointing to your environment file
           auto-update-conda: true
-          python-version: 3.10  # Ensuring consistency with environment.yml
+          python-version: "3.10"
+
+      - name: Create mimic_env from environment.yml
+        run: conda env create -f environment.yml
 
       - name: Activate mimic_env
-        run: source activate mimic_env
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
 
       - name: Install Documentation Dependencies
         run: |
