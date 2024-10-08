@@ -15,16 +15,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Miniconda and create the environment from environment.yml
-      - name: Setup Miniconda
+      # Set up Conda and create the environment from environment.yml
+      - name: Setup Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          activate-environment: mimic_env
-          environment-file: environment.yml
+          environment-file: environment.yml  # Point to your environment.yml
           python-version: "3.10"
-
-      # Install your package in editable mode
+      
+      # Activate the Conda environment and install the package in editable mode
       - name: Install Your Package
         shell: bash -l {0}
         run: |
