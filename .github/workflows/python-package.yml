@@ -101,6 +101,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: "3.10"
+          miniconda-version: "latest"
 
       # Create mimic_env from environment.yml
       - name: Create mimic_env from environment.yml
