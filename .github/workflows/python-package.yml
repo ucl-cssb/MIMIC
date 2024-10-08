@@ -113,7 +113,7 @@ jobs:
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             # Install TensorFlow separately with pip for Windows
             conda activate mimic_env
-            pip install tensorflow==2.16 tensorflow-probability==0.24
+            pip install "tensorflow>=2.16.1" "tensorflow-probability==0.24"
           fi
 
       # Activate mimic_env and install the package for compatibility check
