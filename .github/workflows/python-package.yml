@@ -110,6 +110,7 @@ jobs:
         run: |
           eval "$(conda shell.bash hook)"
           conda env create -f environment.yml
+          conda env export > mimic_env_final.yml
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             # Install TensorFlow separately with pip for Windows
             conda activate mimic_env
