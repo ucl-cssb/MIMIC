@@ -8,7 +8,7 @@ readme = (here / 'README.rst').read_text()
 history = (here / 'HISTORY.rst').read_text()
 
 # Read the requirements from requirements.txt
-with open(here / 'requirements.txt') as f:
+with open(here / 'requirements.in') as f:
     requirements = f.read().splitlines()
 
 setup(
