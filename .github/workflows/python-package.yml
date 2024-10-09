@@ -105,17 +105,16 @@ jobs:
           miniconda-version: "latest"
 
       # Create mimic_env from environment.yml, with adjustments for Windows compatibility
-      - name: Create mimic_env from environment.yml
+      - name: Create mimic_env from environment file
         shell: bash -l {0}
         run: |
           eval "$(conda shell.bash hook)"
-          conda env create -f environment.yml
-          conda env export > mimic_env_final.yml
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            # Install TensorFlow separately with pip for Windows
-            conda activate mimic_env
-            pip install "tensorflow>=2.16.1" "tensorflow-probability==0.24"
+            conda env create -f environment_windows.yml
+          else
+            conda env create -f environment.yml
           fi
+
 
       # Activate mimic_env and install the package for compatibility check
       - name: Install dependencies for compatibility check
