@@ -14,7 +14,7 @@ MICrobiomes Project* (MIMIC) introduces a Python package designed to advance the
 simulation, inference, and prediction of microbial community interactions and dynamics. 
 Addressing the complex nature of microbial ecosystems, MIMIC integrates a suite of 
 mathematical models, including previously used approaches such as *Generalized Lotka-
-Volterra* (gLV), *Gaussian Processes* (GP), and *Vector Autoregression* (VAR) plus 
+Volterra* (gLV), *Gaussian Processes* (GP), and *Vector Autoregression* (VAR), plus 
 newly developed models for integrating multiomic data, to offer a comprehensive 
 framework for analysing microbial dynamics. By leveraging Bayesian inference and 
 machine learning techniques, MIMIC accurately infers the dynamics of microbial 
@@ -42,7 +42,8 @@ The repository is organized into the following main directories:
 - `LICENSE`: The license for the project.
 - `mimic/`: The main directory for the project's source code.
 - `README.rst`: The main README file for the project, providing an overview and basic usage examples.
-- `environment.yml`: The Conda environment file containing all dependencies.
+- `environment.yml`: The Conda environment file for macOS and Ubuntu.
+- `environment_windows.yml`: The Conda environment file for Windows.
 - `requirements.in`: The pip requirements input file.
 - `requirements.txt`: The compiled list of Python dependencies.
 - `setup.py`: The build script for the project.
@@ -59,9 +60,9 @@ Prerequisites
 Installation Steps
 ^^^^^^^^^^^^^^^^^^^
 
-1. **Clone the Repository**
+### For macOS and Ubuntu
 
-   Clone the repository to your local machine:
+1. **Clone the Repository**
 
    .. code-block:: bash
 
@@ -70,29 +71,50 @@ Installation Steps
 
 2. **Create the Conda Environment**
 
-   Create a new Conda environment using the `environment.yml` file:
-
    .. code-block:: bash
 
       conda env create -f environment.yml
 
 3. **Activate the Environment**
 
-   Activate the newly created environment:
-
    .. code-block:: bash
 
       conda activate mimic_env
 
-4. **Install TensorFlow (Windows Only)**
-
-   On Windows, additional steps may be needed to install TensorFlow and TensorFlow Probability:
+4. **Install the Package**
 
    .. code-block:: bash
 
-      pip install tensorflow==2.16 tensorflow-probability==0.24
+      pip install -e .
 
-5. **Install the Package**
+5. **Run the Code**
+
+   Refer to the `Usage`_ section below for instructions on how to run the code.
+
+### For Windows
+
+1. **Clone the Repository**
+
+   .. code-block:: bash
+
+      git clone https://github.com/yourusername/yourrepository.git
+      cd yourrepository
+
+2. **Create the Conda Environment for Windows**
+
+   On Windows, use the `environment_windows.yml` file:
+
+   .. code-block:: bash
+
+      conda env create -f environment_windows.yml
+
+3. **Activate the Environment**
+
+   .. code-block:: bash
+
+      conda activate mimic_env_windows
+
+4. **Install the Package**
 
    Install the package in editable mode:
 
@@ -100,17 +122,9 @@ Installation Steps
 
       pip install -e .
 
-6. **Run the Code**
+5. **Run the Code**
 
    Refer to the `Usage`_ section below for instructions on how to run the code.
-
-7. **Deactivate the Environment**
-
-   When you are finished, you can deactivate the environment:
-
-   .. code-block:: bash
-
-      conda deactivate
 
 Alternative Installation Using Pip Only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -125,7 +139,7 @@ If you prefer to use pip without Conda, you can install the package and its depe
 **Note**: This method may not install all dependencies correctly, especially if there are packages that are only available via Conda. We recommend using the Conda installation method for full functionality.
 
 Compilers
-""""""""""
+"""""""""""
 A g++ compiler is required for the PyMC3 package.
 
 Usage
@@ -149,7 +163,7 @@ License
 This project is licensed under the `LICENSE <LICENSE>`_.
 
 Acknowledgements
-------------------
+-----------------
 
 This project is based on methods proposed in `this paper <https://onlinelibrary.wiley.com/doi/full/10.1002/bies.201600188>`_.
 
@@ -157,4 +171,3 @@ Contact
 --------
 
 For questions or feedback, please `contact us <mailto:christopher.barnes@ucl.ac.uk>`_.
-
