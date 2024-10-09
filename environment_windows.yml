@@ -1,0 +1,13 @@
+name: mimic_env_windows
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pymc>=5
+  - tensorflow
+  - gpflow>=2.9
+  - arviz
+  - pip
+  - pip:
+      - tensorflow-io-gcs-filesystem>=0.29.0,<0.32.0
