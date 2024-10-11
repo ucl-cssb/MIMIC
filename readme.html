@@ -35,6 +35,7 @@
             
   <section id="modelling-and-inference-of-microbiomes-project-mimic">
 <h1>Modelling and Inference of MICrobiomes Project (MIMIC)<a class="headerlink" href="#modelling-and-inference-of-microbiomes-project-mimic" title="Link to this heading">¶</a></h1>
+<a class="reference external image-reference" href="https://codecov.io/gh/ucl-cssb/MIMIC"><img alt="https://codecov.io/gh/ucl-cssb/MIMIC/graph/badge.svg?token=O3J4X6ECIQ" src="https://codecov.io/gh/ucl-cssb/MIMIC/graph/badge.svg?token=O3J4X6ECIQ" /></a>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p>MIMIC: A Comprehensive Python Package for Simulating, Inferring, and Predicting
@@ -45,7 +46,7 @@ MICrobiomes Project</em> (MIMIC) introduces a Python package designed to advance
 simulation, inference, and prediction of microbial community interactions and dynamics.
 Addressing the complex nature of microbial ecosystems, MIMIC integrates a suite of
 mathematical models, including previously used approaches such as <em>Generalized Lotka-
-Volterra</em> (gLV), <em>Gaussian Processes</em> (GP), and <em>Vector Autoregression</em> (VAR) plus
+Volterra</em> (gLV), <em>Gaussian Processes</em> (GP), and <em>Vector Autoregression</em> (VAR), plus
 newly developed models for integrating multiomic data, to offer a comprehensive
 framework for analysing microbial dynamics. By leveraging Bayesian inference and
 machine learning techniques, MIMIC accurately infers the dynamics of microbial
@@ -72,7 +73,10 @@ benefiting the scientific and applied microbiology communities.</p>
 <li><p><cite>LICENSE</cite>: The license for the project.</p></li>
 <li><p><cite>mimic/</cite>: The main directory for the project’s source code.</p></li>
 <li><p><cite>README.rst</cite>: The main README file for the project, providing an overview and basic usage examples.</p></li>
-<li><p><cite>requirements.txt</cite>: A list of Python dependencies required to run the project.</p></li>
+<li><p><cite>environment.yml</cite>: The Conda environment file for macOS and Ubuntu.</p></li>
+<li><p><cite>environment_windows.yml</cite>: The Conda environment file for Windows.</p></li>
+<li><p><cite>requirements.in</cite>: The pip requirements input file.</p></li>
+<li><p><cite>requirements.txt</cite>: The compiled list of Python dependencies.</p></li>
 <li><p><cite>setup.py</cite>: The build script for the project.</p></li>
 <li><p><cite>tests/</cite>: Contains unit tests for the project’s code.</p></li>
 </ul>
@@ -81,32 +85,81 @@ benefiting the scientific and applied microbiology communities.</p>
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <section id="prerequisites">
 <h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h3>
-<p>Conda package manager is recommended due to dependencies on PyMC.</p>
-<section id="python-packages">
-<h4>Python Packages<a class="headerlink" href="#python-packages" title="Link to this heading">¶</a></h4>
-<p>The Python packages needed to run this package are listed in the requirements.txt file in the same workspace. To install them, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-</pre></div>
-</div>
-</section>
-<section id="compilers">
-<h4>Compilers<a class="headerlink" href="#compilers" title="Link to this heading">¶</a></h4>
 <ul class="simple">
-<li><p>g++ compiler is needed for the PyMC3 package.</p></li>
+<li><p><strong>Conda Package Manager</strong>: We recommend using Conda to manage the environment due to dependencies that may not be available via pip.</p></li>
 </ul>
 </section>
-</section>
-<section id="steps">
-<h3>Steps<a class="headerlink" href="#steps" title="Link to this heading">¶</a></h3>
-<ol class="arabic simple">
-<li><p>Clone the repository.</p></li>
-<li><p>Create a new conda environment using the <cite>environment.yml</cite> file.</p></li>
-<li><p>Activate the new environment.</p></li>
-<li><p>Install required packages using <cite>pip install -r requirements.txt</cite> from the root directory of the repository.</p></li>
-<li><p>Install the package using <cite>pip install -e .</cite> from the root directory of the repository.</p></li>
-<li><p>Run the code using the instructions below.</p></li>
-<li><p>Deactivate the environment when finished.</p></li>
+<section id="installation-steps">
+<h3>Installation Steps<a class="headerlink" href="#installation-steps" title="Link to this heading">¶</a></h3>
+<p>### For macOS and Ubuntu</p>
+<ol class="arabic">
+<li><p><strong>Clone the Repository</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/yourusername/yourrepository.git
+<span class="nb">cd</span><span class="w"> </span>yourrepository
+</pre></div>
+</div>
+</li>
+<li><p><strong>Create the Conda Environment</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+</pre></div>
+</div>
+</li>
+<li><p><strong>Activate the Environment</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>mimic_env
+</pre></div>
+</div>
+</li>
+<li><p><strong>Install the Package</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</li>
+<li><p><strong>Run the Code</strong></p>
+<p>Refer to the <a class="reference internal" href="#usage">Usage</a> section below for instructions on how to run the code.</p>
+</li>
 </ol>
+<p>### For Windows</p>
+<ol class="arabic">
+<li><p><strong>Clone the Repository</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/yourusername/yourrepository.git
+<span class="nb">cd</span><span class="w"> </span>yourrepository
+</pre></div>
+</div>
+</li>
+<li><p><strong>Create the Conda Environment for Windows</strong></p>
+<p>On Windows, use the <cite>environment_windows.yml</cite> file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment_windows.yml
+</pre></div>
+</div>
+</li>
+<li><p><strong>Activate the Environment</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>mimic_env_windows
+</pre></div>
+</div>
+</li>
+<li><p><strong>Install the Package</strong></p>
+<p>Install the package in editable mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</li>
+<li><p><strong>Run the Code</strong></p>
+<p>Refer to the <a class="reference internal" href="#usage">Usage</a> section below for instructions on how to run the code.</p>
+</li>
+</ol>
+</section>
+<section id="alternative-installation-using-pip-only">
+<h3>Alternative Installation Using Pip Only<a class="headerlink" href="#alternative-installation-using-pip-only" title="Link to this heading">¶</a></h3>
+<p>If you prefer to use pip without Conda, you can install the package and its dependencies using <cite>requirements.txt</cite>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<p><strong>Note</strong>: This method may not install all dependencies correctly, especially if there are packages that are only available via Conda. We recommend using the Conda installation method for full functionality.</p>
+<section id="compilers">
+<h4>Compilers<a class="headerlink" href="#compilers" title="Link to this heading">¶</a></h4>
+<p>A g++ compiler is required for the PyMC3 package.</p>
+</section>
 </section>
 </section>
 <section id="usage">
@@ -160,7 +213,8 @@ benefiting the scientific and applied microbiology communities.</p>
 <li class="toctree-l2"><a class="reference internal" href="#structure">Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#steps">Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installation-steps">Installation Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alternative-installation-using-pip-only">Alternative Installation Using Pip Only</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>

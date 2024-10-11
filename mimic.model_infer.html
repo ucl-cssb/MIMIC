@@ -12,10 +12,12 @@
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mimic.model_simulate package" href="mimic.model_simulate.html" />
-    <link rel="prev" title="mimic package" href="mimic.html" />
+    <link rel="prev" title="mimic.data_imputation package" href="mimic.data_imputation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -38,20 +40,611 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="mimic-model-infer-clv-module">
-<h2>mimic.model_infer.cLV module<a class="headerlink" href="#mimic-model-infer-clv-module" title="Link to this heading">¶</a></h2>
+<section id="module-mimic.model_infer.cLV">
+<span id="mimic-model-infer-clv-module"></span><h2>mimic.model_infer.cLV module<a class="headerlink" href="#module-mimic.model_infer.cLV" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.CompositionalLotkaVolterra">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">CompositionalLotkaVolterra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">U</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">denom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#CompositionalLotkaVolterra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.CompositionalLotkaVolterra" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<blockquote>
+<div><p>Inference for compositional Lotka-Volterra.</p>
+<div class="math notranslate nohighlight">
+\[\]</div>
+</div></blockquote>
+<p>rac{d}{dt} log(
+rac{pi_i(t)}{pi_D(t)}) = g_i + sum^D_{j=1} (A_{ij} pi_j(t)) + sum^P_{p=1} (B_{ip} u_p(t)</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h3>
+<p>P : A list of T_x by D dimensional numpy arrays of estimated relative abundances.
+T : A list of T_x by 1 dimensional numpy arrays giving the times of each observation x.
+U : An optional list of T_x by P numpy arrays of external perturbations for each x.
+denom : integer, id for taxa in denominator of log ratio
+pseudo_count : float, default=1e-3, a small number to replace zero counts</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.CompositionalLotkaVolterra.get_params">
+<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#CompositionalLotkaVolterra.get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.CompositionalLotkaVolterra.get_params" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.CompositionalLotkaVolterra.get_regularizers">
+<span class="sig-name descname"><span class="pre">get_regularizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#CompositionalLotkaVolterra.get_regularizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.CompositionalLotkaVolterra.get_regularizers" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.CompositionalLotkaVolterra.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#CompositionalLotkaVolterra.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.CompositionalLotkaVolterra.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Predict relative abundances from initial conditions.</p>
+<section id="id1">
+<h4>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><p>p0     : the initial observation, a D-dim numpy array
+times  : a T by 1 numpy array of sample times
+u      : a T by P numpy array of external perturbations</p>
+</div></blockquote>
 </section>
-<section id="mimic-model-infer-infer-var-bayes-module">
-<h2>mimic.model_infer.infer_VAR_bayes module<a class="headerlink" href="#mimic-model-infer-infer-var-bayes-module" title="Link to this heading">¶</a></h2>
+<section id="returns">
+<h4>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><dl class="simple">
+<dt>y_pred<span class="classifier">a T by D numpy array of predicted relative</span></dt><dd><p>abundances. Since we cannot predict initial
+conditions, the first entry is set to the array
+of -1.</p>
+</dd>
+</dl>
+</div></blockquote>
 </section>
-<section id="mimic-model-infer-infer-gmlv-lm-module">
-<h2>mimic.model_infer.infer_gMLV_lm module<a class="headerlink" href="#mimic-model-infer-infer-gmlv-lm-module" title="Link to this heading">¶</a></h2>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.CompositionalLotkaVolterra.set_regularizers">
+<span class="sig-name descname"><span class="pre">set_regularizers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_B</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#CompositionalLotkaVolterra.set_regularizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.CompositionalLotkaVolterra.set_regularizers" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.CompositionalLotkaVolterra.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#CompositionalLotkaVolterra.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.CompositionalLotkaVolterra.train" title="Link to this definition">¶</a></dt>
+<dd><p>Estimate regularization parameters and CLV model parameters.</p>
+</dd></dl>
+
 </section>
-<section id="mimic-model-infer-multi-penalty-lasso-module">
-<h2>mimic.model_infer.multi_penalty_lasso module<a class="headerlink" href="#mimic-model-infer-multi-penalty-lasso-module" title="Link to this heading">¶</a></h2>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.choose_denom">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">choose_denom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#choose_denom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.choose_denom" title="Link to this definition">¶</a></dt>
+<dd><p>Pick a denominator for additive log-ratio transformation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.compute_prediction_error">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">compute_prediction_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">U</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">denom_ids</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#compute_prediction_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.compute_prediction_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.compute_rel_abun">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">compute_rel_abun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">denom</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#compute_rel_abun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.compute_rel_abun" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.construct_alr">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">construct_alr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">denom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#construct_alr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.construct_alr" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the additive log ratio transformation with a given
+choice of denominator. Assumes zeros have been replaced with
+nonzero values.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.elastic_net_clv">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">elastic_net_clv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">U</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Q_inv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#elastic_net_clv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.elastic_net_clv" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.estimate_elastic_net_regularizers_cv">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">estimate_elastic_net_regularizers_cv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">U</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">denom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_effects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#estimate_elastic_net_regularizers_cv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.estimate_elastic_net_regularizers_cv" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.estimate_relative_abundances">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">estimate_relative_abundances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pseudo_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#estimate_relative_abundances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.estimate_relative_abundances" title="Link to this definition">¶</a></dt>
+<dd><p>Adds pseudo counts to avoid zeros and compute relative abundances</p>
+<section id="id2">
+<h3>Parameters<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>Y<span class="classifier">a list sequencing counts or observed concentrations</span></dt><dd><p>per sequence</p>
+</dd>
+<dt>pseudo_count<span class="classifier">pseudo count, specific in relation to</span></dt><dd><p>the relative proportions of each taxon.</p>
+</dd>
+</dl>
+</div></blockquote>
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="id3">
+<h3>Returns<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><p>P : relative abundances with pseudo counts</p>
+</div></blockquote>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.estimate_ridge_regularizers_cv">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">estimate_ridge_regularizers_cv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">U</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">denom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_effects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#estimate_ridge_regularizers_cv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.estimate_ridge_regularizers_cv" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.predict">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">denom</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Make predictions from initial conditions</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.cLV.ridge_regression_clv">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.cLV.</span></span><span class="sig-name descname"><span class="pre">ridge_regression_clv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">U</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_g</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_B</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/cLV.html#ridge_regression_clv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.cLV.ridge_regression_clv" title="Link to this definition">¶</a></dt>
+<dd><p>Computes estimates of A, g, and B using least squares.</p>
+<section id="id4">
+<h3>Parameters<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><p>X : a list of T x yDim-1 numpy arrays
+U : a list of T x uDim numpy arrays
+T   : a list of T x 1 numpy arrays with the time of each observation</p>
+</div></blockquote>
+</section>
+<section id="id5">
+<h3>Returns<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-mimic.model_infer.infer_VAR_bayes">
+<span id="mimic-model-infer-infer-var-bayes-module"></span><h2>mimic.model_infer.infer_VAR_bayes module<a class="headerlink" href="#module-mimic.model_infer.infer_VAR_bayes" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_VAR_bayes.infer_VAR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_VAR_bayes.</span></span><span class="sig-name descname"><span class="pre">infer_VAR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intercepts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covariance_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/infer_VAR_bayes.html#infer_VAR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_VAR_bayes.infer_VAR" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInfer</span></code></p>
+<p>infer_VAR class for performing inference on VAR models.</p>
+<p>This class provides methods for importing data, running inference on the VAR model, and performing posterior sampling and analysis.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>data (numpy.ndarray): The data to perform inference on.</p>
+</dd>
+<dt>Methods:</dt><dd><dl class="simple">
+<dt>run_inference():</dt><dd><p>Runs the inference process for the VAR model.</p>
+</dd>
+<dt>run_inference_large():</dt><dd><p>Runs large-scale inference for VAR model.</p>
+</dd>
+<dt>run_inference_xs():</dt><dd><p>Runs the inference process for the VAR model with metabolite data.</p>
+</dd>
+<dt>run_inference_large_xs():</dt><dd><p>Runs large-scale inference for the VAR model with metabolite data.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_VAR_bayes.infer_VAR.make_plot_stacked">
+<span class="sig-name descname"><span class="pre">make_plot_stacked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataS</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/infer_VAR_bayes.html#infer_VAR.make_plot_stacked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_VAR_bayes.infer_VAR.make_plot_stacked" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a stacked plot of abundance and metabolite data.</p>
+<p>Args:
+dataX (numpy.ndarray): The abundance data.
+dataS (numpy.ndarray): The metabolite data.</p>
+<p>Returns:
+None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_VAR_bayes.infer_VAR.plot_heatmap">
+<span class="sig-name descname"><span class="pre">plot_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/infer_VAR_bayes.html#infer_VAR.plot_heatmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_VAR_bayes.infer_VAR.plot_heatmap" title="Link to this definition">¶</a></dt>
+<dd><p>Plots heatmaps of the inferred matrices.</p>
+<p>Args:
+idata (arviz.InferenceData): The inference data.
+matrices (list of str): List of keys for matrices in idata.posterior to plot.
+true_values (list of numpy.ndarray): List of true matrices to compare with.</p>
+<p>Returns:
+None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_VAR_bayes.infer_VAR.posterior_analysis">
+<span class="sig-name descname"><span class="pre">posterior_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">netcdf_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/infer_VAR_bayes.html#infer_VAR.posterior_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_VAR_bayes.infer_VAR.posterior_analysis" title="Link to this definition">¶</a></dt>
+<dd><p>Performs posterior analysis and visualizes the results.</p>
+<p>Args:
+data_filename (str, optional): The filename for the .npz data file.
+netcdf_filename (str, optional): The filename for the NetCDF file with inference results.
+A (numpy.ndarray, optional): The true matrix A to compare against.
+B (numpy.ndarray, optional): The true matrix B to compare against.</p>
+<p>Returns:
+None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference">
+<span class="sig-name descname"><span class="pre">run_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_VAR_bayes.html#infer_VAR.run_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference" title="Link to this definition">¶</a></dt>
+<dd><p>Runs the inference process for the VAR model.</p>
+<p>Returns:
+None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference_large">
+<span class="sig-name descname"><span class="pre">run_inference_large</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_VAR_bayes.html#infer_VAR.run_inference_large"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference_large" title="Link to this definition">¶</a></dt>
+<dd><p>Run large-scale inference for VAR model.</p>
+<p>This function generates VAR model data, fits a Bayesian VAR model using PyMC3,
+and performs posterior sampling and analysis.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference_large_xs">
+<span class="sig-name descname"><span class="pre">run_inference_large_xs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_VAR_bayes.html#infer_VAR.run_inference_large_xs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference_large_xs" title="Link to this definition">¶</a></dt>
+<dd><p>Runs large-scale inference for the VAR model with metabolite data.</p>
+<p>Returns:
+None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference_xs">
+<span class="sig-name descname"><span class="pre">run_inference_xs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_VAR_bayes.html#infer_VAR.run_inference_xs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference_xs" title="Link to this definition">¶</a></dt>
+<dd><p>Runs the inference process for the VAR model with metabolite data.</p>
+<p>Returns:
+None</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mimic.model_infer.infer_gMLV_lm">
+<span id="mimic-model-infer-infer-gmlv-lm-module"></span><h2>mimic.model_infer.infer_gMLV_lm module<a class="headerlink" href="#module-mimic.model_infer.infer_gMLV_lm" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">Ridge1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#Ridge1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge1" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RegressorMixin</span></code></p>
+<p>Custom ridge regression class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge1.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#Ridge1.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge1.fit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge1.get_params">
+<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#Ridge1.get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge1.get_params" title="Link to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<section id="id6">
+<h3>Parameters<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>deep<span class="classifier">bool, default=True</span></dt><dd><p>If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</dd>
+</dl>
+</section>
+<section id="id7">
+<h3>Returns<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>params<span class="classifier">dict</span></dt><dd><p>Parameter names mapped to their values.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge1.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#Ridge1.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge1.predict" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge1.set_score_request">
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mimic.model_infer.infer_gMLV_lm.Ridge1" title="mimic.model_infer.infer_gMLV_lm.Ridge1"><span class="pre">Ridge1</span></a></span></span><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge1.set_score_request" title="Link to this definition">¶</a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code>).
+Please see <span class="xref std std-ref">User Guide</span> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">score</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>. Otherwise it has no effect.</p>
+</div>
+<section id="id8">
+<h3>Parameters<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>sample_weight<span class="classifier">str, True, False, or None,                     default=sklearn.utils.metadata_routing.UNCHANGED</span></dt><dd><p>Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="id9">
+<h3>Returns<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>self<span class="classifier">object</span></dt><dd><p>The updated object.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">Ridge2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_pert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#Ridge2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge2" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RegressorMixin</span></code></p>
+<p>Custom ridge regression class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge2.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#Ridge2.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge2.fit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge2.get_params">
+<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#Ridge2.get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge2.get_params" title="Link to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<section id="id10">
+<h3>Parameters<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>deep<span class="classifier">bool, default=True</span></dt><dd><p>If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</dd>
+</dl>
+</section>
+<section id="id11">
+<h3>Returns<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>params<span class="classifier">dict</span></dt><dd><p>Parameter names mapped to their values.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge2.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#Ridge2.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge2.predict" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.Ridge2.set_score_request">
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mimic.model_infer.infer_gMLV_lm.Ridge2" title="mimic.model_infer.infer_gMLV_lm.Ridge2"><span class="pre">Ridge2</span></a></span></span><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.Ridge2.set_score_request" title="Link to this definition">¶</a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code>).
+Please see <span class="xref std std-ref">User Guide</span> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">score</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>. Otherwise it has no effect.</p>
+</div>
+<section id="id12">
+<h3>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>sample_weight<span class="classifier">str, True, False, or None,                     default=sklearn.utils.metadata_routing.UNCHANGED</span></dt><dd><p>Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="id13">
+<h3>Returns<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>self<span class="classifier">object</span></dt><dd><p>The updated object.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.do_bootstrapping">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">do_bootstrapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nboots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#do_bootstrapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.do_bootstrapping" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.do_final_fit_Ridge1">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">do_final_fit_Ridge1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#do_final_fit_Ridge1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.do_final_fit_Ridge1" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.do_final_fit_Ridge2">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">do_final_fit_Ridge2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_pert</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#do_final_fit_Ridge2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.do_final_fit_Ridge2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.fit_alpha_Ridge1">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">fit_alpha_Ridge1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_a0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_a1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#fit_alpha_Ridge1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.fit_alpha_Ridge1" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.fit_alpha_Ridge2">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">fit_alpha_Ridge2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_pert</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_a0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_a2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#fit_alpha_Ridge2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.fit_alpha_Ridge2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.fit_alpha_lasso">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">fit_alpha_lasso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_a</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#fit_alpha_lasso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.fit_alpha_lasso" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.linearise_time_course_metabolites">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">linearise_time_course_metabolites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#linearise_time_course_metabolites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.linearise_time_course_metabolites" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.linearize_time_course">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">linearize_time_course</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#linearize_time_course"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.linearize_time_course" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.linearize_time_course_16S">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">linearize_time_course_16S</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#linearize_time_course_16S"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.linearize_time_course_16S" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.linearize_time_course_16S_u">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">linearize_time_course_16S_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#linearize_time_course_16S_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.linearize_time_course_16S_u" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.plot_alpha_lasso">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">plot_alpha_lasso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_a</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#plot_alpha_lasso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.plot_alpha_lasso" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.plot_coeffs">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">plot_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tF</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#plot_coeffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.plot_coeffs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.ridge_fit">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">ridge_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#ridge_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.ridge_fit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.ridge_fit_pert">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">ridge_fit_pert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_pert</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#ridge_fit_pert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.ridge_fit_pert" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.infer_gMLV_lm.ridge_fit_test">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.infer_gMLV_lm.</span></span><span class="sig-name descname"><span class="pre">ridge_fit_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cRidge=&lt;class</span> <span class="pre">'mimic.model_infer.infer_gMLV_lm.Ridge1'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/infer_gMLV_lm.html#ridge_fit_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.infer_gMLV_lm.ridge_fit_test" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mimic.model_infer.multi_penalty_lasso">
+<span id="mimic-model-infer-multi-penalty-lasso-module"></span><h2>mimic.model_infer.multi_penalty_lasso module<a class="headerlink" href="#module-mimic.model_infer.multi_penalty_lasso" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mimic.model_infer.multi_penalty_lasso.</span></span><span class="sig-name descname"><span class="pre">MultiPenaltyLasso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/multi_penalty_lasso.html#MultiPenaltyLasso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RegressorMixin</span></code></p>
+<p>Linear regression with non-uniform L1 regularizer.</p>
+<p>Minimizes objective function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="o">||</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="o">||^</span><span class="mi">2_2</span> <span class="o">+</span> <span class="o">||</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">w</span><span class="o">||</span><span class="n">_1</span>
+</pre></div>
+</div>
+<p>where:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alpha</span> <span class="o">=</span> <span class="n">diag</span><span class="p">(</span><span class="n">alpha_1</span><span class="p">,</span> <span class="n">alpha_2</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">alpha_</span><span class="p">{</span><span class="n">num_samples</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>and all alpha are non-zero</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mimic/model_infer/multi_penalty_lasso.html#MultiPenaltyLasso.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.fit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.get_params">
+<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/multi_penalty_lasso.html#MultiPenaltyLasso.get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.get_params" title="Link to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<section id="id14">
+<h3>Parameters<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>deep<span class="classifier">bool, default=True</span></dt><dd><p>If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</dd>
+</dl>
+</section>
+<section id="id15">
+<h3>Returns<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>params<span class="classifier">dict</span></dt><dd><p>Parameter names mapped to their values.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.non_zero_penalties">
+<span class="sig-name descname"><span class="pre">non_zero_penalties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/multi_penalty_lasso.html#MultiPenaltyLasso.non_zero_penalties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.non_zero_penalties" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.penalised_lasso">
+<span class="sig-name descname"><span class="pre">penalised_lasso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/multi_penalty_lasso.html#MultiPenaltyLasso.penalised_lasso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.penalised_lasso" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/multi_penalty_lasso.html#MultiPenaltyLasso.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.predict" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.set_score_request">
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso" title="mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso"><span class="pre">MultiPenaltyLasso</span></a></span></span><a class="headerlink" href="#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.set_score_request" title="Link to this definition">¶</a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code>).
+Please see <span class="xref std std-ref">User Guide</span> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">score</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>. Otherwise it has no effect.</p>
+</div>
+<section id="id16">
+<h3>Parameters<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>sample_weight<span class="classifier">str, True, False, or None,                     default=sklearn.utils.metadata_routing.UNCHANGED</span></dt><dd><p>Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="id17">
+<h3>Returns<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>self<span class="classifier">object</span></dt><dd><p>The updated object.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mimic.model_infer.multi_penalty_lasso.fit_alpha_MPLasso">
+<span class="sig-prename descclassname"><span class="pre">mimic.model_infer.multi_penalty_lasso.</span></span><span class="sig-name descname"><span class="pre">fit_alpha_MPLasso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_a</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/mimic/model_infer/multi_penalty_lasso.html#fit_alpha_MPLasso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mimic.model_infer.multi_penalty_lasso.fit_alpha_MPLasso" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mimic.model_infer">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mimic.model_infer" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 
@@ -97,7 +690,7 @@
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">mimic</a><ul>
   <li><a href="mimic.html">mimic package</a><ul>
-      <li>Previous: <a href="mimic.html" title="previous chapter">mimic package</a></li>
+      <li>Previous: <a href="mimic.data_imputation.html" title="previous chapter">mimic.data_imputation package</a></li>
       <li>Next: <a href="mimic.model_simulate.html" title="next chapter">mimic.model_simulate package</a></li>
   </ul></li>
   </ul></li>
