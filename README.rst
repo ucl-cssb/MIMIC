@@ -2,6 +2,9 @@
 Modelling and Inference of MICrobiomes Project (MIMIC)
 ===========================================================
 
+.. image:: https://codecov.io/gh/ucl-cssb/MIMIC/graph/badge.svg?token=O3J4X6ECIQ 
+ :target: https://codecov.io/gh/ucl-cssb/MIMIC
+
 Overview
 ---------
 
