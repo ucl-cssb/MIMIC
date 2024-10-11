@@ -23,20 +23,23 @@ jobs:
       - name: Create mimic_env from environment.yml
         run: conda env create -f environment.yml
 
-      - name: Activate mimic_env
+      # Install documentation dependencies in the environment
+      - name: Activate mimic_env and Install Documentation Dependencies
         run: |
           eval "$(conda shell.bash hook)"
           conda activate mimic_env
-
-      - name: Install Documentation Dependencies
-        run: |
           conda install -c conda-forge sphinx sphinx-rtd-theme nbsphinx ipykernel furo sphinx-autoapi recommonmark
 
       - name: Generate API documentation
-        run: sphinx-apidoc -o docs/source/ ./ setup.py
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
+          sphinx-apidoc -o docs/source/ ./ setup.py
 
       - name: Build Sphinx documentation
         run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
           cd docs
           make clean
           make html
