@@ -12,9 +12,11 @@
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mimic.model_infer package" href="mimic.model_infer.html" />
+    <link rel="next" title="mimic.data_imputation package" href="mimic.data_imputation.html" />
     <link rel="prev" title="mimic" href="modules.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -39,19 +41,127 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="mimic.data_imputation.html">mimic.data_imputation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mimic.data_imputation.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.data_imputation.html#mimic-data-imputation-base-imputator-module">mimic.data_imputation.base_imputator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.data_imputation.html#mimic-data-imputation-impute-gp-module">mimic.data_imputation.impute_GP module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.data_imputation.html#module-contents">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="mimic.model_infer.html">mimic.model_infer package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#mimic-model-infer-clv-module">mimic.model_infer.cLV module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#mimic-model-infer-infer-var-bayes-module">mimic.model_infer.infer_VAR_bayes module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#mimic-model-infer-infer-gmlv-lm-module">mimic.model_infer.infer_gMLV_lm module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#mimic-model-infer-multi-penalty-lasso-module">mimic.model_infer.multi_penalty_lasso module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#module-mimic.model_infer.cLV">mimic.model_infer.cLV module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra"><code class="docutils literal notranslate"><span class="pre">CompositionalLotkaVolterra</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.get_params"><code class="docutils literal notranslate"><span class="pre">CompositionalLotkaVolterra.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.get_regularizers"><code class="docutils literal notranslate"><span class="pre">CompositionalLotkaVolterra.get_regularizers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.predict"><code class="docutils literal notranslate"><span class="pre">CompositionalLotkaVolterra.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.set_regularizers"><code class="docutils literal notranslate"><span class="pre">CompositionalLotkaVolterra.set_regularizers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.train"><code class="docutils literal notranslate"><span class="pre">CompositionalLotkaVolterra.train()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.choose_denom"><code class="docutils literal notranslate"><span class="pre">choose_denom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.compute_prediction_error"><code class="docutils literal notranslate"><span class="pre">compute_prediction_error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.compute_rel_abun"><code class="docutils literal notranslate"><span class="pre">compute_rel_abun()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.construct_alr"><code class="docutils literal notranslate"><span class="pre">construct_alr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.elastic_net_clv"><code class="docutils literal notranslate"><span class="pre">elastic_net_clv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.estimate_elastic_net_regularizers_cv"><code class="docutils literal notranslate"><span class="pre">estimate_elastic_net_regularizers_cv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.estimate_relative_abundances"><code class="docutils literal notranslate"><span class="pre">estimate_relative_abundances()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.estimate_ridge_regularizers_cv"><code class="docutils literal notranslate"><span class="pre">estimate_ridge_regularizers_cv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.predict"><code class="docutils literal notranslate"><span class="pre">predict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.cLV.ridge_regression_clv"><code class="docutils literal notranslate"><span class="pre">ridge_regression_clv()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#module-mimic.model_infer.infer_VAR_bayes">mimic.model_infer.infer_VAR_bayes module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_VAR_bayes.infer_VAR"><code class="docutils literal notranslate"><span class="pre">infer_VAR</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_VAR_bayes.infer_VAR.make_plot_stacked"><code class="docutils literal notranslate"><span class="pre">infer_VAR.make_plot_stacked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_VAR_bayes.infer_VAR.plot_heatmap"><code class="docutils literal notranslate"><span class="pre">infer_VAR.plot_heatmap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_VAR_bayes.infer_VAR.posterior_analysis"><code class="docutils literal notranslate"><span class="pre">infer_VAR.posterior_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference"><code class="docutils literal notranslate"><span class="pre">infer_VAR.run_inference()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference_large"><code class="docutils literal notranslate"><span class="pre">infer_VAR.run_inference_large()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference_large_xs"><code class="docutils literal notranslate"><span class="pre">infer_VAR.run_inference_large_xs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_VAR_bayes.infer_VAR.run_inference_xs"><code class="docutils literal notranslate"><span class="pre">infer_VAR.run_inference_xs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#module-mimic.model_infer.infer_gMLV_lm">mimic.model_infer.infer_gMLV_lm module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge1"><code class="docutils literal notranslate"><span class="pre">Ridge1</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge1.fit"><code class="docutils literal notranslate"><span class="pre">Ridge1.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge1.get_params"><code class="docutils literal notranslate"><span class="pre">Ridge1.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge1.predict"><code class="docutils literal notranslate"><span class="pre">Ridge1.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge1.set_score_request"><code class="docutils literal notranslate"><span class="pre">Ridge1.set_score_request()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge2"><code class="docutils literal notranslate"><span class="pre">Ridge2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge2.fit"><code class="docutils literal notranslate"><span class="pre">Ridge2.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge2.get_params"><code class="docutils literal notranslate"><span class="pre">Ridge2.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge2.predict"><code class="docutils literal notranslate"><span class="pre">Ridge2.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.Ridge2.set_score_request"><code class="docutils literal notranslate"><span class="pre">Ridge2.set_score_request()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.do_bootstrapping"><code class="docutils literal notranslate"><span class="pre">do_bootstrapping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.do_final_fit_Ridge1"><code class="docutils literal notranslate"><span class="pre">do_final_fit_Ridge1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.do_final_fit_Ridge2"><code class="docutils literal notranslate"><span class="pre">do_final_fit_Ridge2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.fit_alpha_Ridge1"><code class="docutils literal notranslate"><span class="pre">fit_alpha_Ridge1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.fit_alpha_Ridge2"><code class="docutils literal notranslate"><span class="pre">fit_alpha_Ridge2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.fit_alpha_lasso"><code class="docutils literal notranslate"><span class="pre">fit_alpha_lasso()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.linearise_time_course_metabolites"><code class="docutils literal notranslate"><span class="pre">linearise_time_course_metabolites()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.linearize_time_course"><code class="docutils literal notranslate"><span class="pre">linearize_time_course()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.linearize_time_course_16S"><code class="docutils literal notranslate"><span class="pre">linearize_time_course_16S()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.linearize_time_course_16S_u"><code class="docutils literal notranslate"><span class="pre">linearize_time_course_16S_u()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.plot_alpha_lasso"><code class="docutils literal notranslate"><span class="pre">plot_alpha_lasso()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.plot_coeffs"><code class="docutils literal notranslate"><span class="pre">plot_coeffs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.ridge_fit"><code class="docutils literal notranslate"><span class="pre">ridge_fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.ridge_fit_pert"><code class="docutils literal notranslate"><span class="pre">ridge_fit_pert()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.infer_gMLV_lm.ridge_fit_test"><code class="docutils literal notranslate"><span class="pre">ridge_fit_test()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#module-mimic.model_infer.multi_penalty_lasso">mimic.model_infer.multi_penalty_lasso module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso"><code class="docutils literal notranslate"><span class="pre">MultiPenaltyLasso</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.fit"><code class="docutils literal notranslate"><span class="pre">MultiPenaltyLasso.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.get_params"><code class="docutils literal notranslate"><span class="pre">MultiPenaltyLasso.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.non_zero_penalties"><code class="docutils literal notranslate"><span class="pre">MultiPenaltyLasso.non_zero_penalties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.penalised_lasso"><code class="docutils literal notranslate"><span class="pre">MultiPenaltyLasso.penalised_lasso()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.predict"><code class="docutils literal notranslate"><span class="pre">MultiPenaltyLasso.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.multi_penalty_lasso.MultiPenaltyLasso.set_score_request"><code class="docutils literal notranslate"><span class="pre">MultiPenaltyLasso.set_score_request()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_infer.html#mimic.model_infer.multi_penalty_lasso.fit_alpha_MPLasso"><code class="docutils literal notranslate"><span class="pre">fit_alpha_MPLasso()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.model_infer.html#module-mimic.model_infer">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mimic.model_simulate.html">mimic.model_simulate package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mimic.model_simulate.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mimic.model_simulate.html#mimic-model-simulate-base-model-module">mimic.model_simulate.base_model module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mimic.model_simulate.html#mimic-model-simulate-sim-var-module">mimic.model_simulate.sim_VAR module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.model_simulate.html#module-mimic.model_simulate.base_model">mimic.model_simulate.base_model module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel"><code class="docutils literal notranslate"><span class="pre">BaseModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel.check_params"><code class="docutils literal notranslate"><span class="pre">BaseModel.check_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel.load_data"><code class="docutils literal notranslate"><span class="pre">BaseModel.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel.print_parameters"><code class="docutils literal notranslate"><span class="pre">BaseModel.print_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel.read_parameters"><code class="docutils literal notranslate"><span class="pre">BaseModel.read_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel.save_data"><code class="docutils literal notranslate"><span class="pre">BaseModel.save_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel.save_parameters"><code class="docutils literal notranslate"><span class="pre">BaseModel.save_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel.set_parameters"><code class="docutils literal notranslate"><span class="pre">BaseModel.set_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel.simulate"><code class="docutils literal notranslate"><span class="pre">BaseModel.simulate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.base_model.BaseModel.update_attributes"><code class="docutils literal notranslate"><span class="pre">BaseModel.update_attributes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.model_simulate.html#module-mimic.model_simulate.sim_VAR">mimic.model_simulate.sim_VAR module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR"><code class="docutils literal notranslate"><span class="pre">sim_VAR</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.generate_mvar1_data"><code class="docutils literal notranslate"><span class="pre">sim_VAR.generate_mvar1_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.generate_var1_data"><code class="docutils literal notranslate"><span class="pre">sim_VAR.generate_var1_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.make_plot"><code class="docutils literal notranslate"><span class="pre">sim_VAR.make_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.make_plot_overlay"><code class="docutils literal notranslate"><span class="pre">sim_VAR.make_plot_overlay()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.make_plot_stacked"><code class="docutils literal notranslate"><span class="pre">sim_VAR.make_plot_stacked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.set_parameters"><code class="docutils literal notranslate"><span class="pre">sim_VAR.set_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.simulate"><code class="docutils literal notranslate"><span class="pre">sim_VAR.simulate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="mimic.model_simulate.html#module-mimic.model_simulate.sim_gMLV">mimic.model_simulate.sim_gMLV module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_gMLV.gMLV"><code class="docutils literal notranslate"><span class="pre">gMLV()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mimic.model_simulate.html#mimic.model_simulate.sim_gMLV.sim_gMLV"><code class="docutils literal notranslate"><span class="pre">sim_gMLV</span></code></a><ul>
@@ -61,7 +171,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="mimic.model_simulate.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimic.model_simulate.html#module-mimic.model_simulate">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mimic.utilities.html">mimic.utilities package</a><ul>
@@ -129,7 +239,7 @@
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">mimic</a><ul>
       <li>Previous: <a href="modules.html" title="previous chapter">mimic</a></li>
-      <li>Next: <a href="mimic.model_infer.html" title="next chapter">mimic.model_infer package</a></li>
+      <li>Next: <a href="mimic.data_imputation.html" title="next chapter">mimic.data_imputation package</a></li>
   </ul></li>
   </ul></li>
 </ul>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mimic.model_simulate.sim_VAR &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for mimic.model_simulate.sim_VAR</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+<span class="kn">from</span> <span class="nn">mimic.model_simulate.base_model</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+
+<div class="viewcode-block" id="sim_VAR">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR">[docs]</a>
+<span class="k">class</span> <span class="nc">sim_VAR</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for simulating Vector Autoregression (VAR) models.</span>
+
+<span class="sd">    Inherits from BaseModel and adds specific functionalities for VAR model simulation,</span>
+<span class="sd">    including data generation for both univariate and multivariate autoregressive processes.</span>
+
+<span class="sd">    This class allows users to simulate data from VAR models, specify model parameters, generate</span>
+<span class="sd">    simulated data, visualize the results through various plotting methods, and save the generated</span>
+<span class="sd">    data for further analysis. It supports both single and multi-variable autoregressive models,</span>
+<span class="sd">    making it versatile for different simulation scenarios.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        n_obs (int): Number of observations to generate.</span>
+<span class="sd">        coefficients (np.ndarray): Coefficients of the VAR model.</span>
+<span class="sd">        initial_values (np.ndarray): Initial values for the VAR model simulation.</span>
+<span class="sd">        noise_stddev (float): Standard deviation of the noise in the VAR model.</span>
+<span class="sd">        output (str): Specifies the output action for plots (&#39;show&#39;, &#39;save&#39;, or &#39;both&#39;).</span>
+<span class="sd">        dataM (np.ndarray): Holds the generated data for multivariate simulations.</span>
+<span class="sd">        coefficientsM (np.ndarray): Coefficients for the multivariate VAR model.</span>
+<span class="sd">        initial_valuesM (np.ndarray): Initial values for the multivariate VAR model simulation.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        set_parameters: Allows setting or updating model parameters like number of observations,</span>
+<span class="sd">                        model coefficients, initial values, and noise standard deviation. It supports</span>
+<span class="sd">                        both univariate and multivariate VAR models.</span>
+
+<span class="sd">        generate_var1_data: Simulates data from a VAR(1) process using the specified model parameters</span>
+<span class="sd">                            and saves the generated data. It can also generate and overlay plots based</span>
+<span class="sd">                            on the &#39;output&#39; attribute.</span>
+
+<span class="sd">        generate_mvar1_data: Generates data from a multivariate autoregressive process. It can work</span>
+<span class="sd">                             with complex interactions between multiple variables and supports overlay</span>
+<span class="sd">                             plotting based on the &#39;output&#39; attribute.</span>
+
+<span class="sd">        simulate: Acts as a controller to execute the simulation based on the specified command. It</span>
+<span class="sd">                  supports commands for simulating univariate VAR, multivariate VAR, and generating</span>
+<span class="sd">                  plots as specified.</span>
+
+<span class="sd">        make_plot_overlay: Creates overlay plots for visual comparison of simulated data across</span>
+<span class="sd">                           different variables or processes.</span>
+
+<span class="sd">        make_plot_stacked: Generates a stacked plot and heatmap for the given data, offering a</span>
+<span class="sd">                           detailed visualization of the simulation results.</span>
+
+<span class="sd">        make_plot: Produces separate line plots for each variable in the given data, facilitating</span>
+<span class="sd">                   an in-depth analysis of each variable&#39;s behavior over time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the sim_VAR instance with default parameter values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;VAR&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataM</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coefficientsM</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_valuesM</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span>
+                              <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span>
+                                             <span class="nb">float</span><span class="p">,</span>
+                                             <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                             <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_obs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">,</span>
+                                                       <span class="s2">&quot;coefficients&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span>
+                                                       <span class="s2">&quot;initial_values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span><span class="p">,</span>
+                                                       <span class="s2">&quot;noise_stddev&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span><span class="p">,</span>
+                                                       <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">}</span>
+
+<div class="viewcode-block" id="sim_VAR.set_parameters">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.set_parameters">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">n_obs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">coefficients</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">initial_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">noise_stddev</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">coefficientsM</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">initial_valuesM</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the parameters for the sim_VAR instance.</span>
+
+<span class="sd">        Allows optional specification of all model parameters. Parameters not provided (None) are left unchanged.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            n_obs (Optional[int]): Number of observations to generate.</span>
+<span class="sd">            coefficients (Optional[List[List[Union[int, float]]]]): Coefficients of the VAR model.</span>
+<span class="sd">            initial_values (Optional[List[List[int]]]): Initial values for the VAR model simulation.</span>
+<span class="sd">            noise_stddev (Optional[Union[int, float]]): Standard deviation of the noise.</span>
+<span class="sd">            output (Optional[str]): Output action for plots (&#39;show&#39;, &#39;save&#39;, or &#39;both&#39;).</span>
+<span class="sd">            coefficientsM (Optional[List[List[Union[int, float]]]]): Coefficients for the multivariate VAR model.</span>
+<span class="sd">            initial_valuesM (Optional[List[List[int]]]): Initial values for the multivariate VAR model simulation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_obs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span> <span class="o">=</span> <span class="n">n_obs</span>
+        <span class="k">if</span> <span class="n">coefficients</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coefficients</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">initial_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">initial_values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">noise_stddev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span> <span class="o">=</span> <span class="n">noise_stddev</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="k">if</span> <span class="n">coefficientsM</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coefficientsM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coefficientsM</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">initial_valuesM</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_valuesM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">initial_valuesM</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;n_obs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">,</span>
+            <span class="s2">&quot;coefficients&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span>
+            <span class="s2">&quot;initial_values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span><span class="p">,</span>
+            <span class="s2">&quot;noise_stddev&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span><span class="p">,</span>
+            <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+            <span class="s2">&quot;coefficientsM&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficientsM</span><span class="p">,</span>
+            <span class="s2">&quot;initial_valuesM&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_valuesM</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="sim_VAR.generate_var1_data">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.generate_var1_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_var1_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate simulated data from a VAR(1) process.</span>
+
+<span class="sd">        Simulates a univariate or multivariate VAR(1) process based on the set parameters.</span>
+<span class="sd">        This method populates the `data` attribute with the generated data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The generated data as a numpy array with shape (n_obs, number of variables).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if the coefficients and initial values are provided</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;coefficients, number of observations and initial_values must be provided for VARsim&quot;</span><span class="p">)</span>
+
+        <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
+        <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span> <span class="o">=</span> <span class="mf">0.1</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;noise_stddev not provided, setting to default value 0.1&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">):</span>
+            <span class="c1"># VAR(1) process: X_t = A * X_{t-1} + noise</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:])</span> <span class="o">+</span> <span class="n">noise</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_plot_overlay</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># the generated data</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="sim_VAR.generate_mvar1_data">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.generate_mvar1_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_mvar1_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                            <span class="n">coefficientsM</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                            <span class="n">initial_valuesM</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                                                  <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates synthetic data for a multivariate autoregressive (MVAR) process of order 1.</span>
+
+<span class="sd">        Specifically tailored for generating data from complex MVAR processes where interactions</span>
+<span class="sd">        between multiple variables are considered.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            coefficientsM (np.ndarray): Coefficients for the MVAR model.</span>
+<span class="sd">            initial_valuesM (np.ndarray): Initial values for the MVAR model simulation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: A tuple containing two numpy.ndarrays. The first array is the generated data</span>
+<span class="sd">                   for the X process, and the second array is the generated data for the S process.</span>
+<span class="sd">                   Both arrays have shapes (n_obs, number of X variables) and (n_obs, number of S variables), respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check if the coefficients and initial values are provided</span>
+        <span class="k">if</span> <span class="n">coefficientsM</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">initial_valuesM</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;coefficients, number of observations and initial_values must be provided for MVARsim&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if initial_values and n_obs is different from None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;initial_values and n_obs must be provided for MVARsim&quot;</span><span class="p">)</span>
+
+        <span class="n">nX</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">nX</span><span class="p">))</span>
+        <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">coefficientsM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coefficientsM</span><span class="p">)</span>
+        <span class="n">initial_valuesM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">initial_valuesM</span><span class="p">)</span>
+        <span class="n">nS</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_valuesM</span><span class="p">)</span>
+        <span class="n">dataM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">nS</span><span class="p">))</span>
+        <span class="n">dataM</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">initial_valuesM</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span> <span class="o">=</span> <span class="mf">0.1</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;noise_stddev not provided, setting to default value 0.1&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">):</span>
+            <span class="c1"># VAR(1) process: X_t = A * X_{t-1} + noise</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">nX</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:])</span> <span class="o">+</span> <span class="n">noise</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="p">):</span>
+            <span class="c1"># process: S_t = B * X_{t-1} + noise</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">noise_stddev</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">nS</span><span class="p">))</span>
+
+            <span class="n">Xt</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">nX</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="c1"># print( &quot;mult:&quot;, (coefficientsM @ Xt).shape )</span>
+            <span class="n">product</span> <span class="o">=</span> <span class="n">coefficientsM</span> <span class="o">@</span> <span class="n">Xt</span>
+            <span class="n">dataM</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">product</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">noise</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_plot_overlay</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dataM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataM</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">dataM</span>  <span class="c1"># the generated data</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">dataM</span></div>
+
+
+<div class="viewcode-block" id="sim_VAR.simulate">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.simulate">[docs]</a>
+    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulates data based on the specified command.</span>
+
+<span class="sd">        Supports commands for simulating VAR and multivariate VAR (MVAR) processes.</span>
+<span class="sd">        Adjusts internal state based on simulation results.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            command (str): The simulation command (&#39;VARsim&#39; for VAR simulation, &#39;MVARsim&#39; for multivariate VAR simulation).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If an invalid command is provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">command</span> <span class="o">==</span> <span class="s2">&quot;MVARsim&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">&quot;sVAR&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coefficientsM</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;coefficientsM&quot;</span><span class="p">]])</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;coefficientsM&quot;</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">))</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;coefficientsM&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_valuesM</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;initial_valuesM&quot;</span><span class="p">]])</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;initial_valuesM&quot;</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;initial_valuesM&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficientsM</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_valuesM</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;coefficientsM and initial_valuesM must be provided for MVARsim&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_mvar1_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficientsM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_valuesM</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s2">&quot;VARsim&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="s2">&quot;VAR&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_var1_data</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid command. Must be &#39;VARsim&#39; or &#39;MVARsim&#39;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sim_VAR.make_plot_overlay">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.make_plot_overlay">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_plot_overlay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">dataX</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                          <span class="n">dataS</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;show&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an overlay plot of the given data for easy comparison.</span>
+
+<span class="sd">        This method visualizes the time series data by overlaying the plots of each variable.</span>
+<span class="sd">        It supports both the primary VAR process data and an optional secondary process data for comparison.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            dataX (np.ndarray): The primary data series for the VAR process. Shape: (n_obs, num_variables).</span>
+<span class="sd">            dataS (np.ndarray, optional): The secondary data series for comparison. Shape: (n_obs, num_variables).</span>
+<span class="sd">            output (str): Controls the output of the plot (&#39;show&#39;, &#39;save&#39;, or &#39;both&#39;).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Saves the plot as &quot;plot-data-overlay.pdf&quot; if &#39;save&#39; or &#39;both&#39; is selected as output.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Number of variables in dataX</span>
+        <span class="n">nX</span> <span class="o">=</span> <span class="n">dataX</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Create a figure with two subplots</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+            <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span>
+                <span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span> <span class="k">if</span> <span class="n">dataS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+            <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span>
+                <span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">axs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">axs</span><span class="p">)</span>  <span class="c1"># Ensure axs is always a list</span>
+
+        <span class="c1"># Plot each variable in dataX on the first subplot</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nX</span><span class="p">):</span>
+            <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dataX</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;X</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Abundance, X&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Plot each variable in dataS on the second subplot, if available</span>
+        <span class="k">if</span> <span class="n">dataS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nS</span> <span class="o">=</span> <span class="n">dataS</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nS</span><span class="p">):</span>
+                <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dataS</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;S</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Abundance, S&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Adjust the layout to ensure that the subplots do not overlap</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+        <span class="c1"># If the output option is &#39;save&#39; or &#39;both&#39;, save the figure as a PDF</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">]:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plot-data-overlay.pdf&quot;</span><span class="p">)</span>
+
+        <span class="c1"># If the output option is &#39;show&#39; or &#39;both&#39;, show the figure in a new</span>
+        <span class="c1"># window</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">]:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="sim_VAR.make_plot_stacked">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.make_plot_stacked">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_plot_stacked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataX</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dataS</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a stacked plot and a heatmap for the given data, providing a comprehensive view of the data dynamics.</span>
+
+<span class="sd">        This method visualizes the time series data from the VAR process in a stacked plot for a clear overview</span>
+<span class="sd">        of each variable&#39;s contribution over time. Additionally, it generates a heatmap for secondary data,</span>
+<span class="sd">        offering an intuitive representation of data intensity across variables and time points.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            dataX (np.ndarray): The primary data series from the VAR process. Shape: (n_obs, num_variables).</span>
+<span class="sd">            dataS (np.ndarray): The secondary data series for heatmap visualization. Shape: (n_obs, num_variables).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Saves the plots as &quot;plot-data-XS-stacked.pdf&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dataX</span> <span class="o">=</span> <span class="n">dataX</span> <span class="o">+</span> <span class="mf">1.0</span>
+
+        <span class="c1">#  stacked</span>
+        <span class="n">nX</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataX</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># Number of columns in dataX</span>
+        <span class="n">nS</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataS</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># Number of columns in dataS</span>
+        <span class="n">nobs</span> <span class="o">=</span> <span class="n">dataS</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Create a figure with two subplots</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="c1"># Stack plot for dataX</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stackplot</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">dataX</span><span class="p">)),</span>
+            <span class="o">*</span><span class="n">dataX</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="n">labels</span><span class="o">=</span><span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;X</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nX</span><span class="p">)])</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Abundance, log10 X&quot;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nobs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span>
+            <span class="n">dataS</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="n">annot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;YlGnBu&quot;</span><span class="p">,</span>
+            <span class="n">yticklabels</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;S</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nS</span><span class="p">)],</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">cbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;time (weeks)&quot;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nobs</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>  <span class="c1"># Adjust the layout</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plot-data-XS-stacked.pdf&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sim_VAR.make_plot">
+<a class="viewcode-back" href="../../../mimic.model_simulate.html#mimic.model_simulate.sim_VAR.sim_VAR.make_plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="n">dataX</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                  <span class="n">dataS</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;show&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates separate line plots for each variable in the given data, facilitating detailed analysis.</span>
+
+<span class="sd">        This method creates individual line plots for each variable in the primary and, optionally,</span>
+<span class="sd">        secondary data series. This detailed visualization allows for in-depth analysis of each variable&#39;s</span>
+<span class="sd">        behavior over time.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            dataX (np.ndarray): The primary data series for the VAR process. Shape: (n_obs, num_variables).</span>
+<span class="sd">            dataS (np.ndarray, optional): The secondary data series for comparison. Shape: (n_obs, num_variables).</span>
+<span class="sd">            output (str): Controls the output of the plot (&#39;show&#39;, &#39;save&#39;, or &#39;both&#39;).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Saves the individual plots as &quot;plot-data-XS.pdf&quot; if &#39;save&#39; or &#39;both&#39; is selected as output.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nX</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataX</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># Number of columns in dataX</span>
+
+        <span class="c1"># Number of columns in dataS if it is provided</span>
+        <span class="n">nS</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataS</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">dataS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nX</span> <span class="o">+</span> <span class="n">nS</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">nX</span> <span class="o">+</span> <span class="n">nS</span><span class="p">)))</span>
+
+        <span class="c1"># Adjust the vertical spacing between subplots</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nX</span><span class="p">:</span>
+                <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dataX</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
+                <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;X</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">dataS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dataS</span><span class="p">[:,</span> <span class="n">i</span> <span class="o">-</span> <span class="n">nX</span><span class="p">])</span>
+                <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;S</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">nX</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Set the y-axis label</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Abundance&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">}:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plot-data-stacked.pdf&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;show&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">}:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">mimic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
