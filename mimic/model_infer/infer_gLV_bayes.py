@@ -101,55 +101,127 @@ class infergLVbayes:
         None
     """
 
-    def __init__(
-            self,
-            X=None,
-            F=None,
-            mu=None,
-            M=None,
-            prior_mu_mean = None,
-            prior_mu_sigma = None,
-            prior_Mii_mean=None,
-            prior_Mii_sigma = None,
-            prior_Mij_sigma = None,
-            prior_eps_mean = None,
-            prior_eps_sigma = None,
-            draws = None,
-            tune = None,
-            chains = None,
-            cores = None,
-            M_h=None,
-            DA=None,
-            DA0=None,
-            N=None,
-            noise_stddev=None,
-            epsilon=None,
-            sim_glv=None):
+    def __init__(self):
 
         # self.data = data  # data to do inference on
-        self.X = X
-        self.F = F
-        self.mu = mu
-        self.M = M
-        self.prior_mu_mean = prior_mu_mean
-        self.prior_mu_sigma = prior_mu_sigma
-        self.prior_Mii_mean = prior_Mii_mean
-        self.prior_Mii_sigma = prior_Mii_sigma
-        self.prior_Mij_sigma = prior_Mij_sigma
-        self.prior_eps_mean = prior_eps_mean
-        self.prior_eps_sigma = prior_eps_sigma
-        self.draws = draws
-        self.tune = tune
-        self.chains = chains
-        self.cores = cores
-        self.M_h = M_h
-        self.DA = DA
-        self.DA0 = DA0 if DA0 is not None else (
-            self.calculate_DA0(F.shape[1]) if F is not None else None)
-        self.N = N
-        self.noise_stddev = noise_stddev
-        self.epsilon = epsilon
-        self.sim_glv = sim_glv
+        self.X: Optional[np.ndarray] = None
+        self.F: Optional[np.ndarray] = None
+        self.mu: Optional[Union[int, float]] = None
+        self.M: Optional[Union[int, float]] = None
+        self.prior_mu_mean: Optional[Union[int, float, List[Union[int, float]]]] = None
+        self.prior_mu_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None
+        self.prior_Mii_mean: Optional[Union[int, float, List[Union[int, float]]]] = None
+        self.prior_Mii_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None
+        self.prior_Mij_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None
+        self.prior_eps_mean: Optional[Union[int, float, List[Union[int, float]]]] = None
+        self.prior_eps_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None
+        self.draws: Optional[int] = None
+        self.tune: Optional[int] = None
+        self.chains: Optional[int] = None
+        self.cores: Optional[int] = None
+        self.DA: Optional[int] = None
+        self.DA0: Optional[Union[int, float]] = None
+        self.N: Optional[int] = None
+        self.noise_stddev: Optional[Union[int, float]] = None
+        self.epsilon: Optional[Union[int, float, List[Union[int, float]]]] = None,
+        self.sim_glv: Optional[str] = None
+
+        # Calculate DA0 if F is not None and DA0 is not set
+        if self.DA0 is None and self.F is not None:
+            self.DA0 = self.calculate_DA0(self.F.shape[1])
+
+
+        self.parameters: Dict[str, Optional[Union[int, float, np.ndarray, str]]] = \
+                {"prior_mu_mean": self.prior_mu_mean,
+                  "prior_mu_sigma": self.prior_mu_sigma,
+                  "prior_Mii_mean": self.prior_Mii_mean,
+                  "prior_Mii_sigma": self.prior_Mii_sigma,
+                  "prior_Mij_sigma": self.prior_Mij_sigma,
+                  "prior_eps_mean": self.prior_eps_mean,
+                  "prior_eps_sigma": self.prior_eps_sigma,
+                  "DA": self.DA,
+                  "DA0": self.DA0,
+                  "N": self.N,
+                  "noise_stddev": self.noise_stddev}
+
+
+
+    def set_parameters(self,
+                       X: Optional[np.ndarray] = None,
+                       F: Optional[np.ndarray] = None,
+                       prior_mu_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_mu_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_Mii_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_Mii_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_Mij_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_eps_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_eps_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       draws: Optional[int] = None,
+                       tune: Optional[int] = None,
+                       chains: Optional[int] = None,
+                       cores: Optional[int] = None,
+                       DA: Optional[Union[int, float]] = None,
+                       DA0: Optional[Union[int, float]] = None,
+                       N: Optional[int] = None,
+                       noise_stddev: Optional[Union[int, float]] = None) -> None:
+
+        if X is not None:
+            self.X = np.array(X)
+        if F is not None:
+            self.F = np.array(F)
+        if prior_mu_mean is not None:
+            self.prior_mu_mean = prior_mu_mean
+        if prior_mu_sigma is not None:
+            self.prior_mu_sigma = prior_mu_sigma
+        if prior_Mii_mean is not None:
+            self.prior_Mii_mean = prior_Mii_mean
+        if prior_Mii_sigma is not None:
+            self.prior_Mii_sigma = prior_Mii_sigma
+        if prior_Mij_sigma is not None:
+            self.prior_Mij_sigma = prior_Mij_sigma
+        if prior_eps_mean is not None:
+            self.prior_eps_mean = prior_eps_mean
+        if prior_eps_sigma is not None:
+            self.prior_eps_sigma = prior_eps_sigma
+        if draws is not None:
+            self.draws = draws
+        if tune is not None:
+            self.tune = tune
+        if chains is not None:
+            self.chains = chains
+        if cores is not None:
+            self.cores = cores
+        if DA is not None:
+            self.DA = DA
+        if DA0 is not None:
+            self.DA0 = DA0 if DA0 is not None else (
+                self.calculate_DA0(F.shape[1]) if F is not None else None)
+        if N is not None:
+            self.N = N
+        if noise_stddev is not None:
+            self.noise_stddev = noise_stddev
+
+
+        self.parameters = {
+            "X": self.X,
+            "F": self.F,
+            "prior_mu_mean": self.prior_mu_mean,
+            "prior_mu_sigma": self.prior_mu_sigma,
+            "prior_Mii_mean": self.prior_Mii_mean,
+            "prior_Mii_sigma": self.prior_Mii_sigma,
+            "prior_Mij_sigma": self.prior_Mij_sigma,
+            "prior_eps_mean": self.prior_eps_mean,
+            "prior_eps_sigma": self.prior_eps_sigma,
+            "draws": self.draws,
+            "tune": self.tune,
+            "chains": self.chains,
+            "cores": self.cores,
+            "DA": self.DA,
+            "DA0": self.DA0,
+            "calculate_DA0": self.calculate_DA0,
+            "N": self.N,
+            "noise_stddev": self.noise_stddev}
+
 
     def import_data(self, file_path) -> None:
         """
@@ -281,7 +353,7 @@ class infergLVbayes:
         cores = self.cores
 
         # Print the values to verify
-        print(f"DA: {DA}, DA0: {DA0}, N: {N}, noise_stddev: {noise_stddev}")
+        #print(f"DA: {DA}, DA0: {DA0}, N: {N}, noise_stddev: {noise_stddev}")
 
         num_species = F.shape[1]
 
@@ -371,7 +443,7 @@ class infergLVbayes:
         cores = self.cores
 
         # Print the values to debug
-        print(f"DA: {DA}, DA0: {DA0}, N: {N}, noise_stddev: {noise_stddev}")
+        #print(f"DA: {DA}, DA0: {DA0}, N: {N}, noise_stddev: {noise_stddev}")
 
         num_species = F.shape[1]
 
@@ -394,7 +466,8 @@ class infergLVbayes:
             # apply to sigma for M_ij
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p', mu=prior_Mii_mean, sigma=prior_Mii_sigma, shape=(num_species,))
+            M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p', mu=prior_Mii_mean, sigma=prior_Mii_sigma, lower=0,
+                                            shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
@@ -403,13 +476,12 @@ class infergLVbayes:
             tau0 = (DA0 / (DA - DA0)) * noise_stddev / np.sqrt(N)
             c2 = pm.InverseGamma("c2", 2, 1)
             tau = pm.HalfCauchy("tau", beta=tau0)
-            lam = pm.HalfCauchy(
-                "lam", beta=1, shape=(
-                    num_species, num_species - 1))
-            # M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=tau * lam *
-            # at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
-            # num_species-1))
-            M_ij_hat = pm.Normal('M_ij_hat',mu=0, sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))
+            lam = pm.HalfCauchy("lam", beta=1, shape=(num_species, num_species - 1))
+            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_sigma, sigma=tau * lam *
+                                                                       at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)),
+                                 shape=(num_species,
+                                        num_species - 1))
+            # M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
