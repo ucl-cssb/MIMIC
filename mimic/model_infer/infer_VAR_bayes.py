@@ -86,23 +86,32 @@ class infer_VAR(BaseInfer):
         if dataS is not None:
             self.dataS = self._validate_data(dataS)
         if coefficients is not None:
-            self.coefficients = np.array(coefficients)
+            coefficients = np.array(coefficients)
+            if coefficients.shape[0] != coefficients.shape[1]:
+                raise ValueError("Coefficients matrix must be square.")
+            if self.data is not None and coefficients.shape[0] != self.data.shape[1]:
+                raise ValueError(
+                    "Coefficients matrix dimensions must match the number of variables in the data.")
+            self.coefficients = coefficients
+            self.priors['coefficients'] = self.coefficients
         if intercepts is not None:
-            self.intercepts = np.array(intercepts)
+            intercepts = np.array(intercepts)
+            if self.data is not None and intercepts.shape[0] != self.data.shape[1]:
+                raise ValueError(
+                    "Intercepts must match the number of variables in the data.")
+            self.intercepts = intercepts
+            self.priors['intercepts'] = self.intercepts
         if covariance_matrix is not None:
-            self.covariance_matrix = np.array(covariance_matrix)
+            covariance_matrix = np.array(covariance_matrix)
+            if covariance_matrix.shape[0] != covariance_matrix.shape[1]:
+                raise ValueError("Covariance matrix must be square.")
+            if self.data is not None and covariance_matrix.shape[0] != self.data.shape[1]:
+                raise ValueError(
+                    "Covariance matrix dimensions must match the number of variables in the data.")
+            self.covariance_matrix = covariance_matrix
+            self.priors['covariance_matrix'] = self.covariance_matrix
         if priors is not None:
             self.set_priors(priors)
-
-        # Update parameters dictionary
-        self.parameters = {
-            "data": self.data,
-            "dataS": self.dataS,
-            "coefficients": self.coefficients,
-            "intercepts": self.intercepts,
-            "covariance_matrix": self.covariance_matrix,
-            "priors": self.priors
-        }
 
     def run_inference(self, **kwargs) -> None:
         """
