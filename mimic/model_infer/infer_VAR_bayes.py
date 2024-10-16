@@ -1,11 +1,14 @@
+import os
+from typing import Optional, Union, List, Dict, Any
+
 import arviz as az
 import matplotlib.pyplot as plt
-import os
 import numpy as np
 import pandas as pd
 import pymc as pm
 import pytensor.tensor as at
 import seaborn as sns
+
 from mimic.model_infer.base_infer import BaseInfer
 
 
@@ -54,6 +57,52 @@ class infer_VAR(BaseInfer):
         self.last_data = None
         self.last_data_filename = None
         self.last_netcdf_filename = None
+
+    def set_parameters(
+            self,
+            data: Optional[Union[np.ndarray,
+                                 pd.DataFrame, list, tuple]] = None,
+            coefficients: Optional[Union[np.ndarray, list]] = None,
+            intercepts: Optional[Union[np.ndarray, list]] = None,
+            covariance_matrix: Optional[Union[np.ndarray, list]] = None,
+            dataS: Optional[Union[np.ndarray,
+                                  pd.DataFrame, list, tuple]] = None,
+            priors: Optional[Dict[str, Any]] = None) -> None:
+        """
+        Sets the parameters for the infer_VAR instance.
+
+        Allows optional specification of all model parameters. Parameters not provided (None) are left unchanged.
+
+        Parameters:
+            data (Optional[Union[np.ndarray, pd.DataFrame, list, tuple]]): The data to perform inference on.
+            coefficients (Optional[Union[np.ndarray, list]]): Coefficients of the VAR model.
+            intercepts (Optional[Union[np.ndarray, list]]): Intercepts of the VAR model.
+            covariance_matrix (Optional[Union[np.ndarray, list]]): Covariance matrix of the VAR model.
+            dataS (Optional[Union[np.ndarray, pd.DataFrame, list, tuple]]): The secondary data (e.g., metabolite data).
+            priors (Optional[Dict[str, Any]]): A dictionary of prior distributions.
+        """
+        if data is not None:
+            self.data = self._validate_data(data)
+        if dataS is not None:
+            self.dataS = self._validate_data(dataS)
+        if coefficients is not None:
+            self.coefficients = np.array(coefficients)
+        if intercepts is not None:
+            self.intercepts = np.array(intercepts)
+        if covariance_matrix is not None:
+            self.covariance_matrix = np.array(covariance_matrix)
+        if priors is not None:
+            self.set_priors(priors)
+
+        # Update parameters dictionary
+        self.parameters = {
+            "data": self.data,
+            "dataS": self.dataS,
+            "coefficients": self.coefficients,
+            "intercepts": self.intercepts,
+            "covariance_matrix": self.covariance_matrix,
+            "priors": self.priors
+        }
 
     def run_inference(self, **kwargs) -> None:
         """
