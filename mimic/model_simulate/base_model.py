@@ -61,14 +61,35 @@ class BaseModel(ABC):
             Updates class attributes based on the current parameters dictionary.
     """
 
-    def __init__(self):
+    def __init__(self, debug: Optional[str] = None):
         """
         Initializes the BaseModel with default values.
         """
         self.data: Optional[np.ndarray] = None
         self.model: Optional[object] = None
+        self._debug = None  # Initialize the private attribute
+        self.debug = debug  # Set the debug level through the property
         self.parameters: Optional[Dict[str, Union[int,
                                                   float, None, np.ndarray, str, Any]]] = None
+
+    # The debug property is a getter and setter for the private attribute _debug.
+    @property
+    def debug(self) -> Optional[str]:
+        """Gets the current debug level."""
+        return self._debug
+
+    # The setter for the debug property only allows setting the debug level to None, 'low', or 'high'.
+    @debug.setter
+    def debug(self, value: Optional[str]) -> None:
+        """Sets the debug level, allowing only None, 'low', or 'high'."""
+        if value not in {None, "low", "high"}:
+            raise ValueError("Debug level must be None, 'low', or 'high'.")
+        self._debug = value
+
+    # Example usage of the debug property:
+    # model = BaseModel(debug="low")  # Valid
+    # model.debug = "high"            # Valid
+    # model.debug = "invalid"         # Raises ValueError
 
     # check if params are set, else print a warning and use the default values
     # for each simulation type
@@ -178,8 +199,9 @@ class BaseModel(ABC):
 
         # Check if no parameters were provided and warn the user
         if params is None:
-            print(
-                f"Warning: No parameters provided for {sim_type} simulation. Using default values.")
+            if self.debug in ["low", "high"]:
+                print(
+                    f"Warning: No parameters provided for {sim_type} simulation. Using default values.")
         else:
             # Identify missing or None parameters
             missing_params = [
@@ -192,8 +214,9 @@ class BaseModel(ABC):
                 if value is not None:
                     default_params[key] = value
 
-        print(
-            f"Using the following parameters for {sim_type} simulation: {default_params}")
+        if self.debug == "high":
+            print(
+                f"Using the following parameters for {sim_type} simulation: {default_params}")
         self.parameters = default_params
         self.update_attributes()
 
@@ -224,20 +247,20 @@ class BaseModel(ABC):
         Parameters:
             precision (int): Precision for formatting numpy array elements.
         """
-        print("Model parameters:")
-        print(f"Model: {self.model}")
-        if self.parameters is not None:
-            parameters = {
-                k: self._custom_array_to_string(
-                    v,
-                    precision) if isinstance(
-                    v,
-                    np.ndarray) else v for k,
-                v in self.parameters.items()}
-            for param, value in parameters.items():
-                print(f"{param}: {value}")
-        else:
-            print("No parameters to print.")
+        # Check the class-level debug level
+        if self.debug in ["low", "high"]:
+            print("Model parameters:")
+            print(f"Model: {self.model}")
+            if self.parameters is not None:
+                parameters = {
+                    k: self._custom_array_to_string(
+                        v, precision) if isinstance(v, np.ndarray) else v
+                    for k, v in self.parameters.items()
+                }
+                for param, value in parameters.items():
+                    print(f"{param}: {value}")
+            else:
+                print("No parameters to print.")
 
     def save_parameters(self,
                         filepath: str,
