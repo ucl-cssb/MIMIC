@@ -2,8 +2,8 @@
 Modelling and Inference of MICrobiomes Project (MIMIC)
 ===========================================================
 
-.. image:: https://codecov.io/gh/ucl-cssb/MIMIC/graph/badge.svg?token=O3J4X6ECIQ 
- :target: https://codecov.io/gh/ucl-cssb/MIMIC
+.. image:: https://codecov.io/gh/ucl-cssb/MIMIC/graph/badge.svg?token=O3J4X6ECIQ
+   :target: https://codecov.io/gh/ucl-cssb/MIMIC
 
 Overview
 ---------
@@ -63,14 +63,15 @@ Prerequisites
 Installation Steps
 ^^^^^^^^^^^^^^^^^^^
 
-### For macOS and Ubuntu
+For macOS and Ubuntu
+""""""""""""""""""""
 
 1. **Clone the Repository**
 
    .. code-block:: bash
 
-      git clone https://github.com/yourusername/yourrepository.git
-      cd yourrepository
+      git clone https://github.com/ucl-cssb/MIMIC.git
+      cd MIMIC
 
 2. **Create the Conda Environment**
 
@@ -94,14 +95,15 @@ Installation Steps
 
    Refer to the `Usage`_ section below for instructions on how to run the code.
 
-### For Windows
+For Windows
+"""""""""""
 
 1. **Clone the Repository**
 
    .. code-block:: bash
 
-      git clone https://github.com/yourusername/yourrepository.git
-      cd yourrepository
+      git clone https://github.com/ucl-cssb/MIMIC.git
+      cd MIMIC
 
 2. **Create the Conda Environment for Windows**
 
@@ -132,12 +134,18 @@ Installation Steps
 Alternative Installation Using Pip Only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you prefer to use pip without Conda, you can install the package and its dependencies using `requirements.txt`:
+If you prefer to use pip without Conda, you can install the package and its dependencies by compiling `requirements.in` into `requirements.txt`:
 
 .. code-block:: bash
 
+   # Step 1: Compile requirements.txt from requirements.in
+   pip install pip-tools
+   pip-compile requirements.in
+
+   # Step 2: Install dependencies
    pip install -r requirements.txt
    pip install -e .
+
 
 **Note**: This method may not install all dependencies correctly, especially if there are packages that are only available via Conda. We recommend using the Conda installation method for full functionality.
 
