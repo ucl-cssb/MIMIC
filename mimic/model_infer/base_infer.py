@@ -20,8 +20,12 @@ class BaseInfer(ABC):
     """
 
     def __init__(self, debug: Optional[str] = None):
+        # Initialize the debug level with a default of None
+        self._debug = None
+        self.debug = debug  # Set the debug level through the property
         # Initialize priors as an empty dictionary
         self.priors: Dict[str, Any] = {}
+        # Other initializations
         self.data: Optional[np.ndarray] = None
         self.dataS: Optional[np.ndarray] = None
         self.model: Optional[object] = None
