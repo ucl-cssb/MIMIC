@@ -6,6 +6,7 @@ Examples
 
    notebooks/MVAR/examples-sim-MVAR
    notebooks/MVAR/examples-infer-MVAR
+   notebooks/CRM/examples-sim-CRM
    notebooks/gLV/examples-bayes-gLV
    notebooks/gLV/examples-lasso-gLV
    notebooks/gLV/examples-sim-gLV

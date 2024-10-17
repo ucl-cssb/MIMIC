@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Simulate some time course data from the CRM &#8212; MIMIC 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Used Bayesian inference to infer the parameters of a (linearised) gLV model" href="../gLV/examples-bayes-gLV.html" />
+    <link rel="prev" title="MVAR Simulation for Microbiota and Metabolites" href="../MVAR/examples-infer-MVAR.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="n">set_all_seeds</span>
+<span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="n">plot_gLV</span>
+<span class="c1"># from mimic.model_infer import *</span>
+<span class="kn">from</span> <span class="nn">mimic.model_simulate</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">odeint</span>
+<br/></pre></div>
+</div>
+</div>
+<section id="Simulate-some-time-course-data-from-the-CRM">
+<h1>Simulate some time course data from the CRM<a class="headerlink" href="#Simulate-some-time-course-data-from-the-CRM" title="Link to this heading">¶</a></h1>
+<p>The McArthur Consumer Resource Model takes the form</p>
+<div class="math notranslate nohighlight">
+\[dN_i/dt = 1/\tau_i N_i (\sum_a(c_{ia} w_a R_a - m_i))\]</div>
+<div class="math notranslate nohighlight">
+\[dR_a/dt = 1/(r_a K_a) (K_a - R_a) R_a - \sum_i(N_i c_{ia} R_a)\]</div>
+<p>where: - <span class="math notranslate nohighlight">\(N_i\)</span> is the concentration of a species - <span class="math notranslate nohighlight">\(R_a\)</span> is the concentration of a resource - <span class="math notranslate nohighlight">\(c_{ia}\)</span> is the preference of species <span class="math notranslate nohighlight">\(i\)</span> for resource <span class="math notranslate nohighlight">\(a\)</span> - <span class="math notranslate nohighlight">\(w_a\)</span> is the quality of resource <span class="math notranslate nohighlight">\(a\)</span> - <span class="math notranslate nohighlight">\(m_i\)</span> is the mortality rate of species <span class="math notranslate nohighlight">\(i\)</span> - <span class="math notranslate nohighlight">\(K_a\)</span> is the carrying capacity of resource <span class="math notranslate nohighlight">\(a\)</span> - <span class="math notranslate nohighlight">\(\tau_i\)</span> is the timescale of species <span class="math notranslate nohighlight">\(i\)</span> - <span class="math notranslate nohighlight">\(r_a\)</span> is the timescale of resource <span class="math notranslate nohighlight">\(a\)</span></p>
+<section id="Model-with-five-species">
+<h2>Model with five species<a class="headerlink" href="#Model-with-five-species" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">set_all_seeds</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="n">num_species</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">num_resources</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># species timescales</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
+
+<span class="c1"># resource quality</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>
+
+<span class="c1"># relative resource preferences</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">))</span>
+
+<span class="c1"># mortality rates</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
+
+<span class="c1"># resource timescales</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>
+
+<span class="c1"># resource carrying capacities</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>
+
+<span class="c1"># write the mu, M, epsilon, and pert_fn to a dictionary and pickle</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;num_species&#39;</span><span class="p">:</span> <span class="n">num_species</span><span class="p">,</span> <span class="s1">&#39;num_resources&#39;</span><span class="p">:</span> <span class="n">num_resources</span><span class="p">,</span> <span class="s1">&#39;tau&#39;</span><span class="p">:</span> <span class="n">tau</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">:</span> <span class="n">K</span><span class="p">}</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">to_pickle</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s1">&#39;params-s5.pkl&#39;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Simulate-single-time-course">
+<h2>Simulate single time course<a class="headerlink" href="#Simulate-single-time-course" title="Link to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.model_simulate.sim_CRM</span> <span class="kn">import</span> <span class="n">sim_CRM</span>
+
+<span class="c1"># initial conditions</span>
+<span class="n">init_species</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="o">+</span><span class="n">num_resources</span><span class="p">)</span>
+
+<span class="c1"># instantiate simulator</span>
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">sim_CRM</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                    <span class="n">num_resources</span><span class="o">=</span><span class="n">num_resources</span><span class="p">)</span>
+
+<span class="n">simulator</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">num_species</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;num_species&#39;</span><span class="p">],</span>
+                         <span class="n">num_resources</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;num_resources&#39;</span><span class="p">],</span>
+                         <span class="n">tau</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;tau&#39;</span><span class="p">],</span>
+                         <span class="n">w</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">],</span>
+                         <span class="n">c</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">],</span>
+                         <span class="n">m</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">],</span>
+                         <span class="n">r</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
+                         <span class="n">K</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;K&#39;</span><span class="p">])</span>
+
+<span class="n">simulator</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
+
+<span class="n">yobs</span><span class="p">,</span> <span class="n">sobs</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="p">)</span>
+
+<span class="c1"># plot species simulation</span>
+<span class="n">plot_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+
+<span class="c1"># plot resources simulation</span>
+<span class="n">plot_gLV</span><span class="p">(</span><span class="n">sobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model parameters:
+Model: CRM
+num_species: 2
+num_resources: 2
+tau: [0.27 0.66]
+w: [0.49 0.81]
+c: [[0.8  0.35]
+ [0.35 0.82]]
+m: [0.96 0.89]
+r: [0.42 0.55]
+K: [7.15 7.41]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_CRM_examples-sim-CRM_5_1.png" src="../../_images/notebooks_CRM_examples-sim-CRM_5_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_CRM_examples-sim-CRM_5_2.png" src="../../_images/notebooks_CRM_examples-sim-CRM_5_2.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MIMIC</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Simulate some time course data from the CRM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Model-with-five-species">Model with five species</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Simulate-single-time-course">Simulate single time course</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../examples.html">Examples</a><ul>
+      <li>Previous: <a href="../MVAR/examples-infer-MVAR.html" title="previous chapter">MVAR Simulation for Microbiota and Metabolites</a></li>
+      <li>Next: <a href="../gLV/examples-bayes-gLV.html" title="next chapter">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Pedro Fontanarrosa.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/notebooks/CRM/examples-sim-CRM.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
