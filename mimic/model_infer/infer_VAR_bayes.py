@@ -1,11 +1,14 @@
+import os
+from typing import Optional, Union, List, Dict, Any
+
 import arviz as az
 import matplotlib.pyplot as plt
-import os
 import numpy as np
 import pandas as pd
 import pymc as pm
 import pytensor.tensor as at
 import seaborn as sns
+
 from mimic.model_infer.base_infer import BaseInfer
 
 
@@ -54,6 +57,61 @@ class infer_VAR(BaseInfer):
         self.last_data = None
         self.last_data_filename = None
         self.last_netcdf_filename = None
+
+    def set_parameters(
+            self,
+            data: Optional[Union[np.ndarray,
+                                 pd.DataFrame, list, tuple]] = None,
+            coefficients: Optional[Union[np.ndarray, list]] = None,
+            intercepts: Optional[Union[np.ndarray, list]] = None,
+            covariance_matrix: Optional[Union[np.ndarray, list]] = None,
+            dataS: Optional[Union[np.ndarray,
+                                  pd.DataFrame, list, tuple]] = None,
+            priors: Optional[Dict[str, Any]] = None) -> None:
+        """
+        Sets the parameters for the infer_VAR instance.
+
+        Allows optional specification of all model parameters. Parameters not provided (None) are left unchanged.
+
+        Parameters:
+            data (Optional[Union[np.ndarray, pd.DataFrame, list, tuple]]): The data to perform inference on.
+            coefficients (Optional[Union[np.ndarray, list]]): Coefficients of the VAR model.
+            intercepts (Optional[Union[np.ndarray, list]]): Intercepts of the VAR model.
+            covariance_matrix (Optional[Union[np.ndarray, list]]): Covariance matrix of the VAR model.
+            dataS (Optional[Union[np.ndarray, pd.DataFrame, list, tuple]]): The secondary data (e.g., metabolite data).
+            priors (Optional[Dict[str, Any]]): A dictionary of prior distributions.
+        """
+        if data is not None:
+            self.data = self._validate_data(data)
+        if dataS is not None:
+            self.dataS = self._validate_data(dataS)
+        if coefficients is not None:
+            coefficients = np.array(coefficients)
+            if coefficients.shape[0] != coefficients.shape[1]:
+                raise ValueError("Coefficients matrix must be square.")
+            if self.data is not None and coefficients.shape[0] != self.data.shape[1]:
+                raise ValueError(
+                    "Coefficients matrix dimensions must match the number of variables in the data.")
+            self.coefficients = coefficients
+            self.priors['coefficients'] = self.coefficients
+        if intercepts is not None:
+            intercepts = np.array(intercepts)
+            if self.data is not None and intercepts.shape[0] != self.data.shape[1]:
+                raise ValueError(
+                    "Intercepts must match the number of variables in the data.")
+            self.intercepts = intercepts
+            self.priors['intercepts'] = self.intercepts
+        if covariance_matrix is not None:
+            covariance_matrix = np.array(covariance_matrix)
+            if covariance_matrix.shape[0] != covariance_matrix.shape[1]:
+                raise ValueError("Covariance matrix must be square.")
+            if self.data is not None and covariance_matrix.shape[0] != self.data.shape[1]:
+                raise ValueError(
+                    "Covariance matrix dimensions must match the number of variables in the data.")
+            self.covariance_matrix = covariance_matrix
+            self.priors['covariance_matrix'] = self.covariance_matrix
+        if priors is not None:
+            self.set_priors(priors)
 
     def run_inference(self, **kwargs) -> None:
         """
@@ -201,7 +259,7 @@ class infer_VAR(BaseInfer):
             c2 = pm.InverseGamma("c2", 2, 8)
             tau = pm.HalfCauchy("tau", beta=tau0)
             lam = pm.HalfCauchy("lam", beta=1, shape=(ndim, ndim))
-            A = pm.Normal('A', mu=A_prior_mu, sigma=tau * lam *
+            A = pm.Normal('A', mu=A_prior_mu, sigma=tau * lam * \
                           at.sqrt(c2 / (c2 + tau**2 * lam**2)), shape=(ndim, ndim))
 
             # If noise covariance is provided, use it as a prior
@@ -350,14 +408,14 @@ class infer_VAR(BaseInfer):
             c2_A = pm.InverseGamma("c2_A", 2, 1)
             tau_A = pm.HalfCauchy("tau_A", beta=tau0_A)
             lam_A = pm.HalfCauchy("lam_A", beta=1, shape=(nX, nX))
-            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=tau_A * lam_A *
+            Ah = pm.Normal('Ah', mu=A_prior_mu, sigma=tau_A * lam_A * \
                            at.sqrt(c2_A / (c2_A + tau_A**2 * lam_A**2)), shape=(nX, nX))
 
             tau0_B = (DB0 / (DB - DB0)) * 0.1 / np.sqrt(N)
             c2_B = pm.InverseGamma("c2_B", 2, 1)
             tau_B = pm.HalfCauchy("tau_B", beta=tau0_B)
             lam_B = pm.HalfCauchy("lam_B", beta=1, shape=(nS, nX))
-            Bh = pm.Normal('Bh', mu=0, sigma=tau_B * lam_B *
+            Bh = pm.Normal('Bh', mu=0, sigma=tau_B * lam_B * \
                            at.sqrt(c2_B / (c2_B + tau_B**2 * lam_B**2)), shape=(nS, nX))
 
             if noise_cov_prior is not None:
