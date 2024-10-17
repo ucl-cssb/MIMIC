@@ -148,7 +148,9 @@ class infer_VAR(BaseInfer):
         self.last_trace = trace
         self.last_data = (data,)
 
-        print(az.summary(trace, var_names=["x0", "A"]))
+        # print if `debug` is set to 'high' or 'low'
+        if self.debug in ["high", "low"]:
+            print(az.summary(trace, var_names=["x0", "A"]))
 
         az.plot_posterior(trace, var_names=["x0", "A"])
         plt.savefig("posterior_plot.pdf")
@@ -220,7 +222,9 @@ class infer_VAR(BaseInfer):
         with var_model:
             trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
-        print(az.summary(trace, var_names=["A"]))
+        # print if `debug` is set to 'high' or 'low'
+        if self.debug in ["high", "low"]:
+            print(az.summary(trace, var_names=["A"]))
 
         # Plotting the posterior distributions
         az.plot_posterior(trace, var_names=[
@@ -291,7 +295,9 @@ class infer_VAR(BaseInfer):
         with var_model:
             idata = pm.sample(draws=samples, tune=tune, cores=cores)
 
-        print(az.summary(idata, var_names=["Ah", "Bh"]))
+        # print if `debug` is set to 'high' or 'low'
+        if self.debug in ["high", "low"]:
+            print(az.summary(idata, var_names=["Ah", "Bh"]))
 
         az.plot_posterior(idata, var_names=["Ah", "Bh"])
         plt.savefig("posterior_plot.pdf")
@@ -374,7 +380,9 @@ class infer_VAR(BaseInfer):
         with var_model:
             trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
-        print(az.summary(trace, var_names=["Ah", "Bh"]))
+        # print if `debug` is set to 'high' or 'low'
+        if self.debug in ["high", "low"]:
+            print(az.summary(trace, var_names=["Ah", "Bh"]))
 
         az.plot_posterior(trace, var_names=["Ah", "Bh"])
         plt.savefig("posterior_plot.pdf")
