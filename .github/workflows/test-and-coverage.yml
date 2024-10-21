@@ -1,0 +1,64 @@
+name: Test and Coverage
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test-and-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Conda and create the environment from environment.yml
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: "3.10"
+
+      - name: Create mimic_env from environment.yml
+        run: conda env create -f environment.yml
+
+      - name: Activate mimic_env
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
+      
+      # Activate the Conda environment and install the package in editable mode
+      - name: Install Your Package
+        shell: bash -l {0}
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
+          pip install -e .
+
+      # Run tests with coverage reporting
+      - name: Run tests with coverage
+        shell: bash -l {0}
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
+          pytest --cov=mimic --cov-report=xml --cov-report=html
+
+      # Upload the coverage report as an artifact
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: htmlcov
+
+      # Upload the coverage report to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4.6.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false

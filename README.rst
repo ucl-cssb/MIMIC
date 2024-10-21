@@ -2,6 +2,9 @@
 Modelling and Inference of MICrobiomes Project (MIMIC)
 ===========================================================
 
+.. image:: https://codecov.io/gh/ucl-cssb/MIMIC/graph/badge.svg?token=O3J4X6ECIQ
+   :target: https://codecov.io/gh/ucl-cssb/MIMIC
+
 Overview
 ---------
 
@@ -14,7 +17,7 @@ MICrobiomes Project* (MIMIC) introduces a Python package designed to advance the
 simulation, inference, and prediction of microbial community interactions and dynamics. 
 Addressing the complex nature of microbial ecosystems, MIMIC integrates a suite of 
 mathematical models, including previously used approaches such as *Generalized Lotka-
-Volterra* (gLV), *Gaussian Processes* (GP), and *Vector Autoregression* (VAR) plus 
+Volterra* (gLV), *Gaussian Processes* (GP), and *Vector Autoregression* (VAR), plus 
 newly developed models for integrating multiomic data, to offer a comprehensive 
 framework for analysing microbial dynamics. By leveraging Bayesian inference and 
 machine learning techniques, MIMIC accurately infers the dynamics of microbial 
@@ -27,7 +30,6 @@ flexibility and ease of use, aiming to support researchers and practitioners in
 microbial ecology and microbiome research. This software package contributes to 
 microbial ecology research and supports ecological predictions and applications, 
 benefiting the scientific and applied microbiology communities.
-
 
 Structure
 -----------
@@ -43,7 +45,10 @@ The repository is organized into the following main directories:
 - `LICENSE`: The license for the project.
 - `mimic/`: The main directory for the project's source code.
 - `README.rst`: The main README file for the project, providing an overview and basic usage examples.
-- `requirements.txt`: A list of Python dependencies required to run the project.
+- `environment.yml`: The Conda environment file for macOS and Ubuntu.
+- `environment_windows.yml`: The Conda environment file for Windows.
+- `requirements.in`: The pip requirements input file.
+- `requirements.txt`: The compiled list of Python dependencies.
 - `setup.py`: The build script for the project.
 - `tests/`: Contains unit tests for the project's code.
 
@@ -52,35 +57,101 @@ Installation
 
 Prerequisites
 ^^^^^^^^^^^^^
-Conda package manager is recommended due to dependencies on PyMC.
 
-Python Packages
-""""""""""""""""
-The Python packages needed to run this package are listed in the requirements.txt file in the same workspace. To install them, run:
+- **Conda Package Manager**: We recommend using Conda to manage the environment due to dependencies that may not be available via pip.
+
+Installation Steps
+^^^^^^^^^^^^^^^^^^^
+
+For macOS and Ubuntu
+""""""""""""""""""""
+
+1. **Clone the Repository**
+
+   .. code-block:: bash
+
+      git clone https://github.com/ucl-cssb/MIMIC.git
+      cd MIMIC
+
+2. **Create the Conda Environment**
+
+   .. code-block:: bash
+
+      conda env create -f environment.yml
+
+3. **Activate the Environment**
+
+   .. code-block:: bash
+
+      conda activate mimic_env
+
+4. **Install the Package**
+
+   .. code-block:: bash
+
+      pip install -e .
+
+5. **Run the Code**
+
+   Refer to the `Usage`_ section below for instructions on how to run the code.
+
+For Windows
+"""""""""""
+
+1. **Clone the Repository**
+
+   .. code-block:: bash
+
+      git clone https://github.com/ucl-cssb/MIMIC.git
+      cd MIMIC
+
+2. **Create the Conda Environment for Windows**
+
+   On Windows, use the `environment_windows.yml` file:
+
+   .. code-block:: bash
+
+      conda env create -f environment_windows.yml
+
+3. **Activate the Environment**
+
+   .. code-block:: bash
+
+      conda activate mimic_env_windows
+
+4. **Install the Package**
+
+   Install the package in editable mode:
+
+   .. code-block:: bash
+
+      pip install -e .
+
+5. **Run the Code**
+
+   Refer to the `Usage`_ section below for instructions on how to run the code.
+
+Alternative Installation Using Pip Only
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you prefer to use pip without Conda, you can install the package and its dependencies by compiling `requirements.in` into `requirements.txt`:
 
 .. code-block:: bash
 
+   # Step 1: Compile requirements.txt from requirements.in
+   pip install pip-tools
+   pip-compile requirements.in
+
+   # Step 2: Install dependencies
    pip install -r requirements.txt
+   pip install -e .
+
+
+**Note**: This method may not install all dependencies correctly, especially if there are packages that are only available via Conda. We recommend using the Conda installation method for full functionality.
 
 Compilers
-""""""""""
-* g++ compiler is needed for the PyMC3 package.
-
-.. Solvers
-.. """"""""
-.. * Solver 1
-.. * Solver 2
-
-Steps
-^^^^^
-
-#. Clone the repository.
-#. Create a new conda environment using the `environment.yml` file.
-#. Activate the new environment.
-#. Install required packages using `pip install -r requirements.txt` from the root directory of the repository.
-#. Install the package using `pip install -e .` from the root directory of the repository.
-#. Run the code using the instructions below.
-#. Deactivate the environment when finished.
+"""""""""""
+A g++ compiler is required for the PyMC3 package.
 
 Usage
 -------
@@ -91,7 +162,6 @@ To get started with MIMIC, you can explore a variety of detailed examples and co
 - **Examples**: Check out our [Examples Directory](https://yourdocumentationurl.com/examples) which includes Jupyter notebooks demonstrating how to use MIMIC for different applications and scenarios.
 
 The documentation is regularly updated with the latest information on usage, features, and examples to help you effectively utilize the MIMIC package in your research or applications.
-
 
 Contributing
 -------------
@@ -104,7 +174,7 @@ License
 This project is licensed under the `LICENSE <LICENSE>`_.
 
 Acknowledgements
-------------------
+-----------------
 
 This project is based on methods proposed in `this paper <https://onlinelibrary.wiley.com/doi/full/10.1002/bies.201600188>`_.
 
@@ -112,4 +182,3 @@ Contact
 --------
 
 For questions or feedback, please `contact us <mailto:christopher.barnes@ucl.ac.uk>`_.
-
