@@ -1,3 +1,6 @@
+import os
+from typing import Optional, Union, List, Dict, Any
+
 import arviz as az
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,8 +9,10 @@ import pymc as pm
 import pytensor.tensor as at
 import seaborn as sns
 
+from mimic.model_infer.base_infer import BaseInfer
 
-class infer_VAR:
+
+class infer_VAR(BaseInfer):
     """
     infer_VAR class for performing inference on VAR models.
 
@@ -17,9 +22,6 @@ class infer_VAR:
         data (numpy.ndarray): The data to perform inference on.
 
     Methods:
-        import_data(file_path, index_col=None, parse_dates=False):
-            Imports data from a .csv file.
-
         run_inference():
             Runs the inference process for the VAR model.
 
@@ -43,69 +45,85 @@ class infer_VAR:
             intercepts=None,
             covariance_matrix=None,
             dataS=None):
+        super().__init__()  # Call base class constructor
         self.data = self._validate_data(data)
         self.dataS = self._validate_data(dataS) if dataS is not None else None
         self.coefficients = coefficients
         self.intercepts = intercepts
         self.covariance_matrix = covariance_matrix
 
-    def _validate_data(self, data):
-        if data is None:
-            return None
-        elif isinstance(data, pd.DataFrame):
-            return data.values
-        elif isinstance(data, np.ndarray):
-            return data
-        elif isinstance(data, (list, tuple)):
-            try:
-                return np.array(data)
-            except Exception as e:
-                raise TypeError(
-                    f"Data could not be converted to a numpy array: {e}"
-                ) from e
-        else:
-            raise TypeError(
-                "Unsupported data type. Data must be a DataFrame, ndarray, list, or tuple.")
+        # Initialize attributes for storing data and filenames
+        self.last_trace = None
+        self.last_data = None
+        self.last_data_filename = None
+        self.last_netcdf_filename = None
 
-    def import_data(
+    def set_parameters(
             self,
-            file_path,
-            index_col=None,
-            parse_dates=False,
-            data_type='X') -> None:
+            data: Optional[Union[np.ndarray,
+                                 pd.DataFrame, list, tuple]] = None,
+            coefficients: Optional[Union[np.ndarray, list]] = None,
+            intercepts: Optional[Union[np.ndarray, list]] = None,
+            covariance_matrix: Optional[Union[np.ndarray, list]] = None,
+            dataS: Optional[Union[np.ndarray,
+                                  pd.DataFrame, list, tuple]] = None,
+            priors: Optional[Dict[str, Any]] = None) -> None:
         """
-        Imports data from a .csv file.
+        Sets the parameters for the infer_VAR instance.
 
-        Args:
-        file_path (str): The path to the .csv file.
-        index_col (int, optional): Column to use as the row labels of the DataFrame.
-        parse_dates (bool, optional): Parse dates as datetime.
-        data_type (str): Specify whether the data is for 'X' (abundance) or 'S' (metabolite).
+        Allows optional specification of all model parameters. Parameters not provided (None) are left unchanged.
 
-        Returns:
-        None
+        Parameters:
+            data (Optional[Union[np.ndarray, pd.DataFrame, list, tuple]]): The data to perform inference on.
+            coefficients (Optional[Union[np.ndarray, list]]): Coefficients of the VAR model.
+            intercepts (Optional[Union[np.ndarray, list]]): Intercepts of the VAR model.
+            covariance_matrix (Optional[Union[np.ndarray, list]]): Covariance matrix of the VAR model.
+            dataS (Optional[Union[np.ndarray, pd.DataFrame, list, tuple]]): The secondary data (e.g., metabolite data).
+            priors (Optional[Dict[str, Any]]): A dictionary of prior distributions.
         """
-        try:
-            data = pd.read_csv(file_path, index_col=index_col,
-                               parse_dates=parse_dates)
-            if data_type == 'X':
-                self.data = self._validate_data(data)
-            elif data_type == 'S':
-                self.dataS = self._validate_data(data)
-            else:
-                raise ValueError("data_type must be either 'X' or 'S'.")
-        except Exception as e:
-            raise ValueError(
-                f"Failed to import data from {file_path}: {e}") from e
+        if data is not None:
+            self.data = self._validate_data(data)
+        if dataS is not None:
+            self.dataS = self._validate_data(dataS)
+        if coefficients is not None:
+            coefficients = np.array(coefficients)
+            if coefficients.shape[0] != coefficients.shape[1]:
+                raise ValueError("Coefficients matrix must be square.")
+            if self.data is not None and coefficients.shape[0] != self.data.shape[1]:
+                raise ValueError(
+                    "Coefficients matrix dimensions must match the number of variables in the data.")
+            self.coefficients = coefficients
+            self.priors['coefficients'] = self.coefficients
+        if intercepts is not None:
+            intercepts = np.array(intercepts)
+            if self.data is not None and intercepts.shape[0] != self.data.shape[1]:
+                raise ValueError(
+                    "Intercepts must match the number of variables in the data.")
+            self.intercepts = intercepts
+            self.priors['intercepts'] = self.intercepts
+        if covariance_matrix is not None:
+            covariance_matrix = np.array(covariance_matrix)
+            if covariance_matrix.shape[0] != covariance_matrix.shape[1]:
+                raise ValueError("Covariance matrix must be square.")
+            if self.data is not None and covariance_matrix.shape[0] != self.data.shape[1]:
+                raise ValueError(
+                    "Covariance matrix dimensions must match the number of variables in the data.")
+            self.covariance_matrix = covariance_matrix
+            self.priors['covariance_matrix'] = self.covariance_matrix
+        if priors is not None:
+            self.set_priors(priors)
 
-    # sourcery skip: extract-method
-    def run_inference(self, samples=2000, tune=1000, cores=2) -> None:
+    def run_inference(self, **kwargs) -> None:
         """
         Runs the inference process for the VAR model.
 
         Returns:
         None
         """
+        samples = kwargs.get('samples', 2000)
+        tune = kwargs.get('tune', 1000)
+        cores = kwargs.get('cores', 2)
+
         if self.data is None:
             print("Error: No data to perform inference on.")
             return
@@ -124,11 +142,18 @@ class infer_VAR:
 
         # PyMC3 model
         # Set priors if provided, else default to zero mean and unit variance
-        x0_prior_mu = self.intercepts.flatten(
-        ) if self.intercepts is not None else np.zeros(dim)
-        A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
-            (dim, dim))
-        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
+        x0_prior_mu = self.priors.get('intercepts', self.intercepts.flatten(
+        )) if self.intercepts is not None else np.zeros(dim)
+        A_prior_mu = self.priors.get(
+            'coefficients',
+            self.coefficients) if self.coefficients is not None else np.zeros(
+            (dim,
+             dim))
+        noise_cov_prior = self.priors.get(
+            'covariance_matrix',
+            self.covariance_matrix) if self.covariance_matrix is not None else None
+
+        # PyMC3 model
         with pm.Model() as var_model:
             # Priors for x0 and sigma
             # QUESTION: should the sigma be the noise_stddev from the
@@ -152,20 +177,13 @@ class infer_VAR:
                     "noise_chol", eta=1.0, n=dim, sd_dist=pm.HalfNormal.dist(sigma=1.0))
 
             # VAR(1) process likelihood
-            print("x0:", x0.shape)
-            # print("A:",A.shape)
-            # print("data[:-1, :]:", data[:-1, :].shape)
-            print("data[1:, :]:", data[1:, :].shape)
             x0_obs = data[0, :].copy().reshape(-1)
-            print("x0:", x0_obs.shape)
-
             mu = x0[:, np.newaxis] + pm.math.dot(A, data[:-1, :].T)
-            print("mu:", mu.T.shape)
-            print("data:", data[1:, :].shape)
 
             # obs_chol = np.diag(np.full(dim,sigma))
 
             # *pm.Normal('likelihood_0', mu=x0, sigma=1.0, observed=x0_obs)
+
             likelihood = pm.MvNormal(
                 'likelihood_t', mu=mu.T, chol=noise_chol, observed=data[1:, :])
 
@@ -173,7 +191,7 @@ class infer_VAR:
         with var_model:
             # FIXME: #38 make these arguments specifiable in the
             # parameters.json file file
-            trace = pm.sample(samples, tune=tune, cores=cores)
+            trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
         # Plotting the posterior distributions
         # pm.plot_posterior(trace, var_names=['x0', 'A'])
@@ -184,15 +202,16 @@ class infer_VAR:
         #    'A': np.mean(trace['A'], axis=0)
         #
 
-        # print("Posterior Means:")
-        # print(posterior_means)
+        # Store data directly in object attributes
+        self.last_trace = trace
+        self.last_data = (data,)
 
         print(az.summary(trace, var_names=["x0", "A"]))
 
         az.plot_posterior(trace, var_names=["x0", "A"])
         plt.savefig("posterior_plot.pdf")
-        az.to_netcdf(trace, 'model_posterior.nc')
-        np.savez("data.npz", dataX=data)
+        # Save results using the _save_results method
+        self._save_results(trace, (data,), method='default')
 
     def run_inference_large(self, samples=4000, tune=2000, cores=4) -> None:
         """
@@ -217,50 +236,29 @@ class infer_VAR:
         N = data.shape[0]
 
         # Set priors if provided, else default to zero mean and unit variance
-        x0_prior_mu = self.intercepts.flatten(
-        ) if self.intercepts is not None else np.zeros(ndim)
-        A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
-            (ndim, ndim))
-        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
+        x0_prior_mu = self.priors.get('intercepts', self.intercepts.flatten(
+        )) if self.intercepts is not None else np.zeros(ndim)
+        A_prior_mu = self.priors.get(
+            'coefficients',
+            self.coefficients) if self.coefficients is not None else np.zeros(
+            (ndim,
+             ndim))
+        noise_cov_prior = self.priors.get(
+            'covariance_matrix',
+            self.covariance_matrix) if self.covariance_matrix is not None else None
 
         # create and fit PyMC model
         with pm.Model() as var_model:
-            # Standard LKJ priors Priors for x0 and sigma
-            # x0 = pm.Normal('x0', mu=initial_values_true, sigma=0.01, shape=(ndim,1))
-            # A = pm.Normal('A', mu=0, sigma=1, shape=(ndim, ndim))
-
-            # Priors for coefficients with LKJ prior
-            # noise_chol, _, _ = pm.LKJCholeskyCov("noise_chol", eta=1.0, n=dim, sd_dist=pm.HalfNormal.dist(sigma=1.0) )
-
-            # VAR(1) process likelihood
-            # mu = x0 + pm.math.dot(A, data[:-1, :].T)
-            # likelihood = pm.MvNormal('likelihood_t', mu=mu.T, chol=noise_chol, observed=data[1:, :])
-
-            # Priors for coefficients with horseshoe -> sparse VAR
             noise_stddev = pm.HalfNormal("noise_stddev", 25)
-            # [0,0]*ndim might be better
-            x0 = pm.Normal('x0', mu=x0_prior_mu,
-                           sigma=0.001, shape=(ndim,))
+            x0 = pm.Normal('x0', mu=x0_prior_mu, sigma=0.001, shape=(ndim,))
 
-            # Standard horse shoe
-            # Prior on error SD
-            # sigma = pm.HalfNormal("sigma", 25)
-            # Global shrinkage prior
-            # tau = pm.HalfStudentT("tau", 2, D0 / (D - D0) * sigma / np.sqrt(N))
-            # Local shrinkage prior
-            # lam = pm.HalfStudentT("lam", 5, shape=(ndim, ndim) )
-            # c2 = pm.InverseGamma("c2", 2, 8)
-            # z = pm.Normal("z", 0.0, 1.0, shape=(ndim, ndim) )
-            # Shrunken coefficients
-            # A = pm.Normal('A', mu=0, sigma = z * tau * lam * at.sqrt(c2 / (c2 + tau**2 * lam**2)), shape=(ndim, ndim) )
-
-            # Regularised horse shoe
+            # Regularised horse shoe prior
             tau0 = (D0 / (D - D0)) * noise_stddev / np.sqrt(N)
             c2 = pm.InverseGamma("c2", 2, 8)
             tau = pm.HalfCauchy("tau", beta=tau0)
             lam = pm.HalfCauchy("lam", beta=1, shape=(ndim, ndim))
-            A = pm.Normal('A', mu=A_prior_mu, sigma=tau * lam * at.sqrt(c2 /
-                          (c2 + tau**2 * lam**2)), shape=(ndim, ndim))
+            A = pm.Normal('A', mu=A_prior_mu, sigma=tau * lam * \
+                          at.sqrt(c2 / (c2 + tau**2 * lam**2)), shape=(ndim, ndim))
 
             # If noise covariance is provided, use it as a prior
             if noise_cov_prior is not None:
@@ -278,15 +276,20 @@ class infer_VAR:
 
         # Sampling from the posterior
         with var_model:
-            trace = pm.sample(samples, tune=tune, cores=cores)
+            trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
         print(az.summary(trace, var_names=["A"]))
 
+        # Plotting the posterior distributions
         az.plot_posterior(trace, var_names=[
             "A"])
         plt.savefig("plot-posterior.pdf")
-        az.to_netcdf(trace, 'model_posterior.nc')
-        np.savez("data.npz", dataX=data)
+
+        # Store data directly in object attributes
+        self.last_trace = trace
+        self.last_data = (data,)
+        # Save results to unique filenames
+        self._save_results(trace, data, method='large')
 
     def run_inference_xs(self, samples=2000, tune=1000, cores=2) -> None:
         """
@@ -305,16 +308,20 @@ class infer_VAR:
 
         dataX = self.data
         dataS = self.dataS
-
         nX = dataX.shape[1]
         nS = dataS.shape[1]
 
         # Set priors if provided, else default to zero mean and unit variance
-        x0_prior_mu = self.intercepts.flatten(
-        ) if self.intercepts is not None else np.zeros(nX)
-        A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
-            (nX, nX))
-        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
+        x0_prior_mu = self.priors.get('intercepts', self.intercepts.flatten(
+        )) if self.intercepts is not None else np.zeros(nX)
+        A_prior_mu = self.priors.get(
+            'coefficients',
+            self.coefficients) if self.coefficients is not None else np.zeros(
+            (nX,
+             nX))
+        noise_cov_prior = self.priors.get(
+            'covariance_matrix',
+            self.covariance_matrix) if self.covariance_matrix is not None else None
 
         # PyMC3 model
         with pm.Model() as var_model:
@@ -340,13 +347,18 @@ class infer_VAR:
                                    sigma=sigma, observed=data[2:, :])
 
         with var_model:
-            idata = pm.sample(samples, tune=tune, cores=cores)
+            idata = pm.sample(draws=samples, tune=tune, cores=cores)
 
         print(az.summary(idata, var_names=["Ah", "Bh"]))
+
         az.plot_posterior(idata, var_names=["Ah", "Bh"])
         plt.savefig("posterior_plot.pdf")
-        az.to_netcdf(idata, 'model_posterior.nc')
-        np.savez("data.npz", dataX=dataX, dataS=dataS)
+
+        # Store data directly in object attributes
+        self.last_trace = idata
+        self.last_data = (dataX, dataS)
+        # Save results to unique filenames
+        self._save_results(idata, (dataX, dataS), method='xs')
 
     def run_inference_large_xs(self, samples=4000, tune=2000, cores=4) -> None:
         """
@@ -365,10 +377,8 @@ class infer_VAR:
 
         dataX = self.data
         dataS = self.dataS
-
         nX = dataX.shape[1]
         nS = dataS.shape[1]
-
         DA = nX * nX
         DA0 = 5
         DB = nS * nX
@@ -376,11 +386,16 @@ class infer_VAR:
         N = dataX.shape[0] - 2
 
         # Set priors if provided, else default to zero mean and unit variance
-        x0_prior_mu = self.intercepts.flatten(
-        ) if self.intercepts is not None else np.zeros(nX)
-        A_prior_mu = self.coefficients.values if self.coefficients is not None else np.zeros(
-            (nX, nX))
-        noise_cov_prior = self.covariance_matrix.values if self.covariance_matrix is not None else None
+        x0_prior_mu = self.priors.get('intercepts', self.intercepts.flatten(
+        )) if self.intercepts is not None else np.zeros(nX)
+        A_prior_mu = self.priors.get(
+            'coefficients',
+            self.coefficients) if self.coefficients is not None else np.zeros(
+            (nX,
+             nX))
+        noise_cov_prior = self.priors.get(
+            'covariance_matrix',
+            self.covariance_matrix) if self.covariance_matrix is not None else None
 
         with pm.Model() as var_model:
             tau0_A = (DA0 / (DA - DA0)) * 0.1 / np.sqrt(N)
@@ -415,36 +430,69 @@ class infer_VAR:
                                    sigma=sigma, observed=data[2:, :])
 
         with var_model:
-            trace = pm.sample(samples, tune=tune, cores=cores)
+            trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
         print(az.summary(trace, var_names=["Ah", "Bh"]))
+
         az.plot_posterior(trace, var_names=["Ah", "Bh"])
         plt.savefig("posterior_plot.pdf")
-        az.to_netcdf(trace, 'model_posterior.nc')
-        np.savez("data.npz", dataX=dataX, dataS=dataS)
 
-    def posterior_analysis(self, A=None, B=None):
+        # Store data directly in object attributes
+        self.last_trace = trace
+        self.last_data = (dataX, dataS)
+        # Save results to unique filenames
+        self._save_results(trace, (dataX, dataS), method='large_xs')
+
+    def posterior_analysis(
+            self,
+            data_filename=None,
+            netcdf_filename=None,
+            A=None,
+            B=None):
         """
         Performs posterior analysis and visualizes the results.
 
         Args:
-        simulated (bool): Indicates whether the data is simulated or not.
+        data_filename (str, optional): The filename for the .npz data file.
+        netcdf_filename (str, optional): The filename for the NetCDF file with inference results.
+        A (numpy.ndarray, optional): The true matrix A to compare against.
+        B (numpy.ndarray, optional): The true matrix B to compare against.
 
         Returns:
         None
         """
-        with np.load("data.npz", allow_pickle=True) as xsdata:
-            dataX = xsdata['dataX']
-            dataS = xsdata['dataS']
+        # Check if data is stored in attributes
+        if self.last_data is not None:
+            dataX, dataS = self.last_data[0], self.last_data[1] if len(
+                self.last_data) > 1 else None
+        else:
+            # Load data from file if not stored in attributes
+            data_filename = data_filename or self.last_data_filename
+            try:
+                with np.load(data_filename, allow_pickle=True) as xsdata:
+                    dataX = xsdata['dataX']
+                    dataS = xsdata['dataS'] if 'dataS' in xsdata else None
+            except KeyError as e:
+                print(f"Error loading data: {e}")
+                dataS = None
 
-        self.make_plot_stacked(dataX, dataS)
+        if dataS is not None:
+            self.make_plot_stacked(dataX, dataS)
 
-        idata = az.from_netcdf('model_posterior.nc')
-
-        print(az.summary(idata, var_names=["Ah", "Bh"]))
+        # Check if inference data is stored in attributes
+        if self.last_trace is not None:
+            idata = self.last_trace
+        else:
+            # Load inference data from file if not stored in attributes
+            netcdf_filename = netcdf_filename or self.last_netcdf_filename
+            try:
+                idata = az.from_netcdf(netcdf_filename)
+                print(az.summary(idata, var_names=["Ah", "Bh"]))
+            except FileNotFoundError as e:
+                print(f"Error loading inference data: {e}")
+                return
 
         true_values = [A, B] if A is not None and B is not None else None
-
         self.plot_heatmap(
             idata, matrices=["Ah", "Bh"], true_values=true_values)
 
@@ -548,3 +596,30 @@ class infer_VAR:
 
         plt.tight_layout()
         plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')
+
+    def _save_results(self, trace, data, method='default'):
+        base_filename = f"model_posterior_{method}.nc"
+        data_filename = f"data_{method}.npz"
+
+        # Incremental versioning
+        version = 1
+        while os.path.exists(base_filename):
+            base_filename = f"model_posterior_{method}_v{version}.nc"
+            data_filename = f"data_{method}_v{version}.npz"
+            version += 1
+
+        # Save files as a fallback
+        az.to_netcdf(trace, base_filename)
+        dataX = data[0]
+        dataS = data[1] if len(data) > 1 else None
+        if dataS is None:
+            np.savez(data_filename, dataX=dataX)
+        else:
+            np.savez(data_filename, dataX=dataX, dataS=dataS)
+
+        # Store filenames as fallback
+        self.last_data_filename = data_filename
+        self.last_netcdf_filename = base_filename
+
+        print(
+            f"Results saved as:\nNetCDF file: {base_filename}\nData file: {data_filename}")

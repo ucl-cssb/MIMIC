@@ -89,7 +89,7 @@ class sim_VAR(BaseModel):
                        noise_stddev: Optional[Union[int, float]] = None,
                        output: Optional[str] = None,
                        coefficientsM: Optional[List[List[Union[int, float]]]] = None,
-                       initial_valuesM: Optional[List[List[int]]] = None) -> None:
+                       initial_valuesM: Optional[List[List[Union[int, float]]]] = None) -> None:
         """
         Sets the parameters for the sim_VAR instance.
 

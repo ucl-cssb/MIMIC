@@ -17,7 +17,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
-      
+
       - name: Set up Git
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]
@@ -28,25 +28,43 @@ jobs:
           fi
           git checkout $BRANCH_NAME
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      # Set up Conda
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v2
         with:
+          auto-update-conda: true
           python-version: "3.10"
+          miniconda-version: "latest"
 
-      - name: Install autopep8
-        run: python -m pip install autopep8
-  
+      # Create mimic_env from environment.yml
+      - name: Create mimic_env from environment.yml
+        run: conda env create -f environment.yml
+
+      # Activate mimic_env and install autopep8
+      - name: Activate mimic_env and install autopep8
+        shell: bash -l {0}
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
+          conda install autopep8
+
       - name: Format code with autopep8
-        run: autopep8 --in-place --aggressive --aggressive --recursive mimic/
-  
- 
+        shell: bash -l {0}
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
+          autopep8 --in-place --aggressive --aggressive --recursive mimic/
 
-      - name: Install pip-tools
-        run: python -m pip install pip-tools
+      # Activate mimic_env, install pip-tools, and compile requirements.txt
+      - name: Install pip-tools and compile requirements.txt
+        shell: bash -l {0}
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
+          pip install pip-tools
+          pip-compile --output-file requirements.txt requirements.in
 
-      - name: Compile requirements.txt
-        run: pip-compile --output-file requirements.txt requirements.in
-
+      # Commit changes to the repository
       - name: Commit changes
         run: |
           git config --global user.email "action@github.com"
@@ -62,7 +80,7 @@ jobs:
           name: requirements
           path: requirements.txt
 
-  build:
+  compatibility-check:
     needs: update-requirements
     runs-on: ${{ matrix.os }}
     strategy:
@@ -79,26 +97,29 @@ jobs:
         with:
           name: requirements
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: ${{ matrix.python-version }}
-      
-      - name: Cache Python dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          auto-update-conda: true
+          python-version: "3.10"
+          miniconda-version: "latest"
 
-      - name: Install dependencies
-        shell: bash
+      # Create mimic_env from environment.yml, with adjustments for Windows compatibility
+      - name: Create mimic_env from environment file
+        shell: bash -l {0}
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install flake8 mypy pytest
-          if [ -f requirements.txt ]; then
-            python -m pip install -r requirements.txt
+          eval "$(conda shell.bash hook)"
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            conda env create -f environment_windows.yml
           else
-            echo "No requirements.txt found"
+            conda env create -f environment.yml
           fi
+
+
+      # Activate mimic_env and install the package for compatibility check
+      - name: Install dependencies for compatibility check
+        shell: bash -l {0}
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate mimic_env
+          pip install -e .

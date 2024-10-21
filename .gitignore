@@ -99,10 +99,17 @@ ENV/
 # mypy
 .mypy_cache/
 
+# Mac OS X files
+.DS_Store
+
 # IDE settings
 .vscode/
 .idea/
 
 # Additional and miscellaneous files
 *.pdf
+
+# Ignore all files created during inference
+*.nc
+*.npz
 
