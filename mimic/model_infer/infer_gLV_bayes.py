@@ -9,6 +9,11 @@ import cloudpickle
 from mimic.utilities import *
 from mimic.model_simulate.sim_gLV import *
 
+from mimic.model_infer.base_infer import BaseInfer
+
+import os
+from typing import Optional, Union, List, Dict, Any
+
 
 import pandas as pd
 import numpy as np
@@ -83,7 +88,7 @@ def plot_growth_curves(data):
     plt.show()
 
 
-class infergLVbayes:
+class infergLVbayes(BaseInfer):
     """
     bayes_gLV class for Bayesian inference of gLV models without shrinkage priors
 
@@ -242,7 +247,7 @@ class infergLVbayes:
         DA0 = int(round(expected_non_zero_elements))
         return max(DA0, 1)
 
-    def run_bayes_gLV(self) -> None:
+    def run_inference(self) -> None:
         """
         This function infers the parameters for the Bayesian gLV model
 
@@ -322,12 +327,12 @@ class infergLVbayes:
             # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
-            idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores)
+            idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores, progressbar=True)
 
 
         return idata
 
-    def run_bayes_gLV_shrinkage(self) -> None:
+    def run_inference_shrinkage(self) -> None:
         """
         This function infers the parameters for the Bayesian gLV model with Horseshoe prior for shrinkage
 
@@ -380,7 +385,7 @@ class infergLVbayes:
             c2 = pm.InverseGamma("c2", 2, 1)
             tau = pm.HalfCauchy("tau", beta=tau0)
             lam = pm.HalfCauchy("lam", beta=1, shape=(num_species, num_species - 1))
-            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_sigma, sigma=tau * lam *
+            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=tau * lam *
                 at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
                 num_species-1))
             #M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
@@ -416,7 +421,7 @@ class infergLVbayes:
 
         return idata
 
-    def run_bayes_gLV_shrinkage_pert(self) -> None:
+    def run_inference_shrinkage_pert(self) -> None:
         """
         This function infers the parameters for the Bayesian gLV model with Horseshoe prior for shrinkage
 
