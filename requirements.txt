@@ -4,122 +4,369 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-arviz==0.18.0
+absl-py==2.1.0
+    # via
+    #   keras
+    #   tensorboard
+    #   tensorflow
+    #   tensorflow-probability
+arviz==0.20.0
+    # via
+    #   -r requirements.in
+    #   pymc
+asttokens==2.4.1
+    # via stack-data
+astunparse==1.6.3
+    # via tensorflow
+cachetools==5.5.0
     # via pymc
-cachetools==5.3.3
-    # via pymc
+certifi==2024.8.30
+    # via requests
+charset-normalizer==3.4.0
+    # via requests
+check-shapes==1.1.1
+    # via gpflow
 cloudpickle==3.0.0
-    # via pymc
+    # via
+    #   -r requirements.in
+    #   pymc
+    #   tensorflow-probability
+comm==0.2.2
+    # via
+    #   ipykernel
+    #   ipywidgets
 cons==0.4.6
     # via
     #   etuples
     #   minikanren
     #   pytensor
-contourpy==1.2.1
+contourpy==1.3.0
     # via matplotlib
+coverage[toml]==7.6.2
+    # via pytest-cov
 cycler==0.12.1
     # via matplotlib
+debugpy==1.8.6
+    # via ipykernel
+decorator==5.1.1
+    # via
+    #   ipython
+    #   tensorflow-probability
+deprecated==1.2.14
+    # via gpflow
 dm-tree==0.1.8
-    # via arviz
+    # via tensorflow-probability
+dropstackframe==0.1.1
+    # via check-shapes
 etuples==0.3.9
     # via
     #   minikanren
     #   pytensor
-filelock==3.14.0
+exceptiongroup==1.2.2
+    # via
+    #   ipython
+    #   pytest
+executing==2.1.0
+    # via stack-data
+filelock==3.16.1
     # via pytensor
-fonttools==4.52.4
+flatbuffers==24.3.25
+    # via tensorflow
+fonttools==4.54.1
     # via matplotlib
-h5netcdf==1.3.0
+gast==0.6.0
+    # via
+    #   tensorflow
+    #   tensorflow-probability
+google-pasta==0.2.0
+    # via tensorflow
+gpflow==2.9.2
+    # via -r requirements.in
+grpcio==1.66.2
+    # via
+    #   tensorboard
+    #   tensorflow
+h5netcdf==1.4.0
     # via arviz
-h5py==3.11.0
-    # via h5netcdf
-kiwisolver==1.4.5
+h5py==3.12.1
+    # via
+    #   h5netcdf
+    #   keras
+    #   tensorflow
+idna==3.10
+    # via requests
+iniconfig==2.0.0
+    # via pytest
+ipykernel==6.29.5
+    # via -r requirements.in
+ipython==8.28.0
+    # via
+    #   ipykernel
+    #   ipywidgets
+ipywidgets==8.1.5
+    # via -r requirements.in
+jedi==0.19.1
+    # via ipython
+joblib==1.4.2
+    # via scikit-learn
+jupyter-client==8.6.3
+    # via ipykernel
+jupyter-core==5.7.2
+    # via
+    #   ipykernel
+    #   jupyter-client
+jupyterlab-widgets==3.0.13
+    # via ipywidgets
+keras==3.6.0
+    # via tensorflow
+kiwisolver==1.4.7
     # via matplotlib
+lark==1.2.2
+    # via check-shapes
+libclang==18.1.1
+    # via tensorflow
 logical-unification==0.4.6
     # via
     #   cons
     #   minikanren
     #   pytensor
+markdown==3.7
+    # via tensorboard
 markdown-it-py==3.0.0
     # via rich
-matplotlib==3.9.0
-    # via arviz
+markupsafe==3.0.1
+    # via werkzeug
+matplotlib==3.9.2
+    # via
+    #   -r requirements.in
+    #   arviz
+    #   seaborn
+matplotlib-inline==0.1.7
+    # via
+    #   ipykernel
+    #   ipython
 mdurl==0.1.2
     # via markdown-it-py
 minikanren==1.0.3
     # via pytensor
+ml-dtypes==0.3.2
+    # via
+    #   keras
+    #   tensorflow
 multipledispatch==1.0.0
     # via
     #   etuples
+    #   gpflow
     #   logical-unification
     #   minikanren
+namex==0.0.8
+    # via keras
+nest-asyncio==1.6.0
+    # via ipykernel
 numpy==1.26.4
     # via
+    #   -r requirements.in
     #   arviz
     #   contourpy
+    #   gpflow
     #   h5py
+    #   keras
     #   matplotlib
+    #   ml-dtypes
     #   pandas
     #   pymc
     #   pytensor
+    #   scikit-learn
     #   scipy
+    #   seaborn
+    #   tensorboard
+    #   tensorflow
+    #   tensorflow-probability
     #   xarray
     #   xarray-einstats
-packaging==24.0
+opt-einsum==3.4.0
+    # via tensorflow
+optree==0.13.0
+    # via keras
+packaging==24.1
     # via
     #   arviz
+    #   gpflow
     #   h5netcdf
+    #   ipykernel
+    #   keras
     #   matplotlib
+    #   pytest
+    #   tensorflow
     #   xarray
-pandas==2.2.2
+pandas==2.2.3
     # via
+    #   -r requirements.in
     #   arviz
     #   pymc
+    #   seaborn
     #   xarray
-pillow==10.3.0
+parso==0.8.4
+    # via jedi
+pexpect==4.9.0
+    # via ipython
+pillow==10.4.0
     # via matplotlib
+platformdirs==4.3.6
+    # via jupyter-core
+pluggy==1.5.0
+    # via pytest
+prompt-toolkit==3.0.48
+    # via ipython
+protobuf==4.25.5
+    # via
+    #   tensorboard
+    #   tensorflow
+psutil==6.0.0
+    # via ipykernel
+ptyprocess==0.7.0
+    # via pexpect
+pure-eval==0.2.3
+    # via stack-data
 pygments==2.18.0
-    # via rich
-pymc==5.15.0
+    # via
+    #   ipython
+    #   rich
+pymc==5.17.0
     # via -r requirements.in
-pyparsing==3.1.2
+pyparsing==3.1.4
     # via matplotlib
-pytensor==2.20.0
+pytensor==2.25.5
     # via
     #   -r requirements.in
     #   pymc
+pytest==8.3.3
+    # via
+    #   -r requirements.in
+    #   pytest-cov
+    #   pytest-mock
+pytest-cov==5.0.0
+    # via -r requirements.in
+pytest-mock==3.14.0
+    # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via
+    #   jupyter-client
     #   matplotlib
     #   pandas
-pytz==2024.1
+pytz==2024.2
     # via pandas
-rich==13.7.1
-    # via pymc
-scipy==1.13.1
+pyzmq==26.2.0
     # via
+    #   ipykernel
+    #   jupyter-client
+requests==2.32.3
+    # via tensorflow
+rich==13.9.2
+    # via
+    #   keras
+    #   pymc
+scikit-learn==1.5.2
+    # via -r requirements.in
+scipy==1.14.1
+    # via
+    #   -r requirements.in
     #   arviz
+    #   gpflow
     #   pymc
     #   pytensor
+    #   scikit-learn
     #   xarray-einstats
+seaborn==0.13.2
+    # via -r requirements.in
 six==1.16.0
-    # via python-dateutil
-toolz==0.12.1
+    # via
+    #   asttokens
+    #   astunparse
+    #   google-pasta
+    #   python-dateutil
+    #   tensorboard
+    #   tensorflow
+    #   tensorflow-probability
+stack-data==0.6.3
+    # via ipython
+tabulate==0.9.0
+    # via gpflow
+tensorboard==2.16.2
+    # via tensorflow
+tensorboard-data-server==0.7.2
+    # via tensorboard
+tensorflow==2.16.2
+    # via
+    #   -r requirements.in
+    #   gpflow
+    #   tensorflow-probability
+    #   tf-keras
+tensorflow-io-gcs-filesystem==0.37.1
+    # via tensorflow
+tensorflow-probability[tf]==0.24.0
+    # via
+    #   -r requirements.in
+    #   gpflow
+termcolor==2.5.0
+    # via tensorflow
+tf-keras==2.16.0
+    # via tensorflow-probability
+threadpoolctl==3.5.0
+    # via
+    #   pymc
+    #   scikit-learn
+tomli==2.0.2
+    # via
+    #   coverage
+    #   pytest
+toolz==1.0.0
     # via
     #   logical-unification
     #   minikanren
-typing-extensions==4.12.0
+tornado==6.4.1
+    # via
+    #   ipykernel
+    #   jupyter-client
+traitlets==5.14.3
+    # via
+    #   comm
+    #   ipykernel
+    #   ipython
+    #   ipywidgets
+    #   jupyter-client
+    #   jupyter-core
+    #   matplotlib-inline
+typing-extensions==4.12.2
     # via
     #   arviz
+    #   gpflow
+    #   ipython
+    #   optree
     #   pymc
-    #   pytensor
-tzdata==2024.1
+    #   rich
+    #   tensorflow
+tzdata==2024.2
     # via pandas
-xarray==2024.5.0
+urllib3==2.2.3
+    # via requests
+wcwidth==0.2.13
+    # via prompt-toolkit
+werkzeug==3.0.4
+    # via tensorboard
+wheel==0.44.0
+    # via astunparse
+widgetsnbextension==4.0.13
+    # via ipywidgets
+wrapt==1.16.0
+    # via
+    #   deprecated
+    #   tensorflow
+xarray==2024.9.0
     # via
     #   arviz
     #   xarray-einstats
-xarray-einstats==0.7.0
+xarray-einstats==0.8.0
     # via arviz
 
 # The following packages are considered to be unsafe in a requirements file:
