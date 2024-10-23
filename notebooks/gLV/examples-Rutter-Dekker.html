@@ -78,7 +78,31 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the data</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import and format the data</span>
+
+<span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">input_data</span><span class="p">):</span>
+    <span class="c1"># Read the CSV file</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+
+    <span class="c1"># Adjust for data size and number of species as necessary</span>
+    <span class="c1"># Here we take only time course up to t=400</span>
+    <span class="n">X1_bar</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Calculate the mean of the second species</span>
+    <span class="n">X2_bar</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Combine the first column with the calculated means</span>
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="s1">&#39;X1_bar&#39;</span><span class="p">:</span> <span class="n">X1_bar</span><span class="p">,</span>
+        <span class="s1">&#39;X2_bar&#39;</span><span class="p">:</span> <span class="n">X2_bar</span>
+    <span class="p">})</span>
+
+    <span class="c1"># Replace negative values with 0</span>
+    <span class="n">obs</span><span class="p">[</span><span class="n">obs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">obs</span>
+
 <span class="n">PM3_EntA_data</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;PM3-EntA-coculture.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -127,63 +151,46 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_0.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_0.png" />
 </div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">linearize_time_course_16S</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(19, 3)
-[[ 0.06410781  0.00451447]
- [ 0.030741    0.00864193]
- [ 0.02029504  0.01491441]
- [ 0.03195409  0.00920276]
- [ 0.02306859  0.01972501]
- [ 0.02551347  0.02072131]
- [ 0.031458    0.01324291]
- [ 0.02318223  0.01933004]
- [ 0.02108645  0.00678014]
- [ 0.01398885  0.01118549]
- [ 0.01235913  0.00355461]
- [ 0.00489876  0.00609444]
- [ 0.00298835  0.00563386]
- [ 0.00474679 -0.00245348]
- [ 0.00168398  0.00406172]
- [ 0.00233942  0.00074916]
- [ 0.00208133 -0.00155351]
- [-0.000806    0.0048483 ]
- [ 0.00168939 -0.00319625]]
-</pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define priors</span>
-<span class="n">mu_prior</span> <span class="o">=</span> <span class="mf">0.03</span>
-
-<span class="n">M_prior</span> <span class="o">=</span> <span class="mf">0.1</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Perform Bayesian inference without shrinkage</span>
 
-<span class="n">inference</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">mu_prior</span><span class="p">,</span> <span class="n">M_prior</span><span class="p">)</span>
+<span class="c1"># Define priors</span>
+<span class="n">prior_mu_mean</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">prior_mu_sigma</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="c1">## NB prior_Mii_mean is 0, so not defined as an argument</span>
+<span class="n">prior_Mii_mean</span> <span class="o">=</span>  <span class="mf">0.1</span>
+<span class="n">prior_Mii_sigma</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="n">prior_Mij_sigma</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+
+<span class="c1"># Sampling conditions</span>
+<span class="n">draws</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">tune</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">chains</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">cores</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="n">inference</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">()</span>
+
+<span class="n">inference</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">prior_mu_mean</span><span class="o">=</span><span class="n">prior_mu_mean</span><span class="p">,</span> <span class="n">prior_mu_sigma</span><span class="o">=</span><span class="n">prior_mu_sigma</span><span class="p">,</span>
+                          <span class="n">prior_Mii_sigma</span><span class="o">=</span><span class="n">prior_Mii_sigma</span><span class="p">,</span> <span class="n">prior_Mii_mean</span><span class="o">=</span><span class="n">prior_Mii_mean</span><span class="p">,</span>
+                          <span class="n">prior_Mij_sigma</span><span class="o">=</span><span class="n">prior_Mij_sigma</span><span class="p">,</span>
+                          <span class="n">draws</span><span class="o">=</span><span class="n">draws</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="n">tune</span><span class="p">,</span> <span class="n">chains</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span><span class="n">cores</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
+
 <span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_bayes_gLV</span><span class="p">()</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -194,8 +201,7 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 X shape: (19, 3)
 F shape: (19, 2)
 Number of species: 2
-Manually determined mu prior
-Manually determined M prior
+AdvancedSetSubtensor.0
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -205,69 +211,48 @@ Manually determined M prior
 <div class="highlight"><pre>
 Auto-assigning NUTS sampler...
 Initializing NUTS using jitter+adapt_diag...
-Multiprocess sampling (2 chains in 2 jobs)
+Multiprocess sampling (4 chains in 4 jobs)
 NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
 </pre></div></div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "9f77e94fac7649e5ba11d472191884d9"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "905705fce5714a53b069c7212fe00937"}</script></div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Sampling 2 chains for 500 tune and 500 draw iterations (1_000 + 1_000 draws total) took 4 seconds.
-We recommend running at least 4 chains for robust computation of convergence diagnostics
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_6.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_6.png" />
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># To plot posterior distributions</span>
+<span class="n">inference</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_7.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_7.png" />
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_0.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_1.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_8.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_8.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1">#inference.plot_posterior_a(idata, mu_hat_np, M_hat_np)</span>
-</pre></div>
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_2.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_8_2.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print summary</span>
@@ -296,21 +281,21 @@ We recommend running at least 4 chains for robust computation of convergence dia
 <div class="output_area docutils container">
 <div class="highlight"><pre>
                  mean     sd  r_hat
-mu_hat[0, 0]    0.032  0.003    1.0
-mu_hat[0, 1]    0.015  0.003    1.0
-M_ii_hat[0]    -0.078  0.062    1.0
-M_ii_hat[1]    -0.105  0.034    1.0
-M_ij_hat[0, 0] -0.084  0.027    1.0
-M_ij_hat[1, 0]  0.004  0.088    1.0
-M_hat[0, 0]    -0.084  0.027    1.0
+mu_hat[0, 0]    0.033  0.003   1.00
+mu_hat[0, 1]    0.015  0.003   1.00
+M_ii_hat[0]    -0.131  0.082   1.00
+M_ii_hat[1]    -0.113  0.037   1.00
+M_ij_hat[0, 0] -0.068  0.027   1.01
+M_ij_hat[1, 0] -0.055  0.087   1.00
+M_hat[0, 0]    -0.068  0.027   1.01
 M_hat[0, 1]     0.000  0.000    NaN
-M_hat[1, 0]     0.004  0.088    1.0
-M_hat[1, 1]    -0.105  0.034    1.0
-sigma[0]        0.007  0.001    1.0
+M_hat[1, 0]    -0.055  0.087   1.00
+M_hat[1, 1]    -0.113  0.037   1.00
+sigma[0]        0.007  0.001   1.00
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -319,12 +304,14 @@ sigma[0]        0.007  0.001    1.0
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">init_species_start</span> <span class="o">=</span> <span class="mf">0.01</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># To compare predicted and observed curves</span>
+
+<span class="n">init_species_start</span> <span class="o">=</span> <span class="mf">0.005</span>
 <span class="n">sim_gLV_class</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">()</span>
-<span class="n">curve_compare</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">mu_prior</span><span class="p">,</span> <span class="n">M_prior</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">init_species_start</span><span class="p">,</span> <span class="n">sim_gLV_class</span><span class="p">)</span>
+<span class="n">curve_compare</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">init_species_start</span><span class="p">,</span> <span class="n">sim_gLV_class</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -333,44 +320,62 @@ sigma[0]        0.007  0.001    1.0
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(2, 500, 2, 2)
-(2, 500, 1, 2)
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 2, &#39;mu&#39;: array([0.03186235, 0.01472449]), &#39;M&#39;: array([[-0.08428906,  0.        ],
-       [ 0.00541343, -0.10554024]]), &#39;epsilon&#39;: array([], shape=(2, 0), dtype=float64)}
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 2, &#39;mu&#39;: array([0.03293699, 0.01535046]), &#39;M&#39;: array([[-0.06793405,  0.        ],
+       [-0.0570224 , -0.11398513]]), &#39;epsilon&#39;: array([], shape=(2, 0), dtype=float64)}
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_11_1.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_11_1.png" />
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_10_1.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_10_1.png" />
 </div>
 </div>
 </section>
 <section id="Perform-Bayesian-inference-with-shrinkage">
 <h1>Perform Bayesian inference with shrinkage<a class="headerlink" href="#Perform-Bayesian-inference-with-shrinkage" title="Link to this heading">¶</a></h1>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">n_obs</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define priors</span>
+<span class="n">prior_mu_mean</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">prior_mu_sigma</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="n">prior_Mii_mean</span> <span class="o">=</span>  <span class="mf">0.1</span>
+<span class="n">prior_Mii_sigma</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="c1">## NB prior_Mij_mean is 0, so not defined as an argument</span>
+<span class="n">prior_Mij_sigma</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="c1"># Define parameters for shrinkage on M_ij (non diagonal elements)</span>
+<span class="n">n_obs</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
 <span class="n">num_species</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">nX</span> <span class="o">=</span> <span class="n">num_species</span>
 <span class="n">noise_stddev</span> <span class="o">=</span> <span class="mf">0.1</span>
 
-<span class="c1"># Params for shrinkage on M_ij (non diagonal elements)</span>
 <span class="n">DA</span> <span class="o">=</span> <span class="n">nX</span><span class="o">*</span><span class="n">nX</span> <span class="o">-</span> <span class="n">nX</span>
 
 <span class="n">DA0</span> <span class="o">=</span> <span class="mi">1</span>     <span class="c1"># expected number of non zero entries in M_ij</span>
 <span class="n">N</span> <span class="o">=</span> <span class="n">n_obs</span> <span class="o">-</span> <span class="mi">2</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">inference</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">mu_prior</span><span class="p">,</span> <span class="n">M_prior</span><span class="p">,</span> <span class="n">DA</span><span class="o">=</span><span class="n">DA</span><span class="p">,</span> <span class="n">DA0</span><span class="o">=</span><span class="n">DA0</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">noise_stddev</span><span class="o">=</span><span class="n">noise_stddev</span><span class="p">)</span>
+
+
+<span class="c1"># Sampling conditions</span>
+<span class="n">draws</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">tune</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">chains</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">cores</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="c1"># Run inference</span>
+
+<span class="n">inference</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">()</span>
+
+<span class="n">inference</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">prior_mu_mean</span><span class="o">=</span><span class="n">prior_mu_mean</span><span class="p">,</span> <span class="n">prior_mu_sigma</span><span class="o">=</span><span class="n">prior_mu_sigma</span><span class="p">,</span>
+                          <span class="n">prior_Mii_sigma</span><span class="o">=</span><span class="n">prior_Mii_sigma</span><span class="p">,</span> <span class="n">prior_Mii_mean</span><span class="o">=</span><span class="n">prior_Mii_mean</span><span class="p">,</span>
+                          <span class="n">prior_Mij_sigma</span><span class="o">=</span><span class="n">prior_Mij_sigma</span><span class="p">,</span>
+                          <span class="n">DA</span><span class="o">=</span><span class="n">DA</span><span class="p">,</span> <span class="n">DA0</span><span class="o">=</span><span class="n">DA0</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">noise_stddev</span><span class="o">=</span><span class="n">noise_stddev</span><span class="p">,</span>
+                          <span class="n">draws</span><span class="o">=</span><span class="n">draws</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="n">tune</span><span class="p">,</span> <span class="n">chains</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span><span class="n">cores</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
+
 <span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_bayes_gLV_shrinkage</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -378,52 +383,8 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 2, &#
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-DA: 2, DA0: 1, N: 17, noise_stddev: 0.1
-Manually determined mu prior
-Manually determined M prior
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Auto-assigning NUTS sampler...
-Initializing NUTS using jitter+adapt_diag...
-Multiprocess sampling (2 chains in 2 jobs)
-NUTS: [sigma, mu_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "cb663c5e7a584c6c8b2d33225468c36e"}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-IOPub message rate exceeded.
-The Jupyter server will temporarily stop sending output
-to the client in order to avoid crashing it.
-To change this limit, set the config variable
-`--ServerApp.iopub_msg_rate_limit`.
-
-Current values:
-ServerApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
-ServerApp.rate_limit_window=3.0 (secs)
-
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
 <div class="output_area rendered_html docutils container">
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Sampling 2 chains, 0 divergences <span style="color: #1764f4; text-decoration-color: #1764f4">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸</span><span style="color: #3a3a3a; text-decoration-color: #3a3a3a">━━</span> <span style="color: #800080; text-decoration-color: #800080"> 94%</span> <span style="color: #008080; text-decoration-color: #008080">0:00:01</span> / <span style="color: #808000; text-decoration-color: #808000">0:00:05</span>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Sampling 4 chains, 0 divergences <span style="color: #1764f4; text-decoration-color: #1764f4">━━━━━━━━━━━━━</span><span style="color: #3a3a3a; text-decoration-color: #3a3a3a">╺━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span style="color: #800080; text-decoration-color: #800080"> 33%</span> <span style="color: #008080; text-decoration-color: #008080">0:00:07</span> / <span style="color: #808000; text-decoration-color: #808000">0:00:04</span>
 </pre></div>
 </div>
 <div class="nboutput docutils container">
@@ -439,39 +400,19 @@ ServerApp.rate_limit_window=3.0 (secs)
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
 </pre></div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 2 chains for 500 tune and 500 draw iterations (1_000 + 1_000 draws total) took 6 seconds.
-We recommend running at least 4 chains for robust computation of convergence diagnostics
+Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 10 seconds.
+There were 96 divergences after tuning. Increase `target_accept` or reparameterize.
 The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
 </pre></div></div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_15_8.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_15_8.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_15_9.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_15_9.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_15_10.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_15_10.png" />
-</div>
-</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print summary</span>
@@ -491,16 +432,16 @@ The rhat statistic is larger than 1.01 for some parameters. This indicates probl
 <div class="output_area docutils container">
 <div class="highlight"><pre>
                  mean     sd  r_hat
-mu_hat[0, 0]    0.032  0.003   1.01
+mu_hat[0, 0]    0.034  0.004   1.01
 mu_hat[0, 1]    0.015  0.003   1.01
-M_ii_hat[0]    -0.081  0.062   1.00
-M_ii_hat[1]    -0.102  0.033   1.00
-M_ij_hat[0, 0] -0.083  0.028   1.00
-M_ij_hat[1, 0]  0.001  0.093   1.00
-M_hat[0, 0]    -0.083  0.028   1.00
+M_ii_hat[0]    -0.129  0.080   1.01
+M_ii_hat[1]    -0.113  0.034   1.01
+M_ij_hat[0, 0] -0.052  0.072   1.02
+M_ij_hat[1, 0] -0.115  0.244   1.01
+M_hat[0, 0]    -0.052  0.072   1.02
 M_hat[0, 1]     0.000  0.000    NaN
-M_hat[1, 0]     0.001  0.093   1.00
-M_hat[1, 1]    -0.102  0.033   1.00
+M_hat[1, 0]    -0.115  0.244   1.01
+M_hat[1, 1]    -0.113  0.034   1.01
 sigma[0]        0.007  0.001   1.01
 </pre></div></div>
 </div>
@@ -514,7 +455,7 @@ sigma[0]        0.007  0.001   1.01
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -523,10 +464,12 @@ sigma[0]        0.007  0.001   1.01
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">curve_compare</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">mu_prior</span><span class="p">,</span> <span class="n">M_prior</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">init_species_start</span><span class="p">,</span> <span class="n">sim_gLV_class</span><span class="p">)</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">init_species_start</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">sim_gLV_class</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">()</span>
+<span class="n">curve_compare</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">init_species_start</span><span class="p">,</span> <span class="n">sim_gLV_class</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -535,17 +478,15 @@ sigma[0]        0.007  0.001   1.01
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(2, 500, 2, 2)
-(2, 500, 1, 2)
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 2, &#39;mu&#39;: array([0.03193045, 0.01460738]), &#39;M&#39;: array([[-0.08316311,  0.        ],
-       [-0.00034683, -0.10153014]]), &#39;epsilon&#39;: array([], shape=(2, 0), dtype=float64)}
+Using the following parameters for gLV simulation: {&#39;num_species&#39;: 2, &#39;mu&#39;: array([0.03310294, 0.01519274]), &#39;M&#39;: array([[-0.07234264,  0.        ],
+       [-0.03805635, -0.112146  ]]), &#39;epsilon&#39;: array([], shape=(2, 0), dtype=float64)}
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_17_1.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_17_1.png" />
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_14_1.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_14_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
