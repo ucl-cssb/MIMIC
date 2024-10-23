@@ -103,21 +103,11 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Using the following parameters for VAR simulation: {&#39;n_obs&#39;: 100, &#39;coefficients&#39;: array([[ 0.8, -0.2],
-       [ 0.3,  0.5]]), &#39;initial_values&#39;: array([[1],
-       [2]]), &#39;noise_stddev&#39;: 1.0, &#39;output&#39;: &#39;show&#39;}
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_3_1.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_3_1.png" />
+<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_3_0.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_3_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -158,7 +148,7 @@ NUTS: [x0, A, noise_chol]
         }
     </style>
   <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [6000/6000 00:08<00:00 Sampling 2 chains, 0 divergences]
+  100.00% [6000/6000 00:05<00:00 Sampling 2 chains, 0 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -166,7 +156,7 @@ NUTS: [x0, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 15 seconds.
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 9 seconds.
 We recommend running at least 4 chains for robust computation of convergence diagnostics
 </pre></div></div>
 </div>
@@ -175,24 +165,9 @@ We recommend running at least 4 chains for robust computation of convergence dia
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-          mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-x0[0]   -0.044  0.097  -0.230    0.136      0.001    0.001    5230.0
-x0[1]   -0.032  0.108  -0.236    0.167      0.002    0.002    5139.0
-A[0, 0]  0.745  0.061   0.624    0.854      0.001    0.001    4894.0
-A[0, 1] -0.447  0.073  -0.582   -0.309      0.001    0.001    4888.0
-A[1, 0]  0.291  0.064   0.169    0.411      0.001    0.001    4379.0
-A[1, 1]  0.515  0.080   0.363    0.666      0.001    0.001    6082.0
-
-         ess_tail  r_hat
-x0[0]      3007.0    1.0
-x0[1]      2933.0    1.0
-A[0, 0]    3022.0    1.0
-A[0, 1]    3088.0    1.0
-A[1, 0]    3181.0    1.0
-A[1, 1]    3116.0    1.0
 Results saved as:
-NetCDF file: model_posterior_default_v6.nc
-Data file: data_default_v6.npz
+NetCDF file: model_posterior_default.nc
+Data file: data_default.npz
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -263,7 +238,7 @@ NUTS: [x0, A, noise_chol]
         }
     </style>
   <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [6000/6000 00:07<00:00 Sampling 2 chains, 0 divergences]
+  100.00% [6000/6000 00:05<00:00 Sampling 2 chains, 0 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -271,7 +246,7 @@ NUTS: [x0, A, noise_chol]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 14 seconds.
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 9 seconds.
 We recommend running at least 4 chains for robust computation of convergence diagnostics
 </pre></div></div>
 </div>
@@ -280,24 +255,9 @@ We recommend running at least 4 chains for robust computation of convergence dia
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-          mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-x0[0]   -0.028  0.100  -0.213    0.162      0.001    0.002    4773.0
-x0[1]   -0.034  0.103  -0.233    0.154      0.002    0.001    4613.0
-A[0, 0]  0.750  0.061   0.637    0.866      0.001    0.001    4607.0
-A[0, 1] -0.429  0.072  -0.558   -0.289      0.001    0.001    5114.0
-A[1, 0]  0.289  0.066   0.167    0.416      0.001    0.001    4863.0
-A[1, 1]  0.514  0.082   0.360    0.664      0.001    0.001    4395.0
-
-         ess_tail  r_hat
-x0[0]      3098.0    1.0
-x0[1]      3403.0    1.0
-A[0, 0]    2682.0    1.0
-A[0, 1]    3200.0    1.0
-A[1, 0]    3089.0    1.0
-A[1, 1]    3012.0    1.0
 Results saved as:
-NetCDF file: model_posterior_default_v7.nc
-Data file: data_default_v7.npz
+NetCDF file: model_posterior_default_v1.nc
+Data file: data_default_v1.npz
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -334,7 +294,7 @@ Data file: data_default_v7.npz
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set priors for the inference</span>
@@ -353,7 +313,7 @@ Data file: data_default_v7.npz
 
 <span class="c1"># Run the inference</span>
 <span class="n">infer3</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
-<br/></pre></div>
+</pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -385,7 +345,7 @@ NUTS: [x0, A]
         }
     </style>
   <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [6000/6000 00:04<00:00 Sampling 2 chains, 0 divergences]
+  100.00% [6000/6000 00:02<00:00 Sampling 2 chains, 0 divergences]
 </div></div>
 </div>
 <div class="nboutput docutils container">
@@ -393,7 +353,7 @@ NUTS: [x0, A]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 10 seconds.
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 7 seconds.
 We recommend running at least 4 chains for robust computation of convergence diagnostics
 </pre></div></div>
 </div>
@@ -402,24 +362,9 @@ We recommend running at least 4 chains for robust computation of convergence dia
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-          mean     sd  hdi_3%  hdi_97%  mcse_mean  mcse_sd  ess_bulk  \
-x0[0]   -0.042  0.100  -0.236    0.149      0.001    0.001    6386.0
-x0[1]   -0.035  0.102  -0.225    0.153      0.001    0.001    7248.0
-A[0, 0]  0.745  0.063   0.624    0.856      0.001    0.001    5740.0
-A[0, 1] -0.443  0.074  -0.584   -0.304      0.001    0.001    5562.0
-A[1, 0]  0.292  0.062   0.174    0.411      0.001    0.001    5729.0
-A[1, 1]  0.519  0.075   0.379    0.661      0.001    0.001    4689.0
-
-         ess_tail  r_hat
-x0[0]      3586.0    1.0
-x0[1]      3537.0    1.0
-A[0, 0]    3056.0    1.0
-A[0, 1]    3297.0    1.0
-A[1, 0]    3170.0    1.0
-A[1, 1]    3027.0    1.0
 Results saved as:
-NetCDF file: model_posterior_default_v8.nc
-Data file: data_default_v8.npz
+NetCDF file: model_posterior_default_v2.nc
+Data file: data_default_v2.npz
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -427,6 +372,87 @@ Data file: data_default_v8.npz
 </div>
 <div class="output_area docutils container">
 <img alt="../../_images/notebooks_VAR_examples-bayes-VAR_9_4.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_9_4.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set priors for the inference</span>
+<span class="n">infer3</span> <span class="o">=</span> <span class="n">infer_VAR</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="n">intercepts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">coefficients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+                         <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]])</span>
+<span class="n">covariance_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Use keyword arguments for set_parameters</span>
+<span class="n">infer3</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span>
+    <span class="n">intercepts</span><span class="o">=</span><span class="n">intercepts</span><span class="p">,</span>
+    <span class="n">coefficients</span><span class="o">=</span><span class="n">coefficients</span><span class="p">,</span>
+    <span class="n">covariance_matrix</span><span class="o">=</span><span class="n">covariance_matrix</span>
+<span class="p">)</span>
+
+<span class="c1"># Run the inference</span>
+<span class="n">infer3</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (2 chains in 2 jobs)
+NUTS: [x0, A]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+    <style>
+        /* Turns off some styling */
+        progress {
+            /* gets rid of default border in Firefox and Opera. */
+            border: none;
+            /* Needs to be in here for Safari polyfill so background images work as expected. */
+            background-size: auto;
+        }
+        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+            background: #F44336;
+        }
+    </style>
+  <progress value='6000' class='' max='6000' style='width:300px; height:20px; vertical-align: middle;'></progress>
+  100.00% [6000/6000 00:03<00:00 Sampling 2 chains, 0 divergences]
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 2 chains for 1_000 tune and 2_000 draw iterations (2_000 + 4_000 draws total) took 7 seconds.
+We recommend running at least 4 chains for robust computation of convergence diagnostics
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Results saved as:
+NetCDF file: model_posterior_default_v3.nc
+Data file: data_default_v3.npz
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_VAR_examples-bayes-VAR_10_4.png" src="../../_images/notebooks_VAR_examples-bayes-VAR_10_4.png" />
 </div>
 </div>
 </section>
