@@ -28,6 +28,7 @@ class sim_CRM(BaseModel):
             self,
             num_species=2,
             num_resources=0):
+
         """
         Initializes the CRM simulation with given parameters or defaults.
 
@@ -45,8 +46,7 @@ class sim_CRM(BaseModel):
         self.r = numpy.ones(num_resources),  # resource_timescale
 
         self.w = numpy.ones(num_resources),  # resource_quality
-        self.c = numpy.ones((num_species, num_resources)
-                            ),  # relative_preference
+        self.c = numpy.ones((num_species, num_resources)),  # relative_preference
         self.m = numpy.ones(num_species),  # mortality_rate
 
         self.K = numpy.ones(num_resources)  # resource_capacity
@@ -116,7 +116,7 @@ class sim_CRM(BaseModel):
     def simulate(self,
                  times,
                  sy0) -> tuple[numpy.ndarray,
-                               numpy.ndarray]:
+    numpy.ndarray]:
         """
         Runs the CRM simulation over the specified time course with given initial conditions.
 
@@ -129,19 +129,7 @@ class sim_CRM(BaseModel):
             initial conditions (sy0), growth rates (mu), interaction matrix (M), and metabolite production rates (beta).
         """
         # self.check_params(self.parameters, 'CRM')
-        syobs = odeint(
-            CRM,
-            sy0,
-            times,
-            args=(
-                self.nsp,
-                self.nr,
-                self.tau,
-                self.w,
-                self.c,
-                self.m,
-                self.r,
-                self.K))
+        syobs = odeint(CRM, sy0, times, args=(self.nsp, self.nr, self.tau, self.w, self.c, self.m, self.r, self.K))
         yobs = syobs[:, 0:self.nsp]  # species
         sobs = syobs[:, self.nsp:]  # resources
         self.data = syobs  # QUESTION: should this be yobs or sobs?
@@ -175,7 +163,9 @@ def CRM(sy, t, nsp, nr, tau, w, c, m, r, K) -> numpy.ndarray:
     # dN_i/dt = 1/tau_i * N_i * (Sum_a(c_ia * w_a * R_a - m_i))
     dN = (N / tau) * (c @ (w * R) - m)
 
+
     # dR_a/dt = 1/(r_a * K_a) * (K_a - R_a) * R_a - Sum_i(N_i * c_ia * R_a)
     dR = (1 / r * K) * (K - R) * R - (N @ c * R)
 
     return numpy.hstack((dN, dR))
+
