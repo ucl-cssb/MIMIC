@@ -101,33 +101,133 @@ class infergLVbayes:
         None
     """
 
-    def __init__(
-            self,
-            X=None,
-            F=None,
-            mu=None,
-            M=None,
-            M_h=None,
-            DA=None,
-            DA0=None,
-            N=None,
-            noise_stddev=None,
-            epsilon=None,
-            sim_glv=None):
+    def __init__(self):
 
         # self.data = data  # data to do inference on
-        self.X = X
-        self.F = F
-        self.mu = mu
-        self.M = M
-        self.M_h = M_h
-        self.DA = DA
-        self.DA0 = DA0 if DA0 is not None else (
-            self.calculate_DA0(F.shape[1]) if F is not None else None)
-        self.N = N
-        self.noise_stddev = noise_stddev
-        self.epsilon = epsilon
-        self.sim_glv = sim_glv
+        self.X: Optional[np.ndarray] = None
+        self.F: Optional[np.ndarray] = None
+        self.mu: Optional[Union[int, float]] = None
+        self.M: Optional[Union[int, float]] = None
+        self.prior_mu_mean: Optional[Union[int,
+                                           float, List[Union[int, float]]]] = None
+        self.prior_mu_sigma: Optional[Union[int,
+                                            float, List[Union[int, float]]]] = None
+        self.prior_Mii_mean: Optional[Union[int,
+                                            float, List[Union[int, float]]]] = None
+        self.prior_Mii_sigma: Optional[Union[int,
+                                             float, List[Union[int, float]]]] = None
+        self.prior_Mij_sigma: Optional[Union[int,
+                                             float, List[Union[int, float]]]] = None
+        self.prior_eps_mean: Optional[Union[int,
+                                            float, List[Union[int, float]]]] = None
+        self.prior_eps_sigma: Optional[Union[int,
+                                             float, List[Union[int, float]]]] = None
+        self.draws: Optional[int] = None
+        self.tune: Optional[int] = None
+        self.chains: Optional[int] = None
+        self.cores: Optional[int] = None
+        self.DA: Optional[int] = None
+        self.DA0: Optional[Union[int, float]] = None
+        self.N: Optional[int] = None
+        self.noise_stddev: Optional[Union[int, float]] = None
+        self.epsilon: Optional[Union[int, float,
+                                     List[Union[int, float]]]] = None,
+        self.sim_glv: Optional[str] = None
+
+        # Calculate DA0 if F is not None and DA0 is not set
+        if self.DA0 is None and self.F is not None:
+            self.DA0 = self.calculate_DA0(self.F.shape[1])
+
+        self.parameters: Dict[str,
+                              Optional[Union[int,
+                                             float,
+                                             np.ndarray,
+                                             str]]] = {"prior_mu_mean": self.prior_mu_mean,
+                                                       "prior_mu_sigma": self.prior_mu_sigma,
+                                                       "prior_Mii_mean": self.prior_Mii_mean,
+                                                       "prior_Mii_sigma": self.prior_Mii_sigma,
+                                                       "prior_Mij_sigma": self.prior_Mij_sigma,
+                                                       "prior_eps_mean": self.prior_eps_mean,
+                                                       "prior_eps_sigma": self.prior_eps_sigma,
+                                                       "DA": self.DA,
+                                                       "DA0": self.DA0,
+                                                       "N": self.N,
+                                                       "noise_stddev": self.noise_stddev}
+
+    def set_parameters(self,
+                       X: Optional[np.ndarray] = None,
+                       F: Optional[np.ndarray] = None,
+                       prior_mu_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_mu_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_Mii_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_Mii_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_Mij_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_eps_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_eps_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       draws: Optional[int] = None,
+                       tune: Optional[int] = None,
+                       chains: Optional[int] = None,
+                       cores: Optional[int] = None,
+                       DA: Optional[Union[int, float]] = None,
+                       DA0: Optional[Union[int, float]] = None,
+                       N: Optional[int] = None,
+                       noise_stddev: Optional[Union[int, float]] = None) -> None:
+
+        if X is not None:
+            self.X = np.array(X)
+        if F is not None:
+            self.F = np.array(F)
+        if prior_mu_mean is not None:
+            self.prior_mu_mean = prior_mu_mean
+        if prior_mu_sigma is not None:
+            self.prior_mu_sigma = prior_mu_sigma
+        if prior_Mii_mean is not None:
+            self.prior_Mii_mean = prior_Mii_mean
+        if prior_Mii_sigma is not None:
+            self.prior_Mii_sigma = prior_Mii_sigma
+        if prior_Mij_sigma is not None:
+            self.prior_Mij_sigma = prior_Mij_sigma
+        if prior_eps_mean is not None:
+            self.prior_eps_mean = prior_eps_mean
+        if prior_eps_sigma is not None:
+            self.prior_eps_sigma = prior_eps_sigma
+        if draws is not None:
+            self.draws = draws
+        if tune is not None:
+            self.tune = tune
+        if chains is not None:
+            self.chains = chains
+        if cores is not None:
+            self.cores = cores
+        if DA is not None:
+            self.DA = DA
+        if DA0 is not None:
+            self.DA0 = DA0 if DA0 is not None else (
+                self.calculate_DA0(F.shape[1]) if F is not None else None)
+        if N is not None:
+            self.N = N
+        if noise_stddev is not None:
+            self.noise_stddev = noise_stddev
+
+        self.parameters = {
+            "X": self.X,
+            "F": self.F,
+            "prior_mu_mean": self.prior_mu_mean,
+            "prior_mu_sigma": self.prior_mu_sigma,
+            "prior_Mii_mean": self.prior_Mii_mean,
+            "prior_Mii_sigma": self.prior_Mii_sigma,
+            "prior_Mij_sigma": self.prior_Mij_sigma,
+            "prior_eps_mean": self.prior_eps_mean,
+            "prior_eps_sigma": self.prior_eps_sigma,
+            "draws": self.draws,
+            "tune": self.tune,
+            "chains": self.chains,
+            "cores": self.cores,
+            "DA": self.DA,
+            "DA0": self.DA0,
+            "calculate_DA0": self.calculate_DA0,
+            "N": self.N,
+            "noise_stddev": self.noise_stddev}
 
     def import_data(self, file_path) -> None:
         """
@@ -165,8 +265,15 @@ class infergLVbayes:
         # data = self.data
         X = self.X
         F = self.F
-        mu_prior = self.mu
-        M_prior = self.M
+        prior_mu_mean = self.prior_mu_mean
+        prior_mu_sigma = self.prior_mu_sigma
+        prior_Mii_mean = self.prior_Mii_mean
+        prior_Mii_sigma = self.prior_Mii_sigma
+        prior_Mij_sigma = self.prior_Mij_sigma
+        draws = self.draws
+        tune = self.tune
+        chains = self.chains
+        cores = self.cores
 
         num_species = F.shape[1]
 
@@ -184,35 +291,29 @@ class infergLVbayes:
                 'sigma', sigma=1, shape=(
                     1,))  # Same sigma for all responses
 
-            # If available, define mu as prior
-            if mu_prior is not None:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Manually determined mu prior")
-            else:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=1.0, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Automatically determined mu prior")
-
-            # Use provided M as priors
-            if M_prior is not None:
-                M_prior = M_prior
-                print(f"Manually determined M prior")
-
-            else:
-                M_prior = 0
-                print(f"Automatically determined M prior")
+            # Define mu as prior
+            mu_hat = pm.TruncatedNormal(
+                'mu_hat',
+                mu=prior_mu_mean,
+                sigma=prior_mu_sigma,
+                lower=0,
+                shape=(
+                    1,
+                    num_species))
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.HalfNormal(
-                'M_ii_hat_p', sigma=0.1, shape=(
-                    num_species,))
+            M_ii_hat_p = pm.TruncatedNormal(
+                'M_ii_hat_p',
+                mu=prior_Mii_mean,
+                sigma=prior_Mii_sigma,
+                lower=0,
+                shape=(
+                    num_species,
+                ))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ij is unconstrained
-            M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=0.1, shape=(
+            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(
                 num_species, num_species - 1))  # different shape for off-diagonal
 
             # Combine values
@@ -222,12 +323,12 @@ class infergLVbayes:
                 num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
             M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species)[:, None], np.delete(
                 np.arange(num_species), -1)], M_ij_hat)  # set off-diagonal
+            print(M_hat_vals)
 
             # Save the combined matrix as a deterministic variable
             M_hat = pm.Deterministic('M_hat', M_hat_vals)
 
             # Expected value of outcome (linear model)
-            # model_mean = pm.math.dot(X, pm.math.concatenate([M_hat_vals, mu_hat], axis=0))
             model_mean = pm.math.dot(
                 X, pm.math.concatenate([M_hat, mu_hat], axis=0))
 
@@ -244,15 +345,11 @@ class infergLVbayes:
             # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
-            idata = pm.sample(500, tune=500, chains=2, cores=2)
-
-        # Assemble posterior values for mu and M for plotting and assessment
-        mu_hat_np = idata.posterior['mu_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
-        M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
-
-        # Plot and save posterior results
-        self.plot_posterior(idata, mu_hat_np, M_hat_np)
+            idata = pm.sample(
+                draws=draws,
+                tune=tune,
+                chains=chains,
+                cores=cores)
 
         return idata
 
@@ -267,15 +364,22 @@ class infergLVbayes:
 
         X = self.X
         F = self.F
-        mu_prior = self.mu
-        M_prior = self.M
+        prior_mu_mean = self.prior_mu_mean
+        prior_mu_sigma = self.prior_mu_sigma
+        prior_Mii_mean = self.prior_Mii_mean
+        prior_Mii_sigma = self.prior_Mii_sigma
+        prior_Mij_sigma = self.prior_Mij_sigma
         DA = self.DA
         DA0 = self.DA0
         N = self.N
         noise_stddev = self.noise_stddev
+        draws = self.draws
+        tune = self.tune
+        chains = self.chains
+        cores = self.cores
 
         # Print the values to verify
-        print(f"DA: {DA}, DA0: {DA0}, N: {N}, noise_stddev: {noise_stddev}")
+        # print(f"DA: {DA}, DA0: {DA0}, N: {N}, noise_stddev: {noise_stddev}")
 
         num_species = F.shape[1]
 
@@ -288,35 +392,25 @@ class infergLVbayes:
                 'sigma', sigma=1, shape=(
                     1,))  # Same sigma for all responses
 
-            # If available, define mu as prior
-            if mu_prior is not None:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Manually determined mu prior")
-            else:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=1.0, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Automatically determined mu prior")
-
-            # Set constraints for horseshoe prior
-            # M_ij is is unconstrained but placed under horseshoe prior to
-            # apply to sigma for M_ij
-
-            # Use provided M as priors
-            if M_prior is not None:
-                M_prior = M_prior
-                print(f"Manually determined M prior")
-
-            else:
-                M_prior = 0
-                print(f"Automatically determined M prior")
+            # Define mu as prior
+            mu_hat = pm.TruncatedNormal(
+                'mu_hat',
+                mu=prior_mu_mean,
+                sigma=prior_mu_sigma,
+                lower=0,
+                shape=(
+                    1,
+                    num_species))
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.HalfNormal(
-                'M_ii_hat_p', sigma=0.1, shape=(
-                    num_species,))
+            M_ii_hat_p = pm.TruncatedNormal(
+                'M_ii_hat_p',
+                mu=prior_Mii_mean,
+                sigma=prior_Mii_sigma,
+                lower=0,
+                shape=(
+                    num_species,
+                ))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
@@ -328,12 +422,11 @@ class infergLVbayes:
             lam = pm.HalfCauchy(
                 "lam", beta=1, shape=(
                     num_species, num_species - 1))
-            # M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=tau * lam *
-            # at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
-            # num_species-1))
-            M_ij_hat = pm.Normal(
-                'M_ij_hat', mu=M_prior, sigma=0.1, shape=(
-                    num_species, num_species - 1))
+            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_sigma, sigma=tau * lam * at.sqrt(
+                c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species, num_species - 1))
+            # M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma,
+            # shape=(num_species, num_species - 1))  # different shape for
+            # off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
@@ -363,16 +456,11 @@ class infergLVbayes:
             # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
-            idata = pm.sample(500, tune=500, chains=2, cores=2)
-
-            # Assemble posterior values for mu and M for plotting and
-            # assessment
-        mu_hat_np = idata.posterior['mu_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
-        M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
-
-        # Plot and save posterior results
-        self.plot_posterior(idata, mu_hat_np, M_hat_np)
+            idata = pm.sample(
+                draws=draws,
+                tune=tune,
+                chains=chains,
+                cores=cores)
 
         return idata
 
@@ -386,16 +474,24 @@ class infergLVbayes:
 
         X = self.X
         F = self.F
-        mu_prior = self.mu
-        M_prior = self.M
+        prior_mu_mean = self.prior_mu_mean
+        prior_mu_sigma = self.prior_mu_sigma
+        prior_Mii_mean = self.prior_Mii_mean
+        prior_Mii_sigma = self.prior_Mii_sigma
+        prior_Mij_sigma = self.prior_Mij_sigma
+        prior_eps_mean = self.prior_eps_mean
+        prior_eps_sigma = self.prior_eps_sigma
         DA = self.DA
         DA0 = self.DA0
         N = self.N
         noise_stddev = self.noise_stddev
-        epsilon = self.epsilon
+        draws = self.draws
+        tune = self.tune
+        chains = self.chains
+        cores = self.cores
 
         # Print the values to debug
-        print(f"DA: {DA}, DA0: {DA0}, N: {N}, noise_stddev: {noise_stddev}")
+        # print(f"DA: {DA}, DA0: {DA0}, N: {N}, noise_stddev: {noise_stddev}")
 
         num_species = F.shape[1]
 
@@ -408,39 +504,37 @@ class infergLVbayes:
                 'sigma', sigma=1, shape=(
                     1,))  # Same sigma for all responses
 
-            epsilon_hat = pm.Normal(
-                'epsilon_hat', mu=0, sigma=1.0, shape=(
-                    1, num_species))
+            # Define mu as prior
+            mu_hat = pm.TruncatedNormal(
+                'mu_hat',
+                mu=prior_mu_mean,
+                sigma=prior_mu_sigma,
+                lower=0,
+                shape=(
+                    1,
+                    num_species))
 
-            # If available, define mu as prior
-            if mu_prior is not None:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=mu_prior, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Manually determined mu prior")
-            else:
-                mu_hat = pm.TruncatedNormal(
-                    'mu_hat', mu=1.0, sigma=0.5, lower=0, shape=(
-                        1, num_species))
-                print(f"Automatically determined mu prior")
+            epsilon_hat = pm.Normal(
+                'epsilon_hat',
+                mu=prior_eps_mean,
+                sigma=prior_eps_sigma,
+                shape=(
+                    1,
+                    num_species))
 
             # Set constraints for horseshoe prior
             # M_ij is is unconstrained but placed under horseshoe prior to
             # apply to sigma for M_ij
 
-            # Use provided M as priors
-            if M_prior is not None:
-                M_prior = M_prior
-                print(f"Manually determined M prior")
-
-            else:
-                M_prior = 0
-                print(f"Automatically determined M prior")
-
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.HalfNormal(
-                'M_ii_hat_p', sigma=0.1, shape=(
-                    num_species,))
+            M_ii_hat_p = pm.TruncatedNormal(
+                'M_ii_hat_p',
+                mu=prior_Mii_mean,
+                sigma=prior_Mii_sigma,
+                lower=0,
+                shape=(
+                    num_species,
+                ))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
@@ -452,12 +546,13 @@ class infergLVbayes:
             lam = pm.HalfCauchy(
                 "lam", beta=1, shape=(
                     num_species, num_species - 1))
-            # M_ij_hat = pm.Normal('M_ij_hat', mu=M_prior, sigma=tau * lam *
-            # at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
-            # num_species-1))
-            M_ij_hat = pm.Normal(
-                'M_ij_hat', mu=M_prior, sigma=0.1, shape=(
-                    num_species, num_species - 1))
+            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_sigma, sigma=tau * lam *
+                                 at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)),
+                                 shape=(num_species,
+                                        num_species - 1))
+            # M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma,
+            # shape=(num_species, num_species - 1))  # different shape for
+            # off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
@@ -488,20 +583,28 @@ class infergLVbayes:
             # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
-            idata = pm.sample(500, tune=500, chains=2, cores=2)
+            idata = pm.sample(
+                draws=draws,
+                tune=tune,
+                chains=chains,
+                cores=cores)
 
             # Assemble posterior values for mu and M for plotting and
             # assessment
+        # mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
+        # M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
+
+        # Plot and save posterior results
+        # self.plot_posterior_pert(idata, mu_hat_np, M_hat_np, epsilon)
+
+        return idata
+
+    def plot_posterior(self, idata):
+
         mu_hat_np = idata.posterior['mu_hat'].mean(
             dim=('chain', 'draw')).values.flatten()
         M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
-        # Plot and save posterior results
-        self.plot_posterior_pert(idata, mu_hat_np, M_hat_np, epsilon)
-
-        return idata
-
-    def plot_posterior(self, idata, mu_hat_np, M_hat_np):
         az.plot_posterior(
             idata,
             var_names=["mu_hat"],
@@ -531,12 +634,17 @@ class infergLVbayes:
         plt.show()
         plt.close()
 
-    def plot_posterior_pert(self, idata, mu_hat_np, M_hat_np, epsilon):
+    def plot_posterior_pert(self, idata):
+        mu_hat_np = idata.posterior['mu_hat'].mean(
+            dim=('chain', 'draw')).values.flatten()
+        M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
+        epsilon_hat_np = idata.posterior['epsilon_hat'].mean(
+            dim=('chain', 'draw')).values
+
         az.plot_posterior(
             idata,
             var_names=["mu_hat"],
-            ref_val=mu_hat_np.tolist()
-        )
+            ref_val=mu_hat_np.tolist())
         plt.savefig("plot-posterior-mu.pdf")
         plt.show()
         plt.close()
@@ -544,8 +652,7 @@ class infergLVbayes:
         az.plot_posterior(
             idata,
             var_names=["M_ii_hat"],
-            ref_val=np.diag(M_hat_np).tolist()
-        )
+            ref_val=np.diag(M_hat_np).tolist())
         plt.savefig("plot-posterior-Mii.pdf")
         plt.show()
         plt.close()
@@ -555,8 +662,7 @@ class infergLVbayes:
         az.plot_posterior(
             idata,
             var_names=["M_ij_hat"],
-            ref_val=M_ij.flatten().tolist()
-        )
+            ref_val=M_ij.flatten().tolist())
         plt.savefig("plot-posterior-Mij.pdf")
         plt.show()
         plt.close()
@@ -564,7 +670,7 @@ class infergLVbayes:
         az.plot_posterior(
             idata,
             var_names=["epsilon_hat"],
-            ref_val=epsilon.flatten().tolist())
+            ref_val=epsilon_hat_np.flatten().tolist())
         plt.savefig("plot-posterior-eps.pdf")
         plt.show()
         plt.close()
@@ -632,23 +738,14 @@ def param_data_compare(
     compare_params(mu=(mu, mu_h), M=(M, M_h))
 
 
-def curve_compare(
-        idata,
-        F,
-        mu,
-        M,
-        times,
-        yobs,
-        init_species_start,
-        sim_gLV_class):
+def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
     # Compare model parameters to the data
     num_species = F.shape[1]
     # init_species = 10 * np.ones(num_species)
-    init_species = 0.01 * np.ones(num_species)
+    # init_species = 0.01 * np.ones(num_species)
+    init_species = init_species_start * np.ones(num_species)
 
-    print(idata.posterior["M_hat"].values.shape)
-
-    print(idata.posterior["mu_hat"].values.shape)
+    # print(idata.posterior["M_hat"].values.shape)
 
     # # get median posterior values
     M_h = np.median(idata.posterior["M_hat"].values, axis=(0, 1))
