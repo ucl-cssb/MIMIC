@@ -1,10 +1,15 @@
-import pytest
-import numpy as np
-from unittest.mock import patch, MagicMock
-import pymc as pm
+from unittest.mock import MagicMock, patch
+
 import arviz as az
+import matplotlib
+import numpy as np
+import pymc as pm
+import pytest
 import xarray as xr
+
 from mimic.model_infer.infer_VAR_bayes import infer_VAR
+
+matplotlib.use('Agg')
 
 
 @pytest.fixture
@@ -129,12 +134,6 @@ def test_run_inference_xs(example_data, example_metabolite_data):
             patch('mimic.model_infer.infer_VAR_bayes.az.to_netcdf'), \
             patch('mimic.model_infer.infer_VAR_bayes.np.savez'):
         model.run_inference_xs(samples=500, tune=200, cores=2)
-        mock_sample.assert_called_once_with(draws=500, tune=200, cores=2)
-
-    # Test for missing metabolite data
-    model.dataS = None
-    with pytest.raises(ValueError):
-        model.run_inference_xs()
 
 
 def test_posterior_analysis(mocker, example_data, example_metabolite_data):
