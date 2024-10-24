@@ -582,8 +582,12 @@ class infer_VAR(BaseInfer):
             sns.heatmap(matrix_sum, ax=axes[idx], cmap='viridis')
             axes[idx].set_title(f'{matrix_key}hat')
             axes[idx].set_xlabel('X')
-            axes[idx].set_ylabel('X' if matrix_sum.shape[0]
-                                 == matrix_sum.shape[1] else 'S')
+
+            # Set the y-label based on whether it's the second matrix
+            if num_matrices > 1 and idx == 1:
+                axes[idx].set_ylabel('S')
+            else:
+                axes[idx].set_ylabel('X')
 
             # Determine which values to annotate: true_values if provided, else
             # matrix_sum
