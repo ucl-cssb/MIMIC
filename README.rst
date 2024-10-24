@@ -117,7 +117,7 @@ For Windows
 
    .. code-block:: bash
 
-      conda activate mimic_env_windows
+      conda activate mimic_env
 
 4. **Install the Package**
 

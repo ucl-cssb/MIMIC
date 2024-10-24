@@ -19,13 +19,29 @@ class BaseInfer(ABC):
         results (Any | None): Results of the inference process.
     """
 
-    def __init__(self):
+    def __init__(self, debug: Optional[str] = None):
+        # Initialize the debug level with a default of None
+        self._debug = None
+        self.debug = debug  # Set the debug level through the property
         # Initialize priors as an empty dictionary
         self.priors: Dict[str, Any] = {}
+        # Other initializations
         self.data: Optional[np.ndarray] = None
         self.dataS: Optional[np.ndarray] = None
         self.model: Optional[object] = None
         self.results: Optional[Any] = None
+
+    @property
+    def debug(self) -> Optional[str]:
+        """Gets the current debug level."""
+        return self._debug
+
+    @debug.setter
+    def debug(self, value: Optional[str]) -> None:
+        """Sets the debug level, allowing only None, 'low', or 'high'."""
+        if value not in {None, "low", "high"}:
+            raise ValueError("Debug level must be None, 'low', or 'high'.")
+        self._debug = value
 
     def _validate_data(self, data):
         """
