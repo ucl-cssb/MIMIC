@@ -515,7 +515,6 @@ class infer_VAR(BaseInfer):
         Returns:
         None
         """
-        dataX = dataX + 1.0
 
         nX = len(dataX[0])
         nS = len(dataS[0])
@@ -529,8 +528,8 @@ class infer_VAR(BaseInfer):
             *dataX.T,
             labels=[
                 f"X{str(i)}" for i in range(nX)])
-        axs[0].set_title("Abundance, log10 X")
-        axs[0].set_ylabel("X")
+        axs[0].set_title("Abundance changes over time")
+        axs[0].set_ylabel("ΔX")
         axs[0].set_xlim(0, nobs - 1)
 
         sns.heatmap(
@@ -543,7 +542,7 @@ class infer_VAR(BaseInfer):
         )
         axs[1].set_title("Metabolites, S")
         axs[1].set_ylabel("S")
-        axs[1].set_xlabel("time (weeks)")
+        axs[1].set_xlabel("time (t)")
         axs[1].set_xlim(0, nobs)
 
         plt.tight_layout()
