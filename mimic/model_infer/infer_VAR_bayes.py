@@ -588,22 +588,25 @@ class infer_VAR(BaseInfer):
             else:
                 axes[idx].set_ylabel('X')
 
-            # Determine which values to annotate: true_values if provided, else
-            # matrix_sum
-            annotate_values = true_values[idx] if true_values is not None and len(
-                true_values) > idx and true_values[idx] is not None else matrix_sum
-
+            # Annotate matrix with true values in parentheses if provided
             for i in range(matrix_sum.shape[0]):
                 for j in range(matrix_sum.shape[1]):
-                    text_color = 'white' if true_values is not None and len(
-                        true_values) > idx and true_values[idx] is not None else 'black'
+                    if true_values is not None and len(true_values) > idx and true_values[idx] is not None:
+                        true_value = true_values[idx][i, j]
+                        text_value = f'{matrix_sum[i, j]:.2f} ({true_value:.2f})'
+                        text_color = 'white'  # You can adjust the color if needed
+                    else:
+                        text_value = f'{matrix_sum[i, j]:.2f}'
+                        text_color = 'black'
+
                     axes[idx].text(
                         j + 0.5,
                         i + 0.5,
-                        f'{annotate_values[i, j]:.2f}',
+                        text_value,
                         ha='center',
                         va='center',
-                        color=text_color)
+                        color=text_color
+                    )
 
         plt.tight_layout()
         plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')
