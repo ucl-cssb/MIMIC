@@ -500,9 +500,14 @@ class infer_VAR(BaseInfer):
                 print(f"Error loading inference data: {e}")
                 return
 
-        true_values = [A, B] if A is not None and B is not None else None
-        self.plot_heatmap(
-            idata, matrices=["Ah", "Bh"], true_values=true_values)
+        true_values = [A] if A is not None and B is None else (
+            [A, B] if A is not None and B is not None else None)
+
+        if dataS is not None:
+            self.plot_heatmap(
+                idata, matrices=["Ah", "Bh"], true_values=true_values)
+        else:
+            self.plot_heatmap(idata, matrices=["A"], true_values=true_values)
 
     def make_plot_stacked(self, dataX, dataS):
         """
