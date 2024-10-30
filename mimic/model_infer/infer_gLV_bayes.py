@@ -43,49 +43,8 @@ def plot_params(mu_h, M_h, e_h, nsp):
     plt.stem(np.arange(0, nsp), np.array(e_h), markerfmt="D")
 
 
-def get_data(input_data):
-    # Read the CSV file
-    d = pd.read_csv(input_data)
-
-    # Calculate the mean of columns 2 to 5 (index 1 to 4) for each row
-    # Take only time course up to t=400
-    X1_bar = d.iloc[1:21, 1:5].mean(axis=1)
-
-    # Calculate the mean of columns 6 to 9 (index 5 to 8) for each row
-    X2_bar = d.iloc[1:21, 5:9].mean(axis=1)
-
-    # Combine the first column with the calculated means
-    obs = pd.DataFrame({
-        'time': d.iloc[1:21, 0],
-        'X1_bar': X1_bar,
-        'X2_bar': X2_bar
-    })
-
-    # Replace negative values with 0
-    obs[obs < 0] = 0
-
-    return obs
 
 
-def plot_growth_curves(data):
-    plt.figure(figsize=(10, 6))
-
-    # Plotting X1_bar
-    plt.plot(data['time'], data['X1_bar'], label='X1_bar')
-
-    # Plotting X2_bar
-    plt.plot(data['time'], data['X2_bar'], label='X2_bar')
-
-    # Adding labels and title
-    plt.xlabel('Time')
-    plt.ylabel('Value')
-    plt.title('Growth Curves of X1_bar and X2_bar')
-
-    # Adding a legend
-    plt.legend()
-
-    # Display the plot
-    plt.show()
 
 
 class infergLVbayes(BaseInfer):
@@ -106,10 +65,12 @@ class infergLVbayes(BaseInfer):
         None
     """
 
-    def __init__(self):
+    def __init__(self,
+                 X = None,
+                 F = None):
 
         # self.data = data  # data to do inference on
-        self.X: Optional[np.ndarray] = None
+        self.X: Optional[np.ndarray] = X
         self.F: Optional[np.ndarray] = None
         self.mu: Optional[Union[int, float]] = None
         self.M: Optional[Union[int, float]] = None
@@ -656,7 +617,7 @@ def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
 
 
     # # get median posterior values
-    M_h = np.median(idata.posterior["M_hat"].values, axis=(0, 1))
+    M_h = np.median(idata.posterior["M_hat"].values, axis=(0, 1)).T
 
     mu_h = np.median(idata.posterior["mu_hat"].values, axis=(0, 1))
     mu_h = mu_h.flatten()
@@ -665,7 +626,7 @@ def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
     # M_h= idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
     predictor = sim_gLV(num_species=num_species,
-                        M=M_h,
+                        M=M_h.T,
                         mu=mu_h
                         )
     yobs_h, _, _, _, _ = predictor.simulate(
@@ -674,57 +635,6 @@ def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
     plot_fit_gLV(yobs, yobs_h, times)
 
 
-def generate_5_species_data(sim_gLV_class):
-    # In this example n >> p and it is basically same as standard regression
-    # We have to be careful as most of these gLV models are very weakly
-    # identifiable
-
-    set_all_seeds(1234)
-
-    # SETUP MODEL
-    # establish size of model
-    num_species = 5
-
-    # construct interaction matrix
-    # TODO do this programmatically
-    M = np.zeros((num_species, num_species))
-    np.fill_diagonal(M, [-0.05, -0.1, -0.15, -0.01, -0.2])
-    M[0, 2] = -0.025
-    M[1, 3] = 0.05
-    M[4, 0] = 0.02
-
-    # construct growth rates matrix
-    mu = np.random.lognormal(0.01, 0.5, num_species)
-    print(mu.shape)
-
-    # instantiate simulator
-    simulator = sim_gLV(num_species=num_species,
-                        M=M,
-                        mu=mu)
-    simulator.print_parameters()
-
-    # PRODUCE SIMULATED RESULTS
-    # initial conditions
-    init_species = 10 * np.ones(num_species)
-
-    times = np.arange(0, 5, 0.1)
-    yobs, init_species, mu, M, _ = simulator.simulate(
-        times=times, init_species=init_species)
-
-    # add some gaussian noise
-    yobs = yobs + np.random.normal(loc=0, scale=0.1, size=yobs.shape)
-
-    # plot simulation
-    plot_gLV(yobs, times)
-
-    return yobs, times, mu, M
-
-
-def pert_fn(t):
-    if 2.0 <= t < 2.2 or 3.0 <= t < 3.2 or 4.0 <= t < 4.2:
-        return np.array([1])
-    else:
-        return np.array([0])
 
 
 def param_data_compare_pert( idata, F, mu, M, epsilon, num_perturbations, times, yobs, init_species_start, sim_gLV_class):
