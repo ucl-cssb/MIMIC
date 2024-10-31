@@ -67,18 +67,24 @@ class infergLVbayes(BaseInfer):
 
     def __init__(self,
                  X = None,
-                 F = None):
+                 F = None,
+                 prior_mu_mean = None,
+                 prior_mu_sigma = None,
+                 prior_Mii_mean = None,
+                 prior_Mii_sigma = None,
+                 prior_Mij_sigma = None
+                 ):
 
         # self.data = data  # data to do inference on
         self.X: Optional[np.ndarray] = X
-        self.F: Optional[np.ndarray] = None
+        self.F: Optional[np.ndarray] = F
         self.mu: Optional[Union[int, float]] = None
         self.M: Optional[Union[int, float]] = None
-        self.prior_mu_mean: Optional[Union[int, float, List[Union[int, float]]]] = None
-        self.prior_mu_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None
-        self.prior_Mii_mean: Optional[Union[int, float, List[Union[int, float]]]] = None
-        self.prior_Mii_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None
-        self.prior_Mij_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None
+        self.prior_mu_mean: Optional[Union[int, float, List[Union[int, float]]]] = prior_mu_mean
+        self.prior_mu_sigma: Optional[Union[int, float, List[Union[int, float]]]] = prior_mu_sigma
+        self.prior_Mii_mean: Optional[Union[int, float, List[Union[int, float]]]] = prior_Mii_mean
+        self.prior_Mii_sigma: Optional[Union[int, float, List[Union[int, float]]]] = prior_Mii_sigma
+        self.prior_Mij_sigma: Optional[Union[int, float, List[Union[int, float]]]] = prior_Mij_sigma
         self.prior_eps_mean: Optional[Union[int, float, List[Union[int, float]]]] = None
         self.prior_eps_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None
         self.draws: Optional[int] = None
@@ -90,7 +96,7 @@ class infergLVbayes(BaseInfer):
         self.N: Optional[int] = None
         self.noise_stddev: Optional[Union[int, float]] = None
         self.epsilon: Optional[Union[int, float, List[Union[int, float]]]] = None,
-        self.sim_glv: Optional[str] = None
+        #self.sim_glv: Optional[str] = None
 
         # Calculate DA0 if F is not None and DA0 is not set
         if self.DA0 is None and self.F is not None:
