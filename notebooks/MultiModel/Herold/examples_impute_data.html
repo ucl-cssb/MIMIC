@@ -39,6 +39,19 @@
             
   <section id="Data-imputation-on-a-Real-Public-Dataset,-Herold-et-al.-(2020)">
 <h1>Data imputation on a Real Public Dataset, Herold et al. (2020)<a class="headerlink" href="#Data-imputation-on-a-Real-Public-Dataset,-Herold-et-al.-(2020)" title="Link to this heading">¶</a></h1>
+<p>The article “Integration of time-series meta-omics data reveals how microbial ecosystems respond to disturbance” explores the dynamic nature of microbial communities in biological wastewater treatment plants (BWWTPs) by combining metagenomics (MG), metatranscriptomics (MT), and other meta-omics approaches. The study provides a detailed analysis of these communities’ resilience and resistance to environmental disturbances. We are going to use the data from this study to perform data imputation
+and analysis. Specifically, we will focus on the following figures:</p>
+<section id="Figure-3---Community-Structure-and-Function-Dynamics:">
+<h2>Figure 3 - Community Structure and Function Dynamics:<a class="headerlink" href="#Figure-3---Community-Structure-and-Function-Dynamics:" title="Link to this heading">¶</a></h2>
+<p>Figure 3 presents the community structure and function dynamics over time, focusing on the relative abundance and expression levels of microbial populations. The data are derived from recovered populations represented by reconstructed metagenome-assembled genomes (rMAGs), which show genetic composition and activity through MG and MT depth coverage, with mapping percentages of 26% ± 3% and 27% ± 3%, respectively. The relative abundance data are categorized by genus-level taxonomic assignments,
+and less abundant genera are grouped under “Other” if their mean abundance is below 2%.</p>
+<p>This figure also includes ordination plots based on Bray–Curtis dissimilarity of rMAGs’ relative abundances, constrained by abiotic factors such as metabolite levels, metabolite ratios, and physicochemical parameters (shown as black arrows). The results highlight seasonal shifts and environmental influences on microbial community dynamics, with time-course sampling illustrated through connecting points and color coding by the month of sampling.</p>
+</section>
+<section id="Figure-4---Metabolite-Levels-and-Environmental-Dynamics:">
+<h2>Figure 4 - Metabolite Levels and Environmental Dynamics:<a class="headerlink" href="#Figure-4---Metabolite-Levels-and-Environmental-Dynamics:" title="Link to this heading">¶</a></h2>
+<p>Figure 4 presents time-series data on metabolite levels and physicochemical parameters, highlighting fluctuations in metabolite classes, types, and measurement subtypes. It uses a heatmap to display Z-score transformed intensities of metabolites and other parameters, showcasing intracellular and extracellular metabolite levels, ratios, and several environmental parameters collected manually or through continuous monitoring at a wastewater treatment plant. This data reflects how environmental and
+metabolite dynamics interact, impacting microbial activity and metabolism over time (Herold et al., 2020).</p>
+<p>By focusing on these figures, our VAR (Vector Autoregression) inference and Gaussian Process imputer (GP Imputer) can leverage time-series trends and correlations between microbial populations and their environment within BWWTP systems.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -77,6 +90,279 @@ WARNING:tensorflow:From c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\te
 WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
 </pre></div></div>
 </div>
+<section id="Imputing-Microbial-Community-Data-(Figure-3)-using-Gaussian-Process-Imputer">
+<h3>Imputing Microbial Community Data (Figure 3) using Gaussian Process Imputer<a class="headerlink" href="#Imputing-Microbial-Community-Data-(Figure-3)-using-Gaussian-Process-Imputer" title="Link to this heading">¶</a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Source Data/fig3ab.tsv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Separate-the-data-into-MG-and-MT-datasets">
+<h4>Separate the data into MG and MT datasets<a class="headerlink" href="#Separate-the-data-into-MG-and-MT-datasets" title="Link to this heading">¶</a></h4>
+<p>The data is separated into two datasets, MG and MT. The MG dataset contains the meta-genomics data, while the MT dataset contains the meta-transcriptomics. We will be using the MG dataset in this example.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># separate the data into MG and MT datasets</span>
+
+<span class="n">dataMG</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;MG&#39;</span><span class="p">]</span>
+
+<span class="n">dataMG</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+
+<span class="n">dataMT</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;MT&#39;</span><span class="p">]</span>
+
+<span class="n">dataMT</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>We will proceed with some data wrangling to prepare the data for the imputation process.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data cleaning</span>
+<span class="c1"># Rename Nan in the genus column to &#39;Other&#39;</span>
+
+<span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">)</span>
+
+<span class="c1"># Drop the &#39;type&#39; column</span>
+<span class="n">dataMG</span> <span class="o">=</span> <span class="n">dataMG</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+
+<span class="c1"># Change relative Date columns to days</span>
+<span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days</span>
+
+<span class="c1"># Change the &#39;genus&#39; column to a categorical column</span>
+<span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+
+
+<span class="n">dataMG</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the data, relative abundance (value) vs. days (date) for each genus</span>
+
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dataMG</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Microbial Growth Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Relative Abundance&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pivot the data so each &#39;genus&#39; is a column</span>
+<span class="n">dataMG_pivot</span> <span class="o">=</span> <span class="n">dataMG</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+    <span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Create a stacked area chart</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">stackplot</span><span class="p">(</span><span class="n">dataMG_pivot</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dataMG_pivot</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">dataMG_pivot</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Microbial Growth Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Relative Abundance&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do the same data cleaning for the MT data set</span>
+
+<span class="c1"># Rename Nan in the genus column to &#39;Other&#39;</span>
+
+<span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">)</span>
+
+<span class="c1"># Drop the &#39;type&#39; column</span>
+<span class="n">dataMT</span> <span class="o">=</span> <span class="n">dataMT</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+
+<span class="c1"># Change relative Date columns to days</span>
+<span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days</span>
+
+<span class="c1"># Change the &#39;genus&#39; column to a categorical column</span>
+<span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataMT</span><span class="p">[</span><span class="s1">&#39;genus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the data, relative abundance (value) vs. days (date) for each genus</span>
+
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dataMT</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Microbial Meta Transcriptomics Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Days&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pivot the data so each &#39;genus&#39; is a column</span>
+<span class="n">dataMT_pivot</span> <span class="o">=</span> <span class="n">dataMT</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+    <span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Pivot the MG data so each &#39;genus&#39; is a column</span>
+<span class="n">dataMG_pivot</span> <span class="o">=</span> <span class="n">dataMG</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+    <span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;genus&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1"># Create a DataFrame with a complete range of days</span>
+<span class="n">all_days</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;days&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">dataMG</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)})</span>
+
+<span class="c1"># Reindex the pivoted DataFrame to include all days, filling missing values with None</span>
+<span class="n">complete_dataMG</span> <span class="o">=</span> <span class="n">dataMG_pivot</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">all_days</span><span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">])</span>
+
+<span class="n">complete_dataMG</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">complete_dataMG</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+<p>If we pick one column, say ‘Acinetobacter’, we can see that there are missing values in the dataset. We will use the GP imputator to fill in the missing values.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">complete_dataMG</span><span class="p">[</span><span class="s1">&#39;Acinetobacter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset the index</span>
+<span class="n">complete_dataMG_reset</span> <span class="o">=</span> <span class="n">complete_dataMG</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+<span class="c1"># Make index as float</span>
+<span class="n">complete_dataMG_reset</span><span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">complete_dataMG_reset</span><span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now &#39;days&#39; is a regular column and you can use it as a feature</span>
+<span class="n">new_dataset</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">complete_dataMG_reset</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Acidimicrobium&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Acinetobacter&#39;</span><span class="p">,</span> <span class="s1">&#39;Albidiferax&#39;</span><span class="p">],</span> <span class="s1">&#39;Acinetobacter&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_dataset</span><span class="p">[</span><span class="s1">&#39;Acinetobacter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>We can see now that the data imputator calculated the missing values for the ‘Acinetobacter’ column. However, as we can see fro the graph, the imputed values are not great. This can be caused by multiple factors, so we are going to explore different methods to better impute the missing values.</p>
+<p>We are first going to try to do imputation using VGP imputation. This is a variational Gaussian process imputation method that is more robust to missing data and uses multiple imputs to calculate the missing values. However, as we will see, this method creates an imputation that is heavily biased by other imputs, so it doesn’t work in our case to determine the missing values of the ‘Acinetobacter’ column.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now &#39;days&#39; is a regular column and you can use it as a feature</span>
+<span class="n">new_dataset</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">complete_dataMG_reset</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Acidimicrobium&#39;</span><span class="p">,</span> <span class="s1">&#39;Acinetobacter&#39;</span><span class="p">,</span> <span class="s1">&#39;Albidiferax&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Candidatus Microthrix&#39;</span><span class="p">,</span> <span class="s1">&#39;Chitinophaga pinensis&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Dechloromonas&#39;</span><span class="p">,</span> <span class="s1">&#39;Haliscomenobacter&#39;</span><span class="p">,</span> <span class="s1">&#39;Intrasporangium&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Leptospira&#39;</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">,</span> <span class="s1">&#39;Xanthomonas&#39;</span><span class="p">,</span> <span class="s1">&#39;mean abundance &lt; 2%&#39;</span><span class="p">],</span> <span class="s1">&#39;Acinetobacter&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>If we, isntead, do a single imputation using only a GPR model with a single imput (‘Acinetobacter’), we can see that the imputation is much better. This is because the imputation is not biased by other imputs, and the model can better predict the missing values.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now &#39;days&#39; is a regular column and you can use it as a feature</span>
+<span class="n">new_dataset2</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+    <span class="n">complete_dataMG_reset</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Acinetobacter&#39;</span><span class="p">],</span> <span class="s1">&#39;Acinetobacter&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the dataset (new_dataset2) to a csv file</span>
+<span class="n">new_dataset2</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;imputed_data.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>So we will proceed to do a single imput GPR model for all the columns in the dataset. We will then use the VAR inference method to infer the causal relationships between the variables in the time series.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># do the imputation for each column (genus) in the dataset</span>
+<span class="c1"># Copy the original dataset</span>
+<span class="n">new_dataset_complete</span> <span class="o">=</span> <span class="n">complete_dataMG_reset</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">genus</span> <span class="ow">in</span> <span class="n">complete_dataMG</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="c1"># Impute the missing values for the current column</span>
+    <span class="n">imputed_data</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+        <span class="n">complete_dataMG_reset</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">genus</span><span class="p">],</span> <span class="n">genus</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Update the column in the new dataset with the imputed data</span>
+    <span class="n">new_dataset_complete</span><span class="p">[</span><span class="n">genus</span><span class="p">]</span> <span class="o">=</span> <span class="n">imputed_data</span><span class="p">[</span><span class="n">genus</span><span class="p">]</span>
+
+<span class="c1"># Save the dataset (new_dataset_complete) to a csv file</span>
+<span class="n">new_dataset_complete</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;imputed_data.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Imputing-Metabolite-Data-(Figure-4)-using-Gaussian-Process-Imputer">
+<h3>Imputing Metabolite Data (Figure 4) using Gaussian Process Imputer<a class="headerlink" href="#Imputing-Metabolite-Data-(Figure-4)-using-Gaussian-Process-Imputer" title="Link to this heading">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -85,6 +371,22 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </pre></div>
 </div>
 </div>
+<p>This dataset contains several columns, each representing different attributes related to microbial activity and metabolite concentrations. Here is a detailed explanation of each column:</p>
+<ul class="simple">
+<li><p><strong>date</strong>: The date when the sample was collected.</p></li>
+<li><p><strong>L1</strong>: The functional category or pathway associated with the data point.</p></li>
+<li><p><strong>mp_tot</strong>: Total metaproteomic count for that date and pathway.</p></li>
+<li><p><strong>mt_tot</strong>: Total metatranscriptomic count for that date and pathway.</p></li>
+<li><p><strong>L1sum_MP</strong>: Sum of metaproteomic counts for that specific functional category (L1).</p></li>
+<li><p><strong>L1sum_MT</strong>: Sum of metatranscriptomic counts for that specific functional category (L1).</p></li>
+<li><p><strong>L1rel_MP</strong>: Relative abundance of metaproteomic counts within the functional category.</p></li>
+<li><p><strong>L1rel_MT</strong>: Relative abundance of metatranscriptomic counts within the functional category.</p></li>
+<li><p><strong>MP_std_L1</strong>: Standard deviation of metaproteomic counts for that functional category.</p></li>
+<li><p><strong>MT_std_L1</strong>: Standard deviation of metatranscriptomic counts for that functional category.</p></li>
+<li><p><strong>cor</strong>: Correlation value between metaproteomic and metatranscriptomic data for that pathway.</p></li>
+<li><p><strong>newL1</strong>: A reformatted version of the functional category name, often including a correlation coefficient (r value) for easier readability in the figure.</p></li>
+</ul>
+<p>We will be using the <code class="docutils literal notranslate"><span class="pre">L1rel_MP</span></code> and <code class="docutils literal notranslate"><span class="pre">L1rel_MT</span></code> columns in this example to use it with the VAR inference method to infer the causal relationships between the variables in the time series with the meta transcriptomics (MT) and meta genomics (MG) data.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -252,7 +554,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: 
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_4_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_4_1.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_33_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_33_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -286,7 +588,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1119: 
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_5_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_5_1.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_34_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_34_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -410,7 +712,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: 
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_7_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_7_1.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_36_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_36_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -894,6 +1196,7 @@ c:\ProgramData\anaconda3\envs\MIMIC\Lib\site-packages\seaborn\_oldcore.py:1057: 
 </pre></div>
 </div>
 </div>
+<p>We are going to use the GP imputer to fill in the missing values in the dataset. We will then use the VAR inference method to infer the causal relationships between the variables in the time series. Note how we are only using the matern (M32, M12, and M52) and radial basis function (RBF) kernels in the GP imputer. This is because these kernels are the most suitable for time series data.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -927,7 +1230,7 @@ BIC: 305.14796205640255
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_1.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_1.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_1.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -944,7 +1247,7 @@ BIC: 539.9907420516718
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_3.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_3.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_3.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_3.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -961,7 +1264,7 @@ BIC: 593.6954527249973
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_5.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_5.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_5.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -978,7 +1281,7 @@ BIC: 606.429158574828
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_7.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_7.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_7.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_7.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -995,7 +1298,7 @@ BIC: 389.2225921347663
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_9.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_9.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_9.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_9.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1012,7 +1315,7 @@ BIC: 321.45473434185317
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_11.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_11.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_11.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_11.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1029,7 +1332,7 @@ BIC: 292.9620322625907
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_13.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_13.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_13.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_13.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1046,7 +1349,7 @@ BIC: 558.9765129518931
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_15.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_15.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_15.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_15.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1063,7 +1366,7 @@ BIC: 581.8255133135826
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_17.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_17.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_17.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_17.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1080,7 +1383,7 @@ BIC: 384.214449988753
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_19.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_19.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_19.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_19.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1097,7 +1400,7 @@ BIC: 448.7262491062683
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_21.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_21.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_21.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_21.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1114,7 +1417,7 @@ BIC: 475.6907363223153
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_23.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_23.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_23.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_23.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1131,7 +1434,7 @@ BIC: 595.2739514099666
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_25.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_25.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_25.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_25.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1148,7 +1451,7 @@ BIC: 523.8038498902097
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_27.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_27.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_27.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_27.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1165,7 +1468,7 @@ BIC: 492.72580947714255
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_29.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_29.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_29.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_29.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1182,7 +1485,7 @@ BIC: 404.635080730377
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_31.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_31.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_31.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_31.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1199,7 +1502,7 @@ BIC: 488.89321087777034
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_33.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_33.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_33.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_33.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1216,7 +1519,7 @@ BIC: 443.5037096251963
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_35.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_35.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_35.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_35.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1233,7 +1536,7 @@ BIC: 466.12061932819296
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_37.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_37.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_37.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_37.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1250,7 +1553,7 @@ BIC: 520.4635688670087
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_39.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_39.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_39.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_39.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1267,7 +1570,7 @@ BIC: 405.9096561312746
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_41.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_11_41.png" />
+<img alt="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_41.png" src="../../../_images/notebooks_MultiModel_Herold_examples_impute_data_41_41.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1275,10 +1578,67 @@ BIC: 405.9096561312746
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the dataset (new_dataset_complete) to a csv file</span>
-<span class="n">new_dataset_complete</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;MP_metabolite_imputed_dataV2.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">new_dataset_complete</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;MP_metabolite_imputed_data.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s do the same for the MT dataset</span>
+
+<span class="c1"># Step 1: Determine the minimum and maximum index</span>
+<span class="n">min_index</span> <span class="o">=</span> <span class="n">dataL1_MT_pivot</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">max_index</span> <span class="o">=</span> <span class="n">dataL1_MT_pivot</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+<span class="c1"># Step 2: Create a new index range from min_index to max_index</span>
+<span class="n">new_index</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">min_index</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_index</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Ensure it&#39;s an integer range</span>
+
+<span class="c1"># Step 3: Re-index the DataFrame</span>
+<span class="n">dataL1_MT_complete</span> <span class="o">=</span> <span class="n">dataL1_MT_pivot</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">new_index</span><span class="p">)</span>
+
+<span class="n">dataL1_MT_complete</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset the index</span>
+<span class="n">complete_dataMT_reset</span> <span class="o">=</span> <span class="n">dataL1_MT_complete</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+<span class="c1"># Make index as float</span>
+<span class="n">complete_dataMT_reset</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">complete_dataMT_reset</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># do the imputation for each column (metabolite) in the dataset</span>
+<span class="c1"># Copy the original dataset</span>
+<span class="n">new_dataset_complete</span> <span class="o">=</span> <span class="n">complete_dataMT_reset</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">metabolite</span> <span class="ow">in</span> <span class="n">dataL1_MT_complete</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="c1"># Impute the missing values for the current column</span>
+    <span class="n">imputed_data</span> <span class="o">=</span> <span class="n">GPImputer</span><span class="p">()</span><span class="o">.</span><span class="n">impute_missing_values</span><span class="p">(</span>
+        <span class="n">complete_dataMT_reset</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">metabolite</span><span class="p">],</span> <span class="n">metabolite</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;M32&#39;</span><span class="p">,</span> <span class="s1">&#39;M12&#39;</span><span class="p">,</span> <span class="s1">&#39;M52&#39;</span><span class="p">,</span> <span class="s1">&#39;RBF&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Update the column in the new dataset with the imputed data</span>
+    <span class="n">new_dataset_complete</span><span class="p">[</span><span class="n">metabolite</span><span class="p">]</span> <span class="o">=</span> <span class="n">imputed_data</span><span class="p">[</span><span class="n">metabolite</span><span class="p">]</span>
+
+<span class="c1"># Save the dataset (new_dataset_complete) to a csv file</span>
+<span class="n">new_dataset_complete</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;MT_metabolite_imputed_data.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
 </section>
 
 
@@ -1318,6 +1678,7 @@ BIC: 405.9096561312746
 <li class="toctree-l2"><a class="reference internal" href="../../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../CRM/examples-sim-CRM.html">Simulate some time course data from the CRM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-lasso-gLV.html">Example Lasso gLV model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gLV/examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
@@ -1326,10 +1687,12 @@ BIC: 405.9096561312746
 <li class="toctree-l2"><a class="reference internal" href="../../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-Herold-sVAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data imputation on a Real Public Dataset, Herold et al. (2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Figure-3---Community-Structure-and-Function-Dynamics:">Figure 3 - Community Structure and Function Dynamics:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Figure-4---Metabolite-Levels-and-Environmental-Dynamics:">Figure 4 - Metabolite Levels and Environmental Dynamics:</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>

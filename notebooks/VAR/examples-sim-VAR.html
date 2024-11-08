@@ -89,7 +89,7 @@ techniques.</p>
 <section id="Creating-a-VAR-simulation-model">
 <h3>Creating a VAR simulation model<a class="headerlink" href="#Creating-a-VAR-simulation-model" title="Link to this heading">¶</a></h3>
 <p>In this section, we are just going to create a VAR simulation model class and print the parameters it is initialized with.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -97,20 +97,6 @@ techniques.</p>
 <span class="n">model</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Model parameters:
-Model: VAR
-n_obs: None
-coefficients: None
-initial_values: None
-noise_stddev: None
-output: None
-</pre></div></div>
 </div>
 <p>We can see that the initial parameters are set to <code class="docutils literal notranslate"><span class="pre">null</span></code>. If we create a VAR model or a gMLV model, the initial parameters are going to be different for each model. However, a VAR model is going to have the following parameters: - <strong>n_obs</strong>: Number of observations to generate. - <strong>coefficients</strong>: Coefficient matrix for the VAR(1) process. It should be a square matrix of shape (n, n). - <strong>initial_values</strong>: Initial values for the process, a vector of shape (n,). - <strong>noise_stddev</strong>: Standard
 deviation of the noise term. - <strong>output</strong>: This is a string that specifies the output format. It can be either <code class="docutils literal notranslate"><span class="pre">show</span></code>, <code class="docutils literal notranslate"><span class="pre">save</span></code> or <code class="docutils literal notranslate"><span class="pre">both</span></code>. If it is <code class="docutils literal notranslate"><span class="pre">show</span></code>, the plot is going to be displayed on the screen. If it is <code class="docutils literal notranslate"><span class="pre">save</span></code>, the plot is going to be saved in the current working directory. If it is <code class="docutils literal notranslate"><span class="pre">both</span></code>, the plot is going to be displayed on the screen and saved in the current working directory.</p>
@@ -161,21 +147,11 @@ deviation of the noise term. - <strong>output</strong>: This is a string that sp
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Using the following parameters for VAR simulation: {&#39;n_obs&#39;: 100, &#39;coefficients&#39;: array([[ 0.8, -0.2],
-       [ 0.3,  0.5]]), &#39;initial_values&#39;: array([[1],
-       [2]]), &#39;noise_stddev&#39;: 1.0, &#39;output&#39;: &#39;show&#39;}
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_VAR_examples-sim-VAR_10_1.png" src="../../_images/notebooks_VAR_examples-sim-VAR_10_1.png" />
+<img alt="../../_images/notebooks_VAR_examples-sim-VAR_10_0.png" src="../../_images/notebooks_VAR_examples-sim-VAR_10_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -193,106 +169,106 @@ Using the following parameters for VAR simulation: {&#39;n_obs&#39;: 100, &#39;c
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([[ 1.        ,  2.        ],
-       [ 0.8093882 ,  2.24234669],
-       [-0.58934955,  2.07364017],
-       [-0.09764191,  0.98521665],
-       [-1.04765057, -0.75726147],
-       [-1.13406233, -1.58549792],
-       [-0.64973728, -1.22203036],
-       [-0.68830496, -0.79676058],
-       [-2.15070241,  1.76107743],
-       [-4.24327826,  0.70490676],
-       [-3.90606792,  0.35228913],
-       [-2.92187325, -2.46058004],
-       [-1.02548479, -0.41041054],
-       [-0.23512032, -0.68568214],
-       [-1.50136868,  0.56573815],
-       [-2.85066334, -0.29135802],
-       [-0.56379734, -2.08417105],
-       [-0.22853626, -3.17148826],
-       [ 0.98037713, -2.51090175],
-       [ 0.25046067, -1.38908553],
-       [-1.26456167,  0.39502218],
-       [-1.18078171,  1.21180525],
-       [-1.30140217,  1.42430988],
-       [-0.83009255, -1.45563366],
-       [ 1.13067706, -1.14215114],
-       [ 1.7575821 , -0.91397202],
-       [ 2.97112607,  0.47770998],
-       [ 1.86846265,  0.10762111],
-       [ 3.33111999,  0.20576298],
-       [ 1.90219061,  0.52576461],
-       [ 1.13728423,  1.58481089],
-       [ 1.04933446,  1.60808053],
-       [ 0.36946315,  0.76439876],
-       [-0.35586147,  2.61215567],
-       [ 1.07771168,  2.76161343],
-       [ 1.97602724,  0.26290791],
-       [ 1.91019327, -0.27394092],
-       [ 1.93984545,  0.12745739],
-       [ 1.91518158, -0.9198675 ],
-       [ 1.2427911 ,  1.59763585],
-       [ 2.0414644 ,  1.37263105],
-       [ 2.0655923 ,  0.39519291],
-       [ 2.28154753,  0.71800212],
-       [ 3.14269013,  0.55212722],
-       [ 1.84291348,  0.89385214],
-       [-0.28196928,  2.43051088],
-       [-0.73309384,  0.42135586],
-       [-2.13262922, -1.77299827],
-       [-1.77085268, -2.66819536],
-       [-1.94346104, -1.59371675],
-       [-2.29982838, -0.18443354],
-       [-0.59425022, -0.9533923 ],
-       [-0.85479119, -0.23735167],
-       [ 0.62467523, -0.27638341],
-       [ 0.39574104, -0.62641682],
-       [ 0.01392195, -0.27658502],
-       [-0.62898762,  0.05713162],
-       [ 1.07043435,  0.92439985],
-       [ 0.04475511,  0.09212804],
-       [ 0.35187798, -1.02177799],
-       [-1.47883548,  0.44757627],
-       [-1.39279857, -0.71739262],
-       [-0.66914534, -0.35368738],
-       [-0.43161414, -0.03408332],
-       [ 0.89715929, -1.57830239],
-       [ 3.37276957, -1.89153836],
-       [ 3.18158822,  0.49494532],
-       [ 3.26807853,  0.57986327],
-       [ 3.61931123,  2.05019671],
-       [ 2.84485307,  3.89677475],
-       [ 1.68305286,  2.24293798],
-       [ 1.77045757,  1.17674028],
-       [ 2.48484848,  0.91711633],
-       [ 1.61654471,  3.175619  ],
-       [-0.26092364,  1.94893128],
-       [-0.21791681, -0.60945956],
-       [ 0.60167395,  0.2457652 ],
-       [ 0.77082062, -1.25239792],
-       [ 0.94835472, -0.06921799],
-       [-0.26881958, -1.13974835],
-       [ 1.17142044, -0.13301352],
-       [ 0.83677053, -1.05145638],
-       [-0.12882482,  0.14178902],
-       [-0.76029806,  1.24625656],
-       [-1.13415729,  0.595779  ],
-       [-0.05747409, -0.17261199],
-       [ 0.7505044 , -0.05090913],
-       [ 0.81099874,  0.6677493 ],
-       [ 0.35095274, -0.2814034 ],
-       [-1.31950113, -1.1494864 ],
-       [-1.93229002, -2.93158122],
-       [ 0.53905692, -1.7332172 ],
-       [ 0.98623003, -1.31482049],
-       [ 0.90928423,  1.45185342],
-       [-0.01067594,  0.31299256],
-       [-0.53757832,  1.05078796],
-       [-2.43511476, -0.43405256],
-       [-1.33514516, -1.6293625 ],
-       [-1.06011206, -1.27172062],
-       [-1.47794078, -1.68671162]])
+array([[ 1.00000000e+00,  2.00000000e+00],
+       [ 1.86575292e+00,  1.71471962e+00],
+       [ 9.36875781e-01,  2.08484648e-01],
+       [-1.60825963e+00,  2.25586896e-01],
+       [-7.80926557e-01,  4.57946392e-02],
+       [-1.91372818e+00, -9.16449928e-01],
+       [-1.22230452e+00, -8.62207154e-01],
+       [-1.21754644e+00, -2.90696003e+00],
+       [ 2.47342249e-01, -9.97933732e-01],
+       [ 1.66354232e+00, -2.49801030e-01],
+       [-1.70739040e-01, -3.32194323e-02],
+       [ 5.53857593e-01,  7.13726002e-01],
+       [ 5.42485682e-01, -5.10378692e-01],
+       [ 2.32470329e-02,  2.71940603e-01],
+       [-1.64461809e+00,  4.62760992e-01],
+       [-3.63527445e+00, -6.63373681e-01],
+       [-2.77905681e+00, -1.39733653e+00],
+       [-1.89862384e+00, -2.49523405e-01],
+       [-2.51426916e+00, -1.22225073e+00],
+       [-2.25268180e+00, -1.85264487e+00],
+       [-5.23518156e-01, -1.99703295e+00],
+       [-3.48098197e-01, -1.82586229e+00],
+       [ 1.25597309e+00, -4.99617076e-01],
+       [ 1.08136736e+00, -3.09479686e-01],
+       [ 1.59066994e+00, -9.97820827e-02],
+       [ 7.08138190e-01, -8.95485846e-01],
+       [-8.97082578e-01, -2.59997190e-01],
+       [-1.04178063e+00, -9.42000638e-01],
+       [-9.68814017e-01, -2.03962153e+00],
+       [ 1.05640718e-01, -3.82454395e-01],
+       [-6.64568444e-02, -1.23111825e+00],
+       [-6.27854396e-01,  1.13330674e+00],
+       [-1.04408591e+00, -2.76490804e-01],
+       [ 2.88074257e-01, -2.51719049e-01],
+       [-1.46026458e-01, -2.41267169e-01],
+       [-9.64122931e-01, -5.59617227e-02],
+       [-1.31504148e+00, -4.52628638e-01],
+       [-4.22874738e-01, -3.18593809e-01],
+       [-1.72684038e-01, -7.40474966e-01],
+       [-5.25570445e-01,  3.86730165e-01],
+       [-4.16713939e-01,  7.96070750e-01],
+       [-4.89408391e-01,  1.88444609e+00],
+       [-7.42597394e-01,  5.28853961e-01],
+       [-2.92342807e-01, -5.54073777e-01],
+       [-7.40296445e-01,  6.36273700e-01],
+       [-1.65887854e+00, -6.13591002e-02],
+       [-3.35178644e+00, -1.70325568e+00],
+       [-3.85093341e+00, -2.36879923e+00],
+       [-1.87198325e+00, -1.76896525e+00],
+       [-4.53905452e-01, -9.02601119e-01],
+       [-8.35820106e-01, -3.03338590e-01],
+       [-2.69861655e+00, -7.81159399e-01],
+       [-2.23642537e+00, -4.90695320e-01],
+       [-1.28544695e+00, -1.47325925e+00],
+       [-1.25850976e+00, -1.76521415e+00],
+       [ 4.41034364e-01, -1.95481795e+00],
+       [ 1.30764750e+00, -1.29795448e+00],
+       [ 1.99049960e+00,  4.18733704e-04],
+       [ 1.38373988e+00,  2.81628739e+00],
+       [ 1.34956803e+00,  1.23121854e+00],
+       [ 9.90619520e-01, -2.91994650e-02],
+       [ 8.84275944e-03,  2.29873559e-01],
+       [ 1.50351770e-01,  1.93473696e+00],
+       [-6.83032334e-02,  1.75661998e+00],
+       [-3.95462772e-01,  4.86593899e-01],
+       [-1.72946490e+00, -4.38255234e-01],
+       [-1.28938039e+00, -6.82630193e-01],
+       [-2.10019765e+00, -1.44975260e-01],
+       [-3.12681843e+00, -2.50584956e+00],
+       [-2.33474826e+00, -2.86668475e+00],
+       [-2.23940713e+00, -4.48226298e-01],
+       [-1.15341900e+00, -3.05021431e-01],
+       [-5.50828738e-01, -1.61341102e+00],
+       [-2.70346294e-01, -5.42518556e-01],
+       [-1.24311521e-01, -1.32158468e+00],
+       [-1.98245938e+00,  1.71592398e-01],
+       [ 3.40657735e-01,  1.65788736e+00],
+       [ 5.29529945e-01,  4.24943151e-01],
+       [-2.53534168e-01,  3.10227407e-01],
+       [-1.24135680e+00, -2.93475097e-01],
+       [-6.40683243e-01, -1.26351119e+00],
+       [-1.60138276e+00, -1.95864785e+00],
+       [-2.30779324e+00, -1.82802165e+00],
+       [-1.28835645e+00, -9.51417783e-02],
+       [-2.04603513e+00, -1.34833167e+00],
+       [-1.32666035e+00, -3.01802701e+00],
+       [-1.08920959e-01, -1.58653848e+00],
+       [ 1.23727123e+00, -6.35216636e-01],
+       [ 1.54914003e+00, -1.95296169e+00],
+       [ 2.68638392e+00, -2.06189332e+00],
+       [ 2.08552938e+00,  1.46145764e+00],
+       [ 1.72333870e+00,  1.87424792e+00],
+       [ 1.87610302e+00,  1.31112395e+00],
+       [ 1.52072736e+00,  1.65546481e+00],
+       [ 7.22468406e-01,  1.03547760e+00],
+       [-3.35388106e-01,  4.03683201e-01],
+       [ 6.40411815e-01, -6.06660422e-02],
+       [ 1.23132593e+00,  1.87311096e-01],
+       [ 1.31406498e+00,  1.65667113e+00],
+       [ 8.27079461e-01,  2.09094212e+00]])
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -304,7 +280,7 @@ array([[ 1.        ,  2.        ],
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
@@ -312,22 +288,6 @@ array([[ 1.        ,  2.        ],
 <span class="n">model</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Model parameters:
-Model: VAR
-n_obs: 100
-coefficients: [[ 0.8 -0.2]
- [ 0.3  0.5]]
-initial_values: [[1]
- [2]]
-noise_stddev: 1.0
-output: show
-</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -363,42 +323,15 @@ output: show
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Model parameters:
-Model: VAR
-n_obs: 100
-coefficients: None
-initial_values: [[1]
- [2]]
-noise_stddev: None
-output: show
-coefficientsM: None
-initial_valuesM: None
 Warning: Missing or None parameters for VAR simulation. Using default values for: [&#39;coefficients&#39;, &#39;noise_stddev&#39;]
-Using the following parameters for VAR simulation: {&#39;n_obs&#39;: 100, &#39;coefficients&#39;: [[0.8, -0.2], [0.3, 0.5]], &#39;initial_values&#39;: array([[1],
-       [2]]), &#39;noise_stddev&#39;: 1, &#39;output&#39;: &#39;show&#39;}
 </pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_VAR_examples-sim-VAR_15_1.png" src="../../_images/notebooks_VAR_examples-sim-VAR_15_1.png" />
-</div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-Model parameters:
-Model: VAR
-n_obs: 100
-coefficients: [[0.8, -0.2], [0.3, 0.5]]
-initial_values: [[1]
- [2]]
-noise_stddev: 1
-output: show
-</pre></div></div>
+<img alt="../../_images/notebooks_VAR_examples-sim-VAR_15_1.png" src="../../_images/notebooks_VAR_examples-sim-VAR_15_1.png" />
+</div>
 </div>
 <p>The simulator can also be run using parameters saved in a json file, which is useful for managing and reusing configurations, especially if the matrices are big. We’ll demonstrate this approach in the next section.</p>
 <p>For example, you could specify the parameters in the following way:</p>
@@ -448,34 +381,11 @@ output: show
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Model parameters:
-Model: VAR
-n_obs: 97
-coefficients: [[ 0.8 -0.2  0.3]
- [ 0.3  0.5 -1. ]
- [ 0.2 -0.1  0.4]]
-initial_values: [[1]
- [2]
- [0]]
-noise_stddev: 1.2
-output: show
-Using the following parameters for VAR simulation: {&#39;n_obs&#39;: 97, &#39;coefficients&#39;: array([[ 0.8, -0.2,  0.3],
-       [ 0.3,  0.5, -1. ],
-       [ 0.2, -0.1,  0.4]]), &#39;initial_values&#39;: array([[1],
-       [2],
-       [0]]), &#39;noise_stddev&#39;: 1.2, &#39;output&#39;: &#39;show&#39;}
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_VAR_examples-sim-VAR_17_1.png" src="../../_images/notebooks_VAR_examples-sim-VAR_17_1.png" />
+<img alt="../../_images/notebooks_VAR_examples-sim-VAR_17_0.png" src="../../_images/notebooks_VAR_examples-sim-VAR_17_0.png" />
 </div>
 </div>
 <p>The script also contains different methods for visualizing the simulated data, including plotting the time series of each variable in a different plot.</p>
@@ -550,6 +460,7 @@ Using the following parameters for VAR simulation: {&#39;n_obs&#39;: 97, &#39;co
 <li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../CRM/examples-sim-CRM.html">Simulate some time course data from the CRM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-lasso-gLV.html">Example Lasso gLV model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
@@ -558,9 +469,7 @@ Using the following parameters for VAR simulation: {&#39;n_obs&#39;: 97, &#39;co
 <li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html#Separate-the-data-into-MG-and-MT-datasets">Separate the data into MG and MT datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Vector AutoRegression (VAR) Simulation</a><ul>
