@@ -103,6 +103,10 @@ Suggesting Enhancements
 * Use GitHub issues to suggest enhancements.
 * Be clear and detailed in your suggestion.
 
+Common Issues:
+----------------
+- My example doesn't show in documentation. Make sure that your Jupter notebook is in the correct folder, and more importantly, *that it has a title!*
+
 Additional Notes
 -----------------
 

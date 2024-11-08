@@ -295,14 +295,14 @@ class sim_VAR(BaseModel):
         # Plot each variable in dataX on the first subplot
         for i in range(nX):
             axs[0].plot(dataX[:, i], label=f"X{str(i)}")
-        axs[0].set_title("Abundance, X")
+        axs[0].set_title("Abundance changes, X")
 
         # Plot each variable in dataS on the second subplot, if available
         if dataS is not None:
             nS = dataS.shape[1]
             for i in range(nS):
                 axs[1].plot(dataS[:, i], label=f"S{str(i)}")
-            axs[1].set_title("Abundance, S")
+            axs[1].set_title("Abundance changes, S")
 
         # Adjust the layout to ensure that the subplots do not overlap
         plt.tight_layout()
@@ -332,8 +332,6 @@ class sim_VAR(BaseModel):
             Saves the plots as "plot-data-XS-stacked.pdf".
         """
 
-        dataX = dataX + 1.0
-
         #  stacked
         nX = len(dataX[0])  # Number of columns in dataX
         nS = len(dataS[0])  # Number of columns in dataS
@@ -348,8 +346,8 @@ class sim_VAR(BaseModel):
             *dataX.T,
             labels=[
                 f"X{str(i)}" for i in range(nX)])
-        axs[0].set_title("Abundance, log10 X")
-        axs[0].set_ylabel("X")
+        axs[0].set_title("Abundance changes over time")
+        axs[0].set_ylabel("ΔX")
         axs[0].set_xlim(0, nobs - 1)
 
         sns.heatmap(
@@ -360,9 +358,9 @@ class sim_VAR(BaseModel):
             ax=axs[1],
             cbar=False,
         )
-        axs[1].set_title("S")
+        axs[1].set_title("Metabolites, S")
         axs[1].set_ylabel("S")
-        axs[1].set_xlabel("time (weeks)")
+        axs[1].set_xlabel("time (t)")
         axs[1].set_xlim(0, nobs)
 
         plt.tight_layout()  # Adjust the layout
