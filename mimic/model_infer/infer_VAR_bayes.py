@@ -626,7 +626,8 @@ class infer_VAR(BaseInfer):
             # Annotate matrix with true values in parentheses if provided
             for i in range(matrix_sum.shape[0]):
                 for j in range(matrix_sum.shape[1]):
-                    if true_values is not None and len(true_values) > idx and true_values[idx] is not None:
+                    if true_values is not None and len(
+                            true_values) > idx and true_values[idx] is not None:
                         true_value = true_values[idx][i, j]
                         text_value = f'{matrix_sum[i, j]:.2f} ({true_value:.2f})'
                         text_color = 'white'  # You can adjust the color if needed
