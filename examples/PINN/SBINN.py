@@ -1,8 +1,7 @@
 import numpy as np
 import deepxde as dde
 from deepxde.backend import tf
-from mimic.model_infer import *
-from mimic.model_simulate import *
+from mimic.model_simulate import sim_gLV
 
 # Define the ODE system for gLV
 
@@ -16,51 +15,44 @@ def gLV_ODE(t, y, params):
     return [tf.gradients(y[:, i], t)[0] - dy_dt[:, i:i+1] for i in range(num_species)]
 
 
-# generate some data
+# Generate data
 num_species = 3
 M = np.zeros((num_species, num_species))
 np.fill_diagonal(M, [-0.05, -0.1, -0.15])
 M[0, 1] = 0.05
 M[1, 0] = -0.02
 
-# construct growth rates matrix
-# mu = np.random.lognormal(0.01, 0.5, num_species)
 mu = np.array([0.8, 1.2, 1.5])
 
-# instantiate simulator
-simulator = sim_gLV(num_species=num_species,
-                    M=M,
-                    mu=mu)
+simulator = sim_gLV(num_species=num_species, M=M, mu=mu)
 simulator.print_parameters()
 
 init_species = 10 * np.ones(num_species)
-t_data = np.arange(0, 10, 0.1)
+t_data = np.arange(0, 10, 0.1)[:, None]  # Ensure t_data is 2D
 yobs, y0, mu, M, _ = simulator.simulate(
-    times=t_data, init_species=init_species)
+    times=t_data.ravel(), init_species=init_species)
 
 y_data = yobs + np.random.normal(loc=0, scale=0.1, size=yobs.shape)
 
-
-# Time domain for ODEs
+# Define geometry
 geom = dde.geometry.TimeDomain(t_data[0, 0], t_data[-1, 0])
 
+# Observations
 observes = [
-    dde.DirichletBC(
-        geom,
-        lambda X, index=i: y_data[:, index: index + 1],
-        lambda _, on_boundary: on_boundary,
-        component=i,
-    )
-    for i in range(y_data.shape[1])
+    dde.PointSetBC(t_data, y_data[:, i:i+1], component=i) for i in range(num_species)
 ]
+
 # Prepare PDE data
-data = dde.data.PDE(geom, gLV_ODE, observes, anchors=t_data)
+params_init = np.hstack([mu, M.flatten()])
+params = tf.Variable(params_init, trainable=True, dtype=tf.float32)
+
+data = dde.data.PDE(geom, lambda t, y: gLV_ODE(
+    t, y, params), observes, anchors=t_data)
 
 # Define neural network
-net = dde.maps.FNN([1] + [128] * 3 + [y_data.shape[1]],
-                   "swish", "Glorot normal")
+net = dde.maps.FNN([1] + [128] * 3 + [num_species], "swish", "Glorot normal")
 
-# Transform features and outputs if needed
+# Apply feature transformation
 
 
 def feature_transform(t):
@@ -69,10 +61,9 @@ def feature_transform(t):
 
 net.apply_feature_transform(feature_transform)
 
-# Model compilation
+# Model compilation and training
 model = dde.Model(data, net)
 model.compile("adam", lr=1e-3, loss="MSE")
-
 
 losshistory, train_state = model.train(epochs=20000)
 dde.saveplot(losshistory, train_state, issave=True, isplot=True)
