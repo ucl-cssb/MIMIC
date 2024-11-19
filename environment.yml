@@ -1,5 +1,6 @@
 name: mimic_env
 channels:
+  - pytorch
   - conda-forge
   - defaults
 
@@ -19,6 +20,9 @@ dependencies:
   - arviz
   - cloudpickle
   - pip
+  - pytorch
+  - torchvision
+  - torchaudio
   - pip:
       - pytest
       - pytest-cov

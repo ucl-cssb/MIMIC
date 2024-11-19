@@ -1,5 +1,6 @@
 name: mimic_env
 channels:
+  - pytorch
   - conda-forge
   - defaults
 dependencies:
@@ -8,6 +9,9 @@ dependencies:
   - tensorflow
   - gpflow>=2.9
   - arviz
+  - pytorch
+  - torchvision
+  - torchaudio
   - pip
   - pip:
       - tensorflow-io-gcs-filesystem>=0.29.0,<0.32.0
