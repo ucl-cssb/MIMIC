@@ -1,6 +1,8 @@
-import numpy as np
 import deepxde as dde
+import matplotlib.pyplot as plt
+import numpy as np
 from deepxde.backend import tf
+
 from mimic.model_simulate import sim_gLV
 
 # Define the ODE system for gLV
@@ -67,3 +69,45 @@ model.compile("adam", lr=1e-3, loss="MSE")
 
 losshistory, train_state = model.train(epochs=20000)
 dde.saveplot(losshistory, train_state, issave=True, isplot=True)
+
+# Predict the solution using the trained model
+y_pred = model.predict(t_data)
+
+# Extract inferred parameters from the model
+inferred_params = model.sess.run(params)
+inferred_mu = inferred_params[:num_species]
+inferred_M = inferred_params[num_species:].reshape(num_species, num_species)
+
+# Plot predicted vs actual data for species abundances
+for i in range(num_species):
+    plt.figure()
+    plt.plot(t_data, y_data[:, i], "o",
+             label=f"Actual (species {i+1})", markersize=4)
+    plt.plot(t_data, y_pred[:, i], "-", label=f"Predicted (species {i+1})")
+    plt.xlabel("Time")
+    plt.ylabel(f"Species {i+1} Abundance")
+    plt.legend()
+    plt.title(f"Species {i+1}: Predicted vs Actual")
+    plt.savefig(f"species_{i+1}_comparison.png")
+    plt.show()
+
+# Plot actual vs inferred M matrix
+fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+
+# Actual M matrix
+im1 = axes[0].imshow(M, cmap="viridis", aspect="auto")
+axes[0].set_title("Actual Interaction Matrix (M)")
+plt.colorbar(im1, ax=axes[0])
+
+# Inferred M matrix
+im2 = axes[1].imshow(inferred_M, cmap="viridis", aspect="auto")
+axes[1].set_title("Inferred Interaction Matrix (M)")
+plt.colorbar(im2, ax=axes[1])
+
+plt.tight_layout()
+plt.savefig("interaction_matrix_comparison.png")
+plt.show()
+
+# Optional: Print numerical comparison
+print("Actual M:\n", M)
+print("Inferred M:\n", inferred_M)
