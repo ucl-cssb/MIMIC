@@ -15,13 +15,27 @@ def gLV_ODE(t, y, params):
     return [tf.gradients(y[:, i], t)[0] - dy_dt[:, i:i+1] for i in range(num_species)]
 
 
-# Generate data
+# Generate data for 3 species gLV model
 num_species = 3
 M = np.zeros((num_species, num_species))
 np.fill_diagonal(M, [-0.05, -0.1, -0.15])
 M[0, 1] = 0.05
 M[1, 0] = -0.02
 mu = np.array([0.8, 1.2, 1.5])
+
+# Generate data for 6 species gLV model
+num_species = 6
+M = np.zeros((num_species, num_species))
+np.fill_diagonal(M, [-0.05, -0.1, -0.15, -0.2, -0.25, -0.3])  # Example values
+M[0, 1] = 0.05
+M[1, 0] = -0.02
+M[2, 3] = 0.04
+M[3, 2] = -0.01
+M[4, 5] = 0.03
+M[5, 4] = -0.02
+
+# Growth rates (mu) for 6 species
+mu = np.array([0.8, 1.2, 1.5, 1.0, 0.9, 1.1])
 
 simulator = sim_gLV(num_species=num_species, M=M, mu=mu)
 simulator.print_parameters()
@@ -49,8 +63,6 @@ data = dde.data.PDE(geom, lambda t, y: gLV_ODE(
 net = dde.maps.FNN([1] + [128] * 3 + [num_species], "swish", "Glorot normal")
 
 # Apply feature transformation
-
-
 def feature_transform(t):
     return tf.concat([t, tf.sin(t), tf.sin(2 * t)], axis=1)
 
