@@ -78,11 +78,11 @@ def true_glv_ode_with_perturbation(N, t, mu, M, epsilon):
     returns dN/dt of shape (num_species,)
     """
     # Evaluate step perturbation
-    u_t = step_perturbation_np(t)  # scalar
+    u_t = step_perturbation_np(t)  # scalar step function
     # The system is: dN/dt = N * (mu + M*N + epsilon*u(t))
     # M*N => shape (num_species,)
-    growth = mu + M.dot(N) + epsilon * u_t
-    return N * growth
+    growth = mu + M.dot(N) + epsilon * u_t  # shape (num_species,)
+    return N * growth  # element-wise multiply => shape (num_species,)
 
 ##############################################################################
 # 2) Generate synthetic data (the "ground truth")
@@ -193,7 +193,7 @@ def main():
     np.fill_diagonal(M_true, [-0.05, -0.1, -0.15])
     M_true[0, 1] = 0.05
     M_true[1, 0] = -0.02
-    # Known epsilon
+    # Known epsilon (not trainable)
     epsilon_known = np.array([-0.1, 0.2, -0.05], dtype=np.float32)
 
     # --- b) Generate synthetic data
@@ -321,6 +321,36 @@ def main():
     ax.legend()
     plt.tight_layout()
     plt.show()
+
+    def compare_params(mu=None, M=None):
+        if mu is not None:
+            fig, ax = plt.subplots()
+            ax.stem(np.arange(0, len(mu[0]), dtype="int32"), mu[1],
+                    markerfmt="D", label='Inferred μ', linefmt='C0-')
+            ax.stem(np.arange(0, len(mu[0]), dtype="int32"), mu[0],
+                    markerfmt="X", label='Actual μ', linefmt='C1-')
+            ax.set_xlabel('Parameter Index')
+            ax.set_ylabel('μ[i]')
+            ax.legend()
+            plt.title("Comparison of Actual vs Inferred Growth Rates (μ)")
+            plt.savefig("mu_comparison.png")
+            plt.show()
+
+        if M is not None:
+            fig, ax = plt.subplots()
+            ax.stem(np.arange(0, M[0].size), M[1].flatten(),
+                    markerfmt="D", label='Inferred M', linefmt='C0-')
+            ax.stem(np.arange(0, M[0].size), M[0].flatten(),
+                    markerfmt="X", label='Actual M', linefmt='C1-')
+            ax.set_xlabel('Matrix Element Index')
+            ax.set_ylabel('M[i, j]')
+            ax.legend()
+            plt.title("Comparison of Actual vs Inferred Interaction Matrix (M)")
+            plt.savefig("M_comparison.png")
+            plt.show()
+
+    # Call compare_params for mu and M
+    compare_params(mu=(mu_true, mu_learned), M=(M_true, M_learned))
 
 
 if __name__ == "__main__":
