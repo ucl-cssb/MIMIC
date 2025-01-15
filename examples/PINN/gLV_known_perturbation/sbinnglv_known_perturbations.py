@@ -322,35 +322,91 @@ def main():
     plt.tight_layout()
     plt.show()
 
-    def compare_params(mu=None, M=None):
+    def compare_params(mu=None, M=None, epsilon=None, prefix=""):
+        """
+        Helper function to stem-plot and compare actual vs inferred parameters
+        for a gLV model (or similar).
+
+        Arguments:
+            mu: A tuple (mu_actual, mu_inferred) if comparing growth rates μ.
+                Each must be a 1D numpy array.
+                If None, it is skipped.
+            M: A tuple (M_actual, M_inferred) if comparing interaction matrices.
+                Each must be a 2D numpy array of the same shape.
+                If None, it is skipped.
+            epsilon: A tuple (epsilon_actual, epsilon_inferred) if comparing
+                    perturbation effects or any other 1D parameter set.
+                    If None, it is skipped.
+            prefix: Optional string prefix to prepend to the saved figure filenames.
+                    For example, prefix="trial1_" will save "trial1_mu_comparison.png",
+                    etc.
+        """
+
+        # Compare μ (growth rates)
         if mu is not None:
+            mu_actual, mu_inferred = mu
             fig, ax = plt.subplots()
-            ax.stem(np.arange(0, len(mu[0]), dtype="int32"), mu[1],
-                    markerfmt="D", label='Inferred μ', linefmt='C0-')
-            ax.stem(np.arange(0, len(mu[0]), dtype="int32"), mu[0],
-                    markerfmt="X", label='Actual μ', linefmt='C1-')
-            ax.set_xlabel('Parameter Index')
-            ax.set_ylabel('μ[i]')
+            ax.stem(
+                np.arange(len(mu_actual)), mu_actual,
+                markerfmt="X", label="Actual μ", linefmt="C1-"
+            )
+            ax.stem(
+                np.arange(len(mu_inferred)), mu_inferred,
+                markerfmt="D", label="Inferred μ", linefmt="C0-"
+            )
+            ax.set_xlabel("Species Index")
+            ax.set_ylabel("Growth Rate μ[i]")
             ax.legend()
             plt.title("Comparison of Actual vs Inferred Growth Rates (μ)")
-            plt.savefig("mu_comparison.png")
+            plt.tight_layout()
+            plt.savefig(f"{prefix}mu_comparison.png")
             plt.show()
 
+        # Compare M (interaction matrix)
         if M is not None:
+            M_actual, M_inferred = M
             fig, ax = plt.subplots()
-            ax.stem(np.arange(0, M[0].size), M[1].flatten(),
-                    markerfmt="D", label='Inferred M', linefmt='C0-')
-            ax.stem(np.arange(0, M[0].size), M[0].flatten(),
-                    markerfmt="X", label='Actual M', linefmt='C1-')
-            ax.set_xlabel('Matrix Element Index')
-            ax.set_ylabel('M[i, j]')
+            ax.stem(
+                np.arange(M_actual.size), M_actual.flatten(),
+                markerfmt="X", label="Actual M", linefmt="C1-"
+            )
+            ax.stem(
+                np.arange(M_inferred.size), M_inferred.flatten(),
+                markerfmt="D", label="Inferred M", linefmt="C0-"
+            )
+            ax.set_xlabel("Matrix Element Index")
+            ax.set_ylabel("M[i,j]")
             ax.legend()
             plt.title("Comparison of Actual vs Inferred Interaction Matrix (M)")
-            plt.savefig("M_comparison.png")
+            plt.tight_layout()
+            plt.savefig(f"{prefix}M_comparison.png")
+            plt.show()
+
+        # Compare ε (perturbation effects or other 1D parameter)
+        if epsilon is not None:
+            eps_actual, eps_inferred = epsilon
+            fig, ax = plt.subplots()
+            ax.stem(
+                np.arange(len(eps_actual)), eps_actual,
+                markerfmt="X", label="Actual ε", linefmt="C1-"
+            )
+            ax.stem(
+                np.arange(len(eps_inferred)), eps_inferred,
+                markerfmt="D", label="Inferred ε", linefmt="C0-"
+            )
+            ax.set_xlabel("Parameter Index")
+            ax.set_ylabel("ε[i]")
+            ax.legend()
+            plt.title("Comparison of Actual vs Inferred Perturbation Effects (ε)")
+            plt.tight_layout()
+            plt.savefig(f"{prefix}epsilon_comparison.png")
             plt.show()
 
     # Call compare_params for mu and M
-    compare_params(mu=(mu_true, mu_learned), M=(M_true, M_learned))
+    compare_params(
+        mu=(mu_true, mu_learned),
+        M=(M_true, M_learned),
+        prefix="Perturbations_")
 
 
 if __name__ == "__main__":
