@@ -25,7 +25,8 @@ def step_perturbation_np(t):
 
 def true_glv_ode_with_perturbation(N, t, mu, M, epsilon):
     """
-    True ODE for forward simulation in NumPy.  N shape: (num_species,)
+    True ODE for forward simulation in NumPy.
+    N shape: (num_species,)
     mu shape: (num_species,), M shape: (num_species, num_species), epsilon shape: (num_species,)
     """
     u_t = step_perturbation_np(t)
@@ -49,7 +50,7 @@ def generate_data(num_species, mu, M, epsilon, t_span, init_species, noise_std=0
 
 def glv_pde_with_unknown_perturbation(t, y, trainable_params, num_species):
     """
-    PDE residual for unknown epsilon. trainable_params now includes [mu, M_flat, epsilon].
+    PDE residual for unknown epsilon. trainable_params includes [mu, M_flat, epsilon].
     """
     # parse mu, M, epsilon
     num_params_mu = num_species
@@ -58,12 +59,13 @@ def glv_pde_with_unknown_perturbation(t, y, trainable_params, num_species):
     mu = trainable_params[:num_params_mu]
     M_flat = trainable_params[num_params_mu: num_params_mu + num_params_M]
     epsilon = trainable_params[num_params_mu +
-                               num_params_M:]         # shape (num_species,)
+                               num_params_M:]  # shape (num_species,)
 
     M = tf.reshape(M_flat, (num_species, num_species))
 
     # shape (None,)
     u_t = step_perturbation_tf(t)
+
     # shape (1, num_species)
     mu_expanded = tf.expand_dims(mu, axis=0)
     # shape (None, num_species)
@@ -75,97 +77,101 @@ def glv_pde_with_unknown_perturbation(t, y, trainable_params, num_species):
     u_expanded = tf.expand_dims(u_t, axis=1)
 
     growth = mu_expanded + My + eps_expanded * \
-        u_expanded             # shape (None, num_species)
+        u_expanded  # shape (None, num_species)
     dy_dt = y * growth
 
     residuals = []
     for i in range(num_species):
         dyi_dt = tf.gradients(y[:, i], t)[0]
-        residuals.append(dyi_dt - dy_dt[:, i:i+1])
+        residuals.append(dyi_dt - dy_dt[:, i: i + 1])
     return residuals
 
 
-def compare_params(mu=None, M=None, epsilon=None, prefix=""):
+def plot_comparison_stem(
+    mu_true, mu_learned, M_true, M_learned, epsilon_true, epsilon_learned
+):
     """
-    Helper function to stem-plot and compare actual vs inferred parameters
-    for a gLV model (or similar).
-
-    Arguments:
-        mu: A tuple (mu_actual, mu_inferred) if comparing growth rates μ.
-            Each must be a 1D numpy array.
-            If None, it is skipped.
-        M: A tuple (M_actual, M_inferred) if comparing interaction matrices.
-            Each must be a 2D numpy array of the same shape.
-            If None, it is skipped.
-        epsilon: A tuple (epsilon_actual, epsilon_inferred) if comparing
-                 perturbation effects or any other 1D parameter set.
-                 If None, it is skipped.
-        prefix: Optional string prefix to prepend to the saved figure filenames.
-                For example, prefix="trial1_" will save "trial1_mu_comparison.png",
-                etc.
+    Produce only stem plots for mu, M, and epsilon.
+    No heatmaps, no scatter plots, just stems.
     """
-    import numpy as np
-    import matplotlib.pyplot as plt
+    # 1) Stem plot for mu
+    plt.figure(figsize=(8, 4))
+    plt.stem(
+        range(len(mu_true)),
+        mu_true,
+        markerfmt="o",
+        linefmt="C0-",
+        basefmt=" ",
+        label="Actual μ",
+    )
+    plt.stem(
+        range(len(mu_learned)),
+        mu_learned,
+        markerfmt="x",
+        linefmt="C1-",
+        basefmt=" ",
+        label="Inferred μ",
+    )
+    plt.xlabel("Species Index")
+    plt.ylabel("Growth Rate (μ)")
+    plt.title("Comparison of Actual vs. Inferred μ (Stem Plot)")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("mu_comparison_stem.png")
+    plt.show()
 
-    # Compare μ (growth rates)
-    if mu is not None:
-        mu_actual, mu_inferred = mu
-        fig, ax = plt.subplots()
-        ax.stem(
-            np.arange(len(mu_actual)), mu_actual,
-            markerfmt="X", label="Actual μ", linefmt="C1-"
-        )
-        ax.stem(
-            np.arange(len(mu_inferred)), mu_inferred,
-            markerfmt="D", label="Inferred μ", linefmt="C0-"
-        )
-        ax.set_xlabel("Species Index")
-        ax.set_ylabel("Growth Rate μ[i]")
-        ax.legend()
-        plt.title("Comparison of Actual vs Inferred Growth Rates (μ)")
-        plt.tight_layout()
-        plt.savefig(f"{prefix}mu_comparison.png")
-        plt.show()
+    # 2) Stem plot for flattened M
+    M_size = M_true.size
+    plt.figure(figsize=(10, 4))
+    plt.stem(
+        np.arange(M_size),
+        M_true.flatten(),
+        markerfmt="o",
+        linefmt="C0-",
+        basefmt=" ",
+        label="Actual M",
+    )
+    plt.stem(
+        np.arange(M_size),
+        M_learned.flatten(),
+        markerfmt="x",
+        linefmt="C1-",
+        basefmt=" ",
+        label="Inferred M",
+    )
+    plt.xlabel("Flattened M Index (row-major)")
+    plt.ylabel("Interaction Value")
+    plt.title("Comparison of Actual vs. Inferred M (Stem Plot)")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("M_comparison_stem.png")
+    plt.show()
 
-    # Compare M (interaction matrix)
-    if M is not None:
-        M_actual, M_inferred = M
-        fig, ax = plt.subplots()
-        ax.stem(
-            np.arange(M_actual.size), M_actual.flatten(),
-            markerfmt="X", label="Actual M", linefmt="C1-"
-        )
-        ax.stem(
-            np.arange(M_inferred.size), M_inferred.flatten(),
-            markerfmt="D", label="Inferred M", linefmt="C0-"
-        )
-        ax.set_xlabel("Matrix Element Index")
-        ax.set_ylabel("M[i,j]")
-        ax.legend()
-        plt.title("Comparison of Actual vs Inferred Interaction Matrix (M)")
-        plt.tight_layout()
-        plt.savefig(f"{prefix}M_comparison.png")
-        plt.show()
-
-    # Compare ε (perturbation effects or other 1D parameter)
-    if epsilon is not None:
-        eps_actual, eps_inferred = epsilon
-        fig, ax = plt.subplots()
-        ax.stem(
-            np.arange(len(eps_actual)), eps_actual,
-            markerfmt="X", label="Actual ε", linefmt="C1-"
-        )
-        ax.stem(
-            np.arange(len(eps_inferred)), eps_inferred,
-            markerfmt="D", label="Inferred ε", linefmt="C0-"
-        )
-        ax.set_xlabel("Parameter Index")
-        ax.set_ylabel("ε[i]")
-        ax.legend()
-        plt.title("Comparison of Actual vs Inferred Perturbation Effects (ε)")
-        plt.tight_layout()
-        plt.savefig(f"{prefix}epsilon_comparison.png")
-        plt.show()
+    # 3) Stem plot for epsilon
+    plt.figure(figsize=(8, 4))
+    plt.stem(
+        range(len(epsilon_true)),
+        epsilon_true,
+        markerfmt="o",
+        linefmt="C0-",
+        basefmt=" ",
+        label="Actual ε",
+    )
+    plt.stem(
+        range(len(epsilon_learned)),
+        epsilon_learned,
+        markerfmt="x",
+        linefmt="C1-",
+        basefmt=" ",
+        label="Inferred ε",
+    )
+    plt.xlabel("Species Index")
+    plt.ylabel("Perturbation Effect (ε)")
+    plt.title("Comparison of Actual vs. Inferred ε (Stem Plot)")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("epsilon_comparison_stem.png")
+    plt.show()
 
 
 def main():
@@ -188,23 +194,25 @@ def main():
     t_data = t_span.reshape(-1, 1)
 
     geom = dde.geometry.TimeDomain(t_data[0, 0], t_data[-1, 0])
-
     observes = [
         dde.PointSetBC(t_data, y_noisy[:, i: i + 1], component=i)
         for i in range(num_species)
     ]
 
     # Build trainable params: [mu, M, epsilon]
+    num_params_mu = num_species
+    num_params_M = num_species * num_species
     param_init = np.hstack(
         [
             # mu guess
             np.random.uniform(0.5, 1.5, size=num_species),
-            np.random.uniform(-0.2, 0.2, size=(num_species**2,)
-                              ),       # M guess
+            # M guess
+            np.random.uniform(-0.2, 0.2, size=(num_params_M,)),
             # epsilon guess
             np.random.uniform(-0.1, 0.1, size=num_species),
         ]
     ).astype(np.float32)
+
     trainable_params = tf.Variable(
         param_init, trainable=True, dtype=tf.float32)
 
@@ -213,8 +221,11 @@ def main():
 
     data = dde.data.PDE(geom, ode_residual, observes, anchors=t_data)
 
-    net = dde.maps.FNN([1] + [128, 128, 128] + [num_species],
-                       activation="swish", kernel_initializer="Glorot normal")
+    net = dde.maps.FNN(
+        [1] + [128, 128, 128] + [num_species],
+        activation="swish",
+        kernel_initializer="Glorot normal",
+    )
 
     def feature_transform(t):
         return tf.concat([t, tf.sin(t), tf.sin(2.0 * t)], axis=1)
@@ -228,12 +239,10 @@ def main():
 
     # Extract learned parameters
     inferred = model.sess.run(trainable_params)
-    num_params_mu = num_species
-    num_params_M = num_species * num_species
-
     mu_learned = inferred[:num_params_mu]
-    M_learned = inferred[num_params_mu: num_params_mu +
-                         num_params_M].reshape((num_species, num_species))
+    M_learned = inferred[num_params_mu: num_params_mu + num_params_M].reshape(
+        (num_species, num_species)
+    )
     epsilon_learned = inferred[num_params_mu + num_params_M:]
 
     # Predict solution
@@ -250,7 +259,7 @@ def main():
     print("True epsilon:", epsilon_true)
     print("Learned epsilon:", epsilon_learned)
 
-    # Plot solution
+    # Plot time-series solution
     plt.figure(figsize=(10, 6))
     for i in range(num_species):
         plt.plot(t_span, y_noisy[:, i], "o",
@@ -264,14 +273,11 @@ def main():
     plt.savefig("pinn_unknown_perturbation_solution.png")
     plt.show()
 
-    compare_params(
-        mu=(mu_true, mu_learned),
-        M=(M_true, M_learned),
-        epsilon=(epsilon_true, epsilon_learned),
-        prefix="unknown_perturbation_"
+    # Single function that does stem plots for mu, M, and epsilon
+    plot_comparison_stem(
+        mu_true, mu_learned, M_true, M_learned, epsilon_true, epsilon_learned
     )
 
 
 if __name__ == "__main__":
     main()
-    # After main finishes, call plot_comparison with actual and inferred values
