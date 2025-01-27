@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Simulate some time course data from the gLV &#8212; MIMIC 0.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
     <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -18,8 +18,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Simulate some time course data and perform ridge regression as in Stein et al. 2013" href="examples-ridge-gLV.html" />
-    <link rel="prev" title="Example Lasso gLV model" href="examples-lasso-gLV.html" />
+    <link rel="next" title="Repeat Stein et al. 2013 analysis" href="examples-Stein.html" />
+    <link rel="prev" title="Used Bayesian inference to infer the parameters of a (linearised) gLV model" href="examples-bayes-gLV.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -41,15 +41,15 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="n">set_all_seeds</span>
-<span class="kn">from</span> <span class="nn">mimic.utilities.utilities</span> <span class="kn">import</span> <span class="n">plot_gLV</span>
-<span class="kn">from</span> <span class="nn">mimic.model_infer</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">mimic.model_simulate</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mimic.utilities.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_all_seeds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mimic.utilities.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_gLV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mimic.model_infer</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mimic.model_simulate</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">odeint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
 <br/></pre></div>
 </div>
 </div>
@@ -58,7 +58,13 @@
 <p>The generalized Lotka-Volterra equation takes the form</p>
 <div class="math notranslate nohighlight">
 \[\frac{dX_i}{dt} = \mu_i X_i + X_i M_{ij} X_j + X_i \epsilon_{il} u_l\]</div>
-<p>where: - <span class="math notranslate nohighlight">\(X_i\)</span> is the concentration of a species - <span class="math notranslate nohighlight">\(\mu_i\)</span> is its specific growth rate - <span class="math notranslate nohighlight">\(M_{ij}\)</span> is the effect of the interaction of species <span class="math notranslate nohighlight">\(i\)</span> on species <span class="math notranslate nohighlight">\(j\)</span> - <span class="math notranslate nohighlight">\(\epsilon_{il}\)</span> is the susceptibility to the time-dependent perturbation <span class="math notranslate nohighlight">\(u_l\)</span></p>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(X_i\)</span> is the concentration of a species</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mu_i\)</span> is its specific growth rate</p></li>
+<li><p><span class="math notranslate nohighlight">\(M_{ij}\)</span> is the effect of the interaction of species <span class="math notranslate nohighlight">\(i\)</span> on species <span class="math notranslate nohighlight">\(j\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\epsilon_{il}\)</span> is the susceptibility to the time-dependent perturbation <span class="math notranslate nohighlight">\(u_l\)</span></p></li>
+</ul>
 <section id="Model-with-five-species">
 <h2>Model with five species<a class="headerlink" href="#Model-with-five-species" title="Link to this heading">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -85,7 +91,7 @@
 <span class="n">epsilon</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
 
 <span class="c1"># create a perturbation function including a perturbation at t=2, t=3 and t=4</span>
-<span class="k">def</span> <span class="nf">pert_fn</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pert_fn</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">if</span> <span class="mf">2.0</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">2.2</span> <span class="ow">or</span> <span class="mf">3.0</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">3.2</span> <span class="ow">or</span> <span class="mf">4.0</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">4.2</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
@@ -465,11 +471,16 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../CRM/examples-sim-CRM.html">Simulate some time course data from the CRM</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-lasso-gLV.html">Example Lasso gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Simulate some time course data from the gLV</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Model-with-five-species">Model with five species</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Simulate-single-time-course">Simulate single time course</a></li>
@@ -478,19 +489,14 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 <li class="toctree-l3"><a class="reference internal" href="#Simulate-multiple-time-courses-with-a-perturbation">Simulate multiple time courses with a perturbation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
@@ -503,8 +509,8 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../../examples.html">Examples</a><ul>
-      <li>Previous: <a href="examples-lasso-gLV.html" title="previous chapter">Example Lasso gLV model</a></li>
-      <li>Next: <a href="examples-ridge-gLV.html" title="next chapter">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+      <li>Previous: <a href="examples-bayes-gLV.html" title="previous chapter">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+      <li>Next: <a href="examples-Stein.html" title="next chapter">Repeat Stein et al. 2013 analysis</a></li>
   </ul></li>
   </ul></li>
 </ul>

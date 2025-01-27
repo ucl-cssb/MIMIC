@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mimic.model_infer.cLV &#8212; MIMIC 0.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
     <script src="../../../_static/documentation_options.js?v=01f34227"></script>
@@ -32,20 +32,20 @@
           <div class="body" role="main">
             
   <h1>Source code for mimic.model_infer.cLV</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">linregress</span>
-<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">logsumexp</span>
-<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">RK45</span><span class="p">,</span> <span class="n">solve_ivp</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">linregress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">RK45</span><span class="p">,</span> <span class="n">solve_ivp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 
 
 <div class="viewcode-block" id="CompositionalLotkaVolterra">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra">[docs]</a>
-<span class="k">class</span> <span class="nc">CompositionalLotkaVolterra</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CompositionalLotkaVolterra</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inference for compositional Lotka-Volterra.</span>
 
@@ -54,7 +54,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">denom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pseudo_count</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">denom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pseudo_count</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -100,14 +100,14 @@
 
 <div class="viewcode-block" id="CompositionalLotkaVolterra.get_regularizers">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.get_regularizers">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_regularizers</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_regularizers</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_B</span></div>
 
 
 <div class="viewcode-block" id="CompositionalLotkaVolterra.set_regularizers">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.set_regularizers">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_regularizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">r_A</span><span class="p">,</span> <span class="n">r_g</span><span class="p">,</span> <span class="n">r_B</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_regularizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">r_A</span><span class="p">,</span> <span class="n">r_g</span><span class="p">,</span> <span class="n">r_B</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">r_A</span> <span class="o">=</span> <span class="n">r_A</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">r_g</span> <span class="o">=</span> <span class="n">r_g</span>
@@ -116,7 +116,7 @@
 
 <div class="viewcode-block" id="CompositionalLotkaVolterra.train">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.train">[docs]</a>
-    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">folds</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">folds</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Estimate regularization parameters and CLV model parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -149,7 +149,7 @@
 
 <div class="viewcode-block" id="CompositionalLotkaVolterra.predict">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.predict">[docs]</a>
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Predict relative abundances from initial conditions.</span>
 
 <span class="sd">        Parameters</span>
@@ -179,7 +179,7 @@
 
 <div class="viewcode-block" id="CompositionalLotkaVolterra.get_params">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.CompositionalLotkaVolterra.get_params">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: model has not been trained&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -193,7 +193,7 @@
 
 <div class="viewcode-block" id="choose_denom">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.choose_denom">[docs]</a>
-<span class="k">def</span> <span class="nf">choose_denom</span><span class="p">(</span><span class="n">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">choose_denom</span><span class="p">(</span><span class="n">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pick a denominator for additive log-ratio transformation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
@@ -231,7 +231,7 @@
 
 <div class="viewcode-block" id="construct_alr">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.construct_alr">[docs]</a>
-<span class="k">def</span> <span class="nf">construct_alr</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">denom</span><span class="p">,</span> <span class="n">pseudo_count</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">construct_alr</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">denom</span><span class="p">,</span> <span class="n">pseudo_count</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the additive log ratio transformation with a given</span>
 <span class="sd">    choice of denominator. Assumes zeros have been replaced with</span>
 <span class="sd">    nonzero values.</span>
@@ -251,7 +251,7 @@
 
 <div class="viewcode-block" id="estimate_elastic_net_regularizers_cv">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.estimate_elastic_net_regularizers_cv">[docs]</a>
-<span class="k">def</span> <span class="nf">estimate_elastic_net_regularizers_cv</span><span class="p">(</span><span class="n">X</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_elastic_net_regularizers_cv</span><span class="p">(</span><span class="n">X</span><span class="p">,</span>
                                          <span class="n">P</span><span class="p">,</span>
                                          <span class="n">U</span><span class="p">,</span>
                                          <span class="n">T</span><span class="p">,</span>
@@ -327,7 +327,7 @@
 
 <div class="viewcode-block" id="elastic_net_clv">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.elastic_net_clv">[docs]</a>
-<span class="k">def</span> <span class="nf">elastic_net_clv</span><span class="p">(</span><span class="n">X</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">elastic_net_clv</span><span class="p">(</span><span class="n">X</span><span class="p">,</span>
                     <span class="n">P</span><span class="p">,</span>
                     <span class="n">U</span><span class="p">,</span>
                     <span class="n">T</span><span class="p">,</span>
@@ -341,7 +341,7 @@
                     <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                                              <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                                              <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-    <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">AgB</span><span class="p">,</span> <span class="n">x_stacked</span><span class="p">,</span> <span class="n">pgu_stacked</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gradient</span><span class="p">(</span><span class="n">AgB</span><span class="p">,</span> <span class="n">x_stacked</span><span class="p">,</span> <span class="n">pgu_stacked</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">x_stacked</span> <span class="o">-</span> <span class="n">AgB</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">pgu_stacked</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
         <span class="n">grad</span> <span class="o">=</span> <span class="n">Q_inv</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">pgu_stacked</span><span class="p">))</span>
 
@@ -355,7 +355,7 @@
         <span class="n">grad</span><span class="p">[:,</span> <span class="p">(</span><span class="n">yDim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):]</span> <span class="o">+=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r_B</span><span class="p">)</span> <span class="o">*</span> <span class="n">B</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">grad</span>
 
-    <span class="k">def</span> <span class="nf">generalized_gradient</span><span class="p">(</span><span class="n">AgB</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generalized_gradient</span><span class="p">(</span><span class="n">AgB</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">nxt_AgB</span> <span class="o">=</span> <span class="n">prv_AgB</span> <span class="o">-</span> <span class="n">step</span> <span class="o">*</span> <span class="n">grad</span>
 
         <span class="c1"># threshold A</span>
@@ -386,13 +386,13 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">AgB</span> <span class="o">-</span> <span class="n">AgB_proximal</span><span class="p">)</span> <span class="o">/</span> <span class="n">step</span>
 
-    <span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">AgB</span><span class="p">,</span> <span class="n">x_stacked</span><span class="p">,</span> <span class="n">pgu_stacked</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">AgB</span><span class="p">,</span> <span class="n">x_stacked</span><span class="p">,</span> <span class="n">pgu_stacked</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">x_stacked</span> <span class="o">-</span> <span class="n">AgB</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">pgu_stacked</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Q_inv</span><span class="p">)</span> <span class="o">*</span> <span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="o">-</span><span class="n">obj</span>
 
-    <span class="k">def</span> <span class="nf">stack_observations</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stack_observations</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="c1"># number of observations by xDim</span>
         <span class="n">x_stacked</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># number of observations by yDim + 1 + uDim</span>
@@ -477,7 +477,7 @@
 
 <div class="viewcode-block" id="ridge_regression_clv">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.ridge_regression_clv">[docs]</a>
-<span class="k">def</span> <span class="nf">ridge_regression_clv</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">r_A</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">r_g</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ridge_regression_clv</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">r_A</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">r_g</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                          <span class="n">r_B</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes estimates of A, g, and B using least squares.</span>
 
@@ -528,7 +528,7 @@
 
 <div class="viewcode-block" id="estimate_ridge_regularizers_cv">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.estimate_ridge_regularizers_cv">[docs]</a>
-<span class="k">def</span> <span class="nf">estimate_ridge_regularizers_cv</span><span class="p">(</span><span class="n">X</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_ridge_regularizers_cv</span><span class="p">(</span><span class="n">X</span><span class="p">,</span>
                                    <span class="n">P</span><span class="p">,</span>
                                    <span class="n">U</span><span class="p">,</span>
                                    <span class="n">T</span><span class="p">,</span>
@@ -601,7 +601,7 @@
 
 <div class="viewcode-block" id="compute_rel_abun">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.compute_rel_abun">[docs]</a>
-<span class="k">def</span> <span class="nf">compute_rel_abun</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_rel_abun</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))))</span>
@@ -618,11 +618,11 @@
 <span class="c1"># @timeout(5)</span>
 <div class="viewcode-block" id="predict">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.predict">[docs]</a>
-<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make predictions from initial conditions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">grad_fn</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">denom</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">fn</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">grad_fn</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">denom</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">fn</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">compute_rel_abun</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">g</span> <span class="o">+</span> <span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="n">B</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">fn</span>
@@ -644,8 +644,8 @@
 
 <div class="viewcode-block" id="compute_prediction_error">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.compute_prediction_error">[docs]</a>
-<span class="k">def</span> <span class="nf">compute_prediction_error</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">denom_ids</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">compute_err</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p_pred</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_prediction_error</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">denom_ids</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_err</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p_pred</span><span class="p">):</span>
         <span class="n">err</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">ntaxa</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">err</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">p_pred</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -663,7 +663,7 @@
 
 <div class="viewcode-block" id="estimate_relative_abundances">
 <a class="viewcode-back" href="../../../mimic.model_infer.html#mimic.model_infer.cLV.estimate_relative_abundances">[docs]</a>
-<span class="k">def</span> <span class="nf">estimate_relative_abundances</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">pseudo_count</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_relative_abundances</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">pseudo_count</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds pseudo counts to avoid zeros and compute relative abundances</span>
 
 <span class="sd">    Parameters</span>

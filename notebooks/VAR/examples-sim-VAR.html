@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Vector AutoRegression (VAR) Simulation &#8212; MIMIC 0.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
     <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -18,8 +18,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Simulate some time course data from the gMLV" href="../gMLV/examples-sim-gMLV.html" />
-    <link rel="prev" title="Bayesian Inference for Vector AutoRegression (VAR) Models" href="examples-bayes-VAR.html" />
+    <link rel="next" title="Bayesian Inference for Vector AutoRegression (VAR) Models" href="examples-bayes-VAR.html" />
+    <link rel="prev" title="Imputing Missing Values using Gaussian Process" href="../GP/examples-impute-GP.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -48,7 +48,12 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">VARsim.py</span></code> script simulates data from a VAR(1) process, which is the simplest form of VAR model where each variable’s current value is influenced by the immediately preceding values of all variables in the system. The general formula for a VAR(1) process with $ n $ variables is:</p>
 <div class="math notranslate nohighlight">
 \[X_t = A \cdot X_{t-1} + \epsilon_t\]</div>
-<p>where: - $ X_t $ is the vector of variables at time $ t $, - $ A $ is the matrix of coefficients, capturing the influence of each variable’s previous value on the current value of all variables in the system, - $ <span class="math">\epsilon</span>_t $ is the vector of error terms, assumed to be normally distributed with mean 0 and a specific standard deviation.</p>
+<p>where:</p>
+<ul class="simple">
+<li><p>$ X_t $ is the vector of variables at time $ t $,</p></li>
+<li><p>$ A $ is the matrix of coefficients, capturing the influence of each variable’s previous value on the current value of all variables in the system,</p></li>
+<li><p>$ <span class="math">\epsilon</span>_t $ is the vector of error terms, assumed to be normally distributed with mean 0 and a specific standard deviation.</p></li>
+</ul>
 <p>In the script, <code class="docutils literal notranslate"><span class="pre">generate_var1_data</span></code> method is used to simulate data based on the VAR(1) model parameters:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">n_obs</span></code>: Number of observations to generate.</p></li>
@@ -81,7 +86,7 @@ techniques.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mimic.model_simulate.sim_VAR</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mimic.model_simulate.sim_VAR</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
 </div>
@@ -98,8 +103,14 @@ techniques.</p>
 </pre></div>
 </div>
 </div>
-<p>We can see that the initial parameters are set to <code class="docutils literal notranslate"><span class="pre">null</span></code>. If we create a VAR model or a gMLV model, the initial parameters are going to be different for each model. However, a VAR model is going to have the following parameters: - <strong>n_obs</strong>: Number of observations to generate. - <strong>coefficients</strong>: Coefficient matrix for the VAR(1) process. It should be a square matrix of shape (n, n). - <strong>initial_values</strong>: Initial values for the process, a vector of shape (n,). - <strong>noise_stddev</strong>: Standard
-deviation of the noise term. - <strong>output</strong>: This is a string that specifies the output format. It can be either <code class="docutils literal notranslate"><span class="pre">show</span></code>, <code class="docutils literal notranslate"><span class="pre">save</span></code> or <code class="docutils literal notranslate"><span class="pre">both</span></code>. If it is <code class="docutils literal notranslate"><span class="pre">show</span></code>, the plot is going to be displayed on the screen. If it is <code class="docutils literal notranslate"><span class="pre">save</span></code>, the plot is going to be saved in the current working directory. If it is <code class="docutils literal notranslate"><span class="pre">both</span></code>, the plot is going to be displayed on the screen and saved in the current working directory.</p>
+<p>We can see that the initial parameters are set to <code class="docutils literal notranslate"><span class="pre">null</span></code>. If we create a VAR model or a gMLV model, the initial parameters are going to be different for each model. However, a VAR model is going to have the following parameters:</p>
+<ul class="simple">
+<li><p><strong>n_obs</strong>: Number of observations to generate.</p></li>
+<li><p><strong>coefficients</strong>: Coefficient matrix for the VAR(1) process. It should be a square matrix of shape (n, n).</p></li>
+<li><p><strong>initial_values</strong>: Initial values for the process, a vector of shape (n,).</p></li>
+<li><p><strong>noise_stddev</strong>: Standard deviation of the noise term.</p></li>
+<li><p><strong>output</strong>: This is a string that specifies the output format. It can be either <code class="docutils literal notranslate"><span class="pre">show</span></code>, <code class="docutils literal notranslate"><span class="pre">save</span></code> or <code class="docutils literal notranslate"><span class="pre">both</span></code>. If it is <code class="docutils literal notranslate"><span class="pre">show</span></code>, the plot is going to be displayed on the screen. If it is <code class="docutils literal notranslate"><span class="pre">save</span></code>, the plot is going to be saved in the current working directory. If it is <code class="docutils literal notranslate"><span class="pre">both</span></code>, the plot is going to be displayed on the screen and saved in the current working directory.</p></li>
+</ul>
 <p>In the following section, we are going to specify the parameters we want to use in our simulation.</p>
 </section>
 <section id="Running-the-Simulation-with-Specified-Parameters">
@@ -456,30 +467,30 @@ Warning: Missing or None parameters for VAR simulation. Using default values for
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../CRM/examples-sim-CRM.html">Simulate some time course data from the CRM</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gLV/examples-lasso-gLV.html">Example Lasso gLV model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Vector AutoRegression (VAR) Simulation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Introduction">Introduction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Notebook-Structure">Notebook Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Objective">Objective</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
@@ -492,8 +503,8 @@ Warning: Missing or None parameters for VAR simulation. Using default values for
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../../examples.html">Examples</a><ul>
-      <li>Previous: <a href="examples-bayes-VAR.html" title="previous chapter">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
-      <li>Next: <a href="../gMLV/examples-sim-gMLV.html" title="next chapter">Simulate some time course data from the gMLV</a></li>
+      <li>Previous: <a href="../GP/examples-impute-GP.html" title="previous chapter">Imputing Missing Values using Gaussian Process</a></li>
+      <li>Next: <a href="examples-bayes-VAR.html" title="next chapter">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
   </ul></li>
   </ul></li>
 </ul>
