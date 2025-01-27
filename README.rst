@@ -62,6 +62,8 @@ The repository is organized into the following main directories:
 Installation
 ------------
 
+.. install-begin
+
 Prerequisites
 ^^^^^^^^^^^^^
 
@@ -157,6 +159,7 @@ Compilers
 """""""""
 A g++ compiler is required for the PyMC3 package.
 
+.. install-end
 
 Usage
 -----
