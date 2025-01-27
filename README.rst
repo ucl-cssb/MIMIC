@@ -6,7 +6,7 @@ Modelling and Inference of MICrobiomes Project (MIMIC)
    :target: https://codecov.io/gh/ucl-cssb/MIMIC
 
 Overview
----------
+--------
 
 MIMIC: A Comprehensive Python Package for Simulating, Inferring, and Predicting 
 Microbial Community Interactions
@@ -32,7 +32,7 @@ microbial ecology research and supports ecological predictions and applications,
 benefiting the scientific and applied microbiology communities.
 
 Structure
------------
+---------
 
 The repository is organized into the following main directories:
 
@@ -59,9 +59,8 @@ The repository is organized into the following main directories:
 - `tests/`: Contains unit tests for the project's code.
 - `.github/`: Contains GitHub templates and workflows.
 
-
 Installation
---------------
+------------
 
 Prerequisites
 ^^^^^^^^^^^^^
@@ -69,7 +68,7 @@ Prerequisites
 - **Conda Package Manager**: We recommend using Conda to manage the environment due to dependencies that may not be available via pip.
 
 Installation Steps
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 For macOS and Ubuntu
 """"""""""""""""""""
@@ -129,8 +128,6 @@ For Windows
 
 4. **Install the Package**
 
-   Install the package in editable mode:
-
    .. code-block:: bash
 
       pip install -e .
@@ -142,7 +139,7 @@ For Windows
 Alternative Installation Using Pip Only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you prefer to use pip without Conda, you can install the package and its dependencies by compiling `requirements.in` into `requirements.txt`:
+If you prefer to use pip without Conda, you can install the package and its dependencies by compiling ``requirements.in`` into ``requirements.txt``:
 
 .. code-block:: bash
 
@@ -154,39 +151,44 @@ If you prefer to use pip without Conda, you can install the package and its depe
    pip install -r requirements.txt
    pip install -e .
 
-
 **Note**: This method may not install all dependencies correctly, especially if there are packages that are only available via Conda. We recommend using the Conda installation method for full functionality.
 
 Compilers
-"""""""""""
+"""""""""
 A g++ compiler is required for the PyMC3 package.
 
+
 Usage
--------
+-----
+
+.. usage-begin
 
 To get started with MIMIC, you can explore a variety of detailed examples and comprehensive documentation.
 
-- **Documentation**: Visit our [complete documentation](https://yourdocumentationurl.com) for detailed guides and more.
-- **Examples**: Check out our [Examples Directory](https://github.com/ucl-cssb/MIMIC/tree/master/examples) which includes Jupyter notebooks demonstrating how to use MIMIC for different applications and scenarios.
+- **Documentation**: Visit our `complete documentation <https://ucl-cssb.github.io/MIMIC/>`_ for detailed guides and more.
+- **Examples**: Check out our `Examples Directory <https://github.com/ucl-cssb/MIMIC/tree/master/examples>`_ which includes Jupyter notebooks demonstrating how to use MIMIC for different applications and scenarios.
 
 The documentation is regularly updated with the latest information on usage, features, and examples to help you effectively utilize the MIMIC package in your research or applications.
 
-Contributing
--------------
+.. usage-end
 
-We welcome contributions to the MIMIC project. Please refer to our `Contribution Guidelines <CONTRIBUTING.rst>`_ for more information.
+Contributing
+------------
+
+We welcome contributions to the MIMIC project. Please refer to our 
+`Contribution Guidelines <CONTRIBUTING.rst>`_ for more information.
 
 License
---------
+-------
 
 This project is licensed under the `LICENSE <LICENSE>`_.
 
 Acknowledgements
------------------
+----------------
 
 This project is based on methods proposed in `this paper <https://onlinelibrary.wiley.com/doi/full/10.1002/bies.201600188>`_.
 
 Contact
---------
+-------
 
 For questions or feedback, please `contact us <mailto:christopher.barnes@ucl.ac.uk>`_.
