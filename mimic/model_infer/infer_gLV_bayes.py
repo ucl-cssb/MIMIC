@@ -8,6 +8,7 @@ import cloudpickle
 
 from mimic.utilities import *
 from mimic.model_simulate.sim_gLV import *
+from mimic.model_infer.base_infer import BaseInfer
 
 
 import pandas as pd
@@ -83,7 +84,7 @@ def plot_growth_curves(data):
     plt.show()
 
 
-class infergLVbayes:
+class infergLVbayes(BaseInfer):
     """
     bayes_gLV class for Bayesian inference of gLV models without shrinkage priors
 
@@ -148,7 +149,7 @@ class infergLVbayes:
         DA0 = int(round(expected_non_zero_elements))
         return max(DA0, 1)
 
-    def run_bayes_gLV(self) -> None:
+    def run_inference(self) -> None:
         """
         This function infers the parameters for the Bayesian gLV model
 
