@@ -52,7 +52,7 @@ def group_notebooks_by_top_dir(notebooks):
         ...
       }
     """
-    grouped = {}
+    grouped: dict[str, list[str]] = {}
     for nb in notebooks:
         parts = nb.split('/')
         top_dir = parts[0]  # The directory before the first slash
