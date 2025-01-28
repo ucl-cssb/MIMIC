@@ -2,10 +2,6 @@
 Usage
 =====
 
-To use MIMIC in a project::
-
-    import mimic
-
-.. #FIXME: add the documentation from the tutorials here!
-
-
+.. include:: ../../README.rst
+   :start-after: usage-begin
+   :end-before: usage-end

@@ -72,13 +72,15 @@ class BaseModel(ABC):
         self.parameters: Optional[Dict[str, Union[int,
                                                   float, None, np.ndarray, str, Any]]] = None
 
-    # The debug property is a getter and setter for the private attribute _debug.
+    # The debug property is a getter and setter for the private attribute
+    # _debug.
     @property
     def debug(self) -> Optional[str]:
         """Gets the current debug level."""
         return self._debug
 
-    # The setter for the debug property only allows setting the debug level to None, 'low', or 'high'.
+    # The setter for the debug property only allows setting the debug level to
+    # None, 'low', or 'high'.
     @debug.setter
     def debug(self, value: Optional[str]) -> None:
         """Sets the debug level, allowing only None, 'low', or 'high'."""

@@ -4,6 +4,7 @@ Examples
 .. toctree::
    :maxdepth: 2
 
+   notebooks/CRM/examples-sim-CRM
    notebooks/gLV/examples-bayes-gLV
    notebooks/gLV/examples-lasso-gLV
    notebooks/gLV/examples-ridge-gLV
