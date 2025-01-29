@@ -2,36 +2,48 @@
 Examples
 =========
 
-This directory contains subfolders with Jupyter notebooks demonstrating different
-models and methods in MIMIC:
+This directory contains subfolders with Jupyter notebooks (and related data files) 
+demonstrating different models and methods in MIMIC:
 
-- **`CRM/ <CRM/>`_**: Cross-Feeding Resource Model examples.
-  
-  - `Simulate Time Course Data <CRM/examples-sim-CRM.ipynb>`_: Simulate time course data from the CRM.
-  - `Five Species Model <CRM/five_species_model.ipynb>`_: Modeling dynamics of five species.
+- `CRM/ <CRM/>`_  
+  - `examples-sim-CRM.ipynb <CRM/examples-sim-CRM.ipynb>`_: Simulate time-course data using the Cross-Feeding Resource Model.
 
-- **`gLV/ <gLV/>`_**: Generalized Lotka-Volterra model examples.
-  
-  - `gLV Simulation <gLV/examples-sim-gLV.ipynb>`_: Simulating interactions using the gLV model.
-  - `Parameter Estimation <gLV/gLV_parameter_estimation.ipynb>`_: Estimating parameters in the gLV model.
+- `gLV/ <gLV/>`_  
+  - `examples-bayes-gLV.ipynb <gLV/examples-bayes-gLV.ipynb>`_: Bayesian inference for Generalized Lotka-Volterra.
+  - `examples-lasso-gLV.ipynb <gLV/examples-lasso-gLV.ipynb>`_: Lasso-based inference for gLV.
+  - `examples-ridge-gLV.ipynb <gLV/examples-ridge-gLV.ipynb>`_: Ridge-based inference for gLV.
+  - `examples-Rutter-Dekker.ipynb <gLV/examples-Rutter-Dekker.ipynb>`_: Rutter-Dekker example.
+  - `examples-sim-gLV.ipynb <gLV/examples-sim-gLV.ipynb>`_: Simulation of gLV dynamics.
+  - `examples-Stein.ipynb <gLV/examples-Stein.ipynb>`_: Stein example for gLV.  
+  *(Additional CSV files support these notebooks.)*
 
-- **`gMLV/ <gMLV/>`_**: Generalized Metabolic Lotka-Volterra model examples.
-  
-  - `Five Species, Six Metabolites, Single Time Course <gMLV/examples-sim-gMLV.ipynb#five-species-six-metabolites-single-time-course>`_: 
-    Simulate a single time course with five species and six metabolites.
-  - `Five Species with Perturbation <gMLV/examples-sim-gMLV.ipynb#five-species-with-perturbation>`_: 
-    Simulating perturbations in a five-species system.
+- `gMLV/ <gMLV/>`_  
+  - `examples-ridge-lasso-gMLV.ipynb <gMLV/examples-ridge-lasso-gMLV.ipynb>`_: Ridge/Lasso inference for Generalized Metabolic Lotka-Volterra.
+  - `examples-sim-gMLV.ipynb <gMLV/examples-sim-gMLV.ipynb>`_: gMLV simulation examples.
 
-- **`GP/ <GP/>`_**: Gaussian Processes regression and data-imputation examples.
-  
-  - `Data Imputation <GP/data_imputation.ipynb>`_: Using Gaussian Processes for data imputation.
-  - `Gaussian Process Regression <GP/gp_regression.ipynb>`_: Performing regression with Gaussian Processes.
+- `GP/ <GP/>`_  
+  - `examples-impute-GP.ipynb <GP/examples-impute-GP.ipynb>`_: Data imputation with Gaussian Processes.
+  - `examples-impute-GP_Stein.ipynb <GP/examples-impute-GP_Stein.ipynb>`_: Extended GP-based imputation (Stein example).  
+  *(CSV files for input/output data are included here.)*
 
-- **`MultiModel/Herold/ <MultiModel/Herold/>`_**: Real-life dataset exploration and inference using multiple models and workflows.
-  
-  - `Herold Analysis <MultiModel/Herold/herold_analysis.ipynb>`_: Comprehensive analysis using Herold's multi-model approach.
-  - `Source Data Exploration <MultiModel/Herold/source_data_exploration.ipynb>`_: Exploring and preparing source data.
+- `MultiModel/Herold/ <MultiModel/Herold/>`_  
+  - `examples-Herold-sVAR.ipynb <MultiModel/Herold/examples-Herold-sVAR.ipynb>`_: sVAR approach on Herold dataset.
+  - `examples-Herold-VAR.ipynb <MultiModel/Herold/examples-Herold-VAR.ipynb>`_: VAR approach on Herold dataset.
+  - `examples_impute_data.ipynb <MultiModel/Herold/examples_impute_data.ipynb>`_: Data imputation for Herold multi-model workflows.  
+  *(`Source Data/` folder contains all raw files needed for these notebooks.)*
 
-Each folder contains one or more Jupyter notebooks that guide you step-by-step
-through setup, simulation, and analysis using the MIMIC package. Feel free to
-explore each subfolder for model-specific instructions and examples.
+- `MVAR/ <MVAR/>`_  
+  - `examples-infer-MVAR.ipynb <MVAR/examples-infer-MVAR.ipynb>`_: Inference with the Multivariate Autoregressive model.
+  - `examples-sim-MVAR.ipynb <MVAR/examples-sim-MVAR.ipynb>`_: Simulation using MVAR.
+  *(`parametersS.json` is included for these demos.)*
+
+- `VAR/ <VAR/>`_  
+  - `examples-bayes-VAR.ipynb <VAR/examples-bayes-VAR.ipynb>`_: Bayesian inference for Vector Autoregression.
+  - `examples-sim-VAR.ipynb <VAR/examples-sim-VAR.ipynb>`_: Simulation examples for VAR.
+  *(JSON files and CSV data support these notebooks.)*
+
+- `run_gMLV_sims.py`: A script to run gMLV simulations from the command line.
+
+Each subfolder includes one or more Jupyter notebooks that guide you step-by-step
+through setup, simulation, and analysis with the MIMIC package. Feel free to explore
+each subfolder for model-specific usage instructions, parameter files, and example data.
