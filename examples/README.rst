@@ -6,6 +6,8 @@ This directory contains subfolders with Jupyter notebooks (and related data file
 demonstrating different models and methods in MIMIC. Some of these examples use real-life
 datasets published by Stein et al. and Herold et al.
 
+.. readme-begin
+
 - `CRM/ <CRM/>`_  
 
   - `examples-sim-CRM.ipynb <CRM/examples-sim-CRM.ipynb>`_: Simulate time-course data using the Cross-Feeding Resource Model.
@@ -61,3 +63,5 @@ datasets published by Stein et al. and Herold et al.
 Each subfolder includes one or more Jupyter notebooks that guide you step-by-step
 through setup, simulation, and analysis with the MIMIC package. Feel free to explore
 each subfolder for model-specific usage instructions, parameter files, and example data.
+
+.. readme-end

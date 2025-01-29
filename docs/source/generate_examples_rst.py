@@ -69,7 +69,7 @@ def generate_rst(notebooks, target_dir, output_file):
 
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write("Jupyter Notebook Examples by Model\n")
-        f.write("==================================\n\n")
+        f.write("----------------------------------\n\n")
 
         # For each top-level folder, create a subheading and toctree
         # Sort the folder names so the output is consistent
