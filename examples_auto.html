@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Examples &#8212; MIMIC 0.1.0 documentation</title>
+    <title>Jupyter Notebook Examples by Model &#8212; MIMIC 0.1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
@@ -17,8 +17,6 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Simulate some time course data from the CRM" href="notebooks/CRM/examples-sim-CRM.html" />
-    <link rel="prev" title="mimic.utilities package" href="mimic.utilities.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -36,75 +34,11 @@
 
           <div class="body" role="main">
             
-  <section id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h1>
-<p>Below is an overview of the examples, organized by model type or analysis type.</p>
-<ul>
-<li><p><a class="reference external" href="CRM/">CRM/</a></p>
-<ul class="simple">
-<li><p><a class="reference external" href="CRM/examples-sim-CRM.ipynb">examples-sim-CRM.ipynb</a>: Simulate time-course data using the Cross-Feeding Resource Model.</p></li>
-</ul>
-</li>
-<li><p><a class="reference external" href="gLV/">gLV/</a></p>
-<ul class="simple">
-<li><p><a class="reference external" href="gLV/examples-bayes-gLV.ipynb">examples-bayes-gLV.ipynb</a>: Bayesian inference for Generalized Lotka-Volterra.</p></li>
-<li><p><a class="reference external" href="gLV/examples-lasso-gLV.ipynb">examples-lasso-gLV.ipynb</a>: Lasso-based inference for gLV.</p></li>
-<li><p><a class="reference external" href="gLV/examples-ridge-gLV.ipynb">examples-ridge-gLV.ipynb</a>: Ridge-based inference for gLV.</p></li>
-<li><p><a class="reference external" href="gLV/examples-Rutter-Dekker.ipynb">examples-Rutter-Dekker.ipynb</a>: Rutter-Dekker example.</p></li>
-<li><p><a class="reference external" href="gLV/examples-sim-gLV.ipynb">examples-sim-gLV.ipynb</a>: Simulation of gLV dynamics.</p></li>
-<li><p><a class="reference external" href="gLV/examples-Stein.ipynb">examples-Stein.ipynb</a>: Real-life dataset example (Stein et al.) applying gLV methods.
-<em>(Additional CSV files support these notebooks.)</em></p></li>
-</ul>
-</li>
-<li><p><a class="reference external" href="gMLV/">gMLV/</a></p>
-<p><strong>Generalized Metabolic Lotka-Volterra (gMLV)</strong> is a variation of gLV that includes
-metabolite interactions alongside microbial abundances.</p>
-<ul class="simple">
-<li><p><a class="reference external" href="gMLV/examples-ridge-lasso-gMLV.ipynb">examples-ridge-lasso-gMLV.ipynb</a>:
-Ridge/Lasso inference for gMLV.</p></li>
-<li><p><a class="reference external" href="gMLV/examples-sim-gMLV.ipynb">examples-sim-gMLV.ipynb</a>: gMLV simulation examples.</p></li>
-</ul>
-</li>
-<li><p><a class="reference external" href="GP/">GP/</a></p>
-<ul class="simple">
-<li><p><a class="reference external" href="GP/examples-impute-GP.ipynb">examples-impute-GP.ipynb</a>: Data imputation with Gaussian Processes.</p></li>
-<li><p><a class="reference external" href="GP/examples-impute-GP_Stein.ipynb">examples-impute-GP_Stein.ipynb</a>: Extended GP-based imputation for Stein dataset.
-<em>(CSV files for input/output data are included here.)</em></p></li>
-</ul>
-</li>
-<li><p><a class="reference external" href="MultiModel/Herold/">MultiModel/Herold/</a></p>
-<p>These notebooks use real-life data from Herold et al. to demonstrate multi-model workflows.</p>
-<ul class="simple">
-<li><p><a class="reference external" href="MultiModel/Herold/examples-Herold-sVAR.ipynb">examples-Herold-sVAR.ipynb</a>: sVAR approach on Herold dataset.</p></li>
-<li><p><a class="reference external" href="MultiModel/Herold/examples-Herold-VAR.ipynb">examples-Herold-VAR.ipynb</a>: VAR approach on Herold dataset.</p></li>
-<li><p><a class="reference external" href="MultiModel/Herold/examples_impute_data.ipynb">examples_impute_data.ipynb</a>: Data imputation for Herold multi-model workflows.
-<em>(`Source Data/` folder contains all raw files needed for these notebooks.)</em></p></li>
-</ul>
-</li>
-<li><p><a class="reference external" href="MVAR/">MVAR/</a></p>
-<ul class="simple">
-<li><p><a class="reference external" href="MVAR/examples-infer-MVAR.ipynb">examples-infer-MVAR.ipynb</a>: Inference with the Multivariate Autoregressive model.</p></li>
-<li><p><a class="reference external" href="MVAR/examples-sim-MVAR.ipynb">examples-sim-MVAR.ipynb</a>: Simulation using MVAR.
-<em>(`parametersS.json` is included for these demos.)</em></p></li>
-</ul>
-</li>
-<li><p><a class="reference external" href="VAR/">VAR/</a></p>
-<ul class="simple">
-<li><p><a class="reference external" href="VAR/examples-bayes-VAR.ipynb">examples-bayes-VAR.ipynb</a>: Bayesian inference for Vector Autoregression.</p></li>
-<li><p><a class="reference external" href="VAR/examples-sim-VAR.ipynb">examples-sim-VAR.ipynb</a>: Simulation examples for VAR.
-<em>(JSON files and CSV data support these notebooks.)</em></p></li>
-</ul>
-</li>
-<li><p><cite>run_gMLV_sims.py</cite>: A script to run gMLV simulations from the command line.</p></li>
-</ul>
-<p>Each subfolder includes one or more Jupyter notebooks that guide you step-by-step
-through setup, simulation, and analysis with the MIMIC package. Feel free to explore
-each subfolder for model-specific usage instructions, parameter files, and example data.</p>
-<section id="jupyter-notebook-examples-by-model">
-<h2>Jupyter Notebook Examples by Model<a class="headerlink" href="#jupyter-notebook-examples-by-model" title="Link to this heading">¶</a></h2>
+  <section id="jupyter-notebook-examples-by-model">
+<h1>Jupyter Notebook Examples by Model<a class="headerlink" href="#jupyter-notebook-examples-by-model" title="Link to this heading">¶</a></h1>
 </section>
-<section id="id1">
-<h2>CRM<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<section id="crm">
+<h1>CRM<a class="headerlink" href="#crm" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/CRM/examples-sim-CRM.html">Simulate some time course data from the CRM</a><ul>
@@ -115,8 +49,8 @@ each subfolder for model-specific usage instructions, parameter files, and examp
 </ul>
 </div>
 </section>
-<section id="id2">
-<h2>GP<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<section id="gp">
+<h1>GP<a class="headerlink" href="#gp" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
@@ -124,8 +58,8 @@ each subfolder for model-specific usage instructions, parameter files, and examp
 </ul>
 </div>
 </section>
-<section id="id3">
-<h2>MVAR<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<section id="mvar">
+<h1>MVAR<a class="headerlink" href="#mvar" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a><ul>
@@ -147,7 +81,7 @@ each subfolder for model-specific usage instructions, parameter files, and examp
 </div>
 </section>
 <section id="multimodel">
-<h2>MultiModel<a class="headerlink" href="#multimodel" title="Link to this heading">¶</a></h2>
+<h1>MultiModel<a class="headerlink" href="#multimodel" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
@@ -160,8 +94,8 @@ each subfolder for model-specific usage instructions, parameter files, and examp
 </ul>
 </div>
 </section>
-<section id="id4">
-<h2>VAR<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<section id="var">
+<h1>VAR<a class="headerlink" href="#var" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a><ul>
@@ -180,8 +114,8 @@ each subfolder for model-specific usage instructions, parameter files, and examp
 </ul>
 </div>
 </section>
-<section id="id5">
-<h2>gLV<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<section id="glv">
+<h1>gLV<a class="headerlink" href="#glv" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/gLV/examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
@@ -211,8 +145,8 @@ each subfolder for model-specific usage instructions, parameter files, and examp
 </ul>
 </div>
 </section>
-<section id="id6">
-<h2>gMLV<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<section id="gmlv">
+<h1>gMLV<a class="headerlink" href="#gmlv" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a><ul>
@@ -228,7 +162,6 @@ each subfolder for model-specific usage instructions, parameter files, and examp
 </li>
 </ul>
 </div>
-</section>
 </section>
 
 
@@ -258,55 +191,12 @@ each subfolder for model-specific usage instructions, parameter files, and examp
 </search>
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">mimic</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#jupyter-notebook-examples-by-model">Jupyter Notebook Examples by Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id1">CRM</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/CRM/examples-sim-CRM.html">Simulate some time course data from the CRM</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">GP</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">MVAR</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#multimodel">MultiModel</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">VAR</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/VAR/examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/VAR/examples-sim-VAR.html">Vector AutoRegression (VAR) Simulation</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">gLV</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/gLV/examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/gLV/examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/gLV/examples-lasso-gLV.html">Example Lasso gLV model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">gMLV</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to MIMIC</a></li>
 <li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
@@ -316,8 +206,6 @@ each subfolder for model-specific usage instructions, parameter files, and examp
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="mimic.utilities.html" title="previous chapter">mimic.utilities package</a></li>
-      <li>Next: <a href="notebooks/CRM/examples-sim-CRM.html" title="next chapter">Simulate some time course data from the CRM</a></li>
   </ul></li>
 </ul>
 </div>
@@ -341,7 +229,7 @@ each subfolder for model-specific usage instructions, parameter files, and examp
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
-      <a href="_sources/examples.rst.txt"
+      <a href="_sources/examples_auto.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -18,8 +18,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Bayesian Inference for Vector AutoRegression (VAR) Models" href="examples-bayes-VAR.html" />
-    <link rel="prev" title="Imputing Missing Values using Gaussian Process" href="../GP/examples-impute-GP.html" />
+    <link rel="next" title="Repeat Rutter &amp; Dekker et al 2024 analysis" href="../gLV/examples-Rutter-Dekker.html" />
+    <link rel="prev" title="Bayesian Inference for Vector AutoRegression (VAR) Models" href="examples-bayes-VAR.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -461,38 +461,12 @@ Warning: Missing or None parameters for VAR simulation. Using default values for
 </search>
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">Modelling and Inference of MICrobiomes Project (MIMIC)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">mimic</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../CRM/examples-sim-CRM.html">Simulate some time course data from the CRM</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-infer-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MVAR/examples-sim-MVAR.html">MVAR Simulation for Microbiota and Metabolites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples_impute_data.html">Data imputation on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-sVAR.html">Sparse VAR on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../MultiModel/Herold/examples-Herold-VAR.html">VAR inference on a Real Public Dataset, Herold et al. (2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-lasso-gLV.html">Example Lasso gLV model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Rutter-Dekker.html">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Rutter-Dekker.html#Perform-Bayesian-inference-with-shrinkage">Perform Bayesian inference with shrinkage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-bayes-gLV.html">Used Bayesian inference to infer the parameters of a (linearised) gLV model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-sim-gLV.html">Simulate some time course data from the gLV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-Stein.html">Repeat Stein et al. 2013 analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gLV/examples-ridge-gLV.html">Simulate some time course data and perform ridge regression as in Stein et al. 2013</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-ridge-lasso-gMLV.html">Run ridge regression and lasso for the gMLV model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gMLV/examples-sim-gMLV.html">Simulate some time course data from the gMLV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP_Stein.html">Using the Data Imputator on a Real Public Dataset - Stein et al. (2013)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../GP/examples-impute-GP.html">Imputing Missing Values using Gaussian Process</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Vector AutoRegression (VAR) Simulation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Introduction">Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Notebook-Structure">Notebook Structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Objective">Objective</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="examples-bayes-VAR.html">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to MIMIC</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
@@ -503,8 +477,8 @@ Warning: Missing or None parameters for VAR simulation. Using default values for
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../../examples.html">Examples</a><ul>
-      <li>Previous: <a href="../GP/examples-impute-GP.html" title="previous chapter">Imputing Missing Values using Gaussian Process</a></li>
-      <li>Next: <a href="examples-bayes-VAR.html" title="next chapter">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+      <li>Previous: <a href="examples-bayes-VAR.html" title="previous chapter">Bayesian Inference for Vector AutoRegression (VAR) Models</a></li>
+      <li>Next: <a href="../gLV/examples-Rutter-Dekker.html" title="next chapter">Repeat Rutter &amp; Dekker et al 2024 analysis</a></li>
   </ul></li>
   </ul></li>
 </ul>
