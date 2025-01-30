@@ -35,9 +35,7 @@ def create_mock_trace(dim, chains=2, draws=500):
     )
 
     posterior = xr.Dataset({"x0": x0, "A": A})
-
-    trace = az.InferenceData(posterior=posterior)
-    return trace
+    return az.InferenceData(posterior=posterior)
 
 
 def create_mock_trace_xs(nX, nS, chains=2, draws=500):
@@ -55,9 +53,7 @@ def create_mock_trace_xs(nX, nS, chains=2, draws=500):
     )
 
     posterior = xr.Dataset({"Ah": Ah, "Bh": Bh})
-
-    trace = az.InferenceData(posterior=posterior)
-    return trace
+    return az.InferenceData(posterior=posterior)
 
 
 def test_initialization(example_data):
@@ -76,11 +72,9 @@ def test_initialization(example_data):
 def test_run_inference(example_data):
     # Initialize the model with data
     model = infer_VAR(data=example_data)
-
-    # Determine the dimension based on example_data
     dim = example_data.shape[1]
 
-    # Create a mock trace object with the correct dimensions
+    # Create a mock trace object
     mock_trace = create_mock_trace(dim=dim)
 
     # Mock pymc's sample method to return the mock trace
@@ -98,7 +92,6 @@ def test_run_inference_large(example_data):
 
     # Initialize the model with data
     model = infer_VAR(data=data)
-
     dim = data.shape[1]
 
     # Create a mock trace object
@@ -109,14 +102,14 @@ def test_run_inference_large(example_data):
             patch('mimic.model_infer.infer_VAR_bayes.plt.savefig'), \
             patch('mimic.model_infer.infer_VAR_bayes.az.to_netcdf'), \
             patch('mimic.model_infer.infer_VAR_bayes.np.savez'):
-        model.run_inference_large(samples=1000, tune=500, cores=4)
+        # Call the new single method with method='large'
+        model.run_inference(method='large', samples=1000, tune=500, cores=4)
         mock_sample.assert_called_once_with(draws=1000, tune=500, cores=4)
 
 
 def test_run_inference_xs(example_data, example_metabolite_data):
     # Initialize the model with data and metabolite data
     model = infer_VAR(data=example_data, dataS=example_metabolite_data)
-
     nX = example_data.shape[1]
     nS = example_metabolite_data.shape[1]
 
@@ -128,13 +121,13 @@ def test_run_inference_xs(example_data, example_metabolite_data):
             patch('mimic.model_infer.infer_VAR_bayes.plt.savefig'), \
             patch('mimic.model_infer.infer_VAR_bayes.az.to_netcdf'), \
             patch('mimic.model_infer.infer_VAR_bayes.np.savez'):
-        model.run_inference_xs(samples=500, tune=200, cores=2)
+        model.run_inference(method='xs', samples=500, tune=200, cores=2)
         mock_sample.assert_called_once_with(draws=500, tune=200, cores=2)
 
     # Test for missing metabolite data
     model.dataS = None
     with pytest.raises(ValueError):
-        model.run_inference_xs()
+        model.run_inference(method='xs')
 
 
 def test_posterior_analysis(mocker, example_data, example_metabolite_data):
@@ -156,7 +149,8 @@ def test_posterior_analysis(mocker, example_data, example_metabolite_data):
     # Mock np.load to return a context manager with example data
     mock_np_load = MagicMock()
     mock_np_load.__enter__.return_value = {
-        'dataX': example_data, 'dataS': example_metabolite_data}
+        'dataX': example_data, 'dataS': example_metabolite_data
+    }
     mocker.patch('numpy.load', return_value=mock_np_load)
 
     # Ensure that the trace exists in model to avoid loading errors

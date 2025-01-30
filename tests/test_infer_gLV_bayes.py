@@ -6,123 +6,171 @@ import xarray as xr
 import arviz as az
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pymc as pm
+import pytensor.tensor as tt
 
 
 @pytest.fixture
-def mock_data():
-    X = np.random.rand(10, 5)
-    F = np.random.rand(10, 5)
-    mu = np.random.rand(1, 5)
-    M = np.random.rand(5, 5)
-    return X, F, mu, M
+def setup_data(request):
+    """
+    Fixture to provide mock data for testing.
+    """
+    # Generate mock data for testing purposes with 2 species
+    num_species = 2
+    X = np.random.randn(100, num_species+1)  # Random design matrix for 100 samples and 2 species
+    F = np.random.randn(100, num_species)  # Random data matrix for 100 samples and 2 species
 
+    # Add a condition for different shapes
+    if 'test_run_inference' in request.node.nodeid or 'test_run_gLV_bayes_shrinkage' in request.node.nodeid:
+        X = np.random.randn(100, num_species + 1)  # Shape (100, num_species + 1)
+    elif 'test_run_bayes_gLV_shrinkage_pert' in request.node.nodeid or 'test_plot_posterior_pert' in request.node.nodeid:
+        X = np.random.randn(100, num_species + 2)  # Shape (100, num_species + 2)
 
-@pytest.fixture
-def bayes_model(mock_data):
-    X, F, mu, M = mock_data
-    return infergLVbayes(X=X, F=F, mu=mu, M=M, DA=10, DA0=1, N=10, noise_stddev=0.1, epsilon=np.random.rand(1, 5))
-
-
-def test_import_data(mocker):
-    mocker.patch('numpy.genfromtxt', return_value=np.array([[1, 2], [3, 4]]))
-    model = infergLVbayes()
-    model.import_data('fake_path.csv')
-    assert model.data.shape == (2, 2)
-    np.testing.assert_array_equal(model.data, np.array([[1, 2], [3, 4]]))
-
-
-def generate_mock_inference_data():
-    # Create mock data
+    
+    prior_mu_mean = 0
+    prior_mu_sigma = 1
+    prior_Mii_mean = -0.1
+    prior_Mii_sigma = 0.1
+    prior_Mij_sigma = 0.1
+    prior_eps_mean = 0
+    prior_eps_sigma = 0.1
+    DA = 0.1
+    DA0 = 0.01
+    N = 100
+    noise_stddev = 0.1
+    draws = 500
+    tune = 1000
     chains = 2
-    draws = 100
-
-    # Mock data for each variable
-    mu_hat_data = np.random.rand(chains, draws, 5)
-    M_ii_hat_data = np.random.rand(chains, draws, 5)
-    M_ij_hat_data = np.random.rand(chains, draws, 5, 4)
-    M_hat_data = np.random.rand(chains, draws, 5, 5)
-    epsilon_hat_data = np.random.rand(chains, draws, 5)
-
-    # Creating DataArray objects
-    mu_hat = xr.DataArray(mu_hat_data, dims=("chain", "draw", "mu_hat_dim"))
-    M_ii_hat = xr.DataArray(M_ii_hat_data, dims=("chain", "draw", "mu_hat_dim"))
-    M_ij_hat = xr.DataArray(M_ij_hat_data, dims=("chain", "draw", "M_ij_dim_1", "M_ij_dim_2"))
-    M_hat = xr.DataArray(M_hat_data, dims=("chain", "draw", "M_hat_dim_1", "M_hat_dim_2"))
-    epsilon_hat = xr.DataArray(epsilon_hat_data, dims=("chain", "draw", "mu_hat_dim"))
-
-    # Convert to an xarray.Dataset
-    posterior_dataset = xr.Dataset({
-        "mu_hat": mu_hat,
-        "M_ii_hat": M_ii_hat,
-        "M_ij_hat": M_ij_hat,
-        "M_hat": M_hat,
-        "epsilon_hat": epsilon_hat,  # Include epsilon_hat in the dataset
-    })
-
-    # Constructing the InferenceData object
-    return az.InferenceData(posterior=posterior_dataset)
+    cores = 1
+    
+    return {
+        "X": X,
+        "F": F,
+        "prior_mu_mean": prior_mu_mean,
+        "prior_mu_sigma": prior_mu_sigma,
+        "prior_Mii_mean": prior_Mii_mean,
+        "prior_Mii_sigma": prior_Mii_sigma,
+        "prior_Mij_sigma": prior_Mij_sigma,
+        "prior_eps_mean": prior_eps_mean,
+        "prior_eps_sigma": prior_eps_sigma,
+        "DA": DA,
+        "DA0": DA0,
+        "N": N,
+        "noise_stddev": noise_stddev,
+        "draws": draws,
+        "tune": tune,
+        "chains": chains,
+        "cores": cores
+    }
 
 
-@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
-@patch('pymc.sample', return_value=generate_mock_inference_data())
-def test_run_bayes_gLV(mock_sample, mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
-    bayes_model.run_bayes_gLV()
-    mock_sample.assert_called_once()
+@pytest.fixture
+def bayes_gLV_instance(setup_data):
+    """
+    Fixture to create an instance of the infergLVbayes with mock data.
+    """
+    data = setup_data
+    # Initialize the object without any parameters
+    bayes_gLV = infergLVbayes()
+
+    # Set the parameters using the set_parameters method
+    bayes_gLV.set_parameters(
+        X=data["X"], 
+        F=data["F"],
+        prior_mu_mean=data["prior_mu_mean"],
+        prior_mu_sigma=data["prior_mu_sigma"],
+        prior_Mii_mean=data["prior_Mii_mean"],
+        prior_Mii_sigma=data["prior_Mii_sigma"],
+        prior_Mij_sigma=data["prior_Mij_sigma"],
+        prior_eps_mean=data["prior_eps_mean"],
+        prior_eps_sigma=data["prior_eps_sigma"],
+        DA=data["DA"],
+        DA0=data["DA0"],
+        N=data["N"],
+        noise_stddev=data["noise_stddev"],
+        draws=data["draws"],
+        tune=data["tune"],
+        chains=data["chains"],
+        cores=data["cores"]
+    )
+
+    return bayes_gLV
 
 
-@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
-@patch('pymc.sample', return_value=generate_mock_inference_data())
-def test_run_bayes_gLV_shrinkage(mock_sample, mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
-    bayes_model.run_bayes_gLV_shrinkage()
-    mock_sample.assert_called_once()
+def test_run_inference(bayes_gLV_instance):
+    """
+    Test the `_bayes_run_inference` function to check if it returns the correct output without shrinkage or perturbation.
+    """
+    
+    # Call the method to test without shrinkage or perturbation
+    idata = bayes_gLV_instance.run_inference()
+
+    # Check that the output is an ArviZ InferenceData object
+    assert isinstance(idata, az.InferenceData), "The output is not an InferenceData object."
+
+    # Check that the expected variables are in the posterior
+    assert "mu_hat" in idata.posterior, "'mu_hat' is not in the posterior."
+    assert "M_hat" in idata.posterior, "'M_hat' is not in the posterior."
+
+    # Additional assertions to test the integrity of the returned posterior
+    assert len(idata.posterior["mu_hat"]) > 0, "'mu_hat' has no samples."
+    assert len(idata.posterior["M_hat"]) > 0, "'M_hat' has no samples."
 
 
-@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
-@patch('pymc.sample', return_value=generate_mock_inference_data())
-def test_run_bayes_gLV_shrinkage_pert(mock_sample, mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
-    bayes_model.run_bayes_gLV_shrinkage_pert()
-    mock_sample.assert_called_once()
+def test_run_bayes_gLV_shrinkage(bayes_gLV_instance):
+    """
+    Test the `run_bayes_gLV_shrinkage` function to check if it returns the correct output.
+    """
+    # Call the method to test
+    idata = bayes_gLV_instance.run_bayes_gLV_shrinkage()
+
+    # Check that the output is an ArviZ InferenceData object
+    assert isinstance(idata, az.InferenceData), "The output is not an InferenceData object."
+
+    # Check that the expected variables are in the posterior
+    assert "mu_hat" in idata.posterior, "'mu_hat' is not in the posterior."
+    assert "M_hat" in idata.posterior, "'M_hat' is not in the posterior."
 
 
-@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
-def test_plot_posterior(mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
-    idata = generate_mock_inference_data()
-    bayes_model.plot_posterior(idata, bayes_model.mu, bayes_model.M)
-    assert mock_plot_posterior.call_count == 3
-    assert mock_savefig.call_count == 3
+def test_run_bayes_gLV_shrinkage_pert(bayes_gLV_instance):
+    """
+    Test the `run_bayes_gLV_shrinkage_pert` function to check if it returns the correct output.
+    """
+    # Call the method to test
+    idata = bayes_gLV_instance.run_bayes_gLV_shrinkage_pert()
+
+    # Check that the output is an ArviZ InferenceData object
+    assert isinstance(idata, az.InferenceData), "The output is not an InferenceData object."
+
+    # Check that the expected variables are in the posterior
+    assert "mu_hat" in idata.posterior, "'mu_hat' is not in the posterior."
+    assert "M_hat" in idata.posterior, "'M_hat' is not in the posterior."
+    assert "epsilon_hat" in idata.posterior, "'epsilon_hat' is not in the posterior."
 
 
-@patch('mimic.model_infer.infer_gLV_bayes.az.plot_posterior')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.savefig')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.show')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.close')
-def test_plot_posterior_pert(mock_close, mock_show, mock_savefig, mock_plot_posterior, bayes_model):
-    idata = generate_mock_inference_data()
-    bayes_model.plot_posterior_pert(idata, bayes_model.mu, bayes_model.M, bayes_model.epsilon)
-    assert mock_plot_posterior.call_count == 4
-    assert mock_savefig.call_count == 4
+def test_plot_posterior(bayes_gLV_instance):
+    """
+    Test the `plot_posterior` function to ensure it runs without errors.
+    """
+    # Generate the InferenceData from the method
+    idata = bayes_gLV_instance.run_bayes_gLV_shrinkage()
+
+    # Try to call the plot_posterior method
+    try:
+        bayes_gLV_instance.plot_posterior(idata)
+    except Exception as e:
+        pytest.fail(f"plot_posterior raised an exception: {e}")
 
 
-@patch('mimic.model_infer.infer_gLV_bayes.sns.heatmap')
-@patch('mimic.model_infer.infer_gLV_bayes.plt.subplots')
-def test_plot_interaction_matrix(mock_subplots, mock_heatmap, bayes_model):
-    # Set up the return value for plt.subplots
-    fig_mock = MagicMock()
-    ax_mock = MagicMock()
-    mock_subplots.return_value = (fig_mock, ax_mock)
-    M = np.random.rand(5, 5)
-    M_h = np.random.rand(5, 5)
-    bayes_model.plot_interaction_matrix(M, M_h)
-    mock_heatmap.assert_called_once_with(M_h, ax=ax_mock, cmap='viridis')
+def test_plot_posterior_pert(bayes_gLV_instance):
+    """
+    Test the `plot_posterior_pert` function to ensure it produces the correct plot.
+    """
+    # First, generate the InferenceData from the method
+    idata = bayes_gLV_instance.run_bayes_gLV_shrinkage_pert()
+
+    # Try to call the plot_posterior_pert method
+    try:
+        bayes_gLV_instance.plot_posterior_pert(idata)
+    except Exception as e:
+        pytest.fail(f"plot_posterior_pert raised an exception: {e}")
