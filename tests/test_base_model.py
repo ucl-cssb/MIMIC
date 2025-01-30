@@ -99,6 +99,7 @@ def test_print_parameters(mock_model, capsys):
     """Test printing of model parameters."""
     mock_model.model = "TestModel"
     mock_model.parameters = {"param1": 1, "param2": np.array([1.0, 2.0])}
+    mock_model.debug = "low"  # <--- make sure it actually prints
 
     mock_model.print_parameters(precision=2)
 
