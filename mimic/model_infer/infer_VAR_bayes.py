@@ -22,17 +22,8 @@ class infer_VAR(BaseInfer):
         data (numpy.ndarray): The data to perform inference on.
 
     Methods:
-        run_inference():
+        run_inference(method='default', **kwargs):
             Runs the inference process for the VAR model.
-
-        run_inference_large():
-            Runs large-scale inference for VAR model.
-
-        run_inference_xs():
-            Runs the inference process for the VAR model with metabolite data.
-
-        run_inference_large_xs():
-            Runs large-scale inference for the VAR model with metabolite data.
 
     Returns:
         None
@@ -113,9 +104,33 @@ class infer_VAR(BaseInfer):
         if priors is not None:
             self.set_priors(priors)
 
-    def run_inference(self, **kwargs) -> None:
+    def run_inference(self, method='default', **kwargs):
         """
         Runs the inference process for the VAR model.
+
+        Args:
+            method (str): Specifies which inference method to run.
+                          Options are 'default', 'large', 'xs', 'large_xs'.
+                          Default is 'default'.
+            **kwargs: Additional keyword arguments to pass to the inference methods.
+
+        Returns:
+            None
+        """
+        if method == 'default':
+            self._run_inference_default(**kwargs)
+        elif method == 'large':
+            self._run_inference_large(**kwargs)
+        elif method == 'xs':
+            self._run_inference_xs(**kwargs)
+        elif method == 'large_xs':
+            self._run_inference_large_xs(**kwargs)
+        else:
+            raise ValueError(f"Unknown method: {method}")
+
+    def _run_inference_default(self, **kwargs) -> None:
+        """
+        Runs the default inference process for the VAR model.
 
         Returns:
         None
@@ -206,16 +221,18 @@ class infer_VAR(BaseInfer):
         self.last_trace = trace
         self.last_data = (data,)
 
-        print(az.summary(trace, var_names=["x0", "A"]))
+        # Print summary if debug is enabled
+        if self.debug in ["high", "low"]:
+            print(az.summary(trace, var_names=["x0", "A"]))
 
         az.plot_posterior(trace, var_names=["x0", "A"])
         plt.savefig("posterior_plot.pdf")
         # Save results using the _save_results method
         self._save_results(trace, (data,), method='default')
 
-    def run_inference_large(self, samples=4000, tune=2000, cores=4) -> None:
+    def _run_inference_large(self, **kwargs) -> None:
         """
-        Run large-scale inference for VAR model.
+        Runs large-scale inference for VAR model.
 
         This function generates VAR model data, fits a Bayesian VAR model using PyMC3,
         and performs posterior sampling and analysis.
@@ -223,6 +240,11 @@ class infer_VAR(BaseInfer):
         Returns:
             None
         """
+
+        samples = kwargs.get('samples', 4000)
+        tune = kwargs.get('tune', 2000)
+        cores = kwargs.get('cores', 4)
+
         if self.data is None:
             print("Error: No data to perform inference on.")
             return
@@ -278,7 +300,9 @@ class infer_VAR(BaseInfer):
         with var_model:
             trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
-        print(az.summary(trace, var_names=["A"]))
+        # Print summary if debug is enabled
+        if self.debug in ["high", "low"]:
+            print(az.summary(trace, var_names=["A"]))
 
         # Plotting the posterior distributions
         az.plot_posterior(trace, var_names=[
@@ -291,13 +315,18 @@ class infer_VAR(BaseInfer):
         # Save results to unique filenames
         self._save_results(trace, data, method='large')
 
-    def run_inference_xs(self, samples=2000, tune=1000, cores=2) -> None:
+    def _run_inference_xs(self, **kwargs) -> None:
         """
         Runs the inference process for the VAR model with metabolite data.
 
         Returns:
         None
         """
+
+        samples = kwargs.get('samples', 2000)
+        tune = kwargs.get('tune', 1000)
+        cores = kwargs.get('cores', 2)
+
         if self.dataS is None:
             raise ValueError(
                 "Metabolite data is missing. Please provide dataS.")
@@ -349,7 +378,9 @@ class infer_VAR(BaseInfer):
         with var_model:
             idata = pm.sample(draws=samples, tune=tune, cores=cores)
 
-        print(az.summary(idata, var_names=["Ah", "Bh"]))
+        # Print summary if debug is enabled
+        if self.debug in ["high", "low"]:
+            print(az.summary(idata, var_names=["Ah", "Bh"]))
 
         az.plot_posterior(idata, var_names=["Ah", "Bh"])
         plt.savefig("posterior_plot.pdf")
@@ -360,13 +391,18 @@ class infer_VAR(BaseInfer):
         # Save results to unique filenames
         self._save_results(idata, (dataX, dataS), method='xs')
 
-    def run_inference_large_xs(self, samples=4000, tune=2000, cores=4) -> None:
+    def _run_inference_large_xs(self, **kwargs) -> None:
         """
         Runs large-scale inference for the VAR model with metabolite data.
 
         Returns:
         None
         """
+
+        samples = kwargs.get('samples', 4000)
+        tune = kwargs.get('tune', 2000)
+        cores = kwargs.get('cores', 4)
+
         if self.dataS is None:
             raise ValueError(
                 "Metabolite data is missing. Please provide dataS.")
@@ -432,7 +468,9 @@ class infer_VAR(BaseInfer):
         with var_model:
             trace = pm.sample(draws=samples, tune=tune, cores=cores)
 
-        print(az.summary(trace, var_names=["Ah", "Bh"]))
+        # Print summary if debug is enabled
+        if self.debug in ["high", "low"]:
+            print(az.summary(trace, var_names=["Ah", "Bh"]))
 
         az.plot_posterior(trace, var_names=["Ah", "Bh"])
         plt.savefig("posterior_plot.pdf")
@@ -492,9 +530,14 @@ class infer_VAR(BaseInfer):
                 print(f"Error loading inference data: {e}")
                 return
 
-        true_values = [A, B] if A is not None and B is not None else None
-        self.plot_heatmap(
-            idata, matrices=["Ah", "Bh"], true_values=true_values)
+        true_values = [A] if A is not None and B is None else (
+            [A, B] if A is not None and B is not None else None)
+
+        if dataS is not None:
+            self.plot_heatmap(
+                idata, matrices=["Ah", "Bh"], true_values=true_values)
+        else:
+            self.plot_heatmap(idata, matrices=["A"], true_values=true_values)
 
     def make_plot_stacked(self, dataX, dataS):
         """
@@ -507,7 +550,6 @@ class infer_VAR(BaseInfer):
         Returns:
         None
         """
-        dataX = dataX + 1.0
 
         nX = len(dataX[0])
         nS = len(dataS[0])
@@ -521,8 +563,8 @@ class infer_VAR(BaseInfer):
             *dataX.T,
             labels=[
                 f"X{str(i)}" for i in range(nX)])
-        axs[0].set_title("Abundance, log10 X")
-        axs[0].set_ylabel("X")
+        axs[0].set_title("Abundance changes over time")
+        axs[0].set_ylabel("ΔX")
         axs[0].set_xlim(0, nobs - 1)
 
         sns.heatmap(
@@ -535,7 +577,7 @@ class infer_VAR(BaseInfer):
         )
         axs[1].set_title("Metabolites, S")
         axs[1].set_ylabel("S")
-        axs[1].set_xlabel("time (weeks)")
+        axs[1].set_xlabel("time (t)")
         axs[1].set_xlim(0, nobs)
 
         plt.tight_layout()
@@ -574,25 +616,33 @@ class infer_VAR(BaseInfer):
             sns.heatmap(matrix_sum, ax=axes[idx], cmap='viridis')
             axes[idx].set_title(f'{matrix_key}hat')
             axes[idx].set_xlabel('X')
-            axes[idx].set_ylabel('X' if matrix_sum.shape[0]
-                                 == matrix_sum.shape[1] else 'S')
 
-            # Determine which values to annotate: true_values if provided, else
-            # matrix_sum
-            annotate_values = true_values[idx] if true_values is not None and len(
-                true_values) > idx and true_values[idx] is not None else matrix_sum
+            # Set the y-label based on whether it's the second matrix
+            if num_matrices > 1 and idx == 1:
+                axes[idx].set_ylabel('S')
+            else:
+                axes[idx].set_ylabel('X')
 
+            # Annotate matrix with true values in parentheses if provided
             for i in range(matrix_sum.shape[0]):
                 for j in range(matrix_sum.shape[1]):
-                    text_color = 'white' if true_values is not None and len(
-                        true_values) > idx and true_values[idx] is not None else 'black'
+                    if true_values is not None and len(
+                            true_values) > idx and true_values[idx] is not None:
+                        true_value = true_values[idx][i, j]
+                        text_value = f'{matrix_sum[i, j]:.2f} ({true_value:.2f})'
+                        text_color = 'white'  # You can adjust the color if needed
+                    else:
+                        text_value = f'{matrix_sum[i, j]:.2f}'
+                        text_color = 'black'
+
                     axes[idx].text(
                         j + 0.5,
                         i + 0.5,
-                        f'{annotate_values[i, j]:.2f}',
+                        text_value,
                         ha='center',
                         va='center',
-                        color=text_color)
+                        color=text_color
+                    )
 
         plt.tight_layout()
         plt.savefig('plot-posterior-heatmap.pdf', bbox_inches='tight')

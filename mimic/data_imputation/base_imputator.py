@@ -13,8 +13,22 @@ class BaseImputer(ABC):
     with methods to save and load data and a structure for defining imputation methods.
     """
 
-    def __init__(self):
+    def __init__(self, debug: Optional[str] = None):
         self.data = None
+        self._debug = None
+        self.debug = debug  # Set the debug level through the property
+
+    @property
+    def debug(self) -> Optional[str]:
+        """Gets the current debug level."""
+        return self._debug
+
+    @debug.setter
+    def debug(self, value: Optional[str]) -> None:
+        """Sets the debug level, allowing only None, 'low', or 'high'."""
+        if value not in {None, "low", "high"}:
+            raise ValueError("Debug level must be None, 'low', or 'high'.")
+        self._debug = value
 
     @abstractmethod
     def impute_missing_values(
@@ -30,7 +44,9 @@ class BaseImputer(ABC):
 
         :param dataset: The dataset containing missing values.
         :param feature_columns: List of feature columns to use in the imputation.
+        :param output_columns: List of columns to store imputed values.
         :param target_column: The target column where missing values are imputed.
+        :param kernel: Optional kernel parameter for imputation.
         :return: Dataset with imputed values in the target column.
         """
         raise NotImplementedError("Subclasses must implement this method")
