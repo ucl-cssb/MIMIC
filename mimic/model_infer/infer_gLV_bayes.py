@@ -285,6 +285,10 @@ class infergLVbayes(BaseInfer):
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
 
             # For debugging:
+            # print if `debug` is set to 'high' or 'low'
+            if self.debug in ["high", "low"]:
+                initial_values = bayes_model.initial_point()
+                print(f"Initial parameter values: {initial_values}")
 
             # As tensor objects are symbolic, if needed print using .eval()
             # eg
