@@ -44,10 +44,6 @@ def plot_params(mu_h, M_h, e_h, nsp):
     plt.stem(np.arange(0, nsp), np.array(e_h), markerfmt="D")
 
 
-
-
-
-
 class infergLVbayes(BaseInfer):
     """
     bayes_gLV class for Bayesian inference of gLV models without shrinkage priors
@@ -67,13 +63,13 @@ class infergLVbayes(BaseInfer):
     """
 
     def __init__(self,
-                 X = None,
-                 F = None,
-                 prior_mu_mean = None,
-                 prior_mu_sigma = None,
-                 prior_Mii_mean = None,
-                 prior_Mii_sigma = None,
-                 prior_Mij_sigma = None
+                 X=None,
+                 F=None,
+                 prior_mu_mean=None,
+                 prior_mu_sigma=None,
+                 prior_Mii_mean=None,
+                 prior_Mii_sigma=None,
+                 prior_Mij_sigma=None
                  ):
 
         # self.data = data  # data to do inference on
@@ -81,13 +77,20 @@ class infergLVbayes(BaseInfer):
         self.F: Optional[np.ndarray] = F
         self.mu: Optional[Union[int, float]] = None
         self.M: Optional[Union[int, float]] = None
-        self.prior_mu_mean: Optional[Union[int, float, List[Union[int, float]]]] = prior_mu_mean
-        self.prior_mu_sigma: Optional[Union[int, float, List[Union[int, float]]]] = prior_mu_sigma
-        self.prior_Mii_mean: Optional[Union[int, float, List[Union[int, float]]]] = prior_Mii_mean
-        self.prior_Mii_sigma: Optional[Union[int, float, List[Union[int, float]]]] = prior_Mii_sigma
-        self.prior_Mij_sigma: Optional[Union[int, float, List[Union[int, float]]]] = prior_Mij_sigma
-        self.prior_eps_mean: Optional[Union[int, float, List[Union[int, float]]]] = None
-        self.prior_eps_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None
+        self.prior_mu_mean: Optional[Union[int, float,
+                                           List[Union[int, float]]]] = prior_mu_mean
+        self.prior_mu_sigma: Optional[Union[int, float,
+                                            List[Union[int, float]]]] = prior_mu_sigma
+        self.prior_Mii_mean: Optional[Union[int, float,
+                                            List[Union[int, float]]]] = prior_Mii_mean
+        self.prior_Mii_sigma: Optional[Union[int, float,
+                                             List[Union[int, float]]]] = prior_Mii_sigma
+        self.prior_Mij_sigma: Optional[Union[int, float,
+                                             List[Union[int, float]]]] = prior_Mij_sigma
+        self.prior_eps_mean: Optional[Union[int,
+                                            float, List[Union[int, float]]]] = None
+        self.prior_eps_sigma: Optional[Union[int,
+                                             float, List[Union[int, float]]]] = None
         self.draws: Optional[int] = None
         self.tune: Optional[int] = None
         self.chains: Optional[int] = None
@@ -315,8 +318,12 @@ class infergLVbayes(BaseInfer):
             # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
-            idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores, progressbar=True)
-
+            idata = pm.sample(
+                draws=draws,
+                tune=tune,
+                chains=chains,
+                cores=cores,
+                progressbar=True)
 
         return idata
 
@@ -386,11 +393,19 @@ class infergLVbayes(BaseInfer):
             tau0 = (DA0 / (DA - DA0)) * noise_stddev / np.sqrt(N)
             c2 = pm.InverseGamma("c2", 2, 1)
             tau = pm.HalfCauchy("tau", beta=tau0)
-            lam = pm.HalfCauchy("lam", beta=1, shape=(num_species, num_species - 1))
-            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=tau * lam *
-                at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species,
-                num_species-1))
-            #M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
+            lam = pm.HalfCauchy(
+                "lam", beta=1, shape=(
+                    num_species, num_species - 1))
+            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=tau *
+                                 lam *
+                                 at.sqrt(c2 /
+                                         (c2 +
+                                          tau ** 2 *
+                                          lam ** 2)), shape=(num_species, num_species -
+                                                             1))
+            # M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma,
+            # shape=(num_species, num_species - 1))  # different shape for
+            # off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
@@ -728,8 +743,6 @@ def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
         times=times, init_species=init_species)
 
     plot_fit_gLV(yobs, yobs_h, times)
-
-
 
 
 def param_data_compare_pert(
