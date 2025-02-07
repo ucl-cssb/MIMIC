@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Repeat Rutter &amp; Dekker et al 2024 analysis &#8212; MIMIC 0.1.0 documentation</title>
+    <title>Rutter &amp; Dekker et al 2024 analysis &#8212; MIMIC 0.1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
@@ -38,7 +38,7 @@
           <div class="body" role="main">
             
   <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mimic.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
@@ -64,99 +64,77 @@
 <br/></pre></div>
 </div>
 </div>
-<section id="Repeat-Rutter-&amp;-Dekker-et-al-2024-analysis">
-<h1>Repeat Rutter &amp; Dekker et al 2024 analysis<a class="headerlink" href="#Repeat-Rutter-&-Dekker-et-al-2024-analysis" title="Link to this heading">¶</a></h1>
-<p>This example replicates the analysis completed by Rutter &amp; Dekker investigating the action of a bacteriocin released by one bacteria on another. The bacterial co-culture growth curves are used to infer the interaction of the species on each other. The two species are E. coli Nissle, which is a commensal strain engineered to secrete the bacteriocin, with the aim of killing the second species Enterococcus faecalis, which can be harmful to human health. In the paper, different bacteriocin and
-secretion tag combinations are tested, but in this example we demonstrate using one condition - PM3-EntA.</p>
-<p>The priors selected for Bayesian inference are taken from the paper, which explores this and the model selection in more detail, as well as a thorough introduction to the data.</p>
-<p>The original Rutter &amp; Dekker paper can be found here: <a class="reference external" href="https://www.nature.com/articles/s41467-024-50591-8">https://www.nature.com/articles/s41467-024-50591-8</a></p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import and format the data</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">(</span><span class="n">input_data</span><span class="p">):</span>
-    <span class="c1"># Read the CSV file</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
-
-    <span class="c1"># Adjust for data size and number of species as necessary</span>
-    <span class="c1"># Here we take only time course up to t=400</span>
-    <span class="n">X1_bar</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># Calculate the mean of the second species</span>
-    <span class="n">X2_bar</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># Combine the first column with the calculated means</span>
-    <span class="n">obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-        <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-        <span class="s1">&#39;X1_bar&#39;</span><span class="p">:</span> <span class="n">X1_bar</span><span class="p">,</span>
-        <span class="s1">&#39;X2_bar&#39;</span><span class="p">:</span> <span class="n">X2_bar</span>
-    <span class="p">})</span>
-
-    <span class="c1"># Replace negative values with 0</span>
-    <span class="n">obs</span><span class="p">[</span><span class="n">obs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">return</span> <span class="n">obs</span>
-
-<span class="n">PM3_EntA_data</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;PM3-EntA-coculture.csv&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<section id="Rutter-&amp;-Dekker-et-al-2024-analysis">
+<h1>Rutter &amp; Dekker et al 2024 analysis<a class="headerlink" href="#Rutter-&-Dekker-et-al-2024-analysis" title="Link to this heading">¶</a></h1>
+<section id="Prepare-data">
+<h2>Prepare data<a class="headerlink" href="#Prepare-data" title="Link to this heading">¶</a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualise the mean of the growth curves of both species grown in co-culture together</span>
-<span class="n">plot_growth_curves</span><span class="p">(</span><span class="n">PM3_EntA_data</span><span class="p">)</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in the data</span>
+<span class="n">num_species</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">num_timecourses</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;PM3-EntA-coculture.csv&quot;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">400</span><span class="p">)]</span>  <span class="c1"># Take only the first 400 minutes, excluding the first</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="c1"># Plot mean growth curves of each species</span>
+<span class="n">species_means</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span>
+    <span class="s2">&quot;X1_mean&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;X2_mean&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">})</span>
+
+
+<span class="c1"># Plot growth curves</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">species_means</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">species_means</span><span class="p">[</span><span class="s1">&#39;X1_mean&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;X1_mean&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">species_means</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">species_means</span><span class="p">[</span><span class="s1">&#39;X2_mean&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;X2_mean&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Value&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Growth Curves of X1_mean and X2_mean&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">yobs</span> <span class="o">=</span> <span class="n">species_means</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">linearize_time_course_16S</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+
+
+<span class="c1"># Seperate and stack timecourses</span>
+<span class="n">yobs_1</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:(</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">yobs_2</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">):(</span><span class="mi">2</span><span class="o">*</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">yobs_3</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">):(</span><span class="mi">3</span><span class="o">*</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">yobs_4</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">):(</span><span class="mi">4</span><span class="o">*</span><span class="n">num_species</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">ryobs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">yobs_1</span><span class="p">,</span> <span class="n">yobs_2</span><span class="p">,</span> <span class="n">yobs_3</span><span class="p">,</span> <span class="n">yobs_4</span><span class="p">])</span>
+
+<span class="c1"># Replace negative values with 0</span>
+<span class="n">ryobs</span><span class="p">[</span><span class="n">ryobs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1">#X = np.array([], dtype=np.double).reshape(0, num_species+1)</span>
+<span class="c1">#F = np.array([], dtype=np.double).reshape(0, num_species)</span>
+
+
+<span class="c1">#for timecourse_idx in range(num_timecourses):</span>
+<span class="c1">#    Xs, Fs = linearize_time_course_16S(ryobs[timecourse_idx], times)</span>
+<span class="c1">#    X = np.vstack([X, Xs])</span>
+<span class="c1">#    F = np.vstack([F, Fs])</span>
+<br/><br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_4_0.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_4_0.png" />
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_3_0.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_3_0.png" />
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract data and convert to numpyarrays</span>
-
-<span class="n">yobsdf</span> <span class="o">=</span> <span class="n">PM3_EntA_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span>
-<span class="n">yobs</span> <span class="o">=</span> <span class="n">yobsdf</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-<span class="n">timesa</span> <span class="o">=</span> <span class="n">PM3_EntA_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-<span class="n">times</span> <span class="o">=</span> <span class="n">timesa</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
+</section>
+<section id="Perform-Bayesian-inference-without-shrinkage">
+<h2>Perform Bayesian inference without shrinkage<a class="headerlink" href="#Perform-Bayesian-inference-without-shrinkage" title="Link to this heading">¶</a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_6_0.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_6_0.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">linearize_time_course_16S</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Perform Bayesian inference without shrinkage</span>
@@ -165,7 +143,7 @@ secretion tag combinations are tested, but in this example we demonstrate using 
 <span class="n">prior_mu_mean</span> <span class="o">=</span> <span class="mf">0.03</span>
 <span class="n">prior_mu_sigma</span> <span class="o">=</span> <span class="mf">0.5</span>
 
-<span class="c1">## NB prior_Mii_mean is 0, so not defined as an argument</span>
+<span class="c1">## NB prior_Mij_mean is 0, so not defined as an argument</span>
 <span class="n">prior_Mii_mean</span> <span class="o">=</span>  <span class="mf">0.1</span>
 <span class="n">prior_Mii_sigma</span> <span class="o">=</span> <span class="mf">0.1</span>
 
@@ -178,6 +156,8 @@ secretion tag combinations are tested, but in this example we demonstrate using 
 <span class="n">chains</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">cores</span> <span class="o">=</span> <span class="mi">4</span>
 
+
+<span class="c1"># Run inference using parameters as set above</span>
 <span class="n">inference</span> <span class="o">=</span> <span class="n">infergLVbayes</span><span class="p">()</span>
 
 <span class="n">inference</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">prior_mu_mean</span><span class="o">=</span><span class="n">prior_mu_mean</span><span class="p">,</span> <span class="n">prior_mu_sigma</span><span class="o">=</span><span class="n">prior_mu_sigma</span><span class="p">,</span>
@@ -186,6 +166,28 @@ secretion tag combinations are tested, but in this example we demonstrate using 
                           <span class="n">draws</span><span class="o">=</span><span class="n">draws</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="n">tune</span><span class="p">,</span> <span class="n">chains</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span><span class="n">cores</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
 
 <span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
+
+
+<span class="c1"># To plot posterior distributions</span>
+<span class="n">inference</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
+
+<span class="c1"># Print summary</span>
+<span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ii_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ij_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">[[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;r_hat&quot;</span><span class="p">]])</span>
+
+
+<span class="c1"># Save posterior samples to file</span>
+<span class="n">az</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
+
+<span class="c1"># get median mu_hat and M_hat</span>
+<span class="n">mu_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">M_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;M_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="c1"># compare fitted with simulated parameters</span>
+
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">)</span>
+<span class="n">yobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">yobs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -214,7 +216,7 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e24474889a90477c9d03d53bd011e78a", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3a32faba219f446f84c64f55bd074062", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -222,7 +224,7 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
 <div class="output_area rendered_html docutils container">
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
@@ -230,49 +232,25 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
 Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 3 seconds.
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># To plot posterior distributions</span>
-<span class="n">inference</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
-</pre></div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_5.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_5.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_9_0.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_9_0.png" />
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_6.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_6.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_9_1.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_9_1.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_9_2.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_9_2.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print summary</span>
-
-<span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ii_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ij_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">[[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;r_hat&quot;</span><span class="p">]])</span>
-
-
-<span class="c1"># Save posterior samples to file</span>
-<span class="n">az</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
-</pre></div>
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_7.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_7.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -290,52 +268,44 @@ Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws tota
 <div class="output_area docutils container">
 <div class="highlight"><pre>
                  mean     sd  r_hat
-mu_hat[0, 0]    0.033  0.003   1.00
-mu_hat[0, 1]    0.015  0.003   1.01
-M_ii_hat[0]    -0.131  0.079   1.00
-M_ii_hat[1]    -0.113  0.036   1.01
-M_ij_hat[0, 0] -0.069  0.028   1.00
-M_ij_hat[1, 0] -0.053  0.091   1.00
-M_hat[0, 0]    -0.069  0.028   1.00
+mu_hat[0, 0]    0.032  0.003   1.01
+mu_hat[0, 1]    0.016  0.003   1.00
+M_ii_hat[0]    -0.127  0.081   1.01
+M_ii_hat[1]    -0.116  0.031   1.00
+M_ij_hat[0, 0] -0.078  0.031   1.01
+M_ij_hat[1, 0] -0.061  0.084   1.01
+M_hat[0, 0]    -0.078  0.031   1.01
 M_hat[0, 1]     0.000  0.000    NaN
-M_hat[1, 0]    -0.053  0.091   1.00
-M_hat[1, 1]    -0.113  0.036   1.01
-sigma[0]        0.007  0.001   1.01
+M_hat[1, 0]    -0.061  0.084   1.01
+M_hat[1, 1]    -0.116  0.031   1.00
+sigma[0]        0.006  0.001   1.00
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-&#39;model_posterior.nc&#39;
-</pre></div></div>
+<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_10.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_5_10.png" />
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
-</pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># To compare predicted and observed curves</span>
-
-<span class="n">init_species_start</span> <span class="o">=</span> <span class="mf">0.005</span>
-<span class="n">sim_gLV_class</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">()</span>
-<span class="n">curve_compare</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">init_species_start</span><span class="p">,</span> <span class="n">sim_gLV_class</span><span class="p">)</span>
-</pre></div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_11_0.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_11_0.png" />
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 3 seconds.
+</pre></div></div>
 </div>
-</div>
-</section>
 <section id="Perform-Bayesian-inference-with-shrinkage">
-<h1>Perform Bayesian inference with shrinkage<a class="headerlink" href="#Perform-Bayesian-inference-with-shrinkage" title="Link to this heading">¶</a></h1>
+<h3>Perform Bayesian inference with shrinkage<a class="headerlink" href="#Perform-Bayesian-inference-with-shrinkage" title="Link to this heading">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define priors</span>
@@ -376,101 +346,28 @@ sigma[0]        0.007  0.001   1.01
                           <span class="n">DA</span><span class="o">=</span><span class="n">DA</span><span class="p">,</span> <span class="n">DA0</span><span class="o">=</span><span class="n">DA0</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">noise_stddev</span><span class="o">=</span><span class="n">noise_stddev</span><span class="p">,</span>
                           <span class="n">draws</span><span class="o">=</span><span class="n">draws</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="n">tune</span><span class="p">,</span> <span class="n">chains</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span><span class="n">cores</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
 
-<span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_bayes_gLV_shrinkage</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Initializing NUTS using jitter+adapt_diag...
-Multiprocess sampling (4 chains in 4 jobs)
-NUTS: [sigma, mu_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8293758b98794d66a466af9142af38e3", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 7 seconds.
-There were 108 divergences after tuning. Increase `target_accept` or reparameterize.
-The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print summary</span>
+<span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_inference_shrinkage</span><span class="p">()</span>
 
+<span class="c1"># To plot posterior distributions</span>
+<span class="n">inference</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
+
+<span class="c1"># Print summary</span>
 <span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ii_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ij_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">[[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;r_hat&quot;</span><span class="p">]])</span>
 
 
 <span class="c1"># Save posterior samples to file</span>
 <span class="n">az</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-                 mean     sd  r_hat
-mu_hat[0, 0]    0.034  0.004   1.01
-mu_hat[0, 1]    0.015  0.003   1.01
-M_ii_hat[0]    -0.128  0.078   1.00
-M_ii_hat[1]    -0.115  0.034   1.01
-M_ij_hat[0, 0] -0.048  0.072   1.01
-M_ij_hat[1, 0] -0.124  0.246   1.01
-M_hat[0, 0]    -0.048  0.072   1.01
-M_hat[0, 1]     0.000  0.000    NaN
-M_hat[1, 0]    -0.124  0.246   1.01
-M_hat[1, 1]    -0.115  0.034   1.01
-sigma[0]        0.007  0.001   1.00
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
-  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&#39;model_posterior.nc&#39;
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">init_species_start</span> <span class="o">=</span> <span class="mf">0.001</span>
-<span class="n">sim_gLV_class</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">()</span>
-<span class="n">curve_compare</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">init_species_start</span><span class="p">,</span> <span class="n">sim_gLV_class</span><span class="p">)</span>
+
+<span class="c1"># get median mu_hat and M_hat</span>
+<span class="n">mu_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">M_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;M_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="c1"># compare fitted with simulated parameters</span>
+
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_gLV</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">M_h</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu_h</span><span class="p">)</span>
+<span class="n">yobs_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="o">=</span><span class="n">yobs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plot_fit_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">yobs_h</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -478,8 +375,22 @@ sigma[0]        0.007  0.001   1.00
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-Rutter-Dekker_15_0.png" src="../../_images/notebooks_gLV_examples-Rutter-Dekker_15_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[21], line 39</span>
+<span class="ansi-green-intense-fg ansi-bold">     31</span> inference <span style="color: rgb(98,98,98)">=</span> infergLVbayes()
+<span class="ansi-green-intense-fg ansi-bold">     33</span> inference<span style="color: rgb(98,98,98)">.</span>set_parameters(X<span style="color: rgb(98,98,98)">=</span>X, F<span style="color: rgb(98,98,98)">=</span>F, prior_mu_mean<span style="color: rgb(98,98,98)">=</span>prior_mu_mean, prior_mu_sigma<span style="color: rgb(98,98,98)">=</span>prior_mu_sigma,
+<span class="ansi-green-intense-fg ansi-bold">     34</span>                           prior_Mii_sigma<span style="color: rgb(98,98,98)">=</span>prior_Mii_sigma, prior_Mii_mean<span style="color: rgb(98,98,98)">=</span>prior_Mii_mean,
+<span class="ansi-green-intense-fg ansi-bold">     35</span>                           prior_Mij_sigma<span style="color: rgb(98,98,98)">=</span>prior_Mij_sigma,
+<span class="ansi-green-intense-fg ansi-bold">     36</span>                           DA<span style="color: rgb(98,98,98)">=</span>DA, DA0<span style="color: rgb(98,98,98)">=</span>DA0, N<span style="color: rgb(98,98,98)">=</span>N, noise_stddev<span style="color: rgb(98,98,98)">=</span>noise_stddev,
+<span class="ansi-green-intense-fg ansi-bold">     37</span>                           draws<span style="color: rgb(98,98,98)">=</span>draws, tune<span style="color: rgb(98,98,98)">=</span>tune, chains<span style="color: rgb(98,98,98)">=</span>chains,cores<span style="color: rgb(98,98,98)">=</span>cores)
+<span class="ansi-green-fg">---&gt; 39</span> idata <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">inference</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">run_inference_shrinkage</span>()
+<span class="ansi-green-intense-fg ansi-bold">     41</span> <span style="color: rgb(95,135,135)"># To plot posterior distributions</span>
+<span class="ansi-green-intense-fg ansi-bold">     42</span> inference<span style="color: rgb(98,98,98)">.</span>plot_posterior(idata)
+
+<span class="ansi-red-fg">AttributeError</span>: &#39;infergLVbayes&#39; object has no attribute &#39;run_inference_shrinkage&#39;
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -489,6 +400,8 @@ sigma[0]        0.007  0.001   1.00
 </pre></div>
 </div>
 </div>
+</section>
+</section>
 </section>
 
 
