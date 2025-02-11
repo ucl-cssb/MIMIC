@@ -2,24 +2,19 @@ import arviz as az
 import matplotlib.pyplot as plt
 import numpy as np
 import pymc as pm
+import pandas as pd
+import seaborn as sns
 import pytensor.tensor as at
 import pickle
 import cloudpickle
+import os
+from typing import Optional, Union, List, Dict, Any
 
 from mimic.utilities import *
 from mimic.model_simulate.sim_gLV import *
 from mimic.model_infer.base_infer import BaseInfer
 
-from mimic.model_infer.base_infer import BaseInfer
 
-import os
-from typing import Optional, Union, List, Dict, Any
-
-
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 
 def plot_params(mu_h, M_h, e_h, nsp):
@@ -68,8 +63,9 @@ class infergLVbayes(BaseInfer):
                  prior_mu_sigma=None,
                  prior_Mii_mean=None,
                  prior_Mii_sigma=None,
-                 prior_Mij_sigma=None
-                 ):
+                 prior_Mij_sigma=None):
+        
+        super().__init__()  # Call base class constructor
 
         # self.data = data  # data to do inference on
         self.X: Optional[np.ndarray] = X
@@ -216,7 +212,7 @@ class infergLVbayes(BaseInfer):
         DA0 = int(round(expected_non_zero_elements))
         return max(DA0, 1)
 
-    def run_inference(self) -> None:
+    def run_inference(self, **kwargs) -> None:
         """
         This function infers the parameters for the Bayesian gLV model
 
@@ -293,15 +289,12 @@ class infergLVbayes(BaseInfer):
             # eg
             # print(f"mu_hat: {mu_hat.eval()}")
 
-            # initial_values = bayes_model.initial_point()
-            # print(f"Initial parameter values: {initial_values}")
-
             # Posterior distribution
             idata = pm.sample(draws=draws,tune=tune,chains=chains,cores=cores,progressbar=True)
 
         return idata
 
-    def run_inference_shrinkage(self) -> None:
+    def run_inference_shrinkage(self, **kwargs) -> None:
         """
         This function infers the parameters for the Bayesian gLV model with Horseshoe prior for shrinkage
 
@@ -373,20 +366,21 @@ class infergLVbayes(BaseInfer):
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
 
             # For debugging:
+            # print if `debug` is set to 'high' or 'low'
+            if self.debug in ["high", "low"]:
+                initial_values = bayes_model.initial_point()
+                print(f"Initial parameter values: {initial_values}")
 
             # As tensor objects are symbolic, if needed print using .eval()
             # eg
             # print(f"mu_hat: {mu_hat.eval()}")
-
-            # initial_values = bayes_model.initial_point()
-            # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
             idata = pm.sample(draws=draws,tune=tune,chains=chains,cores=cores)
 
         return idata
 
-    def run_inference_shrinkage_pert(self) -> None:
+    def run_inference_shrinkage_pert(self, **kwargs) -> None:
         """
         This function infers the parameters for the Bayesian gLV model with Horseshoe prior for shrinkage
 
@@ -466,13 +460,14 @@ class infergLVbayes(BaseInfer):
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
 
             # For debugging:
+            # print if `debug` is set to 'high' or 'low'
+            if self.debug in ["high", "low"]:
+                initial_values = bayes_model.initial_point()
+                print(f"Initial parameter values: {initial_values}")
 
             # As tensor objects are symbolic, if needed print using .eval()
             # eg
             # print(f"mu_hat: {mu_hat.eval()}")
-
-            # initial_values = bayes_model.initial_point()
-            # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
             idata = pm.sample(draws=draws,tune=tune,chains=chains,cores=cores)
