@@ -547,6 +547,15 @@ class infergLVbayes(BaseInfer):
                 ax.text(j + 0.5,i + 0.5,f'{M[i, j]:.2f}',ha='center',va='center',color='white')
 
 
+
+
+
+######
+######
+######
+
+
+
 def param_data_compare(idata,F,mu,M,times,yobs,init_species_start,sim_gLV_class):
     # az.to_netcdf(idata, 'model_posterior.nc')
     # Compare model parameters to the data
@@ -603,7 +612,7 @@ def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
     plot_fit_gLV(yobs, yobs_h, times)
 
 
-def param_data_compare_pert(idata, F, mu,M,epsilon,num_perturbations,times,yobs,init_species_start,sim_gLV_class):
+def param_data_compare_pert(idata, F, mu,M,u,epsilon,num_perturbations,times,yobs,init_species_start,sim_gLV_class):
     # az.to_netcdf(idata, 'model_posterior.nc')
     # Compare model parameters to the data
     num_species = F.shape[1]
@@ -633,8 +642,8 @@ def param_data_compare_pert(idata, F, mu,M,epsilon,num_perturbations,times,yobs,
     predictor = sim_gLV(num_species=num_species, M=M_h, mu=mu_h, epsilon=e_h)
     simulator = sim_gLV(num_species=num_species,num_perturbations=num_perturbations,M=M,mu=mu,epsilon=epsilon)
 
-    yobs, init_species, mu, M, _ = simulator.simulate(times=times, init_species=init_species, u=pert_fn)
-    yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=init_species, u=pert_fn)
+    yobs, init_species, mu, M, _ = simulator.simulate(times=times, init_species=init_species, u=u)
+    yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=init_species, u=u)
 
     plot_fit_gLV(yobs, yobs_h, times)
 
