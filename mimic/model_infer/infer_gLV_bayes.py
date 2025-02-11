@@ -22,7 +22,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-# Used in examples-Stein.ipynb
 def plot_params(mu_h, M_h, e_h, nsp):
     print("\ninferred params:")
     print("mu_hat/mu:")
@@ -256,50 +255,30 @@ class infergLVbayes(BaseInfer):
             # Priors for unknown model parameters
             # sigma = pm.HalfNormal('sigma', sigma=1, shape=(num_species,))  #
             # A separate sigma for each response
-            sigma = pm.HalfNormal(
-                'sigma', sigma=1, shape=(
-                    1,))  # Same sigma for all responses
+            sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
 
             # Define mu as prior
-            mu_hat = pm.TruncatedNormal(
-                'mu_hat',
-                mu=prior_mu_mean,
-                sigma=prior_mu_sigma,
-                lower=0,
-                shape=(
-                    1,
-                    num_species))
+            mu_hat = pm.TruncatedNormal('mu_hat',mu=prior_mu_mean,sigma=prior_mu_sigma,lower=0,shape=(1,num_species))
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.TruncatedNormal(
-                'M_ii_hat_p',
-                mu=prior_Mii_mean,
-                sigma=prior_Mii_sigma,
-                lower=0,
-                shape=(
-                    num_species,
-                ))
+            M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p',mu=prior_Mii_mean,sigma=prior_Mii_sigma,lower=0,shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ij is unconstrained
-            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(
-                num_species, num_species - 1))  # different shape for off-diagonal
+            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape
             M_hat_vals = at.zeros((num_species, num_species))
-            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(
-                num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
-            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species)[:, None], np.delete(
-                np.arange(num_species), -1)], M_ij_hat)  # set off-diagonal
+            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
+            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species)[:, None], np.delete(np.arange(num_species), -1)], M_ij_hat)  # set off-diagonal
             print(M_hat_vals)
 
             # Save the combined matrix as a deterministic variable
             M_hat = pm.Deterministic('M_hat', M_hat_vals)
 
             # Expected value of outcome (linear model)
-            model_mean = pm.math.dot(
-                X, pm.math.concatenate([M_hat, mu_hat], axis=0))
+            model_mean = pm.math.dot(X, pm.math.concatenate([M_hat, mu_hat], axis=0))
 
             # Likelihood (sampling distribution) of observations
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
@@ -318,12 +297,7 @@ class infergLVbayes(BaseInfer):
             # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
-            idata = pm.sample(
-                draws=draws,
-                tune=tune,
-                chains=chains,
-                cores=cores,
-                progressbar=True)
+            idata = pm.sample(draws=draws,tune=tune,chains=chains,cores=cores,progressbar=True)
 
         return idata
 
@@ -362,29 +336,13 @@ class infergLVbayes(BaseInfer):
             # Priors for unknown model parameters
             # sigma = pm.HalfNormal('sigma', sigma=1, shape=(num_species,))  #
             # A separate sigma for each response
-            sigma = pm.HalfNormal(
-                'sigma', sigma=1, shape=(
-                    1,))  # Same sigma for all responses
+            sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
 
             # Define mu as prior
-            mu_hat = pm.TruncatedNormal(
-                'mu_hat',
-                mu=prior_mu_mean,
-                sigma=prior_mu_sigma,
-                lower=0,
-                shape=(
-                    1,
-                    num_species))
+            mu_hat = pm.TruncatedNormal('mu_hat',mu=prior_mu_mean,sigma=prior_mu_sigma,lower=0,shape=(1,num_species))
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.TruncatedNormal(
-                'M_ii_hat_p',
-                mu=prior_Mii_mean,
-                sigma=prior_Mii_sigma,
-                lower=0,
-                shape=(
-                    num_species,
-                ))
+            M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p',mu=prior_Mii_mean,sigma=prior_Mii_sigma,lower=0,shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
@@ -393,16 +351,8 @@ class infergLVbayes(BaseInfer):
             tau0 = (DA0 / (DA - DA0)) * noise_stddev / np.sqrt(N)
             c2 = pm.InverseGamma("c2", 2, 1)
             tau = pm.HalfCauchy("tau", beta=tau0)
-            lam = pm.HalfCauchy(
-                "lam", beta=1, shape=(
-                    num_species, num_species - 1))
-            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=tau *
-                                 lam *
-                                 at.sqrt(c2 /
-                                         (c2 +
-                                          tau ** 2 *
-                                          lam ** 2)), shape=(num_species, num_species -
-                                                             1))
+            lam = pm.HalfCauchy("lam", beta=1, shape=(num_species, num_species - 1))
+            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=tau *lam *at.sqrt(c2 /(c2 + tau ** 2 * lam ** 2)), shape=(num_species, num_species - 1))
             # M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma,
             # shape=(num_species, num_species - 1))  # different shape for
             # off-diagonal
@@ -410,17 +360,14 @@ class infergLVbayes(BaseInfer):
             # Combine values
             # start with an all-zero matrix of the correct shape
             M_hat_vals = at.zeros((num_species, num_species))
-            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(
-                num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
-            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species)[:, None], np.delete(
-                np.arange(num_species), -1)], M_ij_hat)  # set off-diagonal
+            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
+            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species)[:, None], np.delete(np.arange(num_species), -1)], M_ij_hat)  # set off-diagonal
 
             # Save the combined matrix as a deterministic variable
             M_hat = pm.Deterministic('M_hat', M_hat_vals)
 
             # Expected value of outcome (linear model)
-            model_mean = pm.math.dot(
-                X, pm.math.concatenate([M_hat, mu_hat], axis=0))
+            model_mean = pm.math.dot(X, pm.math.concatenate([M_hat, mu_hat], axis=0))
 
             # Likelihood (sampling distribution) of observations
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
@@ -435,11 +382,7 @@ class infergLVbayes(BaseInfer):
             # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
-            idata = pm.sample(
-                draws=draws,
-                tune=tune,
-                chains=chains,
-                cores=cores)
+            idata = pm.sample(draws=draws,tune=tune,chains=chains,cores=cores)
 
         return idata
 
@@ -479,41 +422,19 @@ class infergLVbayes(BaseInfer):
             # Priors for unknown model parameters
             # sigma = pm.HalfNormal('sigma', sigma=1, shape=(num_species,))  #
             # A separate sigma for each response
-            sigma = pm.HalfNormal(
-                'sigma', sigma=1, shape=(
-                    1,))  # Same sigma for all responses
+            sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
 
             # Define mu as prior
-            mu_hat = pm.TruncatedNormal(
-                'mu_hat',
-                mu=prior_mu_mean,
-                sigma=prior_mu_sigma,
-                lower=0,
-                shape=(
-                    1,
-                    num_species))
+            mu_hat = pm.TruncatedNormal('mu_hat',mu=prior_mu_mean,sigma=prior_mu_sigma,lower=0,shape=(1,num_species))
 
-            epsilon_hat = pm.Normal(
-                'epsilon_hat',
-                mu=prior_eps_mean,
-                sigma=prior_eps_sigma,
-                shape=(
-                    1,
-                    num_species))
+            epsilon_hat = pm.Normal('epsilon_hat',mu=prior_eps_mean,sigma=prior_eps_sigma,shape=(1,num_species))
 
             # Set constraints for horseshoe prior
             # M_ij is is unconstrained but placed under horseshoe prior to
             # apply to sigma for M_ij
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.TruncatedNormal(
-                'M_ii_hat_p',
-                mu=prior_Mii_mean,
-                sigma=prior_Mii_sigma,
-                lower=0,
-                shape=(
-                    num_species,
-                ))
+            M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p',mu=prior_Mii_mean,sigma=prior_Mii_sigma,lower=0,shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ii_hat = pm.TruncatedNormal('M_ii_hat', mu=-0.1, sigma=0.1, upper=0, shape=(num_species,))
@@ -522,13 +443,8 @@ class infergLVbayes(BaseInfer):
             tau0 = (DA0 / (DA - DA0)) * noise_stddev / np.sqrt(N)
             c2 = pm.InverseGamma("c2", 2, 1)
             tau = pm.HalfCauchy("tau", beta=tau0)
-            lam = pm.HalfCauchy(
-                "lam", beta=1, shape=(
-                    num_species, num_species - 1))
-            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_sigma, sigma=tau * lam *
-                                 at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)),
-                                 shape=(num_species,
-                                        num_species - 1))
+            lam = pm.HalfCauchy("lam", beta=1, shape=(num_species, num_species - 1))
+            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_sigma, sigma=tau * lam *at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)),shape=(num_species,num_species - 1))
             # M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma,
             # shape=(num_species, num_species - 1))  # different shape for
             # off-diagonal
@@ -536,18 +452,15 @@ class infergLVbayes(BaseInfer):
             # Combine values
             # start with an all-zero matrix of the correct shape
             M_hat_vals = at.zeros((num_species, num_species))
-            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(
-                num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
-            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species)[:, None], np.delete(
-                np.arange(num_species), -1)], M_ij_hat)  # set off-diagonal
+            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species), at.arange(num_species)], M_ii_hat)  # set diagonal
+            M_hat_vals = at.set_subtensor(M_hat_vals[at.arange(num_species)[:, None], np.delete(np.arange(num_species), -1)], M_ij_hat)  # set off-diagonal
 
             # Save the combined matrix as a deterministic variable
             M_hat = pm.Deterministic('M_hat', M_hat_vals)
 
             # Expected value of outcome (linear model)
             # model_mean = pm.math.dot(X, pm.math.concatenate([M_hat, mu_hat], axis=0))
-            model_mean = pm.math.dot(X, pm.math.concatenate(
-                [M_hat, mu_hat, epsilon_hat], axis=0))
+            model_mean = pm.math.dot(X, pm.math.concatenate([M_hat, mu_hat, epsilon_hat], axis=0))
 
             # Likelihood (sampling distribution) of observations
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
@@ -562,11 +475,7 @@ class infergLVbayes(BaseInfer):
             # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
-            idata = pm.sample(
-                draws=draws,
-                tune=tune,
-                chains=chains,
-                cores=cores)
+            idata = pm.sample(draws=draws,tune=tune,chains=chains,cores=cores)
 
             # Assemble posterior values for mu and M for plotting and
             # assessment
@@ -580,76 +489,49 @@ class infergLVbayes(BaseInfer):
 
     def plot_posterior(self, idata):
 
-        mu_hat_np = idata.posterior['mu_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
+        mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
         M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
-        az.plot_posterior(
-            idata,
-            var_names=["mu_hat"],
-            ref_val=mu_hat_np.tolist()
-        )
+        az.plot_posterior(idata,var_names=["mu_hat"],ref_val=mu_hat_np.tolist())
         plt.savefig("plot-posterior-mu.pdf")
         plt.show()
         plt.close()
 
-        az.plot_posterior(
-            idata,
-            var_names=["M_ii_hat"],
-            ref_val=np.diag(M_hat_np).tolist()
-        )
+        az.plot_posterior(idata,var_names=["M_ii_hat"],ref_val=np.diag(M_hat_np).tolist())
         plt.savefig("plot-posterior-Mii.pdf")
         plt.show()
         plt.close()
 
         mask = ~np.eye(M_hat_np.shape[0], dtype=bool)
         M_ij = M_hat_np[mask]
-        az.plot_posterior(
-            idata,
-            var_names=["M_ij_hat"],
-            ref_val=M_ij.flatten().tolist()
-        )
+        az.plot_posterior(idata,var_names=["M_ij_hat"],ref_val=M_ij.flatten().tolist())
         plt.savefig("plot-posterior-Mij.pdf")
         plt.show()
         plt.close()
 
     def plot_posterior_pert(self, idata):
-        mu_hat_np = idata.posterior['mu_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
+        mu_hat_np = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
         M_hat_np = idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
-        epsilon_hat_np = idata.posterior['epsilon_hat'].mean(
-            dim=('chain', 'draw')).values
+        epsilon_hat_np = idata.posterior['epsilon_hat'].mean(dim=('chain', 'draw')).values
 
-        az.plot_posterior(
-            idata,
-            var_names=["mu_hat"],
-            ref_val=mu_hat_np.tolist())
+        az.plot_posterior(idata,var_names=["mu_hat"],ref_val=mu_hat_np.tolist())
         plt.savefig("plot-posterior-mu.pdf")
         plt.show()
         plt.close()
 
-        az.plot_posterior(
-            idata,
-            var_names=["M_ii_hat"],
-            ref_val=np.diag(M_hat_np).tolist())
+        az.plot_posterior(idata,var_names=["M_ii_hat"],ref_val=np.diag(M_hat_np).tolist())
         plt.savefig("plot-posterior-Mii.pdf")
         plt.show()
         plt.close()
 
         mask = ~np.eye(M_hat_np.shape[0], dtype=bool)
         M_ij = M_hat_np[mask]
-        az.plot_posterior(
-            idata,
-            var_names=["M_ij_hat"],
-            ref_val=M_ij.flatten().tolist())
+        az.plot_posterior(idata,var_names=["M_ij_hat"],ref_val=M_ij.flatten().tolist())
         plt.savefig("plot-posterior-Mij.pdf")
         plt.show()
         plt.close()
 
-        az.plot_posterior(
-            idata,
-            var_names=["epsilon_hat"],
-            ref_val=epsilon_hat_np.flatten().tolist())
+        az.plot_posterior(idata,var_names=["epsilon_hat"],ref_val=epsilon_hat_np.flatten().tolist())
         plt.savefig("plot-posterior-eps.pdf")
         plt.show()
         plt.close()
@@ -667,24 +549,10 @@ class infergLVbayes(BaseInfer):
         # Annotate the true values for matrix1
         for i in range(M_h.shape[0]):
             for j in range(M_h.shape[1]):
-                ax.text(
-                    j + 0.5,
-                    i + 0.5,
-                    f'{M[i, j]:.2f}',
-                    ha='center',
-                    va='center',
-                    color='white')
+                ax.text(j + 0.5,i + 0.5,f'{M[i, j]:.2f}',ha='center',va='center',color='white')
 
 
-def param_data_compare(
-        idata,
-        F,
-        mu,
-        M,
-        times,
-        yobs,
-        init_species_start,
-        sim_gLV_class):
+def param_data_compare(idata,F,mu,M,times,yobs,init_species_start,sim_gLV_class):
     # az.to_netcdf(idata, 'model_posterior.nc')
     # Compare model parameters to the data
 
@@ -710,8 +578,7 @@ def param_data_compare(
     # M_h= idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
     predictor = sim_gLV(num_species=num_species, M=M_h, mu=mu_h)
-    yobs_h, _, _, _, _ = predictor.simulate(
-        times=times, init_species=init_species)
+    yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=init_species)
 
     plot_fit_gLV(yobs, yobs_h, times)
     compare_params(mu=(mu, mu_h), M=(M, M_h))
@@ -735,27 +602,13 @@ def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
     # mu_h = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
     # M_h= idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
-    predictor = sim_gLV(num_species=num_species,
-                        M=M_h.T,
-                        mu=mu_h
-                        )
-    yobs_h, _, _, _, _ = predictor.simulate(
-        times=times, init_species=init_species)
+    predictor = sim_gLV(num_species=num_species, M=M_h.T,mu=mu_h)
+    yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=init_species)
 
     plot_fit_gLV(yobs, yobs_h, times)
 
 
-def param_data_compare_pert(
-        idata,
-        F,
-        mu,
-        M,
-        epsilon,
-        num_perturbations,
-        times,
-        yobs,
-        init_species_start,
-        sim_gLV_class):
+def param_data_compare_pert(idata, F, mu,M,epsilon,num_perturbations,times,yobs,init_species_start,sim_gLV_class):
     # az.to_netcdf(idata, 'model_posterior.nc')
     # Compare model parameters to the data
     num_species = F.shape[1]
@@ -783,17 +636,10 @@ def param_data_compare_pert(
     # M_h= idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
     predictor = sim_gLV(num_species=num_species, M=M_h, mu=mu_h, epsilon=e_h)
-    simulator = sim_gLV(
-        num_species=num_species,
-        num_perturbations=num_perturbations,
-        M=M,
-        mu=mu,
-        epsilon=epsilon)
+    simulator = sim_gLV(num_species=num_species,num_perturbations=num_perturbations,M=M,mu=mu,epsilon=epsilon)
 
-    yobs, init_species, mu, M, _ = simulator.simulate(
-        times=times, init_species=init_species, u=pert_fn)
-    yobs_h, _, _, _, _ = predictor.simulate(
-        times=times, init_species=init_species, u=pert_fn)
+    yobs, init_species, mu, M, _ = simulator.simulate(times=times, init_species=init_species, u=pert_fn)
+    yobs_h, _, _, _, _ = predictor.simulate(times=times, init_species=init_species, u=pert_fn)
 
     plot_fit_gLV(yobs, yobs_h, times)
 
