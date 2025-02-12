@@ -2,27 +2,19 @@ import arviz as az
 import matplotlib.pyplot as plt
 import numpy as np
 import pymc as pm
+import pandas as pd
+import seaborn as sns
 import pytensor.tensor as at
 import pickle
 import cloudpickle
+import os
+from typing import Optional, Union, List, Dict, Any
 
 from mimic.utilities import *
 from mimic.model_simulate.sim_gLV import *
 from mimic.model_infer.base_infer import BaseInfer
 
-from mimic.model_infer.base_infer import BaseInfer
 
-import os
-from typing import Optional, Union, List, Dict, Any
-
-
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-
-# Used in examples-Stein.ipynb
 def plot_params(mu_h, M_h, e_h, nsp):
     print("\ninferred params:")
     print("mu_hat/mu:")
@@ -69,8 +61,9 @@ class infergLVbayes(BaseInfer):
                  prior_mu_sigma=None,
                  prior_Mii_mean=None,
                  prior_Mii_sigma=None,
-                 prior_Mij_sigma=None
-                 ):
+                 prior_Mij_sigma=None):
+
+        super().__init__()  # Call base class constructor
 
         # self.data = data  # data to do inference on
         self.X: Optional[np.ndarray] = X
@@ -217,7 +210,7 @@ class infergLVbayes(BaseInfer):
         DA0 = int(round(expected_non_zero_elements))
         return max(DA0, 1)
 
-    def run_inference(self) -> None:
+    def run_inference(self, **kwargs) -> None:
         """
         This function infers the parameters for the Bayesian gLV model
 
@@ -314,9 +307,6 @@ class infergLVbayes(BaseInfer):
             # eg
             # print(f"mu_hat: {mu_hat.eval()}")
 
-            # initial_values = bayes_model.initial_point()
-            # print(f"Initial parameter values: {initial_values}")
-
             # Posterior distribution
             idata = pm.sample(
                 draws=draws,
@@ -327,7 +317,7 @@ class infergLVbayes(BaseInfer):
 
         return idata
 
-    def run_inference_shrinkage(self) -> None:
+    def run_inference_shrinkage(self, **kwargs) -> None:
         """
         This function infers the parameters for the Bayesian gLV model with Horseshoe prior for shrinkage
 
@@ -426,13 +416,14 @@ class infergLVbayes(BaseInfer):
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
 
             # For debugging:
+            # print if `debug` is set to 'high' or 'low'
+            if self.debug in ["high", "low"]:
+                initial_values = bayes_model.initial_point()
+                print(f"Initial parameter values: {initial_values}")
 
             # As tensor objects are symbolic, if needed print using .eval()
             # eg
             # print(f"mu_hat: {mu_hat.eval()}")
-
-            # initial_values = bayes_model.initial_point()
-            # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
             idata = pm.sample(
@@ -443,7 +434,7 @@ class infergLVbayes(BaseInfer):
 
         return idata
 
-    def run_inference_shrinkage_pert(self) -> None:
+    def run_inference_shrinkage_pert(self, **kwargs) -> None:
         """
         This function infers the parameters for the Bayesian gLV model with Horseshoe prior for shrinkage
 
@@ -525,10 +516,8 @@ class infergLVbayes(BaseInfer):
             lam = pm.HalfCauchy(
                 "lam", beta=1, shape=(
                     num_species, num_species - 1))
-            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_sigma, sigma=tau * lam *
-                                 at.sqrt(c2 / (c2 + tau ** 2 * lam ** 2)),
-                                 shape=(num_species,
-                                        num_species - 1))
+            M_ij_hat = pm.Normal('M_ij_hat', mu=prior_Mij_sigma, sigma=tau * lam * at.sqrt(
+                c2 / (c2 + tau ** 2 * lam ** 2)), shape=(num_species, num_species - 1))
             # M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma,
             # shape=(num_species, num_species - 1))  # different shape for
             # off-diagonal
@@ -553,13 +542,14 @@ class infergLVbayes(BaseInfer):
             Y_obs = pm.Normal('Y_obs', mu=model_mean, sigma=sigma, observed=F)
 
             # For debugging:
+            # print if `debug` is set to 'high' or 'low'
+            if self.debug in ["high", "low"]:
+                initial_values = bayes_model.initial_point()
+                print(f"Initial parameter values: {initial_values}")
 
             # As tensor objects are symbolic, if needed print using .eval()
             # eg
             # print(f"mu_hat: {mu_hat.eval()}")
-
-            # initial_values = bayes_model.initial_point()
-            # print(f"Initial parameter values: {initial_values}")
 
             # Posterior distribution
             idata = pm.sample(
@@ -587,8 +577,7 @@ class infergLVbayes(BaseInfer):
         az.plot_posterior(
             idata,
             var_names=["mu_hat"],
-            ref_val=mu_hat_np.tolist()
-        )
+            ref_val=mu_hat_np.tolist())
         plt.savefig("plot-posterior-mu.pdf")
         plt.show()
         plt.close()
@@ -596,8 +585,7 @@ class infergLVbayes(BaseInfer):
         az.plot_posterior(
             idata,
             var_names=["M_ii_hat"],
-            ref_val=np.diag(M_hat_np).tolist()
-        )
+            ref_val=np.diag(M_hat_np).tolist())
         plt.savefig("plot-posterior-Mii.pdf")
         plt.show()
         plt.close()
@@ -607,8 +595,7 @@ class infergLVbayes(BaseInfer):
         az.plot_posterior(
             idata,
             var_names=["M_ij_hat"],
-            ref_val=M_ij.flatten().tolist()
-        )
+            ref_val=M_ij.flatten().tolist())
         plt.savefig("plot-posterior-Mij.pdf")
         plt.show()
         plt.close()
@@ -676,6 +663,11 @@ class infergLVbayes(BaseInfer):
                     color='white')
 
 
+######
+######
+######
+
+
 def param_data_compare(
         idata,
         F,
@@ -735,10 +727,7 @@ def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
     # mu_h = idata.posterior['mu_hat'].mean(dim=('chain', 'draw')).values.flatten()
     # M_h= idata.posterior['M_hat'].mean(dim=('chain', 'draw')).values
 
-    predictor = sim_gLV(num_species=num_species,
-                        M=M_h.T,
-                        mu=mu_h
-                        )
+    predictor = sim_gLV(num_species=num_species, M=M_h.T, mu=mu_h)
     yobs_h, _, _, _, _ = predictor.simulate(
         times=times, init_species=init_species)
 
@@ -746,15 +735,16 @@ def curve_compare(idata, F, times, yobs, init_species_start, sim_gLV_class):
 
 
 def param_data_compare_pert(
-        idata,
-        F,
-        mu,
-        M,
-        epsilon,
-        num_perturbations,
-        times,
-        yobs,
-        init_species_start,
+    idata,
+    F,
+    mu,
+    M,
+    u,
+    epsilon,
+    num_perturbations,
+    times,
+    yobs,
+    init_species_start,
         sim_gLV_class):
     # az.to_netcdf(idata, 'model_posterior.nc')
     # Compare model parameters to the data
@@ -791,9 +781,9 @@ def param_data_compare_pert(
         epsilon=epsilon)
 
     yobs, init_species, mu, M, _ = simulator.simulate(
-        times=times, init_species=init_species, u=pert_fn)
+        times=times, init_species=init_species, u=u)
     yobs_h, _, _, _, _ = predictor.simulate(
-        times=times, init_species=init_species, u=pert_fn)
+        times=times, init_species=init_species, u=u)
 
     plot_fit_gLV(yobs, yobs_h, times)
 
