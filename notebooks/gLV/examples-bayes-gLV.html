@@ -38,7 +38,7 @@
           <div class="body" role="main">
             
   <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mimic.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
@@ -76,7 +76,7 @@
 <section id="Bayesian-inference-with-no-shrinkage">
 <h2>Bayesian inference with no shrinkage<a class="headerlink" href="#Bayesian-inference-with-no-shrinkage" title="Link to this heading">¶</a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in pickled simulated parameters, mu, M, epsilon</span>
@@ -122,6 +122,8 @@
 
 <span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
 
+<span class="c1"># To plot posterior distributions</span>
+<span class="c1">#inference.plot_posterior(idata)</span>
 
 
 <span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ii_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ij_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
@@ -159,7 +161,6 @@ AdvancedSetSubtensor.0
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Auto-assigning NUTS sampler...
 Initializing NUTS using jitter+adapt_diag...
 Multiprocess sampling (4 chains in 4 jobs)
 NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
@@ -169,7 +170,7 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "69d9a295b76d4eaab9b3fa826a565bdc"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "029a8845e75f448ea32d3d77a7b07ff5", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -182,14 +183,17 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 87 seconds.
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 63 seconds.
+Chain 0 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+Chain 2 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+Chain 3 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
 </pre></div></div>
 </div>
@@ -199,64 +203,64 @@ Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws tota
 <div class="output_area docutils container">
 <div class="highlight"><pre>
                  mean     sd  r_hat
-mu_hat[0, 0]    1.149  0.459    1.0
-mu_hat[0, 1]    0.963  0.448    1.0
-mu_hat[0, 2]    1.337  0.459    1.0
-mu_hat[0, 3]    0.992  0.445    1.0
-mu_hat[0, 4]    1.199  0.089    1.0
-M_ii_hat[0]    -0.080  0.056    1.0
-M_ii_hat[1]    -0.081  0.063    1.0
-M_ii_hat[2]    -0.081  0.060    1.0
-M_ii_hat[3]    -0.078  0.062    1.0
-M_ii_hat[4]    -0.225  0.016    1.0
-M_ij_hat[0, 0] -0.111  0.055    1.0
-M_ij_hat[0, 1] -0.030  0.058    1.0
-M_ij_hat[0, 2]  0.097  0.055    1.0
-M_ij_hat[0, 3]  0.014  0.054    1.0
-M_ij_hat[1, 0] -0.022  0.036    1.0
-M_ij_hat[1, 1] -0.108  0.038    1.0
-M_ij_hat[1, 2]  0.043  0.037    1.0
-M_ij_hat[1, 3]  0.018  0.037    1.0
-M_ij_hat[2, 0]  0.048  0.052    1.0
-M_ij_hat[2, 1]  0.009  0.054    1.0
-M_ij_hat[2, 2] -0.203  0.052    1.0
-M_ij_hat[2, 3] -0.014  0.051    1.0
-M_ij_hat[3, 0]  0.016  0.023    1.0
-M_ij_hat[3, 1]  0.056  0.025    1.0
-M_ij_hat[3, 2] -0.030  0.024    1.0
-M_ij_hat[3, 3] -0.021  0.024    1.0
-M_ij_hat[4, 0]  0.001  0.037    1.0
-M_ij_hat[4, 1] -0.018  0.037    1.0
-M_ij_hat[4, 2]  0.015  0.037    1.0
-M_ij_hat[4, 3] -0.024  0.037    1.0
-M_hat[0, 0]    -0.111  0.055    1.0
-M_hat[0, 1]    -0.030  0.058    1.0
-M_hat[0, 2]     0.097  0.055    1.0
-M_hat[0, 3]     0.014  0.054    1.0
+mu_hat[0, 0]    1.137  0.459   1.01
+mu_hat[0, 1]    0.954  0.451   1.01
+mu_hat[0, 2]    1.343  0.458   1.00
+mu_hat[0, 3]    0.986  0.452   1.00
+mu_hat[0, 4]    1.199  0.082   1.00
+M_ii_hat[0]    -0.081  0.061   1.00
+M_ii_hat[1]    -0.080  0.063   1.00
+M_ii_hat[2]    -0.082  0.059   1.00
+M_ii_hat[3]    -0.081  0.059   1.00
+M_ii_hat[4]    -0.225  0.015   1.00
+M_ij_hat[0, 0] -0.111  0.054   1.00
+M_ij_hat[0, 1] -0.029  0.055   1.00
+M_ij_hat[0, 2]  0.096  0.054   1.00
+M_ij_hat[0, 3]  0.013  0.054   1.00
+M_ij_hat[1, 0] -0.023  0.035   1.00
+M_ij_hat[1, 1] -0.108  0.036   1.01
+M_ij_hat[1, 2]  0.043  0.036   1.00
+M_ij_hat[1, 3]  0.017  0.035   1.00
+M_ij_hat[2, 0]  0.048  0.052   1.00
+M_ij_hat[2, 1]  0.009  0.053   1.00
+M_ij_hat[2, 2] -0.203  0.051   1.00
+M_ij_hat[2, 3] -0.012  0.053   1.00
+M_ij_hat[3, 0]  0.016  0.022   1.00
+M_ij_hat[3, 1]  0.056  0.023   1.01
+M_ij_hat[3, 2] -0.029  0.023   1.00
+M_ij_hat[3, 3] -0.020  0.022   1.00
+M_ij_hat[4, 0]  0.003  0.037   1.00
+M_ij_hat[4, 1] -0.018  0.037   1.00
+M_ij_hat[4, 2]  0.016  0.037   1.00
+M_ij_hat[4, 3] -0.023  0.037   1.00
+M_hat[0, 0]    -0.111  0.054   1.00
+M_hat[0, 1]    -0.029  0.055   1.00
+M_hat[0, 2]     0.096  0.054   1.00
+M_hat[0, 3]     0.013  0.054   1.00
 M_hat[0, 4]     0.000  0.000    NaN
-M_hat[1, 0]    -0.022  0.036    1.0
-M_hat[1, 1]    -0.108  0.038    1.0
-M_hat[1, 2]     0.043  0.037    1.0
-M_hat[1, 3]     0.018  0.037    1.0
+M_hat[1, 0]    -0.023  0.035   1.00
+M_hat[1, 1]    -0.108  0.036   1.01
+M_hat[1, 2]     0.043  0.036   1.00
+M_hat[1, 3]     0.017  0.035   1.00
 M_hat[1, 4]     0.000  0.000    NaN
-M_hat[2, 0]     0.048  0.052    1.0
-M_hat[2, 1]     0.009  0.054    1.0
-M_hat[2, 2]    -0.203  0.052    1.0
-M_hat[2, 3]    -0.014  0.051    1.0
+M_hat[2, 0]     0.048  0.052   1.00
+M_hat[2, 1]     0.009  0.053   1.00
+M_hat[2, 2]    -0.203  0.051   1.00
+M_hat[2, 3]    -0.012  0.053   1.00
 M_hat[2, 4]     0.000  0.000    NaN
-M_hat[3, 0]     0.016  0.023    1.0
-M_hat[3, 1]     0.056  0.025    1.0
-M_hat[3, 2]    -0.030  0.024    1.0
-M_hat[3, 3]    -0.021  0.024    1.0
+M_hat[3, 0]     0.016  0.022   1.00
+M_hat[3, 1]     0.056  0.023   1.01
+M_hat[3, 2]    -0.029  0.023   1.00
+M_hat[3, 3]    -0.020  0.022   1.00
 M_hat[3, 4]     0.000  0.000    NaN
-M_hat[4, 0]     0.001  0.037    1.0
-M_hat[4, 1]    -0.018  0.037    1.0
-M_hat[4, 2]     0.015  0.037    1.0
-M_hat[4, 3]    -0.024  0.037    1.0
-M_hat[4, 4]    -0.225  0.016    1.0
-sigma[0]        0.118  0.004    1.0
+M_hat[4, 0]     0.003  0.037   1.00
+M_hat[4, 1]    -0.018  0.037   1.00
+M_hat[4, 2]     0.016  0.037   1.00
+M_hat[4, 3]    -0.023  0.037   1.00
+M_hat[4, 4]    -0.225  0.015   1.00
+sigma[0]        0.118  0.004   1.01
 mu_hat/mu:
-[1.15343758 0.94253845 1.33706259 0.97499108 1.19821804]
+[1.13236639 0.94727924 1.33715954 0.96825087 1.19781707]
 [1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
 
 M_hat/M:
@@ -271,11 +275,6 @@ M_hat/M:
  [ 0.     0.    -0.15   0.     0.   ]
  [ 0.     0.     0.    -0.01   0.   ]
  [ 0.02   0.     0.     0.    -0.2  ]]
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.15343758, 0.94253845, 1.33706259, 0.97499108, 1.19821804]), &#39;M&#39;: array([[-0.11129202, -0.02210296,  0.0472438 ,  0.01590125,  0.00096651],
-       [-0.02952047, -0.10751969,  0.00795511,  0.05574278, -0.01910343],
-       [ 0.09673896,  0.04404636, -0.20286262, -0.02981056,  0.01516656],
-       [ 0.01399001,  0.01783327, -0.01424661, -0.0210434 , -0.02329032],
-       [ 0.        ,  0.        ,  0.        ,  0.        , -0.2248702 ]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -300,7 +299,7 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in pickled simulated parameters, mu, M, epsilon</span>
@@ -337,7 +336,7 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in pickled simulated parameters, mu, M, epsilon</span>
@@ -393,6 +392,9 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 
 <span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
 
+<span class="c1"># To plot posterior distributions</span>
+<span class="c1">#inference.plot_posterior(idata)</span>
+
 
 <span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mu_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ii_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_ij_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;M_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
 <span class="c1">#print(summary[[&quot;mean&quot;, &quot;sd&quot;, &quot;r_hat&quot;]])</span>
@@ -431,7 +433,6 @@ AdvancedSetSubtensor.0
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Auto-assigning NUTS sampler...
 Initializing NUTS using jitter+adapt_diag...
 Multiprocess sampling (4 chains in 4 jobs)
 NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
@@ -441,7 +442,7 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "5661099a643b4d8482a7c004f8e0fa19"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0b6029cf4bee4f868421af968189d4bd", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -454,14 +455,14 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 50 seconds.
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 37 seconds.
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
 </pre></div></div>
 </div>
@@ -471,7 +472,7 @@ Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws tota
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 mu_hat/mu:
-[1.37900766 0.75427306 1.75976054 0.97201393 0.80485764]
+[1.3832308  0.74120724 1.77738998 0.95705513 0.80500161]
 [1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
 
 M_hat/M:
@@ -486,36 +487,6 @@ M_hat/M:
  [ 0.     0.    -0.15   0.     0.   ]
  [ 0.     0.     0.    -0.01   0.   ]
  [ 0.02   0.     0.     0.    -0.2  ]]
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.37900766, 0.75427306, 1.75976054, 0.97201393, 0.80485764]), &#39;M&#39;: array([[-5.53447088e-02,  2.48087450e-03, -2.53992124e-02,
-        -1.47318250e-03,  2.36219617e-03],
-       [-1.51715003e-03, -9.01051536e-02, -1.39384006e-02,
-         4.42238774e-02,  6.35337455e-03],
-       [ 1.07203887e-03,  1.09040572e-04, -1.30364593e-01,
-         1.63121496e-04,  9.23460262e-04],
-       [-2.43800147e-03,  6.11157476e-04, -5.21396434e-03,
-        -1.02409179e-02,  1.29384000e-03],
-       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-         0.00000000e+00, -1.51721494e-01]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.37900766, 0.75427306, 1.75976054, 0.97201393, 0.80485764]), &#39;M&#39;: array([[-5.53447088e-02,  2.48087450e-03, -2.53992124e-02,
-        -1.47318250e-03,  2.36219617e-03],
-       [-1.51715003e-03, -9.01051536e-02, -1.39384006e-02,
-         4.42238774e-02,  6.35337455e-03],
-       [ 1.07203887e-03,  1.09040572e-04, -1.30364593e-01,
-         1.63121496e-04,  9.23460262e-04],
-       [-2.43800147e-03,  6.11157476e-04, -5.21396434e-03,
-        -1.02409179e-02,  1.29384000e-03],
-       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-         0.00000000e+00, -1.51721494e-01]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.37900766, 0.75427306, 1.75976054, 0.97201393, 0.80485764]), &#39;M&#39;: array([[-5.53447088e-02,  2.48087450e-03, -2.53992124e-02,
-        -1.47318250e-03,  2.36219617e-03],
-       [-1.51715003e-03, -9.01051536e-02, -1.39384006e-02,
-         4.42238774e-02,  6.35337455e-03],
-       [ 1.07203887e-03,  1.09040572e-04, -1.30364593e-01,
-         1.63121496e-04,  9.23460262e-04],
-       [-2.43800147e-03,  6.11157476e-04, -5.21396434e-03,
-        -1.02409179e-02,  1.29384000e-03],
-       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-         0.00000000e+00, -1.51721494e-01]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -557,7 +528,7 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 <section id="Bayesian-inference-with-shrinkage:-Horseshoe-prior">
 <h2>Bayesian inference with shrinkage: Horseshoe prior<a class="headerlink" href="#Bayesian-inference-with-shrinkage:-Horseshoe-prior" title="Link to this heading">¶</a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in pickled simulated parameters, mu, M, epsilon</span>
@@ -614,6 +585,10 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 
 <span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_inference_shrinkage</span><span class="p">()</span>
 
+<span class="c1"># To plot posterior distributions</span>
+<span class="c1">#inference.plot_posterior(idata)</span>
+
+
 
 
 <span class="c1">#nX = num_species</span>
@@ -653,7 +628,6 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Auto-assigning NUTS sampler...
 Initializing NUTS using jitter+adapt_diag...
 Multiprocess sampling (4 chains in 4 jobs)
 NUTS: [sigma, mu_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
@@ -663,7 +637,7 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "1ee0da0badcd49ab9a434c8723c06407"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "efb7704e8b674e5b95b83ab2b38196bc", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -676,17 +650,17 @@ NUTS: [sigma, mu_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 37 seconds.
-There were 165 divergences after tuning. Increase `target_accept` or reparameterize.
+Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 27 seconds.
+There were 152 divergences after tuning. Increase `target_accept` or reparameterize.
 The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
 The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
 </pre></div></div>
 </div>
@@ -696,68 +670,68 @@ The effective sample size per chain is smaller than 100 for some parameters.  A 
 <div class="output_area docutils container">
 <div class="highlight"><pre>
                  mean     sd  r_hat
-mu_hat[0, 0]    1.045  0.195   1.00
-mu_hat[0, 1]    0.569  0.110   1.01
-mu_hat[0, 2]    1.762  0.129   1.01
-mu_hat[0, 3]    0.846  0.101   1.00
-mu_hat[0, 4]    0.805  0.012   1.00
-M_ii_hat[0]    -0.079  0.061   1.00
-M_ii_hat[1]    -0.080  0.060   1.01
-M_ii_hat[2]    -0.080  0.060   1.00
-M_ii_hat[3]    -0.080  0.063   1.00
+mu_hat[0, 0]    1.045  0.204   1.00
+mu_hat[0, 1]    0.573  0.114   1.01
+mu_hat[0, 2]    1.754  0.133   1.00
+mu_hat[0, 3]    0.849  0.096   1.01
+mu_hat[0, 4]    0.804  0.012   1.00
+M_ii_hat[0]    -0.079  0.061   1.01
+M_ii_hat[1]    -0.078  0.059   1.00
+M_ii_hat[2]    -0.079  0.059   1.00
+M_ii_hat[3]    -0.080  0.059   1.00
 M_ii_hat[4]    -0.152  0.002   1.00
-M_ij_hat[0, 0] -0.048  0.006   1.00
-M_ij_hat[0, 1]  0.000  0.004   1.01
+M_ij_hat[0, 0] -0.048  0.006   1.01
+M_ij_hat[0, 1]  0.000  0.004   1.00
 M_ij_hat[0, 2]  0.000  0.003   1.01
 M_ij_hat[0, 3]  0.000  0.003   1.01
-M_ij_hat[1, 0]  0.000  0.002   1.00
+M_ij_hat[1, 0]  0.000  0.002   1.01
 M_ij_hat[1, 1] -0.089  0.003   1.01
-M_ij_hat[1, 2]  0.000  0.001   1.01
-M_ij_hat[1, 3] -0.000  0.002   1.00
-M_ij_hat[2, 0] -0.012  0.009   1.00
-M_ij_hat[2, 1] -0.001  0.004   1.01
-M_ij_hat[2, 2] -0.129  0.007   1.01
+M_ij_hat[1, 2]  0.000  0.001   1.00
+M_ij_hat[1, 3] -0.000  0.002   1.01
+M_ij_hat[2, 0] -0.012  0.009   1.01
+M_ij_hat[2, 1] -0.001  0.005   1.01
+M_ij_hat[2, 2] -0.129  0.007   1.00
 M_ij_hat[2, 3] -0.001  0.004   1.01
 M_ij_hat[3, 0]  0.000  0.001   1.01
 M_ij_hat[3, 1]  0.044  0.002   1.01
-M_ij_hat[3, 2]  0.000  0.001   1.01
+M_ij_hat[3, 2]  0.000  0.001   1.00
 M_ij_hat[3, 3] -0.010  0.001   1.01
-M_ij_hat[4, 0] -0.001  0.002   1.00
-M_ij_hat[4, 1]  0.001  0.002   1.01
-M_ij_hat[4, 2]  0.000  0.002   1.00
-M_ij_hat[4, 3]  0.000  0.001   1.00
-M_hat[0, 0]    -0.048  0.006   1.00
-M_hat[0, 1]     0.000  0.004   1.01
+M_ij_hat[4, 0] -0.001  0.002   1.01
+M_ij_hat[4, 1]  0.001  0.002   1.00
+M_ij_hat[4, 2]  0.000  0.002   1.01
+M_ij_hat[4, 3]  0.000  0.002   1.01
+M_hat[0, 0]    -0.048  0.006   1.01
+M_hat[0, 1]     0.000  0.004   1.00
 M_hat[0, 2]     0.000  0.003   1.01
 M_hat[0, 3]     0.000  0.003   1.01
 M_hat[0, 4]     0.000  0.000    NaN
-M_hat[1, 0]     0.000  0.002   1.00
+M_hat[1, 0]     0.000  0.002   1.01
 M_hat[1, 1]    -0.089  0.003   1.01
-M_hat[1, 2]     0.000  0.001   1.01
-M_hat[1, 3]    -0.000  0.002   1.00
+M_hat[1, 2]     0.000  0.001   1.00
+M_hat[1, 3]    -0.000  0.002   1.01
 M_hat[1, 4]     0.000  0.000    NaN
-M_hat[2, 0]    -0.012  0.009   1.00
-M_hat[2, 1]    -0.001  0.004   1.01
-M_hat[2, 2]    -0.129  0.007   1.01
+M_hat[2, 0]    -0.012  0.009   1.01
+M_hat[2, 1]    -0.001  0.005   1.01
+M_hat[2, 2]    -0.129  0.007   1.00
 M_hat[2, 3]    -0.001  0.004   1.01
 M_hat[2, 4]     0.000  0.000    NaN
 M_hat[3, 0]     0.000  0.001   1.01
 M_hat[3, 1]     0.044  0.002   1.01
-M_hat[3, 2]     0.000  0.001   1.01
+M_hat[3, 2]     0.000  0.001   1.00
 M_hat[3, 3]    -0.010  0.001   1.01
 M_hat[3, 4]     0.000  0.000    NaN
-M_hat[4, 0]    -0.001  0.002   1.00
-M_hat[4, 1]     0.001  0.002   1.01
-M_hat[4, 2]     0.000  0.002   1.00
-M_hat[4, 3]     0.000  0.001   1.00
+M_hat[4, 0]    -0.001  0.002   1.01
+M_hat[4, 1]     0.001  0.002   1.00
+M_hat[4, 2]     0.000  0.002   1.01
+M_hat[4, 3]     0.000  0.002   1.01
 M_hat[4, 4]    -0.152  0.002   1.00
 sigma[0]        0.118  0.002   1.00
 mu_hat/mu:
-[1.04364785 0.56973101 1.76142327 0.84621059 0.80525024]
+[1.04354708 0.57166277 1.75517601 0.84847451 0.80436547]
 [1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
 
 M_hat/M:
-[[-0.05  0.    0.    0.    0.  ]
+[[-0.05  0.    0.   -0.    0.  ]
  [ 0.   -0.09  0.   -0.    0.  ]
  [-0.01 -0.   -0.13 -0.    0.  ]
  [ 0.    0.04  0.   -0.01  0.  ]
@@ -768,16 +742,6 @@ M_hat/M:
  [ 0.     0.    -0.15   0.     0.   ]
  [ 0.     0.     0.    -0.01   0.   ]
  [ 0.02   0.     0.     0.    -0.2  ]]
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.04364785, 0.56973101, 1.76142327, 0.84621059, 0.80525024]), &#39;M&#39;: array([[-4.78818051e-02,  1.79250709e-04, -1.19793270e-02,
-         4.90300816e-05, -4.12221791e-04],
-       [ 6.50048547e-05, -8.89863765e-02, -3.54140347e-04,
-         4.36014741e-02,  9.16108296e-04],
-       [ 6.30169444e-05,  7.96742648e-05, -1.29085838e-01,
-         2.53794476e-05,  1.84368846e-04],
-       [ 2.91592366e-05, -1.29850356e-04, -1.68485439e-04,
-        -9.61467241e-03,  1.11317905e-05],
-       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-         0.00000000e+00, -1.51779416e-01]]), &#39;epsilon&#39;: array([], shape=(5, 0), dtype=float64)}
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -806,7 +770,7 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 <h2>Bayesian inference with shrinkage and a perturbation with unknown interactions<a class="headerlink" href="#Bayesian-inference-with-shrinkage-and-a-perturbation-with-unknown-interactions" title="Link to this heading">¶</a></h2>
 <p>Now we will do inference with the Horseshoe prior for shrinkage but now we include a perturbation (assuming unknown interaction terms). This gives more identifiability</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_timecourses</span> <span class="o">=</span> <span class="mi">3</span>
@@ -882,6 +846,10 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 
 <span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_inference_shrinkage_pert</span><span class="p">()</span>
 
+<span class="c1"># To plot posterior distributions</span>
+<span class="c1">#inference.plot_posterior_pert(idata)</span>
+
+
 
 
 <span class="c1">#nX = num_species</span>
@@ -939,7 +907,6 @@ Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Auto-assigning NUTS sampler...
 Initializing NUTS using jitter+adapt_diag...
 Multiprocess sampling (4 chains in 4 jobs)
 NUTS: [sigma, mu_hat, epsilon_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
@@ -949,7 +916,7 @@ NUTS: [sigma, mu_hat, epsilon_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "32e5b6baab754fdcbaf69d8bcad03985"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "34fbd36d52924aa090a49fce6c04d3a4", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -962,14 +929,14 @@ NUTS: [sigma, mu_hat, epsilon_hat, M_ii_hat_p, c2, tau, lam, M_ij_hat]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 45 seconds.
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 34 seconds.
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/anaconda3/bin/python3.12/lib/python3.12/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
   (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
 </pre></div></div>
 </div>
@@ -979,64 +946,22 @@ Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws tota
 <div class="output_area docutils container">
 <div class="highlight"><pre>
                     mean     sd  r_hat
-mu_hat[0, 0]       1.231  0.132   1.00
-mu_hat[0, 1]       0.588  0.129   1.00
-mu_hat[0, 2]       1.677  0.128   1.00
-mu_hat[0, 3]       0.879  0.128   1.00
-mu_hat[0, 4]       0.854  0.016   1.00
+mu_hat[0, 0]       1.236  0.130    1.0
+mu_hat[0, 1]       0.586  0.127    1.0
+mu_hat[0, 2]       1.678  0.132    1.0
+mu_hat[0, 3]       0.880  0.128    1.0
+mu_hat[0, 4]       0.855  0.015    1.0
 ...                  ...    ...    ...
-epsilon_hat[0, 1] -0.897  0.028   1.01
-epsilon_hat[0, 2]  0.849  0.029   1.00
-epsilon_hat[0, 3] -0.882  0.028   1.00
-epsilon_hat[0, 4]  0.906  0.028   1.00
-sigma[0]           0.116  0.002   1.01
+epsilon_hat[0, 1] -0.897  0.027    1.0
+epsilon_hat[0, 2]  0.849  0.028    1.0
+epsilon_hat[0, 3] -0.882  0.027    1.0
+epsilon_hat[0, 4]  0.906  0.028    1.0
+sigma[0]           0.116  0.002    1.0
 
 [61 rows x 3 columns]
 (5, 1)
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.22634475, 0.58720846, 1.67252049, 0.88191289, 0.85426386]), &#39;M&#39;: array([[-4.79634847e-02,  2.04001530e-03, -2.24490360e-02,
-        -1.34203370e-03,  2.26316874e-04],
-       [ 8.77586982e-05, -9.07662849e-02, -6.63653574e-03,
-         4.50412663e-02,  7.21577673e-03],
-       [ 1.18454944e-03, -1.45917516e-03, -1.27749035e-01,
-         1.34296594e-03,  4.05619023e-03],
-       [-1.43392693e-03,  2.56506500e-03, -1.99298521e-03,
-        -1.11277652e-02,  1.04897262e-03],
-       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-         0.00000000e+00, -1.59304079e-01]]), &#39;epsilon&#39;: array([[ 0.8740434 ],
-       [-0.89709922],
-       [ 0.84821609],
-       [-0.88306189],
-       [ 0.90649371]])}
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.22634475, 0.58720846, 1.67252049, 0.88191289, 0.85426386]), &#39;M&#39;: array([[-4.79634847e-02,  2.04001530e-03, -2.24490360e-02,
-        -1.34203370e-03,  2.26316874e-04],
-       [ 8.77586982e-05, -9.07662849e-02, -6.63653574e-03,
-         4.50412663e-02,  7.21577673e-03],
-       [ 1.18454944e-03, -1.45917516e-03, -1.27749035e-01,
-         1.34296594e-03,  4.05619023e-03],
-       [-1.43392693e-03,  2.56506500e-03, -1.99298521e-03,
-        -1.11277652e-02,  1.04897262e-03],
-       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-         0.00000000e+00, -1.59304079e-01]]), &#39;epsilon&#39;: array([[ 0.8740434 ],
-       [-0.89709922],
-       [ 0.84821609],
-       [-0.88306189],
-       [ 0.90649371]])}
-Using the following parameters for gLV simulation: {&#39;num_species&#39;: 5, &#39;mu&#39;: array([1.22634475, 0.58720846, 1.67252049, 0.88191289, 0.85426386]), &#39;M&#39;: array([[-4.79634847e-02,  2.04001530e-03, -2.24490360e-02,
-        -1.34203370e-03,  2.26316874e-04],
-       [ 8.77586982e-05, -9.07662849e-02, -6.63653574e-03,
-         4.50412663e-02,  7.21577673e-03],
-       [ 1.18454944e-03, -1.45917516e-03, -1.27749035e-01,
-         1.34296594e-03,  4.05619023e-03],
-       [-1.43392693e-03,  2.56506500e-03, -1.99298521e-03,
-        -1.11277652e-02,  1.04897262e-03],
-       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-         0.00000000e+00, -1.59304079e-01]]), &#39;epsilon&#39;: array([[ 0.8740434 ],
-       [-0.89709922],
-       [ 0.84821609],
-       [-0.88306189],
-       [ 0.90649371]])}
 mu_hat/mu:
-[1.22634475 0.58720846 1.67252049 0.88191289 0.85426386]
+[1.23282783 0.58798556 1.67534212 0.8759228  0.85493615]
 [1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
 
 M_hat/M:
@@ -1053,7 +978,7 @@ M_hat/M:
  [ 0.02   0.     0.     0.    -0.2  ]]
 
 e_hat/e:
-[[ 0.87]
+[[ 0.88]
  [-0.9 ]
  [ 0.85]
  [-0.88]
@@ -1106,6 +1031,14 @@ e_hat/e:
 </div>
 <div class="output_area docutils container">
 <img alt="../../_images/notebooks_gLV_examples-bayes-gLV_9_10.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_9_10.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
 </div>
 </div>
 </section>
