@@ -102,7 +102,7 @@ For macOS and Ubuntu
 
 5. **Run the Code**
 
-   Refer to the `Usage`_ section below for instructions on how to run the code.
+   Refer to the Usage section below for instructions on how to run the code.
 
 For Windows
 """""""""""
@@ -136,7 +136,7 @@ For Windows
 
 5. **Run the Code**
 
-   Refer to the `Usage`_ section below for instructions on how to run the code.
+   Refer to the Usage section below for instructions on how to run the code.
 
 Alternative Installation Using Pip Only
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
