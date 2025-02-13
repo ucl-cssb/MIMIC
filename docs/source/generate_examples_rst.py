@@ -3,6 +3,7 @@ import shutil
 
 
 def clear_directory(directory):
+    """Clears the given directory, deleting all files and subfolders."""
     if os.path.exists(directory):
         for filename in os.listdir(directory):
             file_path = os.path.join(directory, filename)
@@ -15,6 +16,10 @@ def clear_directory(directory):
 
 
 def copy_notebooks(notebooks, examples_dir, target_dir):
+    """
+    Copies each notebook from the examples directory to the target directory.
+    The `notebooks` list contains paths relative to `examples_dir` (without the .ipynb extension).
+    """
     for nb in notebooks:
         source_path = os.path.join(examples_dir, f'{nb}.ipynb')
         target_path = os.path.join(target_dir, f'{nb}.ipynb')
@@ -25,9 +30,9 @@ def copy_notebooks(notebooks, examples_dir, target_dir):
 def find_notebooks(directory):
     """
     Returns a list of notebook paths (with no file extension),
-    relative to 'directory'. For example, if a notebook is:
+    relative to `directory`. For example, if a notebook is:
       examples/gLV/examples-bayes-gLV.ipynb
-    we return 'gLV/examples-bayes-gLV' (forward slashes).
+    this function returns 'gLV/examples-bayes-gLV' (using forward slashes).
     """
     notebooks = []
     for root, _, files in os.walk(directory):
@@ -35,77 +40,91 @@ def find_notebooks(directory):
             if file.endswith(".ipynb"):
                 path = os.path.join(root, file)
                 relative_path = os.path.relpath(path, start=directory)
-                notebooks.append(
-                    relative_path.replace(
-                        os.path.sep, '/').replace('.ipynb', '')
-                )
+                notebooks.append(relative_path.replace(
+                    os.path.sep, '/').replace('.ipynb', ''))
     return notebooks
 
 
 def group_notebooks_by_top_dir(notebooks):
     """
-    Takes a list of relative notebook paths like ['gLV/examples-bayes-gLV', 'CRM/examples-sim-CRM']
-    and returns a dict grouping them by the top-level folder:
+    Groups a list of relative notebook paths (e.g. 'gLV/examples-bayes-gLV')
+    by their top-level folder.
+    Returns a dictionary, for example:
       {
-        'CRM': ['CRM/examples-sim-CRM'],
-        'gLV': ['gLV/examples-bayes-gLV']
-        ...
+          'CRM': ['CRM/examples-sim-CRM'],
+          'gLV': ['gLV/examples-bayes-gLV', 'gLV/examples-sim-gLV'],
+          ...
       }
     """
     grouped: dict[str, list[str]] = {}
     for nb in notebooks:
         parts = nb.split('/')
-        top_dir = parts[0]  # The directory before the first slash
+        top_dir = parts[0]
         grouped.setdefault(top_dir, []).append(nb)
     return grouped
 
 
-def generate_rst(notebooks, target_dir, output_file):
+def generate_rst(notebooks, output_file):
     """
-    Generates 'examples_auto.rst', grouping notebooks by their top-level folder.
-    Each folder gets its own subheading and toctree.
+    Generates a single 'examples.rst' file that includes a top-level header and,
+    for each model group, a section with a toctree of the notebooks.
     """
     grouped = group_notebooks_by_top_dir(notebooks)
 
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write("Jupyter Notebook Examples by Model\n")
-        f.write("----------------------------------\n\n")
+    # Mapping from folder name to a more descriptive title
+    MODEL_NAMES = {
+        "CRM": "Consumer Resource Model (CRM)",
+        "gLV": "Generalized Lotka-Volterra (gLV)",
+        "gMLV": "Generalized Metabolic Lotka-Volterra (gMLV)",
+        "GP": "Gaussian Processes (GP)",
+        "MVAR": "Multivariate Autoregressive Model (MVAR)",
+        "VAR": "Vector Autoregression (VAR)",
+        "MultiModel": "Multi-Model Analysis"
+    }
 
-        # For each top-level folder, create a subheading and toctree
-        # Sort the folder names so the output is consistent
+    with open(output_file, 'w', encoding='utf-8') as f:
+        # Write the top-level headers
+        f.write("Examples\n")
+        f.write("========\n\n")
+        f.write("Jupyter Notebook Examples by Model\n")
+        f.write("------------------------------------\n\n")
+
+        # For each top-level folder, generate a section with a toctree.
         for folder in sorted(grouped.keys()):
-            f.write(folder + "\n" + "-" * len(folder) + "\n\n")
+            title = MODEL_NAMES.get(folder, folder)
+            # Use a level-3 header (using '~' as the underline character)
+            f.write(f"{title}\n")
+            f.write("~" * len(title) + "\n\n")
             f.write(".. toctree::\n")
             f.write("   :maxdepth: 2\n\n")
-
-            # Write each notebook path
             for nb in sorted(grouped[folder]):
-                # notebooks are now in docs/source/notebooks
+                # Assume notebooks are in the 'notebooks' subfolder relative to the .rst file.
                 nb_path = os.path.join(
-                    'notebooks', nb).replace(os.path.sep, '/')
+                    "notebooks", nb).replace(os.path.sep, '/')
                 f.write(f"   {nb_path}\n")
-
-            f.write("\n")  # blank line between sections
+            f.write("\n")
 
 
 def main():
-    # Path to your top-level examples directory
-    examples_dir = os.path.abspath('../../examples')
+    # Path to your top-level examples directory (adjust relative path as needed)
+    examples_dir = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), "../../examples"))
 
-    # The target dir in docs/source where notebooks will be copied
-    target_dir = os.path.join(os.path.dirname(__file__), 'notebooks')
+    # The target directory in docs/source where notebooks will be copied
+    target_dir = os.path.join(os.path.dirname(__file__), "notebooks")
 
     # Clear the target directory before re-copying notebooks
     clear_directory(target_dir)
 
+    # Find all notebooks in the examples directory
     notebooks = find_notebooks(examples_dir)
 
-    # Copy all notebooks from examples/ to docs/source/notebooks/
+    # Copy notebooks from examples/ to docs/source/notebooks/
     copy_notebooks(notebooks, examples_dir, target_dir)
 
-    # Generate 'examples_auto.rst' (instead of 'examples.rst')
-    output_rst = os.path.join(os.path.dirname(__file__), 'examples_auto.rst')
-    generate_rst(notebooks, target_dir, output_rst)
+    # Generate 'examples.rst' in the same directory as this script
+    output_rst = os.path.join(os.path.dirname(__file__), "examples.rst")
+    generate_rst(notebooks, output_rst)
     print(f"Generated {output_rst}")
 
 

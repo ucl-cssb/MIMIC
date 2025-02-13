@@ -20,11 +20,12 @@ def setup_data(request):
     X = np.random.randn(100, num_species+1)  # Random design matrix for 100 samples and 2 species
     F = np.random.randn(100, num_species)  # Random data matrix for 100 samples and 2 species
 
-    # Add a condition for different shapes
-    if 'test_run_inference' in request.node.nodeid or 'test_run_gLV_bayes_shrinkage' in request.node.nodeid:
-        X = np.random.randn(100, num_species + 1)  # Shape (100, num_species + 1)
-    elif 'test_run_bayes_gLV_shrinkage_pert' in request.node.nodeid or 'test_plot_posterior_pert' in request.node.nodeid:
-        X = np.random.randn(100, num_species + 2)  # Shape (100, num_species + 2)
+    # Add a condition for different shapes depending on number of parameters
+    test_name = request.node.nodeid.split("::")[-1] 
+    if test_name in ["test_run_inference", "test_run_inference_shrinkage"]:
+        X = np.random.randn(100, num_species + 1)
+    elif test_name in ["test_run_inference_shrinkage_pert", "test_plot_posterior_pert"]:
+        X = np.random.randn(100, num_species + 2)
 
     
     prior_mu_mean = 0
@@ -117,12 +118,12 @@ def test_run_inference(bayes_gLV_instance):
     assert len(idata.posterior["M_hat"]) > 0, "'M_hat' has no samples."
 
 
-def test_run_bayes_gLV_shrinkage(bayes_gLV_instance):
+def test_run_inference_shrinkage(bayes_gLV_instance):
     """
     Test the `run_bayes_gLV_shrinkage` function to check if it returns the correct output.
     """
     # Call the method to test
-    idata = bayes_gLV_instance.run_bayes_gLV_shrinkage()
+    idata = bayes_gLV_instance.run_inference_shrinkage()
 
     # Check that the output is an ArviZ InferenceData object
     assert isinstance(idata, az.InferenceData), "The output is not an InferenceData object."
@@ -132,12 +133,12 @@ def test_run_bayes_gLV_shrinkage(bayes_gLV_instance):
     assert "M_hat" in idata.posterior, "'M_hat' is not in the posterior."
 
 
-def test_run_bayes_gLV_shrinkage_pert(bayes_gLV_instance):
+def test_run_inference_shrinkage_pert(bayes_gLV_instance):
     """
     Test the `run_bayes_gLV_shrinkage_pert` function to check if it returns the correct output.
     """
     # Call the method to test
-    idata = bayes_gLV_instance.run_bayes_gLV_shrinkage_pert()
+    idata = bayes_gLV_instance.run_inference_shrinkage_pert()
 
     # Check that the output is an ArviZ InferenceData object
     assert isinstance(idata, az.InferenceData), "The output is not an InferenceData object."
@@ -153,7 +154,7 @@ def test_plot_posterior(bayes_gLV_instance):
     Test the `plot_posterior` function to ensure it runs without errors.
     """
     # Generate the InferenceData from the method
-    idata = bayes_gLV_instance.run_bayes_gLV_shrinkage()
+    idata = bayes_gLV_instance.run_inference_shrinkage()
 
     # Try to call the plot_posterior method
     try:
@@ -167,7 +168,7 @@ def test_plot_posterior_pert(bayes_gLV_instance):
     Test the `plot_posterior_pert` function to ensure it produces the correct plot.
     """
     # First, generate the InferenceData from the method
-    idata = bayes_gLV_instance.run_bayes_gLV_shrinkage_pert()
+    idata = bayes_gLV_instance.run_inference_shrinkage_pert()
 
     # Try to call the plot_posterior_pert method
     try:
