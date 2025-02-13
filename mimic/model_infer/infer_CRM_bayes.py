@@ -68,8 +68,9 @@ class inferCRMbayes(BaseInfer):
     def __init__(
             self,
             num_species=2,
-            num_resources=0):
+            num_resources=0): 
 
+        super().__init__()  # Call base class constructor
 
         self.X: Optional[np.ndarray] = None
         self.F: Optional[np.ndarray] = None
