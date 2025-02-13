@@ -8,13 +8,19 @@ import matplotlib.pyplot as plt
 cols = ["red", "green", "blue", "royalblue", "orange", "black"]
 
 
+
 def plot_gLV(yobs, timepoints):
-    # fig, axs = plt.subplots(1, 2, layout='constrained')
+    # fig, axs = plt.subplots(1, 2, layout='constrained')  # Optional alternative
     fig, axs = plt.subplots(1, 1)
     for species_idx in range(yobs.shape[1]):
-        axs.plot(timepoints, yobs[:, species_idx], color=cols[species_idx])
+        label = f'Species {species_idx + 1}'  # Add a label for each species
+        axs.plot(timepoints, yobs[:, species_idx], color=cols[species_idx], label=label)
+    
     axs.set_xlabel('time')
     axs.set_ylabel('[species]')
+    axs.legend()  # Ensure the legend is called on the correct axes
+    plt.show()
+
 
 
 def plot_gMLV(yobs, sobs, timepoints):
