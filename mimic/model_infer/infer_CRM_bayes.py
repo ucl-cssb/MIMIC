@@ -53,7 +53,7 @@ class inferCRMbayes(BaseInfer):
     """
     inferCRMbayes class for Bayesian inference of CRM models.
 
-    Args:
+    Args: 
         X (np.ndarray): The design matrix
         F (np.ndarray): The observed values
 
