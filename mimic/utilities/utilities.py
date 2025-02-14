@@ -17,6 +17,32 @@ def plot_gLV(yobs, timepoints):
     axs.set_ylabel('[species]')
 
 
+def plot_CRM(observed_species, observed_resources, timepoints):
+    # Create a single axis
+    fig, ax = plt.subplots(1, 1)
+    
+    # Plot each species
+    for species_idx in range(observed_species.shape[1]):
+        label = f'Species {species_idx + 1}'
+        ax.plot(timepoints, observed_species[:, species_idx], color=cols[species_idx], label=label)
+    
+    # Plot each resource (using different colors or styles to distinguish them from species)
+    for resource_idx in range(observed_resources.shape[1]):
+        label = f'Resource {resource_idx + 1}'
+        ax.plot(timepoints, observed_resources[:, resource_idx], linestyle='--', color=cols[resource_idx + observed_species.shape[1] +1], label=label)
+    
+    # Set axis labels
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Concentration')
+    
+    # Add a legend to label both species and resources
+    ax.legend()
+    
+    # Show the plot
+    plt.show()
+
+
+
 def plot_gMLV(yobs, sobs, timepoints):
     # fig, axs = plt.subplots(1, 2, layout='constrained')
     fig, axs = plt.subplots(1, 2)

@@ -27,10 +27,10 @@ class sim_gLV(BaseModel):
         If no parameters are given for mu and M, a model is randomly generated
 
         :param num_species: number of species
-        :param mu: specific growth rates vector
+        :param mu: specific growth rates vectors
         :param M: interaction matrix
         """
-        # QUESTION: is this not supposed to have num_metabolites?
+
         super().__init__()
         self.model = "gLV"
         self.nsp = num_species
