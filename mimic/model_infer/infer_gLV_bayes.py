@@ -10,6 +10,7 @@ import cloudpickle
 import os
 from typing import Optional, Union, List, Dict, Any
 
+
 from mimic.utilities import *
 from mimic.model_simulate.sim_gLV import *
 from mimic.model_infer.base_infer import BaseInfer
@@ -43,7 +44,7 @@ class infergLVbayes(BaseInfer):
     Args:
         X (np.ndarray): The design matrix
         F (np.ndarray): The observed values
-        mu (int, float, List): The growth rates matrix
+        mu (int, float, List): The growth rates 
         M (int, float, List): The interaction matrix
         epsilon ((int, float, List)): The perturbation matrix
 
@@ -54,7 +55,7 @@ class infergLVbayes(BaseInfer):
         prior_Mij_sigma (int, float, List): The prior sigma for Mij
         prior_eps_mean (int, float, List): The prior mean for epsilon
         prior_eps_sigma (int, float, List): The prior sigma for epsilon
-        
+
         draws (int): The number of draws for the MCMC sampler
         tune (int): The number of tuning steps for the MCMC sampler
         chains (int): The number of chains for the MCMC sampler
@@ -67,6 +68,19 @@ class infergLVbayes(BaseInfer):
 
 
     Methods:
+
+        set_parameters: Set or update simulation parameters.
+        import_data: Import data from a .csv file.
+        calculate_DA0: Calculate the number of off-diagonal elements to be non-zero.
+
+        run_inference: Run Bayesian inference with uniform priors and specified bounds.
+        run_inference_shrinkage: Run Bayesian inference with horseshoe priors for shrinkage.
+        run_inference_shrinkage_pert: Run Bayesian inference with horseshoe priors for shrinkage and perturbation.
+
+        plot_posterior: Plot the posterior distribution of the parameters.
+        plot_posterior_pert: Plot the posterior distribution of the parameters with perturbation.
+        plot_interaction_matrix: Plot the interaction matrix.
+        
 
 
     Returns:
@@ -266,36 +280,18 @@ class infergLVbayes(BaseInfer):
         bayes_model = pm.Model()
         with bayes_model:
             # Priors for unknown model parameters
-            # sigma = pm.HalfNormal('sigma', sigma=1, shape=(num_species,))  #
-            # A separate sigma for each response
-            sigma = pm.HalfNormal(
-                'sigma', sigma=1, shape=(
-                    1,))  # Same sigma for all responses
+            # sigma = pm.HalfNormal('sigma', sigma=1, shape=(num_species,))  # A separate sigma for each response
+            sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
 
             # Define mu as prior
-            mu_hat = pm.TruncatedNormal(
-                'mu_hat',
-                mu=prior_mu_mean,
-                sigma=prior_mu_sigma,
-                lower=0,
-                shape=(
-                    1,
-                    num_species))
+            mu_hat = pm.TruncatedNormal('mu_hat', mu=prior_mu_mean, sigma=prior_mu_sigma, lower=0, shape=(1, num_species))
 
             # M_ii is constrained to be negative
-            M_ii_hat_p = pm.TruncatedNormal(
-                'M_ii_hat_p',
-                mu=prior_Mii_mean,
-                sigma=prior_Mii_sigma,
-                lower=0,
-                shape=(
-                    num_species,
-                ))
+            M_ii_hat_p = pm.TruncatedNormal('M_ii_hat_p', mu=prior_Mii_mean,sigma=prior_Mii_sigma,lower=0,shape=(num_species,))
             M_ii_hat = pm.Deterministic('M_ii_hat', -M_ii_hat_p)
 
             # M_ij is unconstrained
-            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(
-                num_species, num_species - 1))  # different shape for off-diagonal
+            M_ij_hat = pm.Normal('M_ij_hat', mu=0, sigma=prior_Mij_sigma, shape=(num_species, num_species - 1))  # different shape for off-diagonal
 
             # Combine values
             # start with an all-zero matrix of the correct shape

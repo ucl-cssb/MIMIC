@@ -2,6 +2,7 @@ import random
 from typing import List, Optional, Union
 
 import numpy  # do not change this to np, it will break the code
+from numpy.typing import NDArray
 from scipy import stats
 from scipy.integrate import odeint
 
