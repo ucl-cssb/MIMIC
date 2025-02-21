@@ -22,7 +22,7 @@ def true_glv_ode_with_perturbation(N, t, mu, M, epsilon):
     return N * growth
 
 
-def generate_data(num_species, mu, M, epsilon, t_span, init_species, noise_std=0.1):
+def generate_data(num_species, mu, M, epsilon, t_span, init_species, noise_std=0.3):
     """
     Integrate the ODE to generate the noise-free solution and add Gaussian noise.
     """
@@ -65,7 +65,7 @@ def main():
     t_span = np.linspace(0, 10, 101).astype(np.float32)
     # Initial condition: all species start at abundance 10
     init_species = np.full(num_species, 10.0, dtype=np.float32)
-    noise_std = 0.1  # Standard deviation of measurement noise
+    noise_std = 0.3  # Standard deviation of measurement noise
 
     # Create directory to save simulation files
     os.makedirs("simulations", exist_ok=True)
