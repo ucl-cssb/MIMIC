@@ -9,8 +9,11 @@ import matplotlib.pyplot as plt
 s_M = 10.0    # Interaction matrix scaling factor
 s_eps = 5.0   # Perturbation scaling factor
 
-# Hyperparameter: weight for the PDE residual loss
-lambda_pde = 5.0  # You can experiment with different values
+# Hyperparametes:
+# Averaged tuned hyperparameters (from your grid search)
+lambda_pde = 1.0      # averaged PDE loss weight
+reg_coeff = 0.0046    # averaged regularization coefficient
+lr = 0.00075          # averaged learning rate
 
 
 def step_perturbation_tf(t):
@@ -107,11 +110,11 @@ def infer_parameters_from_file(sim_file):
     net = dde.maps.FNN([1] + [128, 128, 128] + [num_species],
                        activation="swish",
                        kernel_initializer="Glorot normal",
-                       regularization=["l2", 0.01])
+                       regularization=["l2", reg_coeff])
     net.apply_feature_transform(build_feature_transform())
 
     model = dde.Model(data, net)
-    model.compile("adam", lr=1e-3, loss="MSE")
+    model.compile("adam", lr=lr, loss="MSE")
     losshistory, train_state = model.train(
         iterations=20000, display_every=1000)
 
