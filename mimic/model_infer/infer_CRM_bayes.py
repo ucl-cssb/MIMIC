@@ -1,9 +1,10 @@
 import arviz as az
 import matplotlib.pyplot as plt
-import numpy
+import numpy as np
 import pandas as pd
 import seaborn as sns
 import pytensor.tensor as at
+import pytensor
 import pickle
 import cloudpickle
 import os
@@ -44,6 +45,41 @@ def plot_growth_curves(data, ax=None):
     if ax is None:
         plt.show()
 
+# Define the ODE function for CRM model
+def CRM_inf_func(y,t, p):
+    # Unpack parameters from the vector p
+    nr = p[0].astype("int32")   # Number of resources
+    nsp = p[1].astype("int32")   # Number of species
+    tau = p[2:2+nsp]  # Species time scales
+    w = p[2+nsp:2+nsp+nr]  # Resource quality
+    c_flat = p[2+nsp+nr:2+nsp+nr+(nsp*nr)]  # Flattened resource preferences
+    c = c_flat.reshape((nsp, nr))  # Reshape to nsp x nr matrix
+    m = p[2+nsp+nr+(nsp*nr):2+(2*nsp)+nr+(nsp*nr)]  # Mortality rates
+    r = p[2+(2*nsp)+nr+(nsp*nr):2+(2*nsp)+(2*nr)+(nsp*nr)]  # Resource time scales
+    K = p[2+(2*nsp)+(2*nr)+(nsp*nr):2+(2*nsp)+(3*nr)+(nsp*nr)]  # Resource carrying capacities
+
+
+    # Separate species (N) and resources (R)
+    N = y[:nsp]  # Species populations 
+    R = y[nsp:]  # Resource availability 
+
+    
+    # Species growth equation (dN)
+    growth_term = at.dot(c, w * R)  # Matrix multiplication as tensor
+    dN = (N / tau) * (growth_term - m)  # Species growth equation
+
+    # Resource consumption equation (dR)
+    consumption_term = at.dot(N, c)  # Matrix multiplication as tensor
+    dR = (1 / (r * K)) * (K - R) * R - consumption_term * R  # Resource consumption equation
+
+
+    # Combine dN and dR into a single 1D array
+    derivatives = [dN[0], dN[1], dR[0], dR[1]]  # 1D array
+    #derivatives = np.concatenate([dN, dR])  # Concatenate species and resource derivatives
+
+    # Return the derivatives for both species and resources as a single array
+    return derivatives 
+    
 
 
 
@@ -52,8 +88,8 @@ class inferCRMbayes(BaseInfer):
     inferCRMbayes class for Bayesian inference of CRM models.
 
     Args: 
-        X (numpy.ndarray): The design matrix
-        F (numpy.ndarray): The observed values
+        times (np.ndarray): The times at which the observations were made
+        yobs (np.ndarray): The observed values
         num_species (int): The number of species
         num_resources (int): The number of resources
         tau (int, float, List)): The species timescales
@@ -88,8 +124,8 @@ class inferCRMbayes(BaseInfer):
 
     def __init__(
             self,
-            X = None,
-            F = None,
+            times = None,
+            yobs = None,
             num_species=None,
             num_resources=None,
             prior_tau_mean=None,
@@ -107,11 +143,11 @@ class inferCRMbayes(BaseInfer):
 
         super().__init__()  # Call base class constructor
 
-        self.X: Optional[numpy.ndarray] = None
-        self.F: Optional[numpy.ndarray] = None
+        self.times: Optional[np.ndarray] = times
+        self.yobs: Optional[np.ndarray] = yobs
 
-        self.num_species: Optional[int] = None
-        self.num_resources: Optional[int] = None
+        self.num_species: Optional[int] = num_species
+        self.num_resources: Optional[int] = num_resources
 
         # Default values
         self.tau: Optional[Union[int, float]] = None  # species_timescale
@@ -142,43 +178,42 @@ class inferCRMbayes(BaseInfer):
         self.prior_K_sigma: Optional[Union[int, float, List[Union[int, float]]]] = prior_K_sigma
         
 
-        self.parameters = Dict[str,
+        self.parameters: Dict[str,
                               Optional[Union[int,
                                              float,
-                                             numpy.ndarray,
-                                             str]]] = {
-            "num_species": self.num_species,
-            "num_resources": self.num_resources,
-            "tau": self.tau,
-            "w": self.w,
-            "c": self.c,
-            "m": self.m,
-            "r": self.r,
-            "K": self.K,
-            "prior_tau_mean": self.prior_tau_mean,
-            "prior_tau_sigma": self.prior_tau_sigma,
-            "prior_w_mean": self.prior_w_mean,
-            "prior_w_sigma": self.prior_w_sigma,
-            "prior_c_mean": self.prior_c_mean,
-            "prior_c_sigma": self.prior_c_sigma,
-            "prior_m_mean": self.prior_m_mean,
-            "prior_m_sigma": self.prior_m_sigma,
-            "prior_r_mean": self.prior_r_mean,
-            "prior_r_sigma": self.prior_r_sigma,
-            "prior_K_mean": self.prior_K_mean,
-            "prior_K_sigma": self.prior_K_sigma}
+                                             np.ndarray,
+                                             str]]] = {"num_species": self.num_species,
+                                                        "num_resources": self.num_resources,
+                                                        "tau": self.tau,
+                                                        "w": self.w,
+                                                        "c": self.c,
+                                                        "m": self.m,
+                                                        "r": self.r,
+                                                        "K": self.K,
+                                                        "prior_tau_mean": self.prior_tau_mean,
+                                                        "prior_tau_sigma": self.prior_tau_sigma,
+                                                        "prior_w_mean": self.prior_w_mean,
+                                                        "prior_w_sigma": self.prior_w_sigma,
+                                                        "prior_c_mean": self.prior_c_mean,
+                                                        "prior_c_sigma": self.prior_c_sigma,
+                                                        "prior_m_mean": self.prior_m_mean,
+                                                        "prior_m_sigma": self.prior_m_sigma,
+                                                        "prior_r_mean": self.prior_r_mean,
+                                                        "prior_r_sigma": self.prior_r_sigma,
+                                                        "prior_K_mean": self.prior_K_mean,
+                                                        "prior_K_sigma": self.prior_K_sigma}
 
     def set_parameters(self,
-                       X: Optional[numpy.ndarray] = None,
-                       F: Optional[numpy.ndarray] = None,
+                       times: Optional[np.ndarray] = None,
+                       yobs: Optional[np.ndarray] = None,
                        num_species: Optional[int] = None,
                        num_resources: Optional[int] = None,
-                       tau: Optional[Union[List[float], numpy.ndarray]] = None,
-                       w: Optional[Union[List[float], numpy.ndarray]] = None,
-                       c: Optional[Union[List[List[float]], numpy.ndarray]] = None,
-                       m: Optional[Union[List[float], numpy.ndarray]] = None,
-                       r: Optional[Union[List[float], numpy.ndarray]] = None,
-                       K: Optional[Union[List[float], numpy.ndarray]] = None,
+                       tau: Optional[Union[List[float], np.ndarray]] = None,
+                       w: Optional[Union[List[float], np.ndarray]] = None,
+                       c: Optional[Union[List[List[float]], np.ndarray]] = None,
+                       m: Optional[Union[List[float], np.ndarray]] = None,
+                       r: Optional[Union[List[float], np.ndarray]] = None,
+                       K: Optional[Union[List[float], np.ndarray]] = None,
                        prior_tau_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
                        prior_tau_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
                        prior_w_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
@@ -202,12 +237,12 @@ class inferCRMbayes(BaseInfer):
         Parameters:
             num_species (Optional[int]): Number of species.
             num_resources (Optional[int]): Number of resources.
-            tau (Optional[Union[List[float], numpy.ndarray]]): species_timescales.
-            w (Optional[Union[List[float], numpy.ndarray]]): resource_quality.
-            c (Optional[Union[List[List[float]], numpy.ndarray]]): relative_preference.
-            m (Optional[Union[List[float], numpy.ndarray]]): mortality_rate.
-            r (Optional[Union[List[float], numpy.ndarray]]): resource timescale.
-            K (Optional[Union[List[float], numpy.ndarray]]): resource capacity.
+            tau (Optional[Union[List[float], np.ndarray]]): species_timescales.
+            w (Optional[Union[List[float], np.ndarray]]): resource_quality.
+            c (Optional[Union[List[List[float]], np.ndarray]]): relative_preference.
+            m (Optional[Union[List[float], np.ndarray]]): mortality_rate.
+            r (Optional[Union[List[float], np.ndarray]]): resource timescale.
+            K (Optional[Union[List[float], np.ndarray]]): resource capacity.
             prior_tau_mean (Optional[Union[int, float, List[Union[int, float]]]]): The mean of the prior for species timescales.
             prior_tau_sigma (Optional[Union[int, float, List[Union[int, float]]]]): The standard deviation of the prior for species timescales.
             prior_w_mean (Optional[Union[int, float, List[Union[int, float]]]]): The mean of the prior for resource quality.
@@ -226,10 +261,10 @@ class inferCRMbayes(BaseInfer):
             cores (Optional[int]): Number of cores.
         """
 
-        if X is not None:
-            self.X = numpy.array(X)
-        if F is not None:
-            self.F = numpy.array(F)
+        if times is not None:
+            self.times = np.array(times)
+        if yobs is not None:
+            self.yobs = np.array(yobs)
         if num_species is not None:
             self.num_species = num_species
         if num_resources is not None:
@@ -239,7 +274,7 @@ class inferCRMbayes(BaseInfer):
         if w is not None:
             self.w = w
         if c is not None:
-            self.c = numpy.asarray(c, dtype=numpy.float64)
+            self.c = np.asarray(c, dtype=np.float64)
         if m is not None:
             self.m = m
         if r is not None:
@@ -284,8 +319,8 @@ class inferCRMbayes(BaseInfer):
             self.cores = cores
 
         self.parameters = {
-            "X": self.X,
-            "F": self.F,
+            "times": self.times,
+            "yobs": self.yobs,
             "num_species": self.num_species,
             "num_resources": self.num_resources,
             "tau": self.tau,
@@ -321,56 +356,11 @@ class inferCRMbayes(BaseInfer):
         Returns:
         None
         """
-        self.data = numpy.genfromtxt(file_path, delimiter=',')
+        self.data = np.genfromtxt(file_path, delimiter=',')
         return
     
-        # Define the ODE function for CRM model
-
-
-    def CRM(y,t, p):
-        # Unpack parameters from the vector p
-        nr = p[0].astype("int32")   # Number of resources
-        nsp = p[1].astype("int32")   # Number of species
-        tau = p[2:2+nsp]  # Species time scales
-        w = p[2+nsp:2+nsp+nr]  # Resource quality
-        c_flat = p[2+nsp+nr:2+nsp+nr+(nsp*nr)]  # Flattened resource preferences
-        c = c_flat.reshape((nsp, nr))  # Reshape to nsp x nr matrix
-        m = p[2+nsp+nr+(nsp*nr):2+(2*nsp)+nr+(nsp*nr)]  # Mortality rates
-        r = p[2+(2*nsp)+nr+(nsp*nr):2+(2*nsp)+(2*nr)+(nsp*nr)]  # Resource time scales
-        K = p[2+(2*nsp)+(2*nr)+(nsp*nr):2+(2*nsp)+(3*nr)+(nsp*nr)]  # Resource carrying capacities
-
-        # tau = p[:2]  # Species time scales 
-        # w = p[2:4]  # Resource quality 
-        # c_flat = p[4:8]  # Flattened resource preferences 
-        # c = c_flat.reshape((2, 2))  # Reshape to 2x2 matrix
-        # m = p[8:10]  # Mortality rates 
-        # r = p[10:12]  # Resource time scales 
-        # K = p[12:14]  # Resource carrying capacities
-
-        # Separate species (N) and resources (R)
-        N = y[:nsp]  # Species populations 
-        R = y[nsp:]  # Resource availability 
-
+        
     
-        # Species growth equation (dN)
-        growth_term = at.dot(c, w * R)  # Matrix multiplication for species-resource interaction as tensor
-        dN = (N / tau) * (growth_term - m)  # Species growth equation
-
-        # Resource consumption equation (dR)
-        consumption_term = at.dot(N, c)  # Matrix multiplication for resource consumption by species as tensor
-        dR = (1 / (r * K)) * (K - R) * R - consumption_term * R  # Resource consumption equation
-
-        # Combine dN and dR into a single 1D array
-        derivatives = [dN[0], dN[1], dR[0], dR[1]]  # Horizontal stacking ensures a 1D array
-   
-        # Return the derivatives for both species and resources as a single array
-        return derivatives  
-    
-
-
-
-    
-
     def run_inference(self) -> None:
         """
         This function infers the parameters for the Bayesian gLV model
@@ -382,12 +372,12 @@ class inferCRMbayes(BaseInfer):
 
         """
 
-        if self.X is None or self.F is None:
-            raise ValueError("X, F must both be provided.")
+        if self.times is None or self.yobs is None:
+            raise ValueError("times, yobs must both be provided.")
 
         # data = self.data
-        X = self.X
-        F = self.F
+        times = self.times
+        yobs = self.yobs
         num_species = self.num_species
         num_resources = self.num_resources
         tau = self.tau
@@ -415,12 +405,10 @@ class inferCRMbayes(BaseInfer):
 
 
         # Print shapes to ensure data is correct
-        print(f"X shape: {X.shape}")
-        print(f"F shape: {F.shape}")
+        print(f"X shape: {times.shape}")
+        print(f"F shape: {yobs.shape}")
         print(f"Number of species: {num_species}")
         print(f"Number of resources: {num_resources}")
-
-        
 
         # Set up initial conditions and parameters
         nsp = num_species
@@ -428,82 +416,120 @@ class inferCRMbayes(BaseInfer):
         n_states = nsp + nr
         n_theta = 2 + (2 * nsp) + (3 * nr) + (nsp * nr)
 
-        # Time points for integration
-        times = X
 
         # Define the DifferentialEquation model
         crm_model = DifferentialEquation(
-            func=CRM,  # The ODE function
+            func=CRM_inf_func,  # The ODE function
             times=times,  # Time points for the solution
             n_states=n_states,  # Total state variables (nsp + nr)
             n_theta=n_theta,  # Total number of parameters (2 + tau, w, c, m, r, K)
             t0=0  # Initial time
         )
 
+
         bayes_model = pm.Model()
         with bayes_model:
             # Priors for unknown model parameters
 
             sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
+            
 
-            tau_hat = pm.TruncatedNormal('tau_hat', mu=prior_tau_mean, sigma=prior_tau_sigma, lower=0, shape=(1, num_species)) # species timescales
-            w_hat = pm.TruncatedNormal('w_hat', mu=prior_w_mean, sigma=prior_w_sigma, lower=0, shape=(1, num_resources)) # resource quality
-            c_hat_vals = pm.TruncatedNormal('c_hat_vals', mu=prior_c_mean, sigma=prior_c_sigma, lower=0, shape=(num_species, num_resources)) # relative resource preferences
-            c_hat = pm.Deterministic('c_hat', c_hat_vals)
-            m_hat = pm.TruncatedNormal('m_hat', mu=prior_m_mean, sigma=prior_m_sigma, lower=0, shape=(1, num_species)) # mortality rates
-            r_hat = pm.TruncatedNormal('r_hat', mu=prior_r_mean, sigma=prior_r_sigma, lower=0, shape=(1, num_resources)) # resource timescales
-            K_hat = pm.TruncatedNormal('K_hat', mu=prior_K_mean, sigma=prior_K_sigma, lower=0, shape=(1, num_resources)) # resource carrying capacities
+            # Conditionally define parameters based on whether priors are provided
+    
+             # For tau parameter
+            if prior_tau_mean is not None and prior_tau_sigma is not None:
+                tau_hat = pm.TruncatedNormal('tau_hat', mu=prior_tau_mean, sigma=prior_tau_sigma, lower=0.1, shape=(nsp,))
+                print("tau_hat is inferred")
+            else:
+                tau_hat = at.as_tensor_variable(tau)
+                print("tau_hat is fixed")
 
-            #print("Shape of tau_hat:", tau_hat.shape.eval())
-            #print("Shape of c_hat:", c_hat.shape.eval())
+            # For w parameter
+            if prior_w_mean is not None and prior_w_sigma is not None:
+                w_hat = pm.TruncatedNormal('w_hat', mu=prior_w_mean, sigma=prior_w_sigma, lower=0.1, shape=(nr,))
+                print("w_hat is inferred")
+            else:
+                w_hat = at.as_tensor_variable(w)
+                print("w_hat is fixed")
+
+            # For c parameter
+            if prior_c_mean is not None and prior_c_sigma is not None:
+                c_hat_vals = pm.TruncatedNormal('c_hat_vals', mu=prior_c_mean, sigma=prior_c_sigma, lower=0.1, shape=(nsp, nr))
+                c_hat = pm.Deterministic('c_hat', c_hat_vals)
+                print("c_hat is inferred")
+            else:
+                c_hat = at.as_tensor_variable(c)
+                print("c_hat is fixed")
+
+            # For m parameter
+            if prior_m_mean is not None and prior_m_sigma is not None:
+                m_hat = pm.TruncatedNormal('m_hat', mu=prior_m_mean, sigma=prior_m_sigma, lower=0.1, shape=(nsp,))
+                print("m_hat is inferred")
+            else:
+                m_hat = at.as_tensor_variable(m)
+                print("m_hat is fixed")
+
+            # For r parameter
+            if prior_r_mean is not None and prior_r_sigma is not None:
+                r_hat = pm.TruncatedNormal('r_hat', mu=prior_r_mean, sigma=prior_r_sigma, lower=0.1, shape=(nr,))
+                print("r_hat is inferred")
+            else:
+                r_hat = at.as_tensor_variable(r)
+                print("r_hat is fixed")
+
+            # For K parameter
+            if prior_K_mean is not None and prior_K_sigma is not None:
+                K_hat = pm.TruncatedNormal('K_hat', mu=prior_K_mean, sigma=prior_K_sigma, lower=1.0, shape=(nr,))
+                print("K_hat is inferred")
+            else:
+                K_hat = at.as_tensor_variable(K)
+                print("K_hat is fixed")
 
 
-            # Pack parameters into a single vector
+            # Flatten to read into CRM_inf_func as a single vector
 
             nr_tensor = at.as_tensor_variable([nr]) 
             nsp_tensor = at.as_tensor_variable([nsp])
 
             theta = at.concatenate([nr_tensor, nsp_tensor, tau_hat, w_hat, c_hat.flatten(), m_hat, r_hat, K_hat])
 
+
+
             # Initial conditions for the ODE
-            initial_conditions = np.concatenate([(F[0,:]), np.array([8.0, 12.0])])
+            #initial_conditions = np.concatenate([(yobs[0,:nsp]), np.array([10.0, 10.0])])
             y0 = np.concatenate([np.ones(nsp), np.ones(nr)])  # Initial species and resource populations
+            #y0 = np.array([10.0, 10.0, 10.0, 10.0])
+            #y0 = np.full(n_states, 10.0)
 
-            # Solve the ODE
-            crm_curves = crm_model(y0=initial_conditions, theta=theta)
-            crm_species_curves = crm_curves[1:, :nsp]  # Extract species curves only, excluding first time point
-            #print(crm_curves.eval({tau: np.ones(nsp), w: np.ones(nr), c: np.ones((nsp, nr)), m: np.ones(nsp), r: np.ones(nr), K: np.ones(nr)}))
-
-            #print("Adjusted crm_species_curves shape:", crm_species_curves.shape.eval())
-            #print("F shape:", F.shape)
-
-
-            # Define the likelihood
-            #Y = pm.Lognormal("Y", mu=at.log(crm_curves), sigma=sigma, observed=F)
-            Y = pm.Lognormal("Y", mu=pm.math.log(crm_species_curves), sigma=sigma, observed=F)
-            #Y = pm.Normal("Y", mu=crm_species_curves, sigma=sigma, observed=F)
     
+            # Solve the ODE
+            crm_curves = crm_model(y0=y0, theta=theta)
+
+
+            # Define the log-normal likelihood with log-transformed observed data
+            #Y = pm.Lognormal("Y", mu=pm.math.log(crm_curves), sigma=sigma, observed=yobs)
+            Y = pm.Lognormal("Y", mu=at.log(crm_curves), sigma=sigma, observed=yobs)
+
+            # For debugging:
+            # print if `debug` is set to 'high' or 'low'
+            if self.debug in ["high", "low"]:
+                initial_values = bayes_model.initial_point()
+                print(f"Initial parameter values: {initial_values}")
+                print("Shape of tau_hat:", tau_hat.shape.eval())
+                print("Shape of w_hat:", w_hat.shape.eval())
+                print("Shape of c_hat:", c_hat.shape.eval())
+                print("Shape of m_hat:", m_hat.shape.eval())
+                print("Shape of r_hat:", r_hat.shape.eval())
+                print("Shape of K_hat:", K_hat.shape.eval())
+                print("Shape of nr_tensor:", nr_tensor.shape.eval())
+                print("Shape of nsp_tensor:", nsp_tensor.shape.eval())
+                print("Shape of theta:", theta.shape.eval())
+                print("Shape of yobs:", yobs.shape)
+                print("Shape of crm_curves:", crm_curves.shape.eval())
 
             # Sample the posterior
             idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores, progressbar=True)
 
-
-
-
-            # Pack parameters into a single vector
-            #theta = at.concatenate([nr, nsp, tau_hat, w_hat, c_hat.flatten(), m_hat, r_hat, K_hat], axis=0)
-
-            # Initial conditions for the ODE
-            #initial_conditions = numpy.concatenate([numpy.array([5.0, 2.0]), numpy.array([8.0, 12.0])])
-            #y0 = numpy.concatenate([F[0, :num_species], F[0, num_species:]]) # Initial species and resource populations
-
-            # Solve the ODE
-            #crm_curves = crm_model(y0=y0, theta=theta)
-
-            # Define the likelihood
-            #Y = pm.Lognormal("Y", mu=at.log(crm_curves), sigma=sigma, observed=F)
-
-            #idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores, progressbar=True)
 
         return idata
     
@@ -548,7 +574,7 @@ class inferCRMbayes(BaseInfer):
         az.plot_posterior(
             idata,
             var_names=["c_hat"],
-            ref_val=numpy.diag(c_hat_np).tolist())
+            ref_val=c_hat_np.flatten().tolist())
         plt.savefig("plot-posterior-c.pdf")
         plt.show()
         plt.close()

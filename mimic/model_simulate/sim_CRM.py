@@ -28,7 +28,14 @@ class sim_CRM(BaseModel):
     def __init__(
             self,
             num_species=2,
-            num_resources=0):
+            num_resources=2,
+            tau=None,
+            w=None,
+            c=None,
+            m=None,
+            r=None,
+            K=None):
+        
         """
         Initializes the CRM simulation with given parameters or defaults.
 
