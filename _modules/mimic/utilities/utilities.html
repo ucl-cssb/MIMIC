@@ -45,12 +45,18 @@
 <div class="viewcode-block" id="plot_gLV">
 <a class="viewcode-back" href="../../../mimic.utilities.html#mimic.utilities.utilities.plot_gLV">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_gLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">timepoints</span><span class="p">):</span>
-    <span class="c1"># fig, axs = plt.subplots(1, 2, layout=&#39;constrained&#39;)</span>
+    <span class="c1"># fig, axs = plt.subplots(1, 2, layout=&#39;constrained&#39;)  # Optional</span>
+    <span class="c1"># alternative</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">species_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">yobs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-        <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">timepoints</span><span class="p">,</span> <span class="n">yobs</span><span class="p">[:,</span> <span class="n">species_idx</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">cols</span><span class="p">[</span><span class="n">species_idx</span><span class="p">])</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Species </span><span class="si">{</span><span class="n">species_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span>  <span class="c1"># Add a label for each species</span>
+        <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">timepoints</span><span class="p">,</span> <span class="n">yobs</span><span class="p">[:,</span> <span class="n">species_idx</span><span class="p">],</span>
+                 <span class="n">color</span><span class="o">=</span><span class="n">cols</span><span class="p">[</span><span class="n">species_idx</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
     <span class="n">axs</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;[species]&#39;</span><span class="p">)</span></div>
+    <span class="n">axs</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;[species]&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>  <span class="c1"># Ensure the legend is called on the correct axes</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
 
