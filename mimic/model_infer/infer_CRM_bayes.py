@@ -405,8 +405,8 @@ class inferCRMbayes(BaseInfer):
 
 
         # Print shapes to ensure data is correct
-        print(f"X shape: {times.shape}")
-        print(f"F shape: {yobs.shape}")
+        print(f"times shape: {times.shape}")
+        print(f"yobs shape: {yobs.shape}")
         print(f"Number of species: {num_species}")
         print(f"Number of resources: {num_resources}")
 
@@ -460,6 +460,7 @@ class inferCRMbayes(BaseInfer):
             else:
                 c_hat = at.as_tensor_variable(c)
                 print("c_hat is fixed")
+                
 
             # For m parameter
             if prior_m_mean is not None and prior_m_sigma is not None:
@@ -510,6 +511,21 @@ class inferCRMbayes(BaseInfer):
             #Y = pm.Lognormal("Y", mu=pm.math.log(crm_curves), sigma=sigma, observed=yobs)
             Y = pm.Lognormal("Y", mu=at.log(crm_curves), sigma=sigma, observed=yobs)
 
+            initial_values = bayes_model.initial_point()
+            print(f"Initial parameter values: {initial_values}")
+            print("Shape of tau_hat:", tau_hat.shape.eval())
+            print("Shape of w_hat:", w_hat.shape.eval())
+            print("Shape of c_hat:", c_hat.shape.eval())
+            print("Shape of m_hat:", m_hat.shape.eval())
+            print("Shape of r_hat:", r_hat.shape.eval())
+            print("Shape of K_hat:", K_hat.shape.eval())
+            print("Shape of nr_tensor:", nr_tensor.shape.eval())
+            print("Shape of nsp_tensor:", nsp_tensor.shape.eval())
+            print("Shape of theta:", theta.shape.eval())
+            print("Shape of yobs:", yobs.shape)
+            print("Shape of crm_curves:", crm_curves.shape.eval())
+
+
             # For debugging:
             # print if `debug` is set to 'high' or 'low'
             if self.debug in ["high", "low"]:
@@ -534,72 +550,45 @@ class inferCRMbayes(BaseInfer):
         return idata
     
 
-
     def plot_posterior(self, idata):
-
-        tau_hat_np = idata.posterior['tau_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
+        """
+        Plot the posterior distributions of parameters conditionally based on
+        whether they exist in the posterior samples.
         
-        w_hat_np = idata.posterior['w_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
+        Args:
+            idata: InferenceData object containing the posterior samples
+        """
+        # List of parameter names to check and plot if available
+        param_names = ["tau_hat", "w_hat", "c_hat", "m_hat", "r_hat", "K_hat"]
         
-        c_hat_np = idata.posterior['c_hat'].mean(dim=('chain', 'draw')).values
-
-        m_hat_np = idata.posterior['m_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
+        # Get all available variables in the posterior
+        available_vars = list(idata.posterior.data_vars)
         
-        r_hat_np = idata.posterior['r_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
-        
-        K_hat_np = idata.posterior['K_hat'].mean(
-            dim=('chain', 'draw')).values.flatten()
-        
+        for param in param_names:
+            if param in available_vars:
+                print(f"Plotting posterior for {param}")
+                
+                # Extract the posterior mean for the parameter
+                if param == "c_hat":
+                    # Special handling for c_hat due to its shape
+                    param_np = idata.posterior[param].mean(dim=('chain', 'draw')).values
+                    ref_val = param_np.flatten().tolist()
+                else:
+                    param_np = idata.posterior[param].mean(dim=('chain', 'draw')).values.flatten()
+                    ref_val = param_np.tolist()
+                
+                # Plot the posterior
+                az.plot_posterior(
+                    idata,
+                    var_names=[param],
+                    ref_val=ref_val
+                )
+                
+                # Save the plot
+                plt.savefig(f"plot-posterior-{param}.pdf")
+                plt.show()
+                plt.close()
+            else:
+                print(f"Parameter {param} not found in posterior samples, skipping plot.")
 
-        az.plot_posterior(
-            idata,
-            var_names=["tau_hat"],
-            ref_val=tau_hat_np.tolist())
-        plt.savefig("plot-posterior-tau.pdf")
-        plt.show()
-        plt.close()
-
-        az.plot_posterior(
-            idata,
-            var_names=["w_hat"],
-            ref_val=w_hat_np.tolist())
-        plt.savefig("plot-posterior-w.pdf")
-        plt.show()
-        plt.close()
-
-        az.plot_posterior(
-            idata,
-            var_names=["c_hat"],
-            ref_val=c_hat_np.flatten().tolist())
-        plt.savefig("plot-posterior-c.pdf")
-        plt.show()
-        plt.close()
-
-        az.plot_posterior(
-            idata,
-            var_names=["m_hat"],
-            ref_val=m_hat_np.tolist())
-        plt.savefig("plot-posterior-m.pdf")
-        plt.show()
-        plt.close()
-
-        az.plot_posterior(
-            idata,
-            var_names=["r_hat"],
-            ref_val=r_hat_np.tolist())
-        plt.savefig("plot-posterior-r.pdf")
-        plt.show()
-        plt.close()
-
-        az.plot_posterior(
-            idata,
-            var_names=["K_hat"],
-            ref_val=K_hat_np.tolist())
-        plt.savefig("plot-posterior-K.pdf")
-        plt.show()
-        plt.close()
 
