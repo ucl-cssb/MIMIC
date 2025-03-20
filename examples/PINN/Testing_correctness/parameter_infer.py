@@ -101,7 +101,7 @@ def infer_parameters_from_file(sim_file):
                 for i in range(num_species)]
 
     # -- Auxiliary Observations --
-    # Here we select two specific time instants: t0 and a midpoint (you can choose differently).
+    # Select two specific time instants: the first and a midpoint.
     t_aux1 = t_data[0:1, :]
     t_aux2 = t_data[len(t_data)//2:len(t_data)//2+1, :]
     aux_bcs = []
@@ -143,22 +143,66 @@ def infer_parameters_from_file(sim_file):
 
     model = dde.Model(data, net)
 
-    # -- Two-Stage Training --
-    # The loss function in DeepXDE is composed of the PDE residual loss (first term)
-    # and then the BC (observation) losses in the order we provided.
-    # We construct loss weights as follows:
-    # Stage 1: Only supervised losses (set PDE loss weight to 0).
-    loss_weights_stage1 = [0] + [lambda_data] * \
-        len(observes) + [lambda_aux] * len(aux_bcs)
-    model.compile("adam", lr=lr, loss="MSE", loss_weights=loss_weights_stage1)
+    # -- Two-Stage Training & Loss Weighting Explanation --
+    #
+    # DeepXDE constructs the overall loss as a sum of several components. In our setup, these components are:
+    #
+    # 1. PDE Residual Losses:
+    #    - These come from enforcing the PDE residuals at the collocation (anchor) points.
+    #    - Since our system models 'num_species' state variables, the PDE residual function returns a list
+    #      of 'num_species' loss terms (one per species).
+    #
+    # 2. Boundary/Initial Condition (BC) Losses:
+    #    - These losses are computed from the PointSetBC objects that we supply as observations.
+    #    - In our code, we have two groups:
+    #         a. "observes": The scattered data for each species (one loss term per species → num_species terms).
+    #         b. "aux_bcs": Additional auxiliary conditions (here, we pick two specific time instants, for each species,
+    #            yielding 2 * num_species terms).
+    #    - Therefore, the total BC losses contribute (num_species + 2*num_species) = 3*num_species loss terms.
+    #
+    # 3. Extra (Anchor) Loss:
+    #    - When anchors are provided to the PDE data object, DeepXDE automatically adds one extra loss term.
+    #    - This additional term helps to further constrain the network output at the anchor points.
+    #
+    # Adding these up, the total number of loss components becomes:
+    #    PDE losses:            num_species
+    #    BC losses:             3 * num_species
+    #    Extra (anchor) loss:   1
+    # => Total loss components:  num_species + 3*num_species + 1 = 4*num_species + 1.
+    #
+    # When setting up our loss weights (a list with one weight per loss component), we must provide exactly 4*num_species + 1 entries.
+    #
+    # In our two-stage training strategy, we adjust these weights as follows:
+    #
+    # - Stage 1 (Supervised Only):
+    #      * We set the weights for the PDE residual losses to 0 so that only the supervised (BC) losses drive the training.
+    #      * The scattered BC losses (from "observes") get a weight of 'lambda_data'.
+    #      * The auxiliary BC losses (from "aux_bcs") get a weight of 'lambda_aux'.
+    #      * For the extra (anchor) loss, we assign an additional weight (here, 'extra_loss_weight', which we set equal to lambda_data).
+    #
+    # - Stage 2 (Full Training):
+    #      * We re-enable the unsupervised PDE loss by setting their weights to 1.0.
+    #      * The BC losses and extra loss retain the same weights as in Stage 1.
+    #
+    # This breakdown ensures that the length of the loss_weights list matches DeepXDE's internal loss vector,
+    # and it clarifies how the total loss is composed from PDE, BC, and anchor losses.
+
+    extra_loss_weight = lambda_data
+    loss_weights_stage1 = ([0]*num_species +
+                           [lambda_data]*len(observes) +
+                           [lambda_aux]*len(aux_bcs) +
+                           [extra_loss_weight])
     print("Starting Stage 1 (supervised training only)...")
+    model.compile("adam", lr=lr, loss="MSE", loss_weights=loss_weights_stage1)
     model.train(iterations=initial_iterations, display_every=1000)
 
-    # Stage 2: Full training (both PDE and supervised losses).
-    loss_weights_stage2 = [1.0] + [lambda_data] * \
-        len(observes) + [lambda_aux] * len(aux_bcs)
-    model.compile("adam", lr=lr, loss="MSE", loss_weights=loss_weights_stage2)
+# Stage 2: Full training (both PDE and supervised losses).
+    loss_weights_stage2 = ([1.0]*num_species +
+                           [lambda_data]*len(observes) +
+                           [lambda_aux]*len(aux_bcs) +
+                           [extra_loss_weight])
     print("Starting Stage 2 (full training)...")
+    model.compile("adam", lr=lr, loss="MSE", loss_weights=loss_weights_stage2)
     model.train(iterations=remaining_iterations, display_every=1000)
 
     # Extract inferred parameters
