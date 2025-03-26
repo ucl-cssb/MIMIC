@@ -113,3 +113,5 @@ ENV/
 *.nc
 *.npz
 
+examples/PINN/Testing_correctness/inference_results/*.json
+examples/PINN/Testing_correctness/inference_results/*.png
