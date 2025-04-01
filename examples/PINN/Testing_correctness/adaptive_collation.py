@@ -74,15 +74,31 @@ def adaptive_collocation(model, ode_residual, t_min, t_max, num_candidates=1000,
     # Generate dense candidate points.
     t_candidates = np.linspace(
         t_min, t_max, num_candidates).reshape(-1, 1).astype(np.float32)
-    # Predict the network solution at candidate points.
-    y_candidates = model.predict(t_candidates)
-    # Evaluate PDE residuals using the trained model.
-    # Use DeepXDE's built-in function to evaluate residuals.
-    residuals = dde.gradients.compute_pde_residual(
-        ode_residual, t_candidates, y_candidates)
-    # Compute an error metric per candidate point (e.g., L2 norm over components)
-    error_vals = np.linalg.norm(np.concatenate(residuals, axis=1), axis=1)
-    # Select candidate points with the highest error
+    # Try a vectorized evaluation first. If your ode_residual returns a list of residuals,
+    # they can be concatenated along the last axis.
+    try:
+        residuals = model.predict(t_candidates, operator=ode_residual)
+        # If residuals is a list of arrays, combine them.
+        if isinstance(residuals, list):
+            residuals = np.concatenate([r for r in residuals], axis=1)
+        # Compute L2 norm across components for each candidate.
+        error_vals = np.linalg.norm(residuals, axis=1)
+    except Exception:
+        # Fallback: compute residuals point-by-point (less efficient).
+        error_vals = []
+        for t_val in t_candidates:
+            t_val = t_val.reshape(1, 1)
+            # Compute residuals at this point.
+            residual_list = ode_residual(t_val, model.predict(t_val))
+            # If the returned residuals are tensors, convert them to numpy arrays.
+            residual_list = [r.numpy() if hasattr(r, "numpy")
+                             else np.array(r) for r in residual_list]
+            # Combine the residuals (assuming each residual is of shape (1,1)).
+            res = np.concatenate([r.reshape(1, -1)
+                                 for r in residual_list], axis=1)
+            error_vals.append(np.linalg.norm(res))
+        error_vals = np.array(error_vals)
+    # Select candidate points with the highest error.
     idx = np.argsort(error_vals)[-num_select:]
     return t_candidates[idx]
 
