@@ -431,7 +431,7 @@ class inferCRMbayes(BaseInfer):
         with bayes_model:
             # Priors for unknown model parameters
 
-            sigma = pm.HalfNormal('sigma', sigma=1, shape=(1,))  # Same sigma for all responses
+            sigma = pm.HalfNormal('sigma', sigma=0.5, shape=(1,))  # Same sigma for all responses
             
 
             # Conditionally define parameters based on whether priors are provided
@@ -444,6 +444,7 @@ class inferCRMbayes(BaseInfer):
                 tau_hat = at.as_tensor_variable(tau)
                 print("tau_hat is fixed")
 
+
             # For w parameter
             if prior_w_mean is not None and prior_w_sigma is not None:
                 w_hat = pm.TruncatedNormal('w_hat', mu=prior_w_mean, sigma=prior_w_sigma, lower=0.1, shape=(nr,))
@@ -451,6 +452,7 @@ class inferCRMbayes(BaseInfer):
             else:
                 w_hat = at.as_tensor_variable(w)
                 print("w_hat is fixed")
+
 
             # For c parameter
             if prior_c_mean is not None and prior_c_sigma is not None:
@@ -470,6 +472,7 @@ class inferCRMbayes(BaseInfer):
                 m_hat = at.as_tensor_variable(m)
                 print("m_hat is fixed")
 
+
             # For r parameter
             if prior_r_mean is not None and prior_r_sigma is not None:
                 r_hat = pm.TruncatedNormal('r_hat', mu=prior_r_mean, sigma=prior_r_sigma, lower=0.1, shape=(nr,))
@@ -477,6 +480,7 @@ class inferCRMbayes(BaseInfer):
             else:
                 r_hat = at.as_tensor_variable(r)
                 print("r_hat is fixed")
+
 
             # For K parameter
             if prior_K_mean is not None and prior_K_sigma is not None:
@@ -486,15 +490,11 @@ class inferCRMbayes(BaseInfer):
                 K_hat = at.as_tensor_variable(K)
                 print("K_hat is fixed")
 
-
             # Flatten to read into CRM_inf_func as a single vector
-
             nr_tensor = at.as_tensor_variable([nr]) 
             nsp_tensor = at.as_tensor_variable([nsp])
 
             theta = at.concatenate([nr_tensor, nsp_tensor, tau_hat, w_hat, c_hat.flatten(), m_hat, r_hat, K_hat])
-
-
 
             # Initial conditions for the ODE
             #initial_conditions = np.concatenate([(yobs[0,:nsp]), np.array([10.0, 10.0])])
@@ -502,29 +502,13 @@ class inferCRMbayes(BaseInfer):
             #y0 = np.array([10.0, 10.0, 10.0, 10.0])
             #y0 = np.full(n_states, 10.0)
 
-    
             # Solve the ODE
             crm_curves = crm_model(y0=y0, theta=theta)
-
 
             # Define the log-normal likelihood with log-transformed observed data
             #Y = pm.Lognormal("Y", mu=pm.math.log(crm_curves), sigma=sigma, observed=yobs)
             Y = pm.Lognormal("Y", mu=at.log(crm_curves), sigma=sigma, observed=yobs)
-
-            initial_values = bayes_model.initial_point()
-            print(f"Initial parameter values: {initial_values}")
-            print("Shape of tau_hat:", tau_hat.shape.eval())
-            print("Shape of w_hat:", w_hat.shape.eval())
-            print("Shape of c_hat:", c_hat.shape.eval())
-            print("Shape of m_hat:", m_hat.shape.eval())
-            print("Shape of r_hat:", r_hat.shape.eval())
-            print("Shape of K_hat:", K_hat.shape.eval())
-            print("Shape of nr_tensor:", nr_tensor.shape.eval())
-            print("Shape of nsp_tensor:", nsp_tensor.shape.eval())
-            print("Shape of theta:", theta.shape.eval())
-            print("Shape of yobs:", yobs.shape)
-            print("Shape of crm_curves:", crm_curves.shape.eval())
-
+            
 
             # For debugging:
             # print if `debug` is set to 'high' or 'low'
