@@ -35,7 +35,6 @@ class sim_CRM(BaseModel):
             m=None,
             r=None,
             K=None):
-        
         """
         Initializes the CRM simulation with given parameters or defaults.
 
@@ -152,7 +151,7 @@ class sim_CRM(BaseModel):
                 self.K))
         yobs = syobs[:, 0:self.nsp]  # species
         sobs = syobs[:, self.nsp:]  # resources
-        self.data = syobs 
+        self.data = syobs
         return yobs, sobs
 
 
