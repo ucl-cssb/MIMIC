@@ -10,6 +10,7 @@ Consumer Resource Model (CRM)
 .. toctree::
    :maxdepth: 2
 
+   notebooks/CRM/examples-bayes-CRM
    notebooks/CRM/examples-sim-CRM
 
 Gaussian Processes (GP)

@@ -60,6 +60,95 @@
 
 
 
+<div class="viewcode-block" id="plot_CRM">
+<a class="viewcode-back" href="../../../mimic.utilities.html#mimic.utilities.utilities.plot_CRM">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_CRM</span><span class="p">(</span><span class="n">observed_species</span><span class="p">,</span> <span class="n">observed_resources</span><span class="p">,</span> <span class="n">timepoints</span><span class="p">,</span> <span class="n">csv_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># Create a single axis</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">tab10</span><span class="o">.</span><span class="n">colors</span>
+
+    <span class="n">total_entities</span> <span class="o">=</span> <span class="n">observed_species</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">observed_resources</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Plot each species</span>
+    <span class="k">for</span> <span class="n">species_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">observed_species</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Species </span><span class="si">{</span><span class="n">species_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">timepoints</span><span class="p">,</span>
+                <span class="n">observed_species</span><span class="p">[:,</span>
+                                 <span class="n">species_idx</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">cols</span><span class="p">[</span><span class="n">species_idx</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+    <span class="c1"># Plot each resource - using distinct colors that continue from where</span>
+    <span class="c1"># species left off</span>
+    <span class="k">for</span> <span class="n">resource_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">observed_resources</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="c1"># Use a different color index for resources (continuing from where</span>
+        <span class="c1"># species left off)</span>
+        <span class="n">color_idx</span> <span class="o">=</span> <span class="n">observed_species</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">resource_idx</span>
+        <span class="c1"># Use modulo to cycle through colors if we have more entities than</span>
+        <span class="c1"># colors</span>
+        <span class="n">color_idx</span> <span class="o">=</span> <span class="n">color_idx</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span>
+
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Resource </span><span class="si">{</span><span class="n">resource_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">timepoints</span><span class="p">,</span>
+                <span class="n">observed_resources</span><span class="p">[:,</span>
+                                   <span class="n">resource_idx</span><span class="p">],</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">cols</span><span class="p">[</span><span class="n">color_idx</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+    <span class="c1"># If CSV file is provided, overlay the observed data</span>
+    <span class="k">if</span> <span class="n">csv_file</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+        <span class="c1"># Extract time and data columns</span>
+        <span class="n">time_col</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Assuming first column is time</span>
+
+        <span class="c1"># Plot observed species data with markers</span>
+        <span class="n">num_species</span> <span class="o">=</span> <span class="n">observed_species</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_species</span><span class="p">):</span>
+            <span class="n">species_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;species_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">species_col</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">time_col</span><span class="p">],</span>
+                           <span class="n">data</span><span class="p">[</span><span class="n">species_col</span><span class="p">],</span>
+                           <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span>
+                           <span class="n">color</span><span class="o">=</span><span class="n">cols</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)],</span>
+                           <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                           <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+                           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Observed </span><span class="si">{</span><span class="n">species_col</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Plot observed resource data with different markers and consistent</span>
+        <span class="c1"># colors with simulated resources</span>
+        <span class="n">num_resources</span> <span class="o">=</span> <span class="n">observed_resources</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_resources</span><span class="p">):</span>
+            <span class="n">resource_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;resource_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">resource_col</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">color_idx</span> <span class="o">=</span> <span class="n">num_species</span> <span class="o">+</span> <span class="n">i</span>
+                <span class="n">color_idx</span> <span class="o">=</span> <span class="n">color_idx</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">time_col</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">resource_col</span><span class="p">],</span>
+                           <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cols</span><span class="p">[</span><span class="n">color_idx</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+                           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Observed </span><span class="si">{</span><span class="n">resource_col</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Set axis labels</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Concentration&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;CRM Growth Curves: Simulated vs Observed&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+    <span class="c1"># Add a legend to label both species and resources</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Add grid for better readability</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+
+    <span class="c1"># Adjust layout to make room for the legend</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+    <span class="c1"># Show the plot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
+
+
+
 <div class="viewcode-block" id="plot_gMLV">
 <a class="viewcode-back" href="../../../mimic.utilities.html#mimic.utilities.utilities.plot_gMLV">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_gMLV</span><span class="p">(</span><span class="n">yobs</span><span class="p">,</span> <span class="n">sobs</span><span class="p">,</span> <span class="n">timepoints</span><span class="p">):</span>
@@ -118,92 +207,157 @@
 
 
 
+<span class="c1"># def compare_params(mu=None, M=None, alpha=None, e=None):</span>
+<span class="c1">#     # each argument is a tuple of true and predicted values (mu, mu_hat)</span>
+<span class="c1">#     if mu is not None:</span>
+<span class="c1">#         print(&quot;mu_hat/mu:&quot;)</span>
+<span class="c1">#         print(np.array(mu[1]))</span>
+<span class="c1">#         print(np.array(mu[0]))</span>
+
+<span class="c1">#         fig, ax = plt.subplots()</span>
+<span class="c1">#         ax.stem(np.arange(0, len(mu[0]), dtype=&quot;int32&quot;),</span>
+<span class="c1">#                 np.array(mu[1]), markerfmt=&quot;D&quot;, label=&#39;mu_hat&#39;, linefmt=&#39;C0-&#39;)</span>
+<span class="c1">#         ax.stem(np.arange(0, len(mu[0]), dtype=&quot;int32&quot;),</span>
+<span class="c1">#                 np.array(mu[0]), markerfmt=&quot;X&quot;, label=&#39;mu&#39;, linefmt=&#39;C1-&#39;)</span>
+<span class="c1">#         ax.set_xlabel(&#39;i&#39;)</span>
+<span class="c1">#         ax.set_ylabel(&#39;mu[i]&#39;)</span>
+<span class="c1">#         ax.legend()</span>
+
+<span class="c1">#     if M is not None:</span>
+<span class="c1">#         print(&quot;\nM_hat/M:&quot;)</span>
+<span class="c1">#         print(np.round(np.array(M[1]), decimals=2))</span>
+<span class="c1">#         print(&quot;\n&quot;, np.array(M[0]))</span>
+
+<span class="c1">#         fig, ax = plt.subplots()</span>
+<span class="c1">#         ax.stem(</span>
+<span class="c1">#             np.arange(</span>
+<span class="c1">#                 0,</span>
+<span class="c1">#                 M[0].shape[0] ** 2),</span>
+<span class="c1">#             np.array(</span>
+<span class="c1">#                 M[1]).flatten(),</span>
+<span class="c1">#             markerfmt=&quot;D&quot;,</span>
+<span class="c1">#             label=&#39;M_hat&#39;,</span>
+<span class="c1">#             linefmt=&#39;C0-&#39;)</span>
+<span class="c1">#         ax.stem(</span>
+<span class="c1">#             np.arange(</span>
+<span class="c1">#                 0,</span>
+<span class="c1">#                 M[0].shape[0] ** 2),</span>
+<span class="c1">#             np.array(</span>
+<span class="c1">#                 M[0]).flatten(),</span>
+<span class="c1">#             markerfmt=&quot;X&quot;,</span>
+<span class="c1">#             label=&#39;M&#39;,</span>
+<span class="c1">#             linefmt=&#39;C1-&#39;)</span>
+<span class="c1">#         ax.set_ylabel(&#39;M[i,j]&#39;)</span>
+<span class="c1">#         ax.legend()</span>
+
+<span class="c1">#     if alpha is not None:</span>
+<span class="c1">#         print(&quot;\na_hat/a:&quot;)</span>
+<span class="c1">#         print(np.round(np.array(alpha[1]), decimals=2))</span>
+<span class="c1">#         print(&quot;\n&quot;, np.array(alpha[0]))</span>
+
+<span class="c1">#         fig, ax = plt.subplots()</span>
+<span class="c1">#         ax.stem(</span>
+<span class="c1">#             np.arange(</span>
+<span class="c1">#                 0,</span>
+<span class="c1">#                 alpha[0].shape[0] *</span>
+<span class="c1">#                 alpha[0].shape[1]),</span>
+<span class="c1">#             np.array(</span>
+<span class="c1">#                 alpha[1]).flatten(),</span>
+<span class="c1">#             markerfmt=&quot;D&quot;,</span>
+<span class="c1">#             label=&#39;a_hat&#39;,</span>
+<span class="c1">#             linefmt=&#39;C0-&#39;)</span>
+<span class="c1">#         ax.stem(</span>
+<span class="c1">#             np.arange(</span>
+<span class="c1">#                 0,</span>
+<span class="c1">#                 alpha[0].shape[0] *</span>
+<span class="c1">#                 alpha[0].shape[1]),</span>
+<span class="c1">#             np.array(</span>
+<span class="c1">#                 alpha[0]).flatten(),</span>
+<span class="c1">#             markerfmt=&quot;X&quot;,</span>
+<span class="c1">#             label=&#39;a&#39;,</span>
+<span class="c1">#             linefmt=&#39;C1-&#39;)</span>
+<span class="c1">#         ax.set_ylabel(&#39;a[i,j]&#39;)</span>
+<span class="c1">#         ax.legend()</span>
+
+<span class="c1">#     if e is not None:</span>
+<span class="c1">#         print(&quot;\ne_hat/e:&quot;)</span>
+<span class="c1">#         print(np.round(np.array(e[1]), decimals=2))</span>
+<span class="c1">#         print(&quot;\n&quot;, np.array(e[0]))</span>
+
+<span class="c1">#         fig, ax = plt.subplots()</span>
+<span class="c1">#         ax.stem(np.arange(0, e[0].shape[0]), np.array(</span>
+<span class="c1">#             e[1]).flatten(), markerfmt=&quot;D&quot;, label=&#39;e_hat&#39;, linefmt=&#39;C0-&#39;)</span>
+<span class="c1">#         ax.stem(np.arange(0, e[0].shape[0]), np.array(</span>
+<span class="c1">#             e[0]).flatten(), markerfmt=&quot;X&quot;, label=&#39;e&#39;, linefmt=&#39;C1-&#39;)</span>
+<span class="c1">#         ax.set_ylabel(&#39;e[i]&#39;)</span>
+<span class="c1">#         ax.legend()</span>
+
+
 <div class="viewcode-block" id="compare_params">
 <a class="viewcode-back" href="../../../mimic.utilities.html#mimic.utilities.utilities.compare_params">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compare_params</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="c1"># each argument is a tuple of true and predicted values (mu, mu_hat)</span>
-    <span class="k">if</span> <span class="n">mu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mu_hat/mu:&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compare_params</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compare inferred and observed parameters with any parameter name.</span>
 
+<span class="sd">    Parameters:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    **kwargs : Each argument should be a tuple of (true_value, predicted_value)</span>
+<span class="sd">               where true_value and predicted_value are numpy arrays</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+    <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_values</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">true_val</span><span class="p">,</span> <span class="n">pred_val</span> <span class="o">=</span> <span class="n">param_values</span>
+
+        <span class="c1"># Print comparison</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2">_hat/</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pred_val</span><span class="p">),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">true_val</span><span class="p">))</span>
+
+        <span class="c1"># Create figure</span>
         <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">),</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;mu_hat&#39;</span><span class="p">,</span> <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C0-&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">),</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C1-&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;mu[i]&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">M</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">M_hat/M:&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="c1"># Handle different shapes of parameters</span>
+        <span class="n">true_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">true_val</span><span class="p">)</span>
+        <span class="n">pred_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pred_val</span><span class="p">)</span>
 
-        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="c1"># Determine x-axis size based on parameter shape</span>
+        <span class="k">if</span> <span class="n">true_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">x_size</span> <span class="o">=</span> <span class="n">true_array</span><span class="o">.</span><span class="n">size</span>
+            <span class="n">true_flat</span> <span class="o">=</span> <span class="n">true_array</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">pred_flat</span> <span class="o">=</span> <span class="n">pred_array</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">true_array</span><span class="p">)</span>
+            <span class="n">true_flat</span> <span class="o">=</span> <span class="n">true_array</span>
+            <span class="n">pred_flat</span> <span class="o">=</span> <span class="n">pred_array</span>
+
+        <span class="c1"># Create stem plots</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="mi">0</span><span class="p">,</span>
-                <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">),</span>
+            <span class="n">pred_flat</span><span class="p">,</span>
             <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;M_hat&#39;</span><span class="p">,</span>
-            <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C0-&#39;</span><span class="p">)</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s1">_hat&#39;</span><span class="p">,</span>
+            <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C0-&#39;</span>
+        <span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="mi">0</span><span class="p">,</span>
-                <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">),</span>
+            <span class="n">true_flat</span><span class="p">,</span>
             <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;M&#39;</span><span class="p">,</span>
-            <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C1-&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;M[i,j]&#39;</span><span class="p">)</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C1-&#39;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Set labels and legend</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s1">[i]&#39;</span> <span class="k">if</span> <span class="n">true_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s1">[i,j]&#39;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">alpha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">a_hat/a:&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-
-        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="mi">0</span><span class="p">,</span>
-                <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span>
-                <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
-            <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;a_hat&#39;</span><span class="p">,</span>
-            <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C0-&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="mi">0</span><span class="p">,</span>
-                <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span>
-                <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
-            <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C1-&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;a[i,j]&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-
-    <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">e_hat/e:&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-
-        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;e_hat&#39;</span><span class="p">,</span> <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C0-&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">markerfmt</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;C1-&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;e[i]&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span></div>
+        <span class="c1"># Show plot</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
 

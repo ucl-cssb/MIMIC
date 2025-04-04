@@ -55,6 +55,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pymc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytensor</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytensor.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">at</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">cloudpickle</span>
@@ -76,7 +77,7 @@
 <section id="Bayesian-inference-with-no-shrinkage">
 <h2>Bayesian inference with no shrinkage<a class="headerlink" href="#Bayesian-inference-with-no-shrinkage" title="Link to this heading">¶</a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in pickled simulated parameters, mu, M, epsilon, created in examples-sim-gLV.ipynb</span>
@@ -145,158 +146,31 @@
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-X shape: (99, 6)
-F shape: (99, 5)
-Number of species: 5
-AdvancedSetSubtensor.0
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Initializing NUTS using jitter+adapt_diag...
-Multiprocess sampling (4 chains in 4 jobs)
-NUTS: [sigma, mu_hat, M_ii_hat_p, M_ij_hat]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "029a8845e75f448ea32d3d77a7b07ff5", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Sampling 4 chains for 500 tune and 500 draw iterations (2_000 + 2_000 draws total) took 63 seconds.
-Chain 0 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
-Chain 2 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
-Chain 3 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
-/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
-  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
-  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
-  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-/Users/chaniaclare/Documents/GitHub/MIMIC/venv/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
-  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-                 mean     sd  r_hat
-mu_hat[0, 0]    1.137  0.459   1.01
-mu_hat[0, 1]    0.954  0.451   1.01
-mu_hat[0, 2]    1.343  0.458   1.00
-mu_hat[0, 3]    0.986  0.452   1.00
-mu_hat[0, 4]    1.199  0.082   1.00
-M_ii_hat[0]    -0.081  0.061   1.00
-M_ii_hat[1]    -0.080  0.063   1.00
-M_ii_hat[2]    -0.082  0.059   1.00
-M_ii_hat[3]    -0.081  0.059   1.00
-M_ii_hat[4]    -0.225  0.015   1.00
-M_ij_hat[0, 0] -0.111  0.054   1.00
-M_ij_hat[0, 1] -0.029  0.055   1.00
-M_ij_hat[0, 2]  0.096  0.054   1.00
-M_ij_hat[0, 3]  0.013  0.054   1.00
-M_ij_hat[1, 0] -0.023  0.035   1.00
-M_ij_hat[1, 1] -0.108  0.036   1.01
-M_ij_hat[1, 2]  0.043  0.036   1.00
-M_ij_hat[1, 3]  0.017  0.035   1.00
-M_ij_hat[2, 0]  0.048  0.052   1.00
-M_ij_hat[2, 1]  0.009  0.053   1.00
-M_ij_hat[2, 2] -0.203  0.051   1.00
-M_ij_hat[2, 3] -0.012  0.053   1.00
-M_ij_hat[3, 0]  0.016  0.022   1.00
-M_ij_hat[3, 1]  0.056  0.023   1.01
-M_ij_hat[3, 2] -0.029  0.023   1.00
-M_ij_hat[3, 3] -0.020  0.022   1.00
-M_ij_hat[4, 0]  0.003  0.037   1.00
-M_ij_hat[4, 1] -0.018  0.037   1.00
-M_ij_hat[4, 2]  0.016  0.037   1.00
-M_ij_hat[4, 3] -0.023  0.037   1.00
-M_hat[0, 0]    -0.111  0.054   1.00
-M_hat[0, 1]    -0.029  0.055   1.00
-M_hat[0, 2]     0.096  0.054   1.00
-M_hat[0, 3]     0.013  0.054   1.00
-M_hat[0, 4]     0.000  0.000    NaN
-M_hat[1, 0]    -0.023  0.035   1.00
-M_hat[1, 1]    -0.108  0.036   1.01
-M_hat[1, 2]     0.043  0.036   1.00
-M_hat[1, 3]     0.017  0.035   1.00
-M_hat[1, 4]     0.000  0.000    NaN
-M_hat[2, 0]     0.048  0.052   1.00
-M_hat[2, 1]     0.009  0.053   1.00
-M_hat[2, 2]    -0.203  0.051   1.00
-M_hat[2, 3]    -0.012  0.053   1.00
-M_hat[2, 4]     0.000  0.000    NaN
-M_hat[3, 0]     0.016  0.022   1.00
-M_hat[3, 1]     0.056  0.023   1.01
-M_hat[3, 2]    -0.029  0.023   1.00
-M_hat[3, 3]    -0.020  0.022   1.00
-M_hat[3, 4]     0.000  0.000    NaN
-M_hat[4, 0]     0.003  0.037   1.00
-M_hat[4, 1]    -0.018  0.037   1.00
-M_hat[4, 2]     0.016  0.037   1.00
-M_hat[4, 3]    -0.023  0.037   1.00
-M_hat[4, 4]    -0.225  0.015   1.00
-sigma[0]        0.118  0.004   1.01
-mu_hat/mu:
-[1.13236639 0.94727924 1.33715954 0.96825087 1.19781707]
-[1.27853844 0.55683415 2.06752757 0.86387608 0.70448068]
-
-M_hat/M:
-[[-0.11 -0.03  0.1   0.01  0.  ]
- [-0.02 -0.11  0.04  0.02  0.  ]
- [ 0.05  0.01 -0.2  -0.01  0.  ]
- [ 0.02  0.06 -0.03 -0.02  0.  ]
- [ 0.   -0.02  0.02 -0.02 -0.22]]
-
- [[-0.05   0.    -0.025  0.     0.   ]
- [ 0.    -0.1    0.     0.05   0.   ]
- [ 0.     0.    -0.15   0.     0.   ]
- [ 0.     0.     0.    -0.01   0.   ]
- [ 0.02   0.     0.     0.    -0.2  ]]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_3_6.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_3_6.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_3_7.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_3_7.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_gLV_examples-bayes-gLV_3_8.png" src="../../_images/notebooks_gLV_examples-bayes-gLV_3_8.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[2], line 3</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># read in pickled simulated parameters, mu, M, epsilon</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> num_species <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">5</span>
+<span class="ansi-green-fg">----&gt; 3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#34;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">params-s5.pkl</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#34;</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#34;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">rb</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#34;</span><span class="ansi-yellow-bg">)</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
+<span class="ansi-green-intense-fg ansi-bold">      4</span>     params <span style="color: rgb(98,98,98)">=</span> pickle<span style="color: rgb(98,98,98)">.</span>load(f)
+<span class="ansi-green-intense-fg ansi-bold">      5</span> M <span style="color: rgb(98,98,98)">=</span> params[<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">M</span><span style="color: rgb(175,0,0)">&#34;</span>]
+
+File <span class="ansi-green-fg">/opt/anaconda3/envs/my_mimic_env/lib/python3.10/site-packages/IPython/core/interactiveshell.py:324</span>, in <span class="ansi-cyan-fg">_modified_open</span><span class="ansi-blue-fg">(file, *args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    317</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> file <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> {<span style="color: rgb(98,98,98)">0</span>, <span style="color: rgb(98,98,98)">1</span>, <span style="color: rgb(98,98,98)">2</span>}:
+<span class="ansi-green-intense-fg ansi-bold">    318</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
+<span class="ansi-green-intense-fg ansi-bold">    319</span>         <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">IPython won</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">t let you open fd=</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>file<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)"> by default </span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    320</span>         <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">as it is likely to crash IPython. If you know what you are doing, </span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    321</span>         <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">you can use builtins</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)"> open.</span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    322</span>     )
+<span class="ansi-green-fg">--&gt; 324</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">io_open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">file</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;params-s5.pkl&#39;
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
