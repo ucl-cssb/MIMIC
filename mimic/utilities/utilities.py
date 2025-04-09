@@ -3,6 +3,7 @@ import os
 
 import random
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 cols = ["red", "green", "blue", "royalblue", "orange", "black"]
@@ -45,8 +46,7 @@ def plot_CRM(observed_species, observed_resources, timepoints, csv_file=None):
         # Use a different color index for resources (continuing from where
         # species left off)
         color_idx = observed_species.shape[1] + resource_idx
-        # Use modulo to cycle through colors if we have more entities than
-        # colors
+
         color_idx = color_idx % len(cols)
 
         label = f'Resource {resource_idx + 1}'
@@ -107,6 +107,85 @@ def plot_CRM(observed_species, observed_resources, timepoints, csv_file=None):
     plt.show()
 
     return fig, ax
+
+
+def plot_CRM_with_intervals(
+        observed_species,
+        observed_resources,
+        species_lower,
+        species_upper,
+        resource_lower,
+        resource_upper,
+        times,
+        filename=None):
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    # Plot median trajectories
+    for i in range(observed_species.shape[1]):
+        ax.plot(times, observed_species[:, i],
+                label=f'Species {i+1}', linewidth=2)
+
+    for i in range(observed_resources.shape[1]):
+        ax.plot(times,
+                observed_resources[:,
+                                   i],
+                label=f'Resource {i+1}',
+                linewidth=2,
+                linestyle='--')
+
+    # Add confidence ribbons
+    for i in range(observed_species.shape[1]):
+        ax.fill_between(times, species_lower[:, i], species_upper[:, i],
+                        alpha=0.2, color=plt.cm.tab10(i))
+
+    for i in range(observed_resources.shape[1]):
+        ax.fill_between(times,
+                        resource_lower[:,
+                                       i],
+                        resource_upper[:,
+                                       i],
+                        alpha=0.2,
+                        color=plt.cm.tab10(i + observed_species.shape[1]))
+
+    if filename:
+        true_data = pd.read_csv(filename)
+        true_times = true_data['time'].values
+
+        for i in range(observed_species.shape[1]):
+            col_name = f'species_{i+1}'
+            if col_name in true_data.columns:
+                ax.scatter(
+                    true_times,
+                    true_data[col_name],
+                    marker='o',
+                    s=30,
+                    color=plt.cm.tab10(i),
+                    label=f'True {col_name}')
+
+        for i in range(observed_resources.shape[1]):
+            col_name = f'resource_{i+1}'
+            if col_name in true_data.columns:
+                ax.scatter(
+                    true_times,
+                    true_data[col_name],
+                    marker='s',
+                    s=30,
+                    color=plt.cm.tab10(
+                        i + observed_species.shape[1]),
+                    label=f'True {col_name}')
+
+    ax.set_xlabel('Time', fontsize=14)
+    ax.set_ylabel('Concentration', fontsize=14)
+    ax.set_title(
+        'Consumer-Resource Model Dynamics with 95% Credible Intervals',
+        fontsize=16)
+    ax.legend(loc='best', fontsize=12)
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    if filename:
+        plt.savefig(f"{filename.split('.')[0]}_with_intervals.png", dpi=300)
+    plt.show()
 
 
 def plot_gMLV(yobs, sobs, timepoints):
