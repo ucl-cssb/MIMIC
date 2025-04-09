@@ -37,12 +37,12 @@
 
           <div class="body" role="main">
             
-  <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+  <div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mimic.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mimic.utilities.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_CRM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mimic.utilities.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_CRM</span><span class="p">,</span> <span class="n">plot_CRM_with_intervals</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mimic.model_infer.infer_CRM_bayes</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mimic.model_infer</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
@@ -54,7 +54,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">azS</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pymc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytensor.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">at</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
@@ -62,8 +62,16 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
-<br/><br/><br/></pre></div>
+<br/></pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
 </div>
 <section id="Bayesian-inference-to-infer-the-parameters-of-a-Consumer-Resource-model">
 <h1>Bayesian inference to infer the parameters of a Consumer Resource model<a class="headerlink" href="#Bayesian-inference-to-infer-the-parameters-of-a-Consumer-Resource-model" title="Link to this heading">¶</a></h1>
@@ -83,7 +91,7 @@
 <li><p><span class="math notranslate nohighlight">\(K\)</span> is the resource capacity</p></li>
 <li><p><span class="math notranslate nohighlight">\(c\)</span> is each species’ preference for each resource</p></li>
 </ul>
-<p>Unlike the gLV, the CRM is not linearised, so the DifferentialEquation function from pymc is utilised to solve the ODEs within the inference function. This can take a while if inferring all parameters, so below we demonstrate two features of the run_inference: inferring only one parameter (c) while the rest remain fixed, and inferring all parameters, although this takes longer.</p>
+<p>Unlike the gLV, the CRM is not linearised, so the DifferentialEquation function from pymc is utilised to solve the ODEs within the inference function. This can take a while if inferring all parameters, so below we demonstrate run_inference by inferring only one parameter (c) while the rest remain fixed, where inferring all parameters takes longer.</p>
 </section>
 <section id="Read-in-simulated-data">
 <h1>Read in simulated data<a class="headerlink" href="#Read-in-simulated-data" title="Link to this heading">¶</a></h1>
@@ -110,29 +118,12 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[0.67557518 0.43848517]
- [0.88461136 0.64786379]]
-</pre></div></div>
-</div>
 </section>
 <section id="Infer-parameter-c-only">
 <h1>Infer parameter c only<a class="headerlink" href="#Infer-parameter-c-only" title="Link to this heading">¶</a></h1>
-<p>While parameters tau, m, r, w and K remain fixed to true values generated by the simulation</p>
+<p>While parameters tau, m, r, w and K remain fixed to true values generated by the simulation. Any combination of parameters can be inferred by providing the prior_mean and prior_sigma instead of the true value</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_species</span> <span class="o">=</span> <span class="mi">2</span>
@@ -146,15 +137,12 @@
 <span class="n">K</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">]</span>
 
 <span class="c1"># Define prior for c (resource preference matrix)</span>
-<span class="c1"># prior_c_mean = np.array([[0.6, 0.4], [0.8, 0.6]])</span>
-<span class="c1"># prior_c_sigma = np.array([[0.2, 0.2], [0.2, 0.2]])</span>
-
 <span class="n">prior_c_mean</span> <span class="o">=</span> <span class="mf">0.6</span>
-<span class="n">prior_c_sigma</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="n">prior_c_sigma</span> <span class="o">=</span> <span class="mf">0.1</span>
 
 <span class="c1"># Sampling conditions</span>
-<span class="n">draws</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="n">tune</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">draws</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">tune</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="n">chains</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">cores</span> <span class="o">=</span> <span class="mi">4</span>
 
@@ -188,21 +176,6 @@ times shape: (100,)
 yobs shape: (100, 4)
 Number of species: 2
 Number of resources: 2
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Only 20 samples per chain. Reliable r-hat and ESS diagnostics require longer chains for accurate estimate.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
 tau_hat is fixed
 w_hat is fixed
 c_hat is inferred
@@ -226,7 +199,58 @@ NUTS: [sigma, c_hat_vals]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d46c7ae3011244269e00048aac661ffb", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d3b5612bf1724ef6afd81ac810812d6b", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/cclare/projects/CRM/MIMIC/MIMIC_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Illegal input detected (internal error). Run with full_output = 1 to get quantitative information.
+  sol = scipy.integrate.odeint(
+/home/cclare/projects/CRM/MIMIC/MIMIC_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Excess accuracy requested (tolerances too small). Run with full_output = 1 to get quantitative information.
+  sol = scipy.integrate.odeint(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ lsoda--  warning..internal t (=r1) and h (=r2) are       such that in the machine, t + h = t on the next step
+       (h = step size). solver will continue anyway      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
+ intdy--  t (=r1) illegal            in above message,  r1 =  0.1000000000000D+00
+      t not in interval tcur - hu (= r1) to tcur (=r2)
+      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
+ intdy--  t (=r1) illegal            in above message,  r1 =  0.2000000000000D+00
+      t not in interval tcur - hu (= r1) to tcur (=r2)
+      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
+ lsoda--  trouble from intdy. itask = i1, tout = r1      in above message,  i1 =         1
+      in above message,  r1 =  0.2000000000000D+00
+ lsoda--  at t (=r1), too much accuracy requested         for precision of machine..  see tolsf (=r2)       in above,  r1 =  0.1000000000000D+00   r2 =                  NaN
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/cclare/projects/CRM/MIMIC/MIMIC_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Excess work done on this call (perhaps wrong Dfun type). Run with full_output = 1 to get quantitative information.
+  sol = scipy.integrate.odeint(
+/home/cclare/projects/CRM/MIMIC/MIMIC_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Excess accuracy requested (tolerances too small). Run with full_output = 1 to get quantitative information.
+  sol = scipy.integrate.odeint(
+/home/cclare/projects/CRM/MIMIC/MIMIC_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Excess accuracy requested (tolerances too small). Run with full_output = 1 to get quantitative information.
+  sol = scipy.integrate.odeint(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ lsoda--  at t (=r1), too much accuracy requested         for precision of machine..  see tolsf (=r2)       in above,  r1 =  0.1000000000000D+00   r2 =                  NaN
+ lsoda--  at t (=r1), too much accuracy requested         for precision of machine..  see tolsf (=r2)       in above,  r1 =  0.1000000000000D+00   r2 =                  NaN
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -239,8 +263,7 @@ NUTS: [sigma, c_hat_vals]
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Sampling 4 chains for 20 tune and 20 draw iterations (80 + 80 draws total) took 341 seconds.
-The number of samples is too small to check convergence reliably.
+Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 664 seconds.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -257,7 +280,7 @@ Plotting posterior for c_hat
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_7_8.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_7_8.png" />
+<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_6_10.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_6_10.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -269,15 +292,16 @@ Parameter m_hat not found in posterior samples, skipping plot.
 Parameter r_hat not found in posterior samples, skipping plot.
 Parameter K_hat not found in posterior samples, skipping plot.
               mean     sd  r_hat
-c_hat[0, 0]  0.110  0.009   1.24
-c_hat[0, 1]  0.665  0.029   1.05
-c_hat[1, 0]  0.449  0.022   1.07
-c_hat[1, 1]  0.140  0.041   1.15
-sigma[0]     2.940  0.096   1.05
+c_hat[0, 0]  0.597  0.043    1.0
+c_hat[0, 1]  0.903  0.108    1.0
+c_hat[1, 0]  0.647  0.040    1.0
+c_hat[1, 1]  1.068  0.067    1.0
+sigma[0]     2.840  0.093    1.0
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -285,7 +309,7 @@ sigma[0]     2.940  0.096   1.05
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the trace of the posterior samples</span>
@@ -294,7 +318,7 @@ sigma[0]     2.940  0.096   1.05
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -309,11 +333,11 @@ array([[&lt;Axes: title={&#39;center&#39;: &#39;c_hat&#39;}&gt;,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_8_1.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_8_1.png" />
+<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_7_1.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_7_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the CRM</span>
@@ -354,8 +378,8 @@ array([[&lt;Axes: title={&#39;center&#39;: &#39;c_hat&#39;}&gt;,
 <div class="highlight"><pre>
 
 c_hat/c:
-[[0.11 0.67]
- [0.44 0.13]]
+[[0.6  0.9 ]
+ [0.65 1.07]]
 
  [[0.67557518 0.43848517]
  [0.88461136 0.64786379]]
@@ -365,18 +389,18 @@ c_hat/c:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_9_1.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_9_1.png" />
+<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_8_1.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_8_1.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_9_2.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_9_2.png" />
+<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_8_2.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_8_2.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -385,956 +409,72 @@ c_hat/c:
  &lt;Axes: title={&#39;center&#39;: &#39;CRM Growth Curves: Simulated vs Observed&#39;}, xlabel=&#39;Time&#39;, ylabel=&#39;Concentration&#39;&gt;)
 </pre></div></div>
 </div>
-</section>
-<section id="Infer-all-parameters">
-<h1>Infer all parameters<a class="headerlink" href="#Infer-all-parameters" title="Link to this heading">¶</a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in pickled simulated parameters, tau, m, r, w, K and c</span>
-<span class="n">num_species</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">num_resources</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;params-s2-r2.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;tau&quot;</span><span class="p">]</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">]</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span>
-<span class="n">w</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span>
-<span class="n">K</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">]</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Plot CRM  with confidence intervals</span>
 
-<span class="c1"># read in the data</span>
+<span class="c1"># Get posterior samples for c_hat</span>
+<span class="n">c_posterior_samples</span> <span class="o">=</span> <span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;c_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
-<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data-s2-r2.csv&quot;</span><span class="p">)</span>
+<span class="n">lower_percentile</span> <span class="o">=</span> <span class="mf">2.5</span>
+<span class="n">upper_percentile</span> <span class="o">=</span> <span class="mf">97.5</span>
 
-<span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="n">yobs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">random_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">c_posterior_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
+<span class="c1"># Store simulation results</span>
+<span class="n">all_species_trajectories</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">all_resource_trajectories</span> <span class="o">=</span> <span class="p">[]</span>
 
+<span class="c1"># Run simulations with different posterior samples</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+    <span class="n">chain_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">c_posterior_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">c_sample</span> <span class="o">=</span> <span class="n">c_posterior_samples</span><span class="p">[</span><span class="n">chain_idx</span><span class="p">,</span> <span class="n">random_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
 
-<span class="c1"># Define priors</span>
-<span class="n">prior_tau_mean</span> <span class="o">=</span> <span class="mf">0.5</span>   <span class="c1"># species timescale vector</span>
-<span class="n">prior_tau_sigma</span> <span class="o">=</span> <span class="mf">0.3</span>
+    <span class="n">sample_predictor</span> <span class="o">=</span> <span class="n">sim_CRM</span><span class="p">()</span>
+    <span class="n">sample_predictor</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span>
+                                   <span class="n">num_resources</span><span class="o">=</span><span class="n">num_resources</span><span class="p">,</span>
+                                   <span class="n">tau</span><span class="o">=</span><span class="n">tau</span><span class="p">,</span>
+                                   <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span>
+                                   <span class="n">c</span><span class="o">=</span><span class="n">c_sample</span><span class="p">,</span>
+                                   <span class="n">m</span><span class="o">=</span><span class="n">m</span><span class="p">,</span>
+                                   <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
+                                   <span class="n">K</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
 
-<span class="n">prior_m_mean</span> <span class="o">=</span> <span class="mf">0.4</span>     <span class="c1"># mortality rate vector</span>
-<span class="n">prior_m_sigma</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">sample_species</span><span class="p">,</span> <span class="n">sample_resources</span> <span class="o">=</span> <span class="n">sample_predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="p">)</span>
 
-<span class="n">prior_c_mean</span> <span class="o">=</span> <span class="mf">0.6</span>     <span class="c1"># resource preference matrix</span>
-<span class="n">prior_c_sigma</span> <span class="o">=</span> <span class="mf">0.3</span>
+    <span class="c1"># Store results</span>
+    <span class="n">all_species_trajectories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_species</span><span class="p">)</span>
+    <span class="n">all_resource_trajectories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_resources</span><span class="p">)</span>
 
-<span class="n">prior_r_mean</span> <span class="o">=</span> <span class="mf">0.5</span>      <span class="c1"># resource timescale vector</span>
-<span class="n">prior_r_sigma</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="c1"># Convert to numpy arrays</span>
+<span class="n">all_species_trajectories</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_species_trajectories</span><span class="p">)</span>
+<span class="n">all_resource_trajectories</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_resource_trajectories</span><span class="p">)</span>
 
-<span class="n">prior_w_mean</span> <span class="o">=</span> <span class="mf">0.4</span>     <span class="c1"># resource quality vector</span>
-<span class="n">prior_w_sigma</span> <span class="o">=</span> <span class="mf">0.2</span>
-
-<span class="n">prior_K_mean</span> <span class="o">=</span> <span class="mf">3.0</span>      <span class="c1"># resource carrying capacity vector</span>
-<span class="n">prior_K_sigma</span> <span class="o">=</span> <span class="mf">2.0</span>
-
-
-<span class="c1"># Sampling conditions</span>
-<span class="n">draws</span> <span class="o">=</span> <span class="mi">50</span>
-<span class="n">tune</span> <span class="o">=</span> <span class="mi">50</span>
-<span class="n">chains</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="n">cores</span> <span class="o">=</span> <span class="mi">4</span>
-
-<span class="n">inference</span> <span class="o">=</span> <span class="n">inferCRMbayes</span><span class="p">()</span>
-
-<span class="n">inference</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">yobs</span><span class="o">=</span><span class="n">yobs</span><span class="p">,</span> <span class="n">num_species</span><span class="o">=</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_resources</span><span class="o">=</span><span class="n">num_resources</span><span class="p">,</span>
-                          <span class="n">prior_tau_mean</span><span class="o">=</span><span class="n">prior_tau_mean</span><span class="p">,</span> <span class="n">prior_tau_sigma</span><span class="o">=</span><span class="n">prior_tau_sigma</span><span class="p">,</span>
-                          <span class="n">prior_m_mean</span><span class="o">=</span><span class="n">prior_m_mean</span><span class="p">,</span> <span class="n">prior_m_sigma</span><span class="o">=</span><span class="n">prior_m_sigma</span><span class="p">,</span>
-                          <span class="n">prior_r_mean</span><span class="o">=</span><span class="n">prior_r_mean</span><span class="p">,</span> <span class="n">prior_r_sigma</span><span class="o">=</span><span class="n">prior_r_sigma</span><span class="p">,</span>
-                          <span class="n">prior_w_mean</span><span class="o">=</span><span class="n">prior_w_mean</span><span class="p">,</span> <span class="n">prior_w_sigma</span><span class="o">=</span><span class="n">prior_w_sigma</span><span class="p">,</span>
-                          <span class="n">prior_K_mean</span><span class="o">=</span><span class="n">prior_K_mean</span><span class="p">,</span> <span class="n">prior_K_sigma</span><span class="o">=</span><span class="n">prior_K_sigma</span><span class="p">,</span>
-                          <span class="n">prior_c_mean</span><span class="o">=</span><span class="n">prior_c_mean</span><span class="p">,</span> <span class="n">prior_c_sigma</span><span class="o">=</span><span class="n">prior_c_sigma</span><span class="p">,</span>
-                          <span class="n">draws</span><span class="o">=</span><span class="n">draws</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="n">tune</span><span class="p">,</span> <span class="n">chains</span><span class="o">=</span><span class="n">chains</span><span class="p">,</span><span class="n">cores</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
-
-<span class="n">idata</span> <span class="o">=</span> <span class="n">inference</span><span class="o">.</span><span class="n">run_inference</span><span class="p">()</span>
+<span class="c1"># Calculate percentiles across samples for each time point and species/resource</span>
+<span class="n">species_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">all_species_trajectories</span><span class="p">,</span> <span class="n">lower_percentile</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">species_upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">all_species_trajectories</span><span class="p">,</span> <span class="n">upper_percentile</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">resource_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">all_resource_trajectories</span><span class="p">,</span> <span class="n">lower_percentile</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">resource_upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">all_resource_trajectories</span><span class="p">,</span> <span class="n">upper_percentile</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 
-<span class="c1"># To plot posterior distributions</span>
-<span class="c1">#inference.plot_posterior(idata)</span>
-
-<span class="n">summary</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tau_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;w_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;c_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;m_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;r_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;K_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">[[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span> <span class="s2">&quot;r_hat&quot;</span><span class="p">]])</span>
-
-<span class="c1"># Save posterior samples to file</span>
-<span class="n">az</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="s1">&#39;model_posterior.nc&#39;</span><span class="p">)</span>
-<br/><br/></pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-times shape: (100,)
-yobs shape: (100, 4)
-Number of species: 2
-Number of resources: 2
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Only 50 samples per chain. Reliable r-hat and ESS diagnostics require longer chains for accurate estimate.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-tau_hat is inferred
-w_hat is inferred
-c_hat is inferred
-m_hat is inferred
-r_hat is inferred
-K_hat is inferred
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Auto-assigning NUTS sampler...
-Initializing NUTS using jitter+adapt_diag...
-Multiprocess sampling (4 chains in 4 jobs)
-NUTS: [sigma, tau_hat, w_hat, c_hat_vals, m_hat, r_hat, K_hat]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c11401badce74ffea3d470d610c5ff87", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/opt/anaconda3/envs/my_mimic_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Excess work done on this call (perhaps wrong Dfun type). Run with full_output = 1 to get quantitative information.
-  sol = scipy.integrate.odeint(
-/opt/anaconda3/envs/my_mimic_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Illegal input detected (internal error). Run with full_output = 1 to get quantitative information.
-  sol = scipy.integrate.odeint(
-/opt/anaconda3/envs/my_mimic_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Illegal input detected (internal error). Run with full_output = 1 to get quantitative information.
-  sol = scipy.integrate.odeint(
-/opt/anaconda3/envs/my_mimic_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Excess work done on this call (perhaps wrong Dfun type). Run with full_output = 1 to get quantitative information.
-  sol = scipy.integrate.odeint(
-/opt/anaconda3/envs/my_mimic_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Excess work done on this call (perhaps wrong Dfun type). Run with full_output = 1 to get quantitative information.
-  sol = scipy.integrate.odeint(
-/opt/anaconda3/envs/my_mimic_env/lib/python3.10/site-packages/pymc/ode/ode.py:131: ODEintWarning: Illegal input detected (internal error). Run with full_output = 1 to get quantitative information.
-  sol = scipy.integrate.odeint(
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
- lsoda--  warning..internal t (=r1) and h (=r2) are       such that in the machine, t + h = t on the next step
-       (h = step size). solver will continue anyway      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
- intdy--  t (=r1) illegal            in above message,  r1 =  0.1000000000000D+00
-      t not in interval tcur - hu (= r1) to tcur (=r2)
-      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
- intdy--  t (=r1) illegal            in above message,  r1 =  0.2000000000000D+00
-      t not in interval tcur - hu (= r1) to tcur (=r2)
-      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
- lsoda--  trouble from intdy. itask = i1, tout = r1      in above message,  i1 =         1
-      in above message,  r1 =  0.2000000000000D+00
- lsoda--  warning..internal t (=r1) and h (=r2) are       such that in the machine, t + h = t on the next step
-       (h = step size). solver will continue anyway      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
- intdy--  t (=r1) illegal            in above message,  r1 =  0.1000000000000D+00
-      t not in interval tcur - hu (= r1) to tcur (=r2)
-      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
- intdy--  t (=r1) illegal            in above message,  r1 =  0.2000000000000D+00
-      t not in interval tcur - hu (= r1) to tcur (=r2)
-      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
- lsoda--  trouble from intdy. itask = i1, tout = r1      in above message,  i1 =         1
-      in above message,  r1 =  0.2000000000000D+00
- lsoda--  warning..internal t (=r1) and h (=r2) are       such that in the machine, t + h = t on the next step
-       (h = step size). solver will continue anyway      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
- intdy--  t (=r1) illegal            in above message,  r1 =  0.1000000000000D+00
-      t not in interval tcur - hu (= r1) to tcur (=r2)
-      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
- intdy--  t (=r1) illegal            in above message,  r1 =  0.2000000000000D+00
-      t not in interval tcur - hu (= r1) to tcur (=r2)
-      in above,  r1 =  0.0000000000000D+00   r2 =  0.0000000000000D+00
- lsoda--  trouble from intdy. itask = i1, tout = r1      in above message,  i1 =         1
-      in above message,  r1 =  0.2000000000000D+00
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Sampling 4 chains for 50 tune and 50 draw iterations (200 + 200 draws total) took 14396 seconds.
-There were 3 divergences after tuning. Increase `target_accept` or reparameterize.
-Chain 0 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
-Chain 1 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
-Chain 2 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
-Chain 3 reached the maximum tree depth. Increase `max_treedepth`, increase `target_accept` or reparameterize.
-The number of samples is too small to check convergence reliably.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-              mean     sd  r_hat
-tau_hat[0]   0.152  0.049   1.02
-tau_hat[1]   0.109  0.011   1.01
-w_hat[0]     0.698  0.221   1.43
-w_hat[1]     1.056  0.248   1.43
-c_hat[0, 0]  0.236  0.071   1.19
-c_hat[0, 1]  0.539  0.103   1.00
-c_hat[1, 0]  0.217  0.060   1.50
-c_hat[1, 1]  0.409  0.075   1.31
-m_hat[0]     0.322  0.095   1.31
-m_hat[1]     0.270  0.098   1.48
-r_hat[0]     0.117  0.019   1.23
-r_hat[1]     0.103  0.003   1.13
-K_hat[0]     5.372  2.175   1.54
-K_hat[1]     5.057  2.592   1.55
-sigma[0]     1.781  0.063   1.05
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<span class="c1"># plot the CRM with confidence intervals</span>
+<span class="n">plot_CRM_with_intervals</span><span class="p">(</span><span class="n">observed_species</span><span class="p">,</span> <span class="n">observed_resources</span><span class="p">,</span>
+                       <span class="n">species_lower</span><span class="p">,</span> <span class="n">species_upper</span><span class="p">,</span>
+                       <span class="n">resource_lower</span><span class="p">,</span> <span class="n">resource_upper</span><span class="p">,</span>
+                       <span class="n">times</span><span class="p">,</span> <span class="s1">&#39;data-s2-r2.csv&#39;</span><span class="p">)</span>
 </pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&#39;model_posterior.nc&#39;
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># To plot posterior distributions</span>
-<span class="n">inference</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Plotting posterior for tau_hat
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_12_1.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_12_1.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Plotting posterior for w_hat
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_12_3.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_12_3.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Plotting posterior for c_hat
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_12_5.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_12_5.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Plotting posterior for m_hat
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_12_7.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_12_7.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Plotting posterior for r_hat
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_12_9.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_12_9.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Plotting posterior for K_hat
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_12_11.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_12_11.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">init_species</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="o">+</span><span class="n">num_resources</span><span class="p">)</span>
-
-<span class="c1"># # compare fitted with simulated parameters</span>
-<span class="n">tau_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;tau_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">m_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;m_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">r_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;r_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">w_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;w_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">K_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;K_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">c_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;c_hat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
-
-
-<span class="n">compare_params</span><span class="p">(</span><span class="n">tau</span><span class="o">=</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">tau_h</span><span class="p">),</span> <span class="n">m</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m_h</span><span class="p">),</span> <span class="n">r</span><span class="o">=</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r_h</span><span class="p">),</span> <span class="n">w</span><span class="o">=</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">w_h</span><span class="p">),</span> <span class="n">K</span><span class="o">=</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">K_h</span><span class="p">)</span> <span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c_h</span><span class="p">))</span>
-
-<span class="n">predictor</span> <span class="o">=</span> <span class="n">sim_CRM</span><span class="p">()</span>
-
-<span class="n">predictor</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">num_species</span> <span class="o">=</span> <span class="n">num_species</span><span class="p">,</span>
-                         <span class="n">num_resources</span> <span class="o">=</span> <span class="n">num_resources</span><span class="p">,</span>
-                         <span class="n">tau</span> <span class="o">=</span> <span class="n">tau_h</span><span class="p">,</span>
-                         <span class="n">w</span> <span class="o">=</span> <span class="n">w_h</span><span class="p">,</span>
-                         <span class="n">c</span> <span class="o">=</span> <span class="n">c_h</span><span class="p">,</span>
-                         <span class="n">m</span> <span class="o">=</span> <span class="n">m_h</span><span class="p">,</span>
-                         <span class="n">r</span> <span class="o">=</span> <span class="n">r_h</span><span class="p">,</span>
-                         <span class="n">K</span> <span class="o">=</span> <span class="n">K_h</span><span class="p">)</span>
-
-<span class="n">predictor</span><span class="o">.</span><span class="n">print_parameters</span><span class="p">()</span>
-
-<span class="n">observed_species</span><span class="p">,</span> <span class="n">observed_resources</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">init_species</span><span class="p">)</span>
-<span class="n">observed_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">observed_species</span><span class="p">,</span> <span class="n">observed_resources</span><span class="p">))</span>
-
-<span class="c1"># plot simulated species and resouce dynamics</span>
-
-<span class="n">plot_CRM</span><span class="p">(</span><span class="n">observed_species</span><span class="p">,</span> <span class="n">observed_resources</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="s1">&#39;data-s2-r2.csv&#39;</span><span class="p">)</span>
-<br/></pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-tau_hat/tau:
-[0.14 0.11]
-
- [0.65717535 0.32891147]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_13_1.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_13_1.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-m_hat/m:
-[0.3  0.24]
-
- [0.49237276 0.45684701]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_13_3.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_13_3.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-r_hat/r:
-[0.11 0.1 ]
-
- [0.37454241 0.68323977]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_13_5.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_13_5.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-w_hat/w:
-[0.66 1.11]
-
- [0.28148116 0.54105182]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_13_7.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_13_7.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-K_hat/K:
-[4.51 5.61]
-
- [4.9471502  1.53710107]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_13_9.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_13_9.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-c_hat/c:
-[[0.23 0.54]
- [0.2  0.41]]
-
- [[0.67557518 0.43848517]
- [0.88461136 0.64786379]]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_13_11.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_13_11.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_13_12.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_13_12.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(&lt;Figure size 1000x600 with 1 Axes&gt;,
- &lt;Axes: title={&#39;center&#39;: &#39;CRM Growth Curves: Simulated vs Observed&#39;}, xlabel=&#39;Time&#39;, ylabel=&#39;Concentration&#39;&gt;)
-</pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<section id="Old-notes">
-<h2>Old notes<a class="headerlink" href="#Old-notes" title="Link to this heading">¶</a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">CRM</span><span class="p">(</span><span class="n">sy</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">nsp</span><span class="p">,</span> <span class="n">nr</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
-    <span class="c1"># Separate species (N) and resources (R)</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="n">sy</span><span class="p">[:</span><span class="n">nsp</span><span class="p">]</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="n">sy</span><span class="p">[</span><span class="n">nsp</span><span class="p">:]</span>
-
-    <span class="c1"># Changes in species (dN)</span>
-    <span class="n">dN</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">@</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">R</span><span class="p">)</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span>
-
-    <span class="c1"># Changes in resources (dR)</span>
-    <span class="n">dR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">r</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">K</span> <span class="o">-</span> <span class="n">R</span><span class="p">)</span> <span class="o">*</span> <span class="n">R</span> <span class="o">-</span> <span class="p">(</span><span class="n">N</span> <span class="o">@</span> <span class="n">c</span> <span class="o">*</span> <span class="n">R</span><span class="p">)</span>
-
-    <span class="c1"># Return derivative of species and resources</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">dN</span><span class="p">,</span> <span class="n">dR</span><span class="p">))</span>
-
-
-<span class="c1"># Parameters for the model</span>
-<span class="n">nsp</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># Number of species</span>
-<span class="n">nr</span> <span class="o">=</span> <span class="mi">2</span>   <span class="c1"># Number of resources</span>
-
-
-<span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">nsp</span><span class="p">)</span>  <span class="c1"># species timescales</span>
-<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">nr</span><span class="p">)</span>    <span class="c1"># resource quality</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="n">nsp</span><span class="p">,</span> <span class="n">nr</span><span class="p">))</span>  <span class="c1"># relative resource preferences</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">nsp</span><span class="p">)</span>  <span class="c1"># mortality rates</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">nr</span><span class="p">)</span>   <span class="c1"># resource timescales</span>
-<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">nr</span><span class="p">)</span>  <span class="c1"># resource carrying capacities</span>
-
-
-<span class="c1"># Initial conditions (N0 for species, R0 for resources)</span>
-<span class="n">N0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">])</span>  <span class="c1"># Initial species populations</span>
-<span class="n">R0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">])</span>  <span class="c1"># Initial resource amounts</span>
-<span class="n">sy0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">N0</span><span class="p">,</span> <span class="n">R0</span><span class="p">])</span>  <span class="c1"># Combined initial condition</span>
-<span class="n">init_species</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nsp</span> <span class="o">+</span> <span class="n">nr</span><span class="p">)</span>
-
-
-<span class="c1"># Time points to solve the ODE</span>
-<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-
-<span class="c1"># Solve the system of ODEs</span>
-<span class="n">solution</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">CRM</span><span class="p">,</span> <span class="n">init_species</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">nsp</span><span class="p">,</span> <span class="n">nr</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
-
-<span class="c1"># Extract species and resources from the solution</span>
-<span class="n">N_solution</span> <span class="o">=</span> <span class="n">solution</span><span class="p">[:,</span> <span class="p">:</span><span class="n">nsp</span><span class="p">]</span>  <span class="c1"># Species population over time</span>
-<span class="n">R_solution</span> <span class="o">=</span> <span class="n">solution</span><span class="p">[:,</span> <span class="n">nsp</span><span class="p">:]</span>  <span class="c1"># Resource levels over time</span>
-
-<span class="c1"># Plot the results</span>
-
-<span class="n">plot_CRM</span><span class="p">(</span><span class="n">N_solution</span><span class="p">,</span> <span class="n">R_solution</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
-<br/></pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pymc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pymc.ode</span><span class="w"> </span><span class="kn">import</span> <span class="n">DifferentialEquation</span>
-
-<span class="c1"># Define the ODE function for CRM model</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">CRM</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="c1"># Unpack parameters from the vector p</span>
-    <span class="n">tau</span> <span class="o">=</span> <span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Species time scales (2 values)</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># Resource quality (2 values)</span>
-    <span class="n">c_flat</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>  <span class="c1"># Flattened resource preferences (4 values)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">c_flat</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># Reshape to 2x2 matrix</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>  <span class="c1"># Mortality rates (2 values)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span>  <span class="c1"># Resource time scales (2 values)</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">14</span><span class="p">]</span>  <span class="c1"># Resource carrying capacities (2 values)</span>
-
-    <span class="c1"># Separate species (N) and resources (R)</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Species populations (2 elements)</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>  <span class="c1"># Resource availability (2 elements)</span>
-
-
-    <span class="c1"># Species growth equation (dN)</span>
-    <span class="c1">#dN = (N / tau) * (c @ (w * R) - m)  # Species growth equation</span>
-
-    <span class="n">growth_term</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">w</span> <span class="o">*</span> <span class="n">R</span><span class="p">)</span>  <span class="c1"># Matrix multiplication for species-resource interaction</span>
-    <span class="n">dN</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">growth_term</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span>  <span class="c1"># Species growth equation</span>
-
-    <span class="c1"># Resource consumption equation (dR)</span>
-    <span class="c1">#dR = (1 / r * K) * (K - R) * R - (N @ c * R) # Resource consumption</span>
-
-    <span class="n">consumption_term</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>  <span class="c1"># Matrix multiplication for resource consumption by species</span>
-    <span class="n">dR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">K</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">K</span> <span class="o">-</span> <span class="n">R</span><span class="p">)</span> <span class="o">*</span> <span class="n">R</span> <span class="o">-</span> <span class="n">consumption_term</span> <span class="o">*</span> <span class="n">R</span>  <span class="c1"># Resource consumption equation</span>
-
-    <span class="c1"># Combine dN and dR into a single 1D array</span>
-    <span class="n">derivatives</span> <span class="o">=</span> <span class="p">[</span><span class="n">dN</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dN</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dR</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dR</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>  <span class="c1"># Horizontal stacking ensures a 1D array</span>
-
-
-    <span class="c1"># Return the derivatives for both species and resources as a single array</span>
-    <span class="c1">#return np.concatenate([dN, dR])  # Concatenate to match n_states</span>
-    <span class="c1">#return [dN,dR]</span>
-    <span class="k">return</span> <span class="n">derivatives</span>  <span class="c1"># Return as list</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">CRM_numeric</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="c1"># Unpack parameters from the vector p</span>
-    <span class="n">tau</span> <span class="o">=</span> <span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Species time scales (2 values)</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># Resource quality (2 values)</span>
-    <span class="n">c_flat</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>  <span class="c1"># Flattened resource preferences (4 values)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">c_flat</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># Reshape to 2x2 matrix</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>  <span class="c1"># Mortality rates (2 values)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span>  <span class="c1"># Resource time scales (2 values)</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">14</span><span class="p">]</span>  <span class="c1"># Resource carrying capacities (2 values)</span>
-
-    <span class="c1"># Separate species (N) and resources (R)</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Species populations (2 elements)</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>  <span class="c1"># Resource availability (2 elements)</span>
-
-
-    <span class="c1">#dN = (N / tau) * (c @ (w * R) - m)  # Species growth equation</span>
-
-    <span class="c1">#dR = (1 / r * K) * (K - R) * R - (N @ c * R) # Resource consumption</span>
-
-    <span class="c1"># Species growth equation (dN)</span>
-    <span class="n">growth_term</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">w</span> <span class="o">*</span> <span class="n">R</span><span class="p">)</span>  <span class="c1"># Matrix multiplication for species-resource interaction</span>
-    <span class="n">dN</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">growth_term</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span>  <span class="c1"># Species growth equation</span>
-
-    <span class="c1"># Resource consumption equation (dR)</span>
-    <span class="n">consumption_term</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>  <span class="c1"># Matrix multiplication for resource consumption by species</span>
-    <span class="n">dR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">K</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">K</span> <span class="o">-</span> <span class="n">R</span><span class="p">)</span> <span class="o">*</span> <span class="n">R</span> <span class="o">-</span> <span class="n">consumption_term</span> <span class="o">*</span> <span class="n">R</span>  <span class="c1"># Resource consumption equation</span>
-
-    <span class="c1"># Combine dN and dR into a single 1D array</span>
-    <span class="n">derivatives</span> <span class="o">=</span> <span class="p">[</span><span class="n">dN</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dN</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dR</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dR</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>  <span class="c1"># Horizontal stacking ensures a 1D array</span>
-
-
-    <span class="c1"># Return the derivatives for both species and resources as a single array</span>
-    <span class="c1">#return np.concatenate([dN, dR])  # Concatenate to match n_states</span>
-    <span class="c1">#return [dN,dR]</span>
-    <span class="k">return</span> <span class="n">derivatives</span>  <span class="c1"># Return as list</span>
-
-
-<span class="c1"># Set up initial conditions and parameters</span>
-<span class="n">num_species</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">num_resources</span> <span class="o">=</span> <span class="mi">2</span>
-
-<span class="c1"># Define model parameters (totals for species and resources)</span>
-<span class="c1"># Set initial values for parameters (these would be set as priors later on)</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>  <span class="c1"># Species time scales (2 values)</span>
-<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>  <span class="c1"># Resource quality (2 values)</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">))</span>  <span class="c1"># Resource preferences (2x2 matrix)</span>
-<span class="n">c_flat</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>  <span class="c1"># Flatten the matrix for PyMC input</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>  <span class="c1"># Mortality rates (2 values)</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>  <span class="c1"># Resource time scales (2 values)</span>
-<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>  <span class="c1"># Resource carrying capacities (2 values)</span>
-
-<span class="c1"># Store parameters in a single vector (flattened for PyMC input)</span>
-<span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">tau</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c_flat</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">K</span><span class="p">])</span>
-
-<span class="c1"># Set initial conditions (initial populations of species and resources)</span>
-<span class="n">y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_resources</span><span class="p">)])</span>  <span class="c1"># Initial species and resource populations</span>
-<span class="n">initial_conditions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">])])</span>
-
-
-<span class="c1"># Time points for integration</span>
-<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
-<span class="n">numeric_solution</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">CRM_numeric</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">params</span><span class="p">,))</span>
-<span class="c1">#plt.plot(times, numeric_solution)</span>
-<span class="c1">#plt.show()</span>
-
-<span class="c1"># Plot the solution</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">numeric_solution</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Species 1 (N1)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">numeric_solution</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Species 2 (N2)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">numeric_solution</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Resource 1 (R1)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">numeric_solution</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Resource 2 (R2)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amount&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-
-<span class="c1"># Define the DifferentialEquation model</span>
-<span class="n">crm_model</span> <span class="o">=</span> <span class="n">DifferentialEquation</span><span class="p">(</span>
-    <span class="n">func</span><span class="o">=</span><span class="n">CRM</span><span class="p">,</span>  <span class="c1"># The ODE function</span>
-    <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>  <span class="c1"># Time points for the solution</span>
-    <span class="n">n_states</span><span class="o">=</span><span class="n">num_species</span><span class="o">+</span><span class="n">num_resources</span><span class="p">,</span>  <span class="c1"># Total state variables (2 species + 2 resources)</span>
-    <span class="n">n_theta</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>  <span class="c1"># Total number of parameters (tau, w, c, m, r, K)</span>
-    <span class="n">t0</span><span class="o">=</span><span class="mi">0</span>  <span class="c1"># Initial time</span>
-<span class="p">)</span>
-<br/><br/><br/><br/><br/></pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nr</span> <span class="o">=</span> <span class="n">num_resources</span>
-<span class="n">nsp</span> <span class="o">=</span> <span class="n">num_species</span>
-<span class="n">n_states</span> <span class="o">=</span> <span class="n">nsp</span> <span class="o">+</span> <span class="n">nr</span>
-
-<span class="k">with</span> <span class="n">pm</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span> <span class="k">as</span> <span class="n">model</span><span class="p">:</span>
-    <span class="c1"># Priors for the parameters</span>
-    <span class="n">sigma</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">HalfCauchy</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">n_states</span><span class="p">)</span>
-
-    <span class="n">tau</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">&quot;tau&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nsp</span><span class="p">)</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nr</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nsp</span><span class="p">,</span> <span class="n">nr</span><span class="p">))</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nsp</span><span class="p">)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nr</span><span class="p">)</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nr</span><span class="p">)</span>
-
-    <span class="c1"># Pack parameters into a single vector</span>
-    <span class="n">theta</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">tau</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">K</span><span class="p">])</span>
-
-    <span class="c1"># Initial conditions for the ODE</span>
-    <span class="n">initial_conditions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">])])</span>
-    <span class="n">y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_resources</span><span class="p">)])</span>  <span class="c1"># Initial species and resource populations</span>
-
-    <span class="c1"># Solve the ODE</span>
-    <span class="n">crm_curves</span> <span class="o">=</span> <span class="n">crm_model</span><span class="p">(</span><span class="n">y0</span><span class="o">=</span><span class="n">y0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">)</span>
-
-    <span class="c1">#print(&#39;numeric_solution shape:&#39;, numeric_solution)</span>
-
-    <span class="c1"># Define the likelihood</span>
-    <span class="n">Y</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Lognormal</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">at</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">crm_curves</span><span class="p">),</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="n">numeric_solution</span><span class="p">)</span>
-
-    <span class="c1"># Sample the posterior</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">draws</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">chains</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">cores</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-
-<span class="n">az</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-
-<span class="c1"># Define the ODE function for CRM model</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">CRM</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="c1"># Unpack parameters from the vector p</span>
-    <span class="n">tau</span> <span class="o">=</span> <span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Species time scales (2 values)</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>   <span class="c1"># Resource quality (2 values)</span>
-    <span class="n">c_flat</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>  <span class="c1"># Flattened resource preferences (4 values)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">c_flat</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># Reshape to 2x2 matrix</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>  <span class="c1"># Mortality rates (2 values)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span>  <span class="c1"># Resource time scales (2 values)</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">14</span><span class="p">]</span>  <span class="c1"># Resource carrying capacities (2 values)</span>
-
-    <span class="c1"># Separate species (N) and resources (R)</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Species populations (2 elements)</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>  <span class="c1"># Resource availability (2 elements)</span>
-
-    <span class="c1"># Define the ODEs</span>
-    <span class="n">dN</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">w</span> <span class="o">*</span> <span class="n">R</span><span class="p">)</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span>  <span class="c1"># Species growth equation</span>
-    <span class="n">dR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">K</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">K</span> <span class="o">-</span> <span class="n">R</span><span class="p">)</span> <span class="o">*</span> <span class="n">R</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">*</span> <span class="n">R</span>  <span class="c1"># Resource consumption</span>
-
-    <span class="c1"># Return the concatenated derivatives</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">dN</span><span class="p">,</span> <span class="n">dR</span><span class="p">])</span>
-
-<span class="c1"># Set initial conditions and parameters</span>
-<span class="n">num_species</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">num_resources</span> <span class="o">=</span> <span class="mi">2</span>
-
-<span class="c1"># Define model parameters (totals for species and resources)</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>  <span class="c1"># Species time scales (2 values)</span>
-<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>  <span class="c1"># Resource quality (2 values)</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">))</span>  <span class="c1"># Resource preferences (2x2 matrix)</span>
-<span class="n">c_flat</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>  <span class="c1"># Flatten the matrix for PyMC input</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>  <span class="c1"># Mortality rates (2 values)</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>  <span class="c1"># Resource time scales (2 values)</span>
-<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>  <span class="c1"># Resource carrying capacities (2 values)</span>
-
-<span class="c1"># Store parameters in a single vector (flattened for PyMC input)</span>
-<span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">tau</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c_flat</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">K</span><span class="p">])</span>
-
-<span class="c1"># Set initial conditions (initial populations of species and resources)</span>
-<span class="n">y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_resources</span><span class="p">)])</span>  <span class="c1"># Initial species and resource populations</span>
-
-<span class="c1"># Time points for integration</span>
-<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-
-<span class="c1"># Solve the ODE using odeint</span>
-<span class="n">solution</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">CRM</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">params</span><span class="p">,))</span>
-
-<span class="c1"># Plot the solution</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">solution</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Species 1 (N1)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">solution</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Species 2 (N2)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">solution</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Resource 1 (R1)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">solution</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Resource 2 (R2)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Population&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<br/></pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pymc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pymc.ode</span><span class="w"> </span><span class="kn">import</span> <span class="n">DifferentialEquation</span>
-
-<span class="c1"># Define the CRM ODE function (already provided)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">CRM</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="c1"># Unpack parameters</span>
-    <span class="n">tau</span> <span class="o">=</span> <span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Species time scales</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># Resource quality</span>
-    <span class="n">c_flat</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>  <span class="c1"># Resource preferences flattened</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">c_flat</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># Reshape to matrix form</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>  <span class="c1"># Mortality rates</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span>  <span class="c1"># Resource time scales</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">14</span><span class="p">]</span>  <span class="c1"># Resource carrying capacities</span>
-
-    <span class="n">N</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Species populations</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>  <span class="c1"># Resource availability</span>
-
-    <span class="n">growth_term</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">w</span> <span class="o">*</span> <span class="n">R</span><span class="p">)</span>  <span class="c1"># Interaction term</span>
-    <span class="n">dN</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">growth_term</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span>  <span class="c1"># Species growth equation</span>
-
-    <span class="n">consumption_term</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>  <span class="c1"># Consumption term</span>
-    <span class="n">dR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">K</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">K</span> <span class="o">-</span> <span class="n">R</span><span class="p">)</span> <span class="o">*</span> <span class="n">R</span> <span class="o">-</span> <span class="n">consumption_term</span> <span class="o">*</span> <span class="n">R</span>  <span class="c1"># Resource equation</span>
-
-    <span class="c1"># Return the derivatives as a single list (flattened)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">dN</span><span class="p">,</span> <span class="n">dR</span><span class="p">])</span>
-
-<span class="c1"># Time points for ODE integration</span>
-<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-
-<span class="c1"># Initial conditions and parameters (same as earlier)</span>
-<span class="n">num_species</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">num_resources</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_species</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_resources</span><span class="p">)])</span>  <span class="c1"># Initial populations</span>
-
-<span class="c1"># Generate model parameters</span>
-<span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
-<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="n">num_species</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">))</span>
-<span class="n">c_flat</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_species</span><span class="p">)</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>
-<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">num_resources</span><span class="p">)</span>
-<span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">tau</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c_flat</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">K</span><span class="p">])</span>
-
-<span class="c1"># Solve the system numerically</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
-<span class="n">numeric_solution</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">CRM_numeric</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">params</span><span class="p">,))</span>
-
-<span class="c1"># Plot the solution</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">numeric_solution</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Species 1 (N1)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">numeric_solution</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Species 2 (N2)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">numeric_solution</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Resource 1 (R1)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">numeric_solution</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Resource 2 (R2)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amount&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[4], line 49</span>
-<span class="ansi-green-intense-fg ansi-bold">     47</span> <span style="color: rgb(95,135,135)"># Solve the system numerically</span>
-<span class="ansi-green-intense-fg ansi-bold">     48</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">scipy</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">integrate</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> odeint
-<span class="ansi-green-fg">---&gt; 49</span> numeric_solution <span style="color: rgb(98,98,98)">=</span> odeint(<span class="ansi-yellow-bg">CRM_numeric</span>, y0<span style="color: rgb(98,98,98)">=</span>y0, t<span style="color: rgb(98,98,98)">=</span>times, args<span style="color: rgb(98,98,98)">=</span>(params,))
-<span class="ansi-green-intense-fg ansi-bold">     51</span> <span style="color: rgb(95,135,135)"># Plot the solution</span>
-<span class="ansi-green-intense-fg ansi-bold">     52</span> plt<span style="color: rgb(98,98,98)">.</span>plot(times, numeric_solution[:, <span style="color: rgb(98,98,98)">0</span>], label<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Species 1 (N1)</span><span style="color: rgb(175,0,0)">&#39;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;CRM_numeric&#39; is not defined
-</pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
+<img alt="../../_images/notebooks_CRM_examples-bayes-CRM_9_0.png" src="../../_images/notebooks_CRM_examples-bayes-CRM_9_0.png" />
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-</section>
 </section>
 
 
