@@ -61,35 +61,42 @@ def main():
     # Settings
     num_simulations = 50
     num_species = 3
+    num_replicates = 3         # <-- run 3 noisy replicates per parameter draw
     # Time span: 101 points from t=0 to t=10
     t_span = np.linspace(0, 10, 101).astype(np.float32)
     # Initial condition: all species start at abundance 10
     init_species = np.full(num_species, 10.0, dtype=np.float32)
-    noise_std = 0.3  # Standard deviation of measurement noise
+    noise_std = 0.3          # Standard deviation of measurement noise
 
     # Create directory to save simulation files
     os.makedirs("simulations", exist_ok=True)
 
     for i in range(num_simulations):
-        # Generate a random parameter set from the defined ranges
+        # 1) generate parameters once per “simulation”
         mu, M, epsilon = generate_random_parameters(num_species)
 
-        # Generate simulation data (noise-free and noisy)
-        sol, noisy_sol = generate_data(
-            num_species, mu, M, epsilon, t_span, init_species, noise_std)
+        # 2) run replicates, but only keep the noisy output
+        replicates = []
+        for r in range(num_replicates):
+            _, noisy_sol = generate_data(
+                num_species, mu, M, epsilon,
+                t_span, init_species, noise_std
+            )
+            replicates.append({
+                "noisy_solution": noisy_sol.tolist()
+            })
 
-        # Package all simulation data along with the "true" parameter set
+        # 3) package into one JSON document
         sim_data = {
-            "mu_true": mu.tolist(),
-            "M_true": M.tolist(),
+            "mu_true":      mu.tolist(),
+            "M_true":       M.tolist(),
             "epsilon_true": epsilon.tolist(),
-            "t_span": t_span.tolist(),
+            "t_span":       t_span.tolist(),
             "init_species": init_species.tolist(),
-            "solution": sol.tolist(),          # Noise-free solution
-            "noisy_solution": noisy_sol.tolist()  # Observed data with noise
+            "replicates":   replicates
         }
 
-        # Save each simulation as a JSON file (e.g., simulation_001.json, simulation_002.json, ...)
+        # Save each simulation as a JSON file
         filename = f"simulations/simulation_{i+1:03d}.json"
         with open(filename, "w") as f:
             json.dump(sim_data, f, indent=4)
