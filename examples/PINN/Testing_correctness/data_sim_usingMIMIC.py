@@ -43,7 +43,7 @@ def main():
         sim_data = {
             "mu_true":      mu_true.tolist(),
             "M_true":       M_true.tolist(),
-            "epsilon_true": eps_true.tolist(),
+            "epsilon_true": eps_true.flatten().tolist(),
             "t_span":       t_span.tolist(),
             "init_species": init_species.tolist(),
             "replicates":   replicates,
