@@ -1,106 +1,104 @@
-import numpy as np
-import os
+"""
+Stable gLV generator with step perturbation (t = 5) and 3 replicates
+====================================================================
+* Draws parameters from safer ranges
+* Rejects any draw whose trajectory explodes ( > 1e3 or NaNs / Infs )
+* JSON layout is exactly what original_parameter_infer.py expects
+* Files are written to: sim_reps_mimic/sim_###.json
+"""
+
 import json
+import os
+import numpy as np
 from scipy.integrate import odeint
 
 
-def step_perturbation_np(t):
-    # Step function: activates at t>=5
+# ------------------------------------------------------------------
+# 1.  gLV system with a single step perturbation
+# ------------------------------------------------------------------
+def step_perturbation(t: float) -> float:
+    """0 for t < 5, 1 for t >= 5."""
     return 1.0 if t >= 5.0 else 0.0
 
 
-def true_glv_ode_with_perturbation(N, t, mu, M, epsilon):
-    """
-    Generalized Lotka–Volterra ODE with an external step perturbation.
-    N: species abundances (vector)
-    mu: intrinsic growth rates (vector)
-    M: interaction matrix (num_species x num_species)
-    epsilon: perturbation vector (vector)
-    """
-    u_t = step_perturbation_np(t)
-    growth = mu + np.dot(M, N) + epsilon * u_t
+def glv_ode(N, t, mu, M, epsilon):
+    """Generalised Lotka–Volterra with external perturbation ε·u(t)."""
+    u_t = step_perturbation(t)
+    growth = mu + M @ N + epsilon * u_t
     return N * growth
 
 
-def generate_data(num_species, mu, M, epsilon, t_span, init_species, noise_std=0.3):
-    """
-    Integrate the ODE to generate the noise-free solution and add Gaussian noise.
-    """
-    def ode_wrapper(N, t):
-        return true_glv_ode_with_perturbation(N, t, mu, M, epsilon)
-    sol = odeint(ode_wrapper, init_species, t_span)
-    noisy_sol = sol + np.random.normal(0, noise_std, sol.shape)
-    return sol, noisy_sol
+# ------------------------------------------------------------------
+# 2.  parameter sampling
+# ------------------------------------------------------------------
+def draw_parameters(n_species: int):
+    """Return μ, M, ε drawn from *stable* ranges."""
+    mu = np.random.uniform(0.8, 1.6, size=n_species)
 
+    # weaker positive couplings, stronger self‑inhibition
+    M = np.random.uniform(-0.02, 0.03, size=(n_species, n_species))
+    np.fill_diagonal(M,
+                     np.random.uniform(-0.30, -0.10, size=n_species))
 
-def generate_random_parameters(num_species):
-    """
-    Generate a random parameter set based on ranges aligned with the original script:
-
-    - Intrinsic growth rates μ: Uniform[0.8, 1.6]
-    - Interaction matrix M:
-         * Diagonals (self-interaction): Uniform[-0.16, -0.04]
-         * Off-diagonals: Uniform[-0.03, 0.06]
-    - Perturbation vector ε: Uniform[-0.15, 0.25]
-    """
-    # Sample μ for each species
-    mu = np.random.uniform(0.8, 1.6, size=num_species)
-
-    # Create an interaction matrix M: first sample off-diagonals, then set diagonals separately.
-    M = np.random.uniform(-0.03, 0.06, size=(num_species, num_species))
-    diag_vals = np.random.uniform(-0.16, -0.04, size=num_species)
-    np.fill_diagonal(M, diag_vals)
-
-    # Sample perturbation vector ε
-    epsilon = np.random.uniform(-0.15, 0.25, size=num_species)
+    # milder external shock
+    epsilon = np.random.uniform(-0.15, 0.25, size=n_species)
 
     return mu.astype(np.float32), M.astype(np.float32), epsilon.astype(np.float32)
 
 
+def simulate_until_finite(n_species, t_span, init):
+    """Keep drawing parameters until trajectory stays finite and < 1e3."""
+    while True:
+        mu, M, eps = draw_parameters(n_species)
+        sol = odeint(glv_ode, init, t_span, args=(mu, M, eps))
+
+        if (np.isfinite(sol).all()) and (sol.max() < 1e3):
+            return mu, M, eps, sol
+
+
+# ------------------------------------------------------------------
+# 3.  main data‑generation loop
+# ------------------------------------------------------------------
 def main():
-    # Settings
-    num_simulations = 50
-    num_species = 3
-    num_replicates = 3         # <-- run 3 noisy replicates per parameter draw
-    # Time span: 101 points from t=0 to t=10
+    # user settings -------------------------------------------------
+    n_sims = 50
+    n_species = 6
+    n_reps = 3
+    noise_std = 0.3                    # >0 for Gaussian measurement noise
     t_span = np.linspace(0, 10, 101).astype(np.float32)
-    # Initial condition: all species start at abundance 10
-    init_species = np.full(num_species, 10.0, dtype=np.float32)
-    noise_std = 0.3          # Standard deviation of measurement noise
+    init_species = np.full(n_species, 10.0, dtype=np.float32)  # higher start
 
-    # Create directory to save simulation files
-    os.makedirs("simulations", exist_ok=True)
+    out_dir = "simulation_replicates"
+    os.makedirs(out_dir, exist_ok=True)
 
-    for i in range(num_simulations):
-        # 1) generate parameters once per “simulation”
-        mu, M, epsilon = generate_random_parameters(num_species)
+    # generation ----------------------------------------------------
+    for idx in range(1, n_sims + 1):
+        mu, M, eps, sol = simulate_until_finite(n_species,
+                                                t_span,
+                                                init_species)
 
-        # 2) run replicates, but only keep the noisy output
+        # build replicates
         replicates = []
-        for r in range(num_replicates):
-            _, noisy_sol = generate_data(
-                num_species, mu, M, epsilon,
-                t_span, init_species, noise_std
-            )
-            replicates.append({
-                "noisy_solution": noisy_sol.tolist()
-            })
+        for _ in range(n_reps):
+            noisy = sol + np.random.normal(0, noise_std, sol.shape)
+            replicates.append({"noisy_solution": noisy.tolist()})
 
-        # 3) package into one JSON document
-        sim_data = {
+        # save JSON
+        payload = {
             "mu_true":      mu.tolist(),
             "M_true":       M.tolist(),
-            "epsilon_true": epsilon.tolist(),
+            "epsilon_true": eps.tolist(),          # flattened
             "t_span":       t_span.tolist(),
             "init_species": init_species.tolist(),
             "replicates":   replicates
         }
 
-        # Save each simulation as a JSON file
-        filename = f"simulations/simulation_{i+1:03d}.json"
-        with open(filename, "w") as f:
-            json.dump(sim_data, f, indent=4)
-        print(f"Saved simulation {i+1} to {filename}")
+        fname = os.path.join(out_dir, f"sim_{idx:03d}.json")
+        with open(fname, "w") as f:
+            json.dump(payload, f, indent=2)
+        print(f"✔ saved {fname}")
+
+    print("Finished generating data.")
 
 
 if __name__ == "__main__":
