@@ -1,3 +1,13 @@
+"""
+PINN parameter‑inference for gLV simulations (clean ASCII version)
+
+Differences vs. the earlier draft
+---------------------------------
+* uses a single colour per species for both observed points and
+  PINN‑predicted line
+* no non‑ASCII characters in code or comments
+"""
+
 import os
 import json
 import numpy as np
@@ -5,193 +15,207 @@ import deepxde as dde
 from deepxde.backend import tf
 import matplotlib.pyplot as plt
 
-# Define scaling factors for M and ε.
-s_M = 10.0    # Interaction matrix scaling factor
-s_eps = 5.0   # Perturbation scaling factor
 
-# Hyperparameters (from your tuning)
-lambda_pde = 1.0      # PDE loss weight
-reg_coeff = 0.0046    # L2 regularization coefficient
-lr = 0.00075          # learning rate
+# ------------------------------------------------------------------
+# 1.  Global settings
+# ------------------------------------------------------------------
+S_M = 5.0   # interaction‑matrix scale (was 10)
+S_EPS = 2.0   # perturbation‑vector scale (was 5)
 
-
-def step_perturbation_tf(t):
-    val = tf.where(t >= 5.0, tf.ones_like(t), tf.zeros_like(t))
-    return tf.reshape(val, [-1])
+LAMBDA_PDE = 1.0
+REG_COEFF = 4.6e-3
+LR = 2e-4
 
 
-def glv_pde_with_unknown_perturbation(t, y, trainable_params, num_species):
-    """
-    PDE residual for gLV with unknown parameters.
-    trainable_params = [mu, M_scaled, eps_scaled]
-    """
-    # unpack
-    num_mu = num_species
-    num_M = num_species * num_species
-    mu = trainable_params[:num_mu]
-    M_scaled = trainable_params[num_mu: num_mu + num_M]
-    eps_scaled = trainable_params[num_mu + num_M:]
-    # un‐scale
-    M = tf.reshape(M_scaled, (num_species, num_species)) / s_M
-    epsilon = eps_scaled / s_eps
+# ------------------------------------------------------------------
+# 2.  Helper functions
+# ------------------------------------------------------------------
+def step_tf(t):
+    "Heaviside step: 1 for t >= 5, else 0."
+    return tf.where(t >= 5.0, tf.ones_like(t), tf.zeros_like(t))
 
-    u_t = step_perturbation_tf(t)
-    mu_exp = tf.expand_dims(mu, 0)            # (1, S)
-    My = tf.matmul(y, M, transpose_b=True)    # (N, S)
-    eps_exp = tf.expand_dims(epsilon, 0)      # (1, S)
-    u_exp = tf.expand_dims(u_t, 1)            # (N, 1)
 
-    growth = mu_exp + My + eps_exp * u_exp     # (N, S)
-    dy_dt = y * growth                        # (N, S)
+def glv_pde(t, y, params, n_species):
+    "PDE residual for unknown mu, M, epsilon."
+    n_mu = n_species
+    n_M = n_species * n_species
 
-    residuals = []
-    for i in range(num_species):
+    mu = params[:n_mu]
+    M_s = params[n_mu: n_mu + n_M]
+    eps_s = params[n_mu + n_M:]
+
+    M = tf.reshape(M_s, (n_species, n_species)) / S_M
+    epsilon = eps_s / S_EPS
+
+    u = step_tf(t)                              # (N,)
+    mu_e = tf.expand_dims(mu, 0)                   # (1, S)
+    My = tf.matmul(y, M, transpose_b=True)       # (N, S)
+    eps_e = tf.expand_dims(epsilon, 0)              # (1, S)
+    u_e = tf.expand_dims(u, 1)                    # (N, 1)
+
+    growth = mu_e + My + eps_e * u_e                 # (N, S)
+    rhs = y * growth                              # (N, S)
+
+    res = []
+    for i in range(n_species):
         dyi_dt = tf.gradients(y[:, i], t)[0]
-        residuals.append(lambda_pde * (dyi_dt - dy_dt[:, i: i + 1]))
-    return residuals
+        res.append(LAMBDA_PDE * (dyi_dt - rhs[:, i: i + 1]))
+    return res
 
 
 def build_feature_transform():
-    def transform(t):
+    def ft(t):
         return tf.concat([t, tf.sin(t), tf.sin(2.0 * t)], axis=1)
-    return transform
+    return ft
 
 
-def infer_parameters_from_file(sim_file):
-    """
-    Runs one full round of inference on ALL replicates in sim_file,
-    then returns true parameters, replicate‐wise inferred parameters,
-    and their mean/std.
-    """
-    # --- 0) reset TF / DeepXDE graph so each call is fresh ---
+def positive_output_transform(_, y):
+    "Softplus keeps network outputs non‑negative."
+    return tf.nn.softplus(y)
+
+
+def reset_graph():
     tf.keras.backend.clear_session()
-    if hasattr(tf, "reset_default_graph"):
-        tf.reset_default_graph()
-    elif hasattr(tf, "compat") and hasattr(tf.compat, "v1"):
+    if hasattr(tf, "compat") and hasattr(tf.compat, "v1"):
         tf.compat.v1.reset_default_graph()
 
-    # --- 1) load data ---
-    with open(sim_file) as f:
+
+# ------------------------------------------------------------------
+# 3.  Single‑simulation inference
+# ------------------------------------------------------------------
+def infer_from_file(path):
+    reset_graph()
+
+    with open(path, "r") as f:
         sim = json.load(f)
 
     t_span = np.array(sim["t_span"], dtype=np.float32).reshape(-1, 1)
-    true_mu = np.array(sim["mu_true"], dtype=np.float32)
-    true_M = np.array(sim["M_true"], dtype=np.float32)
-    true_eps = np.array(sim["epsilon_true"], dtype=np.float32)
+    mu_true = np.array(sim["mu_true"],      dtype=np.float32)
+    M_true = np.array(sim["M_true"],       dtype=np.float32)
+    eps_true = np.array(sim["epsilon_true"], dtype=np.float32).reshape(-1)
 
-    num_species = true_mu.size
-    num_reps = len(sim["replicates"])
+    S = mu_true.size
+    n_M = S * S
+    results = []
 
-    # container for per‐replicate inferences
-    rep_results = []
+    for rep_idx, rep in enumerate(sim["replicates"], start=1):
+        y_obs = np.array(rep["noisy_solution"], dtype=np.float32)
 
-    for idx, rep in enumerate(sim["replicates"], 1):
-        noisy = np.array(rep["noisy_solution"], dtype=np.float32)
-
-        # geometry & BCs
+        # Geometry and data boundary conditions
         geom = dde.geometry.TimeDomain(t_span[0, 0], t_span[-1, 0])
-        bcs = [
-            dde.PointSetBC(t_span, noisy[:, i: i + 1], component=i)
-            for i in range(num_species)
-        ]
+        bcs = [dde.PointSetBC(t_span, y_obs[:, i:i+1], component=i)
+               for i in range(S)]
 
-        # initial parameter guess
-        num_mu = num_species
-        num_M = num_species * num_species
-        mu_g = np.random.uniform(0.8, 1.6, size=num_species)
-        M_g = np.random.uniform(-0.03, 0.06, size=(num_M,))
-        # stronger self‐interaction guess
-        for j in range(num_species):
-            M_g[j * num_species + j] = np.random.uniform(-0.15, -0.05) * s_M
-        eps_g = np.random.uniform(-0.15, 0.25, size=num_species) * s_eps
+        # Initial guesses
+        mu_g = np.random.uniform(0.8, 1.6, S)
+        M_g = np.random.uniform(-0.03, 0.06, n_M)
+        for i in range(S):
+            M_g[i * S + i] = np.random.uniform(-0.15, -0.05) * S_M
+        eps_g = np.random.uniform(-0.15, 0.25, S) * S_EPS
 
-        init_params = np.hstack([mu_g, M_g, eps_g]).astype(np.float32)
-        trainable = tf.Variable(init_params, dtype=tf.float32, trainable=True)
+        init_theta = np.hstack([mu_g, M_g, eps_g]).astype(np.float32)
+        theta = tf.Variable(init_theta, trainable=True, dtype=tf.float32)
 
-        # setup PINN
-        def pde_res(t, y):
-            return glv_pde_with_unknown_perturbation(
-                t, y, trainable, num_species
-            )
+        def pde_residual(t, y):
+            return glv_pde(t, y, theta, S)
 
-        data = dde.data.PDE(geom, pde_res, bcs, anchors=t_span)
-        net = dde.maps.FNN(
-            [1, 128, 128, 128, num_species],
-            "swish",
-            "Glorot normal",
-            regularization=["l2", reg_coeff],
-        )
+        data = dde.data.PDE(geom, pde_residual, bcs, anchors=t_span)
+
+        net = dde.maps.FNN([1, 128, 128, 128, S],
+                           activation="swish",
+                           kernel_initializer="Glorot normal",
+                           regularization=["l2", REG_COEFF])
         net.apply_feature_transform(build_feature_transform())
+        net.apply_output_transform(positive_output_transform)
+
         model = dde.Model(data, net)
-        model.compile("adam", lr=lr)
-        model.train(iterations=20000, display_every=1000)
+        model.compile("adam", lr=LR, loss="MSE")
 
-        # pull out inferred parameters
-        inf = model.sess.run(trainable)
-        mu_inf = inf[:num_mu]
-        M_inf = (
-            inf[num_mu: num_mu + num_M].reshape(num_species, num_species) / s_M)
-        eps_inf = inf[num_mu + num_M:] / s_eps
+        try:
+            model.train(iterations=20000, display_every=1000)
+            inferred = model.sess.run(theta)
+        except (tf.errors.InvalidArgumentError, FloatingPointError):
+            print(f"replicate {rep_idx}: training diverged, skipped")
+            continue
 
-        rep_results.append(
-            {
-                "replicate": idx,
-                "inferred_mu": mu_inf.tolist(),
-                "inferred_M": M_inf.tolist(),
-                "inferred_epsilon": eps_inf.tolist(),
-            }
-        )
+        mu_inf = inferred[:S]
+        M_inf = inferred[S:S + n_M].reshape(S, S) / S_M
+        eps_inf = inferred[S + n_M:] / S_EPS
 
-    # --- 3) aggregate across replicates ---
-    mus = np.array([r["inferred_mu"] for r in rep_results])
-    Ms = np.array([r["inferred_M"] for r in rep_results])
-    epss = np.array([r["inferred_epsilon"] for r in rep_results])
+        results.append({
+            "replicate":        rep_idx,
+            "inferred_mu":      mu_inf.tolist(),
+            "inferred_M":       M_inf.tolist(),
+            "inferred_epsilon": eps_inf.tolist()
+        })
 
-    mu_mean = mus.mean(axis=0)
-    mu_std = mus.std(axis=0)
-    M_mean = Ms.mean(axis=0)
-    M_std = Ms.std(axis=0)
-    eps_mean = epss.mean(axis=0)
-    eps_std = epss.std(axis=0)
+        # quick diagnostic plot ---------------------------------
+        colours = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+        plt.figure(figsize=(8, 4))
+        for k in range(S):
+            col = colours[k % len(colours)]
+            plt.plot(t_span, y_obs[:, k], "o", ms=2, color=col,
+                     label=f"obs S{k+1}" if k == 0 else None)
+            y_hat = model.predict(t_span)[:, k]
+            plt.plot(t_span, y_hat, "-", lw=1, color=col,
+                     label=f"pred S{k+1}" if k == 0 else None)
+        plt.title(f"{os.path.basename(path)}  replicate {rep_idx}")
+        plt.tight_layout()
+        plot_name = os.path.basename(path).replace(".json",
+                                                   f"_rep{rep_idx}.png")
+        plt.savefig(os.path.join("original_inference_results", plot_name))
+        plt.close()
 
-    return {
-        "simulation_file": os.path.basename(sim_file),
-        "true_mu": true_mu.tolist(),
-        "true_M": true_M.tolist(),
-        "true_epsilon": true_eps.tolist(),
-        "replicates_inferred": rep_results,
-        "mu_mean": mu_mean.tolist(),
-        "mu_std": mu_std.tolist(),
-        "M_mean": M_mean.tolist(),
-        "M_std": M_std.tolist(),
-        "epsilon_mean": eps_mean.tolist(),
-        "epsilon_std": eps_std.tolist(),
+    if not results:
+        return {"simulation_file": os.path.basename(path),
+                "error": "all replicates diverged"}
+
+    mu_arr = np.array([r["inferred_mu"] for r in results])
+    M_arr = np.array([r["inferred_M"] for r in results])
+    eps_arr = np.array([r["inferred_epsilon"] for r in results])
+
+    summary = {
+        "simulation_file": os.path.basename(path),
+        "true_mu":      mu_true.tolist(),
+        "true_M":       M_true.tolist(),
+        "true_epsilon": eps_true.tolist(),
+        "replicates_inferred": results,
+        "mu_mean":      mu_arr.mean(axis=0).tolist(),
+        "mu_std":       mu_arr.std(axis=0).tolist(),
+        "M_mean":       M_arr.mean(axis=0).tolist(),
+        "M_std":        M_arr.std(axis=0).tolist(),
+        "epsilon_mean": eps_arr.mean(axis=0).tolist(),
+        "epsilon_std":  eps_arr.std(axis=0).tolist()
     }
+    return summary
 
 
+# ------------------------------------------------------------------
+# 4.  Batch runner
+# ------------------------------------------------------------------
 def main():
-    sim_dir = "simulations_replicates"
+    sim_dir = "simulation_replicates"
     out_dir = "original_inference_results"
     os.makedirs(out_dir, exist_ok=True)
 
-    all_results = []
-    for fn in sorted(os.listdir(sim_dir)):
-        if not fn.endswith(".json"):
+    all_summaries = []
+    for fname in sorted(os.listdir(sim_dir)):
+        if not fname.endswith(".json"):
             continue
-        sim_path = os.path.join(sim_dir, fn)
-        print(f"→ Inferring on {fn} …")
-        res = infer_parameters_from_file(sim_path)
-        all_results.append(res)
+        fpath = os.path.join(sim_dir, fname)
+        print(f"inferring {fname}")
+        summary = infer_from_file(fpath)
+        all_summaries.append(summary)
 
-        out_path = os.path.join(out_dir, fn.replace(".json", "_inferred.json"))
-        with open(out_path, "w") as f:
-            json.dump(res, f, indent=4)
-        print(f"  saved: {out_path}")
+        out_json = os.path.join(
+            out_dir, fname.replace(".json", "_inferred.json"))
+        with open(out_json, "w") as fp:
+            json.dump(summary, fp, indent=2)
 
-    # also dump combined summary
-    with open(os.path.join(out_dir, "all_inferred_summary.json"), "w") as f:
-        json.dump(all_results, f, indent=4)
-    print("All done.")
+    with open(os.path.join(out_dir, "all_inferred_summary.json"), "w") as fp:
+        json.dump(all_summaries, fp, indent=2)
+
+    print("finished all simulations")
 
 
 if __name__ == "__main__":
