@@ -441,7 +441,7 @@ class inferCRMbayes(BaseInfer):
             # Priors for unknown model parameters
 
             sigma = pm.HalfNormal(
-                'sigma', sigma = 0.5, shape=(
+                'sigma', sigma = 0.1, shape=(
                     1,))  # Same sigma for all responses
 
             # Conditionally define parameters based on whether priors are
@@ -483,7 +483,7 @@ class inferCRMbayes(BaseInfer):
                     'c_hat_vals',
                     mu=prior_c_mean,
                     sigma=prior_c_sigma,
-                    lower=0.1,
+                    lower=0,
                     shape=(
                         nsp,
                         nr))
@@ -514,7 +514,7 @@ class inferCRMbayes(BaseInfer):
                     'r_hat',
                     mu=prior_r_mean,
                     sigma=prior_r_sigma,
-                    lower=0.1,
+                    lower=0,
                     shape=(
                         nr,
                     ))
@@ -590,7 +590,7 @@ class inferCRMbayes(BaseInfer):
 
         return idata
 
-    def plot_posterior(self, idata):
+    def plot_posterior(self, idata, true_params=None):
         """
         Plot the posterior distributions of parameters conditionally based on
         whether they exist in the posterior samples.
@@ -603,12 +603,13 @@ class inferCRMbayes(BaseInfer):
 
         # Get all available variables in the posterior
         available_vars = list(idata.posterior.data_vars)
+        true_param_names = ["tau", "w", "c", "m", "r", "K"]
 
-        for param in param_names:
+        for i, param in enumerate(param_names):
             if param in available_vars:
                 print(f"Plotting posterior for {param}")
-
-                # Extract the posterior mean for the parameter
+                
+                # Extract the posterior mean for the parameter (as before)
                 if param == "c_hat":
                     # Special handling for c_hat due to its shape
                     param_np = idata.posterior[param].mean(
@@ -618,18 +619,35 @@ class inferCRMbayes(BaseInfer):
                     param_np = idata.posterior[param].mean(
                         dim=('chain', 'draw')).values.flatten()
                     ref_val = param_np.tolist()
-
-                # Plot the posterior
+                
+                # Plot the posterior distribution (original behavior)
                 az.plot_posterior(
                     idata,
                     var_names=[param],
                     ref_val=ref_val
                 )
-
+                
+                # Add true value as a vertical line if available
+                true_param_name = true_param_names[i]
+                if true_params and true_param_name in true_params:
+                    true_val = true_params[true_param_name]
+                    
+                    # Flatten the true values to match the subplot structure
+                    true_vals = true_val.flatten()
+                    
+                    # Get current axes
+                    axes = plt.gcf().get_axes()
+                    for j, ax in enumerate(axes):
+                        if j < len(true_vals):
+                            ax.axvline(true_vals[j], color='red', linestyle='--', linewidth=2, 
+                                    label=f'True value')
+                            ax.legend()
+                    
+                    print(f"Added true value line for {param}: {true_val}")
+                
                 # Save the plot
                 plt.savefig(f"plot-posterior-{param}.pdf")
                 plt.show()
                 plt.close()
             else:
-                print(
-                    f"Parameter {param} not found in posterior samples, skipping plot.")
+                print(f"Parameter {param} not found in posterior samples, skipping plot.")
