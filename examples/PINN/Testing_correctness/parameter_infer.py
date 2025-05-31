@@ -78,24 +78,8 @@ def infer_parameters_from_file(sim_file):
 
     # Create geometry and boundary condition observations from the time series
     geom = dde.geometry.TimeDomain(t_data[0, 0], t_data[-1, 0])
-    #observes = [dde.PointSetBC(t_data, noisy_solution[:, i:i+1], component=i)
-    #            for i in range(num_species)]
-    # 1. exact BC at t = 0   (use init_species from the JSON)
-    ic_time = t_data[:1]
-    init_N  = np.array(sim_data["init_species"], dtype=np.float32)
-    ic_BCs  = [dde.PointSetBC(ic_time,
-                            init_N[i:i+1].reshape(1,1),
-                            component=i)
-            for i in range(num_species)]
-
-    # noisy observations **from the second time-point onward**
-    obs_BCs = [dde.PointSetBC(t_data[1:],          # <-- slice off row 0
-                            noisy_solution[1:, i:i+1],
-                            component=i)
-            for i in range(num_species)]
-
-    bcs = ic_BCs + obs_BCs
-
+    observes = [dde.PointSetBC(t_data, noisy_solution[:, i:i+1], component=i)
+                for i in range(num_species)]
 
     # Set up initial guess for trainable parameters: [mu_guess, M_guess_scaled, eps_guess_scaled]
     num_params_mu = num_species
@@ -116,7 +100,7 @@ def infer_parameters_from_file(sim_file):
     def ode_residual(t, y):
         return glv_pde_with_unknown_perturbation(t, y, trainable_params, num_species, s_M, s_eps)
 
-    data = dde.data.PDE(geom, ode_residual, bcs, anchors=t_data)
+    data = dde.data.PDE(geom, ode_residual, observes, anchors=t_data)
 
     net = dde.maps.FNN([1] + [128, 128, 128] + [num_species],
                        activation="swish",
@@ -124,10 +108,10 @@ def infer_parameters_from_file(sim_file):
     net.apply_feature_transform(build_feature_transform())
 
     model = dde.Model(data, net)
-    model.compile("adam", lr=1e-3, loss="MSE",external_trainable_variables=[trainable_params])
+    model.compile("adam", lr=1e-3, loss="MSE", external_trainable_variables=[trainable_params])
     losshistory, train_state = model.train(epochs=20000, display_every=1000)
     model.compile("L-BFGS", external_trainable_variables=[trainable_params])
-    model.train() 
+    losshistory_lbfgs, train_state_lbfgs = model.train()
 
     # Extract inferred parameters
     inferred = model.sess.run(trainable_params)
