@@ -108,8 +108,10 @@ def infer_parameters_from_file(sim_file):
     net.apply_feature_transform(build_feature_transform())
 
     model = dde.Model(data, net)
-    model.compile("adam", lr=1e-3, loss="MSE")
+    model.compile("adam", lr=1e-3, loss="MSE", external_trainable_variables=[trainable_params])
     losshistory, train_state = model.train(epochs=20000, display_every=1000)
+    model.compile("L-BFGS", external_trainable_variables=[trainable_params])
+    losshistory_lbfgs, train_state_lbfgs = model.train()
 
     # Extract inferred parameters
     inferred = model.sess.run(trainable_params)
