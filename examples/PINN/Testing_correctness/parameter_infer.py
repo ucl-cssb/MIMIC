@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 # Define scaling factors for M and ε.
 s_M = 10.0    # Interaction matrix scaling factor
 s_eps = 5.0   # Perturbation scaling factor
+lambda_coeff = 1  # Coefficient for the physics mismatch term
+
 
 # --- Functions from the PINN inference script with scaling ---
 
@@ -40,14 +42,18 @@ def glv_pde_with_unknown_perturbation(t, y, trainable_params, num_species, s_M, 
     eps_expanded = tf.expand_dims(epsilon, axis=0)  # shape (1, num_species)
     u_expanded = tf.expand_dims(u_t, axis=1)     # shape (None, 1)
 
-    growth = mu_expanded + My + eps_expanded * \
-        u_expanded  # shape (None, num_species)
-    dy_dt = y * growth
+    growth = mu_expanded + My + eps_expanded * u_expanded
+    dy_dt  = y * growth
+
     residuals = []
+    sqrt_lam = tf.sqrt(tf.constant(lambda_coeff, tf.float32))  # NEW
+
     for i in range(num_species):
         dyi_dt = tf.gradients(y[:, i], t)[0]
-        residuals.append(dyi_dt - dy_dt[:, i:i+1])
+        # multiply each physics mismatch by √λ
+        residuals.append(sqrt_lam * (dyi_dt - dy_dt[:, i:i+1]))   # CHANGED
     return residuals
+
 
 
 def build_feature_transform():
