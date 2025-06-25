@@ -116,3 +116,5 @@ ENV/
 examples/PINN/Testing_correctness/inference_results/*.json
 examples/PINN/Testing_correctness/inference_results/*.png
 examples/PINN/Testing_correctness/simulations/*.json
+examples/PINN/Testing_correctness/simulation_replicates/*.json
+examples/PINN/Testing_correctness/sim_reps_mimic/*.json
