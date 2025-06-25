@@ -4,9 +4,9 @@ Credits
 
 Development Lead
 ----------------
+* Pedro Fontanarrosa <pfontanarrosa@gmail.com>
 * Chris Barnes <christopher.barnes@ucl.ac.uk>
 * Alex Fedorec <a.fedorec@ucl.ac.uk>
-* Pedro Fontanarrosa <pfontanarrosa@gmail.com>
 * Chania Clare <chania.clare.21@ucl.ac.uk> 
 
 Contributors

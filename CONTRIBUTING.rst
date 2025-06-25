@@ -4,6 +4,16 @@ Contributing to MIMIC
 
 We're excited to have you contribute to MIMIC! This document outlines the guidelines for contributing to our project. By following these guidelines, you help us maintain the quality of our project and ensure that everyone's contributions can be incorporated smoothly.
 
+Maintainer Handoff & Onboarding
+-------------------------------
+
+If you are taking over as a maintainer, please:
+
+- Add your name and contact to AUTHORS.rst.
+- Review HISTORY.rst for recent changes and handoff notes.
+- Familiarize yourself with the codebase and documentation structure.
+- Update this file with any new processes or guidelines as the project evolves.
+
 Getting Started
 ----------------
 
