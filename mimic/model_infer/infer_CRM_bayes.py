@@ -508,7 +508,7 @@ class inferCRMbayes(BaseInfer):
 
             theta = at.concatenate([nsp_tensor, nr_tensor, tau_hat, w_hat, c_hat.flatten(), m_hat, r_hat, K_hat])
 
-            print("=== CRITICAL: TESTING IF MODEL STRUCTURE IS CORRECT ===")
+            print("=== RSME ===")
             try:
                 y0 = np.full(n_states, 10.0)
                 test_curves = crm_model(y0=y0, theta=theta)
