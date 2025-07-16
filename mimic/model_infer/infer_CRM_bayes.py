@@ -69,15 +69,27 @@ def CRM_inf_func(y, t, p):
     N = y[:nsp]  # Species populations
     R = y[nsp:]  # Resource availability
 
+    # Biologically informed constraint: ensure all values are positive
+    # ie species populations and resource concentrations are positive
+    eps = 1e-8  # Small positive number for numerical stability
+    N_safe = at.maximum(N, eps)
+    R_safe = at.maximum(R, eps)
+
 
     # Species growth equation (dN)
-    growth_term = at.dot(c, w * R)  # Matrix multiplication as tensor
-    dN = (N / tau) * (growth_term - m)  # Species growth equation
+    growth_term = at.dot(c, w * R_safe)  # Matrix multiplication as tensor
+    dN = (N_safe / tau) * (growth_term - m)  # Species growth equation
 
     # Resource consumption equation (dR)
-    consumption_term = at.dot(N, c)  # Matrix multiplication as tensor
-    dR = (1 / (r * K)) * (K - R) * R - consumption_term * R  # Resource consumption equation
-    
+    consumption_term = at.dot(N_safe, c)  # Matrix multiplication as tensor
+    dR = (1 / (r * K)) * (K - R_safe) * R_safe - consumption_term * R_safe  # Resource consumption equation
+
+
+    # If species population or resource concentration is smaller than eps *and* decreasing, 
+    #   then set rate of change to zero to prevent negative values in the next step
+    dN = at.where((N < eps) & (dN < 0), 0.0, dN)
+    dR = at.where((R < eps) & (dR < 0), 0.0, dR)
+
 
     # Flatten array to 1D for concatenation
     dN_flat = at.flatten(dN)
@@ -515,7 +527,7 @@ class inferCRMbayes(BaseInfer):
                 test_pred = test_curves.eval()
     
                 rmse = np.sqrt(np.mean((test_pred - yobs)**2))
-                print(f"RMSE with near-true parameters: {rmse:.6f}")
+                print(f"RMSE: {rmse:.6f}")
                 print(f"Data scale: {np.mean(yobs):.3f}")
                 print(f"Model scale: {np.mean(test_pred):.3f}")
                 print(f"First few predictions: {test_pred[:3]}")
@@ -524,11 +536,11 @@ class inferCRMbayes(BaseInfer):
             except Exception as e:
                 print(f"MODEL FAILED: {e}")
 
-            print(f"nsp_tensor: {nsp_tensor.eval()}, nr_tensor: {nr_tensor.eval()}")
-            print(f"tau_hat: {tau_hat.eval()}, w_hat: {w_hat.eval()}")
-            print(f"c_hat: {c_hat.eval()}, m_hat: {m_hat.eval()}")
-            print(f"r_hat: {r_hat.eval()}, K_hat: {K_hat.eval()}")
-            print(f"theta: {theta.eval()}")
+            # print(f"nsp_tensor: {nsp_tensor.eval()}, nr_tensor: {nr_tensor.eval()}")
+            # print(f"tau_hat: {tau_hat.eval()}, w_hat: {w_hat.eval()}")
+            # print(f"c_hat: {c_hat.eval()}, m_hat: {m_hat.eval()}")
+            # print(f"r_hat: {r_hat.eval()}, K_hat: {K_hat.eval()}")
+            # print(f"theta: {theta.eval()}")
 
             # Initial conditions for the ODE
             # initial_conditions = np.concatenate([(yobs[0,:nsp]), np.array([10.0, 10.0])])
@@ -544,10 +556,9 @@ class inferCRMbayes(BaseInfer):
             crm_curves = crm_model(y0=y0, theta=theta)
 
             # Define the log-normal likelihood with log-transformed observed data
-            # Y = pm.Lognormal("Y", mu=pm.math.log(crm_curves), sigma=sigma, observed=yobs)
             #Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
-            #Y = pm.Normal("Y", mu=crm_curves, sigma=sigma, observed=yobs)
-            Y = pm.Normal("Y", mu=crm_curves[:, :nsp], sigma=sigma, observed=yobs_species_only) # species only
+            Y = pm.Normal("Y", mu=crm_curves, sigma=sigma, observed=yobs)
+            #Y = pm.Normal("Y", mu=crm_curves[:, :nsp], sigma=sigma, observed=yobs_species_only) # species only
 
             # For debugging:
             # print if `debug` is set to 'high' or 'low'
