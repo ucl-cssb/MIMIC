@@ -2,6 +2,7 @@ import random
 from typing import List, Optional, Union
 
 import numpy  # do not change this to np, it will break the code
+from numpy.typing import NDArray
 from scipy import stats
 from scipy.integrate import odeint
 
@@ -27,7 +28,13 @@ class sim_CRM(BaseModel):
     def __init__(
             self,
             num_species=2,
-            num_resources=0):
+            num_resources=2,
+            tau=None,
+            w=None,
+            c=None,
+            m=None,
+            r=None,
+            K=None):
         """
         Initializes the CRM simulation with given parameters or defaults.
 
@@ -126,7 +133,7 @@ class sim_CRM(BaseModel):
 
         Returns:
             tuple: Tuple containing the simulation results for species (yobs), metabolites (sobs),
-            initial conditions (sy0), growth rates (mu), interaction matrix (M), and metabolite production rates (beta).
+            initial conditions (sy0)
         """
         # self.check_params(self.parameters, 'CRM')
         syobs = odeint(
@@ -144,7 +151,7 @@ class sim_CRM(BaseModel):
                 self.K))
         yobs = syobs[:, 0:self.nsp]  # species
         sobs = syobs[:, self.nsp:]  # resources
-        self.data = syobs  # QUESTION: should this be yobs or sobs?
+        self.data = syobs
         return yobs, sobs
 
 

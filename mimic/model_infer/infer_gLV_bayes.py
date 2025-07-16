@@ -10,6 +10,7 @@ import cloudpickle
 import os
 from typing import Optional, Union, List, Dict, Any
 
+
 from mimic.utilities import *
 from mimic.model_simulate.sim_gLV import *
 from mimic.model_infer.base_infer import BaseInfer
@@ -43,11 +44,43 @@ class infergLVbayes(BaseInfer):
     Args:
         X (np.ndarray): The design matrix
         F (np.ndarray): The observed values
-        mu (np.ndarray): The growth rates matrix
-        M (np.ndarray): The interaction matrix
+        mu (int, float, List): The growth rates
+        M (int, float, List): The interaction matrix
+        epsilon ((int, float, List)): The perturbation matrix
+
+        prior_mu_mean (int, float, List): The prior mean for mu
+        prior_mu_sigma (int, float, List): The prior sigma for mu
+        prior_Mii_mean (int, float, List): The prior mean for Mii
+        prior_Mii_sigma (int, float, List): The prior sigma for Mii
+        prior_Mij_sigma (int, float, List): The prior sigma for Mij
+        prior_eps_mean (int, float, List): The prior mean for epsilon
+        prior_eps_sigma (int, float, List): The prior sigma for epsilon
+
+        draws (int): The number of draws for the MCMC sampler
+        tune (int): The number of tuning steps for the MCMC sampler
+        chains (int): The number of chains for the MCMC sampler
+        cores (int): The number of cores to use for the MCMC sampler
+        DA (int): The number of off-diagonal elements to be non-zero
+        DA0 (int, float): The number of off-diagonal elements to be non-zero
+        N (int): The number of samples
+        noise_stddev (int, float): The standard deviation of the noise
+
 
 
     Methods:
+
+        set_parameters: Set or update simulation parameters.
+        import_data: Import data from a .csv file.
+        calculate_DA0: Calculate the number of off-diagonal elements to be non-zero.
+
+        run_inference: Run Bayesian inference with uniform priors and specified bounds.
+        run_inference_shrinkage: Run Bayesian inference with horseshoe priors for shrinkage.
+        run_inference_shrinkage_pert: Run Bayesian inference with horseshoe priors for shrinkage and perturbation.
+
+        plot_posterior: Plot the posterior distribution of the parameters.
+        plot_posterior_pert: Plot the posterior distribution of the parameters with perturbation.
+        plot_interaction_matrix: Plot the interaction matrix.
+
 
 
     Returns:
