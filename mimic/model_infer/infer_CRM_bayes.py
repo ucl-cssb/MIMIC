@@ -75,28 +75,27 @@ def CRM_inf_func(y, t, p):
     N_safe = at.maximum(N, eps)
     R_safe = at.maximum(R, eps)
 
-
     # Species growth equation (dN)
     growth_term = at.dot(c, w * R_safe)  # Matrix multiplication as tensor
     dN = (N_safe / tau) * (growth_term - m)  # Species growth equation
 
     # Resource consumption equation (dR)
     consumption_term = at.dot(N_safe, c)  # Matrix multiplication as tensor
-    dR = (1 / (r * K)) * (K - R_safe) * R_safe - consumption_term * R_safe  # Resource consumption equation
+    dR = (1 / (r * K)) * (K - R_safe) * R_safe - \
+        consumption_term * R_safe  # Resource consumption equation
 
-
-    # If species population or resource concentration is smaller than eps *and* decreasing, 
-    #   then set rate of change to zero to prevent negative values in the next step
+    # If species population or resource concentration is smaller than eps *and* decreasing,
+    # then set rate of change to zero to prevent negative values in the next
+    # step
     dN = at.where((N < eps) & (dN < 0), 0.0, dN)
     dR = at.where((R < eps) & (dR < 0), 0.0, dR)
-
 
     # Flatten array to 1D for concatenation
     dN_flat = at.flatten(dN)
     dR_flat = at.flatten(dR)
 
     # Combine dN and dR into a single 1D array
-    #derivatives = [dN[0], dN[1], dR[0], dR[1]]  # 1D array
+    # derivatives = [dN[0], dN[1], dR[0], dR[1]]  # 1D array
     derivatives = at.concatenate([dN_flat, dR_flat])  # Concatenate species and
     # resource derivatives
 
@@ -443,7 +442,7 @@ class inferCRMbayes(BaseInfer):
         n_states = nsp + nr
         n_theta = 2 + (2 * nsp) + (3 * nr) + (nsp * nr)
 
-        yobs_species_only = yobs[:, :nsp]  
+        yobs_species_only = yobs[:, :nsp]
 
         # Define the DifferentialEquation model
         crm_model = DifferentialEquation(
@@ -459,16 +458,23 @@ class inferCRMbayes(BaseInfer):
         with bayes_model:
             # Priors for unknown model parameters
 
-
-            sigma = pm.HalfNormal('sigma', sigma = 0.1, shape=(1,))  # Same sigma for all responses
-
+            sigma = pm.HalfNormal(
+                'sigma', sigma=0.1, shape=(
+                    1,))  # Same sigma for all responses
 
             # Conditionally define parameters based on whether priors are
             # provided
 
             # For tau parameter
             if prior_tau_mean is not None and prior_tau_sigma is not None:
-                tau_hat = pm.TruncatedNormal('tau_hat',mu=prior_tau_mean,sigma=prior_tau_sigma,lower=0,shape=(nsp,))
+                tau_hat = pm.TruncatedNormal(
+                    'tau_hat',
+                    mu=prior_tau_mean,
+                    sigma=prior_tau_sigma,
+                    lower=0,
+                    shape=(
+                        nsp,
+                    ))
                 print("tau_hat is inferred")
             else:
                 tau_hat = at.as_tensor_variable(tau)
@@ -476,7 +482,14 @@ class inferCRMbayes(BaseInfer):
 
             # For w parameter
             if prior_w_mean is not None and prior_w_sigma is not None:
-                w_hat = pm.TruncatedNormal('w_hat',mu=prior_w_mean,sigma=prior_w_sigma,lower=0,shape=(nr,))
+                w_hat = pm.TruncatedNormal(
+                    'w_hat',
+                    mu=prior_w_mean,
+                    sigma=prior_w_sigma,
+                    lower=0,
+                    shape=(
+                        nr,
+                    ))
                 print("w_hat is inferred")
             else:
                 w_hat = at.as_tensor_variable(w)
@@ -484,7 +497,14 @@ class inferCRMbayes(BaseInfer):
 
             # For c parameter
             if prior_c_mean is not None and prior_c_sigma is not None:
-                c_hat_vals = pm.TruncatedNormal('c_hat_vals',mu=prior_c_mean,sigma=prior_c_sigma,lower=0,shape=(nsp,nr))
+                c_hat_vals = pm.TruncatedNormal(
+                    'c_hat_vals',
+                    mu=prior_c_mean,
+                    sigma=prior_c_sigma,
+                    lower=0,
+                    shape=(
+                        nsp,
+                        nr))
                 c_hat = pm.Deterministic('c_hat', c_hat_vals)
                 print("c_hat is inferred")
             else:
@@ -493,7 +513,14 @@ class inferCRMbayes(BaseInfer):
 
             # For m parameter
             if prior_m_mean is not None and prior_m_sigma is not None:
-                m_hat = pm.TruncatedNormal('m_hat',mu=prior_m_mean,sigma=prior_m_sigma,lower=0,shape=(nsp, ))
+                m_hat = pm.TruncatedNormal(
+                    'm_hat',
+                    mu=prior_m_mean,
+                    sigma=prior_m_sigma,
+                    lower=0,
+                    shape=(
+                        nsp,
+                    ))
                 print("m_hat is inferred")
             else:
                 m_hat = at.as_tensor_variable(m)
@@ -501,7 +528,14 @@ class inferCRMbayes(BaseInfer):
 
             # For r parameter
             if prior_r_mean is not None and prior_r_sigma is not None:
-                r_hat = pm.TruncatedNormal('r_hat',mu=prior_r_mean,sigma=prior_r_sigma,lower=0,shape=(nr,))
+                r_hat = pm.TruncatedNormal(
+                    'r_hat',
+                    mu=prior_r_mean,
+                    sigma=prior_r_sigma,
+                    lower=0,
+                    shape=(
+                        nr,
+                    ))
                 print("r_hat is inferred")
             else:
                 r_hat = at.as_tensor_variable(r)
@@ -509,7 +543,14 @@ class inferCRMbayes(BaseInfer):
 
             # For K parameter
             if prior_K_mean is not None and prior_K_sigma is not None:
-                K_hat = pm.TruncatedNormal('K_hat', mu=prior_K_mean, sigma=prior_K_sigma,lower=0,shape=(nr,))
+                K_hat = pm.TruncatedNormal(
+                    'K_hat',
+                    mu=prior_K_mean,
+                    sigma=prior_K_sigma,
+                    lower=0,
+                    shape=(
+                        nr,
+                    ))
                 print("K_hat is inferred")
             else:
                 K_hat = at.as_tensor_variable(K)
@@ -518,23 +559,23 @@ class inferCRMbayes(BaseInfer):
             # Flatten to read into CRM_inf_func as a single vector
             nsp_tensor = at.as_tensor_variable([nsp])
             nr_tensor = at.as_tensor_variable([nr])
-            
 
-            theta = at.concatenate([nsp_tensor, nr_tensor, tau_hat, w_hat, c_hat.flatten(), m_hat, r_hat, K_hat])
+            theta = at.concatenate(
+                [nsp_tensor, nr_tensor, tau_hat, w_hat, c_hat.flatten(), m_hat, r_hat, K_hat])
 
             print("=== RSME ===")
             try:
                 y0 = np.full(n_states, 10.0)
                 test_curves = crm_model(y0=y0, theta=theta)
                 test_pred = test_curves.eval()
-    
+
                 rmse = np.sqrt(np.mean((test_pred - yobs)**2))
                 print(f"RMSE: {rmse:.6f}")
                 print(f"Data scale: {np.mean(yobs):.3f}")
                 print(f"Model scale: {np.mean(test_pred):.3f}")
                 print(f"First few predictions: {test_pred[:3]}")
                 print(f"First few observations: {yobs[:3]}")
-    
+
             except Exception as e:
                 print(f"MODEL FAILED: {e}")
 
@@ -547,8 +588,8 @@ class inferCRMbayes(BaseInfer):
             # Initial conditions for the ODE
             # initial_conditions = np.concatenate([(yobs[0,:nsp]), np.array([10.0, 10.0])])
             # Initial species and resource populations
-            #y0 = np.concatenate([np.ones(nsp), np.ones(nr)])
-            #y0 = yobs[0, :]
+            # y0 = np.concatenate([np.ones(nsp), np.ones(nr)])
+            # y0 = yobs[0, :]
             y0 = np.full(nsp + nr, 10.0)
             print(f"Initial conditions (y0): {y0}")
             # y0 = np.array([10.0, 10.0, 10.0, 10.0])
@@ -558,9 +599,10 @@ class inferCRMbayes(BaseInfer):
             crm_curves = crm_model(y0=y0, theta=theta)
 
             # Define the log-normal likelihood with log-transformed observed data
-            #Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
+            # Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
             Y = pm.Normal("Y", mu=crm_curves, sigma=sigma, observed=yobs)
-            #Y = pm.Normal("Y", mu=crm_curves[:, :nsp], sigma=sigma, observed=yobs_species_only) # species only
+            # Y = pm.Normal("Y", mu=crm_curves[:, :nsp], sigma=sigma,
+            # observed=yobs_species_only) # species only
 
             # For debugging:
             # print if `debug` is set to 'high' or 'low'
@@ -580,7 +622,12 @@ class inferCRMbayes(BaseInfer):
                 print("Shape of crm_curves:", crm_curves.shape.eval())
 
             # Sample the posterior
-            idata = pm.sample(draws=draws,tune=tune,chains=chains,cores=cores,progressbar=True)
+            idata = pm.sample(
+                draws=draws,
+                tune=tune,
+                chains=chains,
+                cores=cores,
+                progressbar=True)
 
         return idata
 
@@ -602,7 +649,7 @@ class inferCRMbayes(BaseInfer):
         for i, param in enumerate(param_names):
             if param in available_vars:
                 print(f"Plotting posterior for {param}")
-                
+
                 # Extract the posterior mean for the parameter (as before)
                 if param == "c_hat":
                     # Special handling for c_hat due to its shape
@@ -613,35 +660,40 @@ class inferCRMbayes(BaseInfer):
                     param_np = idata.posterior[param].mean(
                         dim=('chain', 'draw')).values.flatten()
                     ref_val = param_np.tolist()
-                
+
                 # Plot the posterior distribution (original behavior)
                 az.plot_posterior(
                     idata,
                     var_names=[param],
                     ref_val=ref_val
                 )
-                
+
                 # Add true value as a vertical line if available
                 true_param_name = true_param_names[i]
                 if true_params and true_param_name in true_params:
                     true_val = true_params[true_param_name]
-                    
+
                     # Flatten the true values to match the subplot structure
                     true_vals = true_val.flatten()
-                    
+
                     # Get current axes
                     axes = plt.gcf().get_axes()
                     for j, ax in enumerate(axes):
                         if j < len(true_vals):
-                            ax.axvline(true_vals[j], color='red', linestyle='--', linewidth=2, 
-                                    label=f'True value')
+                            ax.axvline(
+                                true_vals[j],
+                                color='red',
+                                linestyle='--',
+                                linewidth=2,
+                                label=f'True value')
                             ax.legend()
-                    
+
                     print(f"Added true value line for {param}: {true_val}")
-                
+
                 # Save the plot
                 plt.savefig(f"plot-posterior-{param}.pdf")
                 plt.show()
                 plt.close()
             else:
-                print(f"Parameter {param} not found in posterior samples, skipping plot.")
+                print(
+                    f"Parameter {param} not found in posterior samples, skipping plot.")
