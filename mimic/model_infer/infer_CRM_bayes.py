@@ -459,7 +459,9 @@ class inferCRMbayes(BaseInfer):
         with bayes_model:
             # Priors for unknown model parameters
 
+
             sigma = pm.HalfNormal('sigma', sigma = 0.1, shape=(1,))  # Same sigma for all responses
+
 
             # Conditionally define parameters based on whether priors are
             # provided
