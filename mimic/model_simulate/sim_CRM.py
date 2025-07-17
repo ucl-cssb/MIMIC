@@ -183,6 +183,6 @@ def CRM(sy, t, nsp, nr, tau, w, c, m, r, K) -> numpy.ndarray:
     dN = (N / tau) * (c @ (w * R) - m)
 
     # dR_a/dt = 1/(r_a * K_a) * (K_a - R_a) * R_a - Sum_i(N_i * c_ia * R_a)
-    dR = (1 / r * K) * (K - R) * R - (N @ c * R)
+    dR = (1 / (r * K)) * (K - R) * R - (N @ c * R)
 
     return numpy.hstack((dN, dR))
