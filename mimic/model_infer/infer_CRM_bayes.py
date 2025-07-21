@@ -543,11 +543,16 @@ class inferCRMbayes(BaseInfer):
             # print(f"theta: {theta.eval()}")
 
             # Initial conditions for the ODE
-            # initial_conditions = np.concatenate([(yobs[0,:nsp]), np.array([10.0, 10.0])])
+            
             # Initial species and resource populations
-            #y0 = np.concatenate([np.ones(nsp), np.ones(nr)])
-            #y0 = yobs[0, :]
-            y0 = np.full(nsp + nr, 10.0)
+            y0_species = yobs_species_only[0, :]  # Shape: (nsp,)
+
+            # Estimate reasonable resource initial conditions
+            y0_resources = np.full(nr, 0.05)
+
+            # Combine them
+            y0 = np.concatenate([y0_species, y0_resources])  # Shape: (nsp + nr,)
+            #y0 = np.full(nsp + nr, 10.0)
             print(f"Initial conditions (y0): {y0}")
             # y0 = np.array([10.0, 10.0, 10.0, 10.0])
             # y0 = np.full(n_states, 10.0)
@@ -557,8 +562,8 @@ class inferCRMbayes(BaseInfer):
 
             # Define the log-normal likelihood with log-transformed observed data
             #Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
-            Y = pm.Normal("Y", mu=crm_curves, sigma=sigma, observed=yobs)
-            #Y = pm.Normal("Y", mu=crm_curves[:, :nsp], sigma=sigma, observed=yobs_species_only) # species only
+            # Y = pm.Normal("Y", mu=crm_curves, sigma=sigma, observed=yobs)
+            Y = pm.Normal("Y", mu=crm_curves[:, :nsp], sigma=sigma, observed=yobs_species_only) # species only
 
             # For debugging:
             # print if `debug` is set to 'high' or 'low'
