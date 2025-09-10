@@ -548,7 +548,8 @@ class inferCRMbayes(BaseInfer):
             y0_species = yobs_species_only[0, :]  # Shape: (nsp,)
 
             # Estimate reasonable resource initial conditions
-            y0_resources = np.full(nr, 0.05)
+            #y0_resources = np.full(nr, 0.05)
+            y0_resources = np.array([0.7, 0.6]) 
 
             # Combine them
             y0 = np.concatenate([y0_species, y0_resources])  # Shape: (nsp + nr,)
@@ -560,10 +561,10 @@ class inferCRMbayes(BaseInfer):
             # Solve the ODE
             crm_curves = crm_model(y0=y0, theta=theta)
 
-            # Define the log-normal likelihood with log-transformed observed data
-            #Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
+            # Define the likelihood with observed data
+            Y = pm.Lognormal( "Y",mu=at.log(crm_curves[:, :nsp]),sigma=sigma, observed=yobs_species_only)
             # Y = pm.Normal("Y", mu=crm_curves, sigma=sigma, observed=yobs)
-            Y = pm.Normal("Y", mu=crm_curves[:, :nsp], sigma=sigma, observed=yobs_species_only) # species only
+            #Y = pm.Normal("Y", mu=crm_curves[:, :nsp], sigma=sigma, observed=yobs_species_only) # species only
 
             # For debugging:
             # print if `debug` is set to 'high' or 'low'
