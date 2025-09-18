@@ -138,6 +138,9 @@ class inferCRMbayes(BaseInfer):
         set_parameters: Set or update simulation parameters.
         run_inference: Run Bayesian inference with uniform priors and specified bounds.
         plot_posterior: Plot the posterior distributions of the inferred parameters.
+        add_prior_curve: Add prior distribution curve to posterior plots.
+        plot_corner_topright: Plot corner plot in the top-right triangle.
+        plot_corner_bottomleft: Plot corner plot in the bottom-left triangle.
 
     Returns:
         None
@@ -607,7 +610,7 @@ class inferCRMbayes(BaseInfer):
             if param in available_vars:
                 print(f"Plotting posterior for {param}")
                 
-                # Extract the posterior mean for the parameter (as before)
+                # Extract the posterior mean for the parameter
                 if param == "c_hat":
                     # Special handling for c_hat due to its shape
                     param_np = idata.posterior[param].mean(
@@ -618,7 +621,7 @@ class inferCRMbayes(BaseInfer):
                         dim=('chain', 'draw')).values.flatten()
                     ref_val = param_np.tolist()
                 
-                # Plot the posterior distribution (original behavior)
+                # Plot the posterior distribution 
                 az.plot_posterior(
                     idata,
                     var_names=[param],
@@ -649,3 +652,230 @@ class inferCRMbayes(BaseInfer):
                 plt.close()
             else:
                 print(f"Parameter {param} not found in posterior samples, skipping plot.")
+
+
+
+    def add_prior_curve(self, ax, param_name, prior_means, prior_sigmas):
+        """
+        Add truncated normal prior curve for any parameter
+        Returns the prior mean value for text labeling
+        """
+        from scipy.stats import truncnorm
+        import numpy as np
+        
+        # Extract base parameter name and indices
+        if '[' in param_name:
+            base_name = param_name.split('[')[0]
+            indices_str = param_name.split('[')[1].split(']')[0]
+            
+            # Check if this parameter has priors defined
+            if base_name not in prior_means or prior_means[base_name] is None:
+                return None  # Skip if no prior defined
+            
+            if ',' in indices_str:  # 2D like c_hat[1,0]
+                i, j = [int(x.strip()) for x in indices_str.split(',')]
+                mean = prior_means[base_name][i][j]
+                sigma = prior_sigmas[base_name][i][j]
+            else:  # 1D like tau_hat[0], r_hat[1], etc.
+                idx = int(indices_str)
+                prior_mean_val = prior_means[base_name]
+                prior_sigma_val = prior_sigmas[base_name]
+                
+                # Handle scalar values that get broadcast (like r_hat)
+                if isinstance(prior_mean_val, (int, float)):
+                    mean = prior_mean_val
+                    sigma = prior_sigma_val
+                else:
+                    mean = prior_mean_val[idx]
+                    sigma = prior_sigma_val[idx]
+        else:
+            return None
+        
+        # Create x_range to show full prior distribution
+        prior_min = max(0, mean - 3 * sigma)
+        prior_max = mean + 3 * sigma
+        x_range = np.linspace(prior_min, prior_max, 300)
+        
+        # Create truncated normal and plot
+        a = (0 - mean) / sigma
+        prior_dist = truncnorm(a, np.inf, loc=mean, scale=sigma)
+        prior_curve = prior_dist.pdf(x_range)
+        ax.plot(x_range, prior_curve, color='blue', linewidth=2, linestyle='--', 
+                alpha=0.5, label='Prior')
+        
+        # Add vertical line at prior mean
+        ax.axvline(mean, color='blue', linestyle='--', linewidth=1, alpha=0.7)
+        
+        return mean  # Return the prior mean for text labeling
+
+
+
+    def plot_corner_bottomleft(self, param_names, posterior_array, prior_means, prior_sigmas):
+
+        ## Create corner plot
+        n_params = len(param_names)
+        fig, axes = plt.subplots(n_params, n_params, figsize=(10, 10))
+
+        for i in range(n_params):
+            for j in range(n_params):
+                ax = axes[i, j]
+                
+                if i == j:  # Diagonal - smooth density curves with mean lines
+                    from scipy.stats import gaussian_kde
+
+                    # Add prior curve
+                    prior_mean = self.add_prior_curve(ax, param_names[i], prior_means, prior_sigmas)
+                    if prior_mean is not None:
+                        ax.text(0.5, 1.8, rf'$\mu$ = {prior_mean:.2f}', transform=ax.transAxes, 
+                                ha='center', va='top', fontsize=7, color='blue', alpha=0.8)
+
+                    data = posterior_array[:, i]
+                    kde = gaussian_kde(data)
+                    x_range = np.linspace(data.min(), data.max(), 200)
+                    ax.plot(x_range, kde(x_range), color='red', linewidth=2)
+                    
+                    # Add vertical line at mean
+                    mean_val = np.mean(data)
+                    ax.axvline(mean_val, color='red', linestyle='-', linewidth=1)
+
+                    # Add mean value text above the plot
+                    ax.text(0.5, 1.6, rf'$\hat{{\mu}}$ = {mean_val:.2f}', transform=ax.transAxes, ha='center', va='top', fontsize=7, color='red', alpha=0.8)
+
+                    ax.set_ylabel('')
+                    ax.set_yticks([])
+                    ax.tick_params(left=False)
+
+                    # Add top x-axis for diagonal plots
+                    ax.tick_params(axis='x', which='major', labelsize=8, labeltop=True, top=True, pad=2)
+
+                    # Rotate the x-axis labels
+                    plt.setp(ax.get_xticklabels(), rotation=35, ha='left') 
+
+                    
+                elif i > j:  # Lower triangle - graduated contours
+                #elif i < j:  # Upper triangle - graduated contours
+                    x_data = posterior_array[:, j]
+                    y_data = posterior_array[:, i]
+                    
+                    # Create 2D histogram for contour data
+                    H, xedges, yedges = np.histogram2d(x_data, y_data, bins=20)
+                    X, Y = np.meshgrid(xedges[:-1], yedges[:-1])
+                    
+                    # Set white background and mask zero areas
+                    ax.set_facecolor('white')
+                    H_masked = np.ma.masked_where(H.T <= 0, H.T)
+                    
+                    # Create contours only where there's  data
+                    ax.contourf(X, Y, H_masked, levels=10, cmap='Blues', alpha=0.8)
+
+                    ax.tick_params(axis='x', which='major', labelbottom=False, bottom=False)
+
+                    
+                else:  # hide upper triangle
+                    ax.set_visible(False)
+                    
+                # Labels and ticks only on edges
+                if i == n_params - 1:  # Bottom row
+                    #if i != j:  # Don't duplicate diagonal labels
+                    # ax.set_xlabel(param_names[j], fontsize=10)
+                    ax.tick_params(axis='x', which='major', labelsize=8, labelbottom=True, bottom=True)
+                    plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+                else:
+                    ax.tick_params(axis='x', which='major', labelbottom=False)
+
+            
+                if j == 0:  # Left column  
+                    #ax.set_ylabel(param_names[i], fontsize=10)
+                    ax.tick_params(axis='y', which='major', labelsize=8, labelleft=True)
+                else:
+                    ax.tick_params(axis='y', which='major', labelleft=False)
+
+
+        plt.tight_layout()
+        plt.subplots_adjust(hspace=0.0, wspace=0.0)
+
+
+    def plot_corner_topright(self, param_names, posterior_array, prior_means, prior_sigmas):
+
+        ## Create corner plot
+        n_params = len(param_names)
+        fig, axes = plt.subplots(n_params, n_params, figsize=(10, 10))
+
+        for i in range(n_params):
+            for j in range(n_params):
+                ax = axes[i, j]
+                
+                if i == j:  # Diagonal - smooth density curves with mean lines
+                    from scipy.stats import gaussian_kde
+
+                    # Add prior curve  
+                    prior_mean = self.add_prior_curve(ax, param_names[i], prior_means, prior_sigmas)
+                    if prior_mean is not None:
+                        ax.text(0.5, -0.6, rf'$\mu$ = {prior_mean:.2f}', transform=ax.transAxes, ha='center', va='top', fontsize=7, color='blue', alpha=0.8)
+
+                    data = posterior_array[:, i]
+                    kde = gaussian_kde(data)
+                    x_range = np.linspace(data.min(), data.max(), 200)
+                    ax.plot(x_range, kde(x_range), color='red', linewidth=2)
+                    
+                    # Add vertical line at mean
+                    mean_val = np.mean(data)
+                    ax.axvline(mean_val, color='red', linestyle='-', linewidth=1)
+
+                    # Add mean value text above the plot
+                    ax.text(0.5, -0.8, rf'$\hat{{\mu}}$ = {mean_val:.2f}', transform=ax.transAxes, ha='center', va='top', fontsize=7, color='red', alpha=0.8)
+
+                    ax.set_ylabel('')
+                    ax.set_yticks([])
+                    ax.tick_params(left=False)
+
+                    # Add top x-axis for diagonal plots
+                    ax.tick_params(axis='x', which='major', labelsize=8, labelbottom=True, bottom=True, pad=2)
+
+                    # Rotate the x-axis labels
+                    plt.setp(ax.get_xticklabels(), rotation=35, ha='right') 
+
+                    
+                elif i < j:  # Upper triangle - graduated contours
+                    x_data = posterior_array[:, j]
+                    y_data = posterior_array[:, i]
+                    
+                    # Create 2D histogram for contour data
+                    H, xedges, yedges = np.histogram2d(x_data, y_data, bins=20)
+                    X, Y = np.meshgrid(xedges[:-1], yedges[:-1])
+                    
+                    # Set white background and mask zero areas
+                    ax.set_facecolor('white')
+                    H_masked = np.ma.masked_where(H.T <= 0, H.T)
+                    
+                    # Create contours only where there's  data
+                    ax.contourf(X, Y, H_masked, levels=10, cmap='Blues', alpha=0.8)
+
+                    ax.tick_params(axis='x', which='major', labelbottom=False, bottom=False)
+
+                    
+                else:  # hide upper triangle
+                    ax.set_visible(False)
+                    
+                # Labels and ticks only on edges
+                if i == 0:  # Top row off-diagonal
+                    if i != j:  # Only off-diagonal
+                        #ax.set_xlabel(param_names[j], fontsize=10)
+                        #ax.xaxis.set_label_position('top')
+                        #ax.xaxis.set_label_coords(0.5, 1.7)
+                        ax.tick_params(axis='x', which='major', labelsize=8, labeltop=True, top=True, labelbottom=False, bottom=False)
+                        plt.setp(ax.get_xticklabels(), rotation=45, ha='left')
+                else:
+                    ax.tick_params(axis='x', which='major', labeltop=False, top=False)
+
+
+                if j == n_params - 1:  # Right column  
+                    #ax.set_ylabel(param_names[i], fontsize=10)
+                    #ax.yaxis.set_label_position('right')
+                    #ax.yaxis.set_label_coords(0.5, 1.7)
+                    ax.tick_params(axis='y', which='major', labelsize=8, labelright=True, right=True, labelleft=False, left=False)
+                else:
+                    ax.tick_params(axis='y', which='major', labelright=False, right=False, labelleft=False, left=False)
+
+        plt.tight_layout()
+        plt.subplots_adjust(hspace=0.0, wspace=0.0)
