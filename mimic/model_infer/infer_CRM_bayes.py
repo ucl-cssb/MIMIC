@@ -391,12 +391,11 @@ class inferCRMbayes(BaseInfer):
 
     def run_inference(self) -> None:
         """
-        This function infers the parameters for the Bayesian gLV model
+        This function infers the parameters for the Bayesian CRM model
 
         Returns:
             idata: The posterior inference data
-            var_names: Names of each M(ij) parameter used
-
+            
 
         """
 
@@ -535,8 +534,8 @@ class inferCRMbayes(BaseInfer):
             y0_resources = np.array([0.7, 0.6]) 
 
             # Combine them
-            y0 = np.concatenate([y0_species, y0_resources])  # Shape: (nsp + nr,)
-            #y0 = np.full(nsp + nr, 10.0) # alternative: uniform starting concentrations if unknown
+            #y0 = np.concatenate([y0_species, y0_resources])  # Shape: (nsp + nr,)
+            y0 = np.full(nsp + nr, 10.0) # alternative: uniform starting concentrations if unknown
             print(f"Initial conditions (y0): {y0}")
             
 
@@ -544,7 +543,8 @@ class inferCRMbayes(BaseInfer):
             crm_curves = crm_model(y0=y0, theta=theta)
 
             # Define the loglikelihood with observed data
-            Y = pm.Lognormal( "Y",mu=at.log(crm_curves[:, :nsp]),sigma=sigma, observed=yobs_species_only)
+            #Y = pm.Lognormal( "Y",mu=at.log(crm_curves[:, :nsp]),sigma=sigma, observed=yobs_species_only)
+            Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
 
             # For debugging:
             # print if `debug` is set to 'high' or 'low'
@@ -685,7 +685,7 @@ class inferCRMbayes(BaseInfer):
     def plot_corner_bottomleft(self, param_names, posterior_array, prior_means, prior_sigmas):
         ## Create corner plot
         n_params = len(param_names)
-        fig, axes = plt.subplots(n_params, n_params, figsize=(10, 10))
+        fig, axes = plt.subplots(n_params, n_params, figsize=(6, 6))
 
         for i in range(n_params):
             for j in range(n_params):
@@ -697,7 +697,7 @@ class inferCRMbayes(BaseInfer):
                     # Add prior curve
                     prior_mean = self.add_prior_curve(ax, param_names[i], prior_means, prior_sigmas)
                     if prior_mean is not None:
-                        ax.text(0.5, 1.8, rf'$\mu$ = {prior_mean:.2f}', transform=ax.transAxes, 
+                        ax.text(0.5, 1.9, rf'$\mu$ = {prior_mean:.2f}', transform=ax.transAxes, 
                                 ha='center', va='top', fontsize=7, color='blue', alpha=0.8)
 
                     data = posterior_array[:, i]
@@ -710,7 +710,7 @@ class inferCRMbayes(BaseInfer):
                     ax.axvline(mean_val, color='red', linestyle='-', linewidth=1)
 
                     # Add mean value text above the plot
-                    ax.text(0.5, 1.6, rf'$\hat{{\mu}}$ = {mean_val:.2f}', transform=ax.transAxes, ha='center', va='top', fontsize=7, color='red', alpha=0.8)
+                    ax.text(0.5, 1.7, rf'$\hat{{\mu}}$ = {mean_val:.2f}', transform=ax.transAxes, ha='center', va='top', fontsize=7, color='red', alpha=0.8)
 
                     ax.set_ylabel('')
                     ax.set_yticks([])
@@ -748,7 +748,7 @@ class inferCRMbayes(BaseInfer):
                     #if i != j:  # Don't duplicate diagonal labels
                     # ax.set_xlabel(param_names[j], fontsize=10)
                     ax.tick_params(axis='x', which='major', labelsize=8, labelbottom=True, bottom=True)
-                    plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+                    plt.setp(ax.get_xticklabels(), rotation=45, ha='left')
                 else:
                     ax.tick_params(axis='x', which='major', labelbottom=False)
 
