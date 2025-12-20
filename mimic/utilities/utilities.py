@@ -10,145 +10,445 @@ cols = ["red", "green", "blue", "royalblue", "orange", "black"]
 
 
 def plot_gLV(yobs, timepoints):
-    # fig, axs = plt.subplots(1, 2, layout='constrained')
+    # fig, axs = plt.subplots(1, 2, layout='constrained')  # Optional
+    # alternative
     fig, axs = plt.subplots(1, 1)
     for species_idx in range(yobs.shape[1]):
-        axs.plot(timepoints, yobs[:, species_idx], color=cols[species_idx])
+        label = f'Species {species_idx + 1}'  # Add a label for each species
+        axs.plot(timepoints, yobs[:, species_idx],
+                 color=cols[species_idx], label=label)
+
     axs.set_xlabel('time')
     axs.set_ylabel('[species]')
+    axs.legend()  # Ensure the legend is called on the correct axes
+    plt.show()
 
 
-def plot_CRM(observed_species, observed_resources, timepoints, csv_file=None):
+# def plot_CRM(observed_species, observed_resources, observed_secondary_resources, timepoints, csv_file=None):
+#     # Create a single axis
+#     fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+#     cols = plt.cm.tab10.colors
+
+#     total_entities = observed_species.shape[1] + observed_resources.shape[1] + observed_secondary_resources.shape[1]
+
+#     # Plot each species
+#     for species_idx in range(observed_species.shape[1]):
+#         label = f'Species {species_idx + 1}'
+#         ax.plot(timepoints,
+#                 observed_species[:,
+#                                  species_idx],
+#                 color=cols[species_idx],
+#                 label=label)
+
+#     # Plot each resource - using distinct colors that continue from where
+#     # species left off
+#     for resource_idx in range(observed_resources.shape[1]):
+#         # Use a different color index for resources (continuing from where
+#         # species left off)
+#         color_idx = observed_species.shape[1] + resource_idx
+
+#         color_idx = color_idx % len(cols)
+
+#         label = f'Resource {resource_idx + 1}'
+#         ax.plot(timepoints,
+#                 observed_resources[:,
+#                                    resource_idx],
+#                 linestyle='--',
+#                 color=cols[color_idx],
+#                 label=label)
+        
+#     for secondary_resource_idx in range(observed_secondary_resources.shape[1]):
+#         # Use a different color index for resources (continuing from where
+#         # species + resources left off)
+#         sec_color_idx = observed_species.shape[1] + resource_idx + secondary_resource_idx
+
+#         sec_color_idx = sec_color_idx % len(cols)
+
+#         label = f'Secondary resource {secondary_resource_idx + 1}'
+#         ax.plot(timepoints,
+#                 observed_secondary_resources[:,
+#                                    secondary_resource_idx],
+#                 linestyle=':',
+#                 color=cols[sec_color_idx],
+#                 label=label)
+
+#     # If CSV file is provided, overlay the observed data
+#     if csv_file:
+#         import pandas as pd
+#         data = pd.read_csv(csv_file)
+#         # Extract time and data columns
+#         time_col = data.columns[0]  # Assuming first column is time
+
+#         # Plot observed species data with markers
+#         num_species = observed_species.shape[1]
+#         for i in range(num_species):
+#             species_col = f'species_{i+1}'
+#             if species_col in data.columns:
+#                 ax.scatter(data[time_col],
+#                            data[species_col],
+#                            marker='o',
+#                            color=cols[i % len(cols)],
+#                            s=10,
+#                            alpha=0.7,
+#                            label=f'Observed {species_col}')
+
+#         # Plot observed resource data with different markers and consistent
+#         # colors with simulated resources
+#         num_resources = observed_resources.shape[1]
+#         for i in range(num_resources):
+#             resource_col = f'resource_{i+1}'
+#             if resource_col in data.columns:
+#                 color_idx = num_species + i
+#                 color_idx = color_idx % len(cols)
+#                 ax.scatter(data[time_col], data[resource_col],
+#                            marker='s', color=cols[color_idx], s=10, alpha=0.7,
+#                            label=f'Observed {resource_col}')
+
+#     # Set axis labels
+#     ax.set_xlabel('Time', fontsize=12)
+#     ax.set_ylabel('Concentration', fontsize=12)
+#     ax.set_title('CRM Growth Curves: Simulated vs Observed', fontsize=14)
+
+#     # Add a legend to label both species and resources
+#     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+
+#     # Add grid for better readability
+#     ax.grid(True, linestyle='--', alpha=0.7)
+
+#     # Adjust layout to make room for the legend
+#     plt.tight_layout()
+
+#     # Show the plot
+#     plt.show()
+
+#     return fig, ax
+
+def plot_CRM(observed_species, observed_resources, observed_secondary_resources=None, timepoints=None, csv_file=None):
     # Create a single axis
     fig, ax = plt.subplots(1, 1, figsize=(10, 6))
     cols = plt.cm.tab10.colors
-
+    
+    # Calculate total entities
     total_entities = observed_species.shape[1] + observed_resources.shape[1]
-
+    if observed_secondary_resources is not None:
+        total_entities += observed_secondary_resources.shape[1]
+    
     # Plot each species
     for species_idx in range(observed_species.shape[1]):
         label = f'Species {species_idx + 1}'
         ax.plot(timepoints,
-                observed_species[:,
-                                 species_idx],
+                observed_species[:, species_idx],
                 color=cols[species_idx],
                 label=label)
-
-    # Plot each resource - using distinct colors that continue from where
-    # species left off
+    
+    # Plot each resource
     for resource_idx in range(observed_resources.shape[1]):
-        # Use a different color index for resources (continuing from where
-        # species left off)
         color_idx = observed_species.shape[1] + resource_idx
-
         color_idx = color_idx % len(cols)
-
         label = f'Resource {resource_idx + 1}'
         ax.plot(timepoints,
-                observed_resources[:,
-                                   resource_idx],
+                observed_resources[:, resource_idx],
                 linestyle='--',
                 color=cols[color_idx],
                 label=label)
-
+    
+    # Plot secondary resources only if provided
+    if observed_secondary_resources is not None:
+        for secondary_resource_idx in range(observed_secondary_resources.shape[1]):
+            sec_color_idx = observed_species.shape[1] + observed_resources.shape[1] + secondary_resource_idx
+            sec_color_idx = sec_color_idx % len(cols)
+            label = f'Secondary resource {secondary_resource_idx + 1}'
+            ax.plot(timepoints,
+                    observed_secondary_resources[:, secondary_resource_idx],
+                    linestyle=':',
+                    color=cols[sec_color_idx],
+                    label=label)
+    
     # If CSV file is provided, overlay the observed data
     if csv_file:
         import pandas as pd
         data = pd.read_csv(csv_file)
         # Extract time and data columns
         time_col = data.columns[0]  # Assuming first column is time
-
+        
         # Plot observed species data with markers
         num_species = observed_species.shape[1]
         for i in range(num_species):
             species_col = f'species_{i+1}'
             if species_col in data.columns:
                 ax.scatter(data[time_col],
-                           data[species_col],
-                           marker='o',
-                           color=cols[i % len(cols)],
-                           s=10,
-                           alpha=0.7,
-                           label=f'Observed {species_col}')
-
-        # Plot observed resource data with different markers and consistent
-        # colors with simulated resources
+                          data[species_col],
+                          marker='o',
+                          color=cols[i % len(cols)],
+                          s=10,
+                          alpha=0.7,
+                          label=f'Observed {species_col}')
+        
+        # Plot observed resource data
         num_resources = observed_resources.shape[1]
         for i in range(num_resources):
             resource_col = f'resource_{i+1}'
             if resource_col in data.columns:
                 color_idx = num_species + i
                 color_idx = color_idx % len(cols)
-                ax.scatter(data[time_col], data[resource_col],
-                           marker='s', color=cols[color_idx], s=10, alpha=0.7,
-                           label=f'Observed {resource_col}')
-
+                ax.scatter(data[time_col], 
+                          data[resource_col],
+                          marker='s', 
+                          color=cols[color_idx], 
+                          s=10, 
+                          alpha=0.7,
+                          label=f'Observed {resource_col}')
+        
+        # Plot observed secondary resource data (only if secondary resources exist)
+        if observed_secondary_resources is not None:
+            num_secondary = observed_secondary_resources.shape[1]
+            for i in range(num_secondary):
+                secondary_col = f'secondary_resource_{i+1}'
+                if secondary_col in data.columns:
+                    sec_color_idx = num_species + num_resources + i
+                    sec_color_idx = sec_color_idx % len(cols)
+                    ax.scatter(data[time_col],
+                              data[secondary_col],
+                              marker='^',
+                              color=cols[sec_color_idx],
+                              s=10,
+                              alpha=0.7,
+                              label=f'Observed {secondary_col}')
+    
     # Set axis labels
     ax.set_xlabel('Time', fontsize=12)
     ax.set_ylabel('Concentration', fontsize=12)
     ax.set_title('CRM Growth Curves: Simulated vs Observed', fontsize=14)
-
-    # Add a legend to label both species and resources
+    
+    # Add a legend
     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-
+    
     # Add grid for better readability
     ax.grid(True, linestyle='--', alpha=0.7)
-
+    
     # Adjust layout to make room for the legend
     plt.tight_layout()
-
+    
     # Show the plot
     plt.show()
-
+    
     return fig, ax
 
-def plot_CRM_with_intervals(observed_species, observed_resources, species_lower, species_upper, 
-                           resource_lower, resource_upper, times, filename=None):
+
+
+# def plot_CRM_with_intervals(
+#         observed_species,
+#         observed_resources,
+#         species_lower,
+#         species_upper,
+#         resource_lower,
+#         resource_upper,
+#         times,
+#         filename=None):
+    
+#     fig, ax = plt.subplots(figsize=(12, 8))
+
+#     # Ensure resources are 2D
+#     if observed_resources.ndim == 1:
+#         observed_resources = observed_resources.reshape(-1, 1)
+#         resource_lower = resource_lower.reshape(-1, 1)
+#         resource_upper = resource_upper.reshape(-1, 1)
+
+#     # Plot median trajectories
+#     for i in range(observed_species.shape[1]):
+#         ax.plot(times, observed_species[:, i],
+#                 label=f'Species {i+1}', linewidth=2)
+
+#     for i in range(observed_resources.shape[1]):
+#         ax.plot(times,
+#                 observed_resources[:,
+#                                    i],
+#                 label=f'Resource {i+1}',
+#                 linewidth=2,
+#                 linestyle='--')
+
+#     # Add confidence ribbons
+#     for i in range(observed_species.shape[1]):
+#         ax.fill_between(times, species_lower[:, i], species_upper[:, i],
+#                         alpha=0.2, color=plt.cm.tab10(i))
+
+#     for i in range(observed_resources.shape[1]):
+#         ax.fill_between(times,
+#                         resource_lower[:,
+#                                        i],
+#                         resource_upper[:,
+#                                        i],
+#                         alpha=0.2,
+#                         color=plt.cm.tab10(i + observed_species.shape[1]))
+
+#     if filename:
+#         true_data = pd.read_csv(filename)
+#         true_times = true_data['time'].values
+
+#         for i in range(observed_species.shape[1]):
+#             col_name = f'species_{i+1}'
+#             if col_name in true_data.columns:
+#                 ax.scatter(
+#                     true_times,
+#                     true_data[col_name],
+#                     marker='o',
+#                     s=30,
+#                     color=plt.cm.tab10(i),
+#                     label=f'True {col_name}')
+
+#         for i in range(observed_resources.shape[1]):
+#             col_name = f'resource_{i+1}'
+#             if col_name in true_data.columns:
+#                 ax.scatter(
+#                     true_times,
+#                     true_data[col_name],
+#                     marker='s',
+#                     s=30,
+#                     color=plt.cm.tab10(
+#                         i + observed_species.shape[1]),
+#                     label=f'True {col_name}')
+
+#     ax.set_xlabel('Time', fontsize=14)
+#     ax.set_ylabel('Concentration', fontsize=14)
+#     ax.set_title(
+#         'Consumer-Resource Model Dynamics with 95% Credible Intervals',
+#         fontsize=16)
+#     ax.legend(loc='best', fontsize=12)
+#     ax.grid(True, alpha=0.3)
+
+#     plt.tight_layout()
+#     if filename:
+#         plt.savefig(f"{filename.split('.')[0]}_with_intervals.png", dpi=300)
+#     plt.show()
+
+def plot_CRM_with_intervals(
+        observed_species,
+        observed_resources,
+        species_lower,
+        species_upper,
+        resource_lower,
+        resource_upper,
+        times,
+        observed_secondary_resources=None,
+        secondary_lower=None,
+        secondary_upper=None,
+        filename=None):
     fig, ax = plt.subplots(figsize=(12, 8))
     
-    # Plot median trajectories
+    # Ensure resources are 2D
+    if observed_resources.ndim == 1:
+        observed_resources = observed_resources.reshape(-1, 1)
+        resource_lower = resource_lower.reshape(-1, 1)
+        resource_upper = resource_upper.reshape(-1, 1)
+    
+    # Ensure secondary resources are 2D if provided
+    if observed_secondary_resources is not None and observed_secondary_resources.ndim == 1:
+        observed_secondary_resources = observed_secondary_resources.reshape(-1, 1)
+        secondary_lower = secondary_lower.reshape(-1, 1)
+        secondary_upper = secondary_upper.reshape(-1, 1)
+    
+    # Plot median trajectories for species
     for i in range(observed_species.shape[1]):
-        ax.plot(times, observed_species[:, i], label=f'Species {i+1}', linewidth=2)
+        ax.plot(times, observed_species[:, i],
+                label=f'Species {i+1}', linewidth=2)
     
+    # Plot median trajectories for resources
     for i in range(observed_resources.shape[1]):
-        ax.plot(times, observed_resources[:, i], label=f'Resource {i+1}', linewidth=2, linestyle='--')
+        ax.plot(times,
+                observed_resources[:, i],
+                label=f'Resource {i+1}',
+                linewidth=2,
+                linestyle='--')
     
-    # Add confidence ribbons 
+    # Plot median trajectories for secondary resources if provided
+    if observed_secondary_resources is not None:
+        for i in range(observed_secondary_resources.shape[1]):
+            ax.plot(times,
+                    observed_secondary_resources[:, i],
+                    label=f'Secondary resource {i+1}',
+                    linewidth=2,
+                    linestyle=':')
+    
+    # Add confidence ribbons for species
     for i in range(observed_species.shape[1]):
-        ax.fill_between(times, species_lower[:, i], species_upper[:, i], 
-                       alpha=0.2, color=plt.cm.tab10(i))
+        ax.fill_between(times, species_lower[:, i], species_upper[:, i],
+                        alpha=0.2, color=plt.cm.tab10(i))
     
+    # Add confidence ribbons for resources
     for i in range(observed_resources.shape[1]):
-        ax.fill_between(times, resource_lower[:, i], resource_upper[:, i], 
-                       alpha=0.2, color=plt.cm.tab10(i + observed_species.shape[1]))
+        ax.fill_between(times,
+                        resource_lower[:, i],
+                        resource_upper[:, i],
+                        alpha=0.2,
+                        color=plt.cm.tab10(i + observed_species.shape[1]))
     
+    # Add confidence ribbons for secondary resources if provided
+    if observed_secondary_resources is not None:
+        for i in range(observed_secondary_resources.shape[1]):
+            color_idx = observed_species.shape[1] + observed_resources.shape[1] + i
+            ax.fill_between(times,
+                            secondary_lower[:, i],
+                            secondary_upper[:, i],
+                            alpha=0.2,
+                            color=plt.cm.tab10(color_idx))
+    
+    # Overlay true data if filename provided
     if filename:
         true_data = pd.read_csv(filename)
         true_times = true_data['time'].values
         
+        # Plot true species data
         for i in range(observed_species.shape[1]):
             col_name = f'species_{i+1}'
             if col_name in true_data.columns:
-                ax.scatter(true_times, true_data[col_name], 
-                          marker='o', s=30, color=plt.cm.tab10(i), label=f'True {col_name}')
+                ax.scatter(
+                    true_times,
+                    true_data[col_name],
+                    marker='o',
+                    s=30,
+                    color=plt.cm.tab10(i),
+                    label=f'True {col_name}')
         
+        # Plot true resource data
         for i in range(observed_resources.shape[1]):
             col_name = f'resource_{i+1}'
             if col_name in true_data.columns:
-                ax.scatter(true_times, true_data[col_name], 
-                          marker='s', s=30, color=plt.cm.tab10(i + observed_species.shape[1]), 
-                          label=f'True {col_name}')
+                ax.scatter(
+                    true_times,
+                    true_data[col_name],
+                    marker='s',
+                    s=30,
+                    color=plt.cm.tab10(i + observed_species.shape[1]),
+                    label=f'True {col_name}')
+        
+        # Plot true secondary resource data if secondary resources exist
+        if observed_secondary_resources is not None:
+            for i in range(observed_secondary_resources.shape[1]):
+                col_name = f'secondary_resource_{i+1}'
+                if col_name in true_data.columns:
+                    color_idx = observed_species.shape[1] + observed_resources.shape[1] + i
+                    ax.scatter(
+                        true_times,
+                        true_data[col_name],
+                        marker='^',
+                        s=30,
+                        color=plt.cm.tab10(color_idx),
+                        label=f'True {col_name}')
     
     ax.set_xlabel('Time', fontsize=14)
     ax.set_ylabel('Concentration', fontsize=14)
-    ax.set_title('Consumer-Resource Model Dynamics with 95% Credible Intervals', fontsize=16)
+    ax.set_title(
+        'Consumer-Resource Model Dynamics with 95% Credible Intervals',
+        fontsize=16)
     ax.legend(loc='best', fontsize=12)
     ax.grid(True, alpha=0.3)
-    
     plt.tight_layout()
+    
     if filename:
         plt.savefig(f"{filename.split('.')[0]}_with_intervals.png", dpi=300)
     plt.show()
+    
+    return fig, ax
 
 
 def plot_gMLV(yobs, sobs, timepoints):

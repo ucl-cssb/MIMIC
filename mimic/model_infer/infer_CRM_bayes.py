@@ -13,12 +13,152 @@ from typing import Optional, Union, List, Dict, Any
 import pymc as pm
 from pymc.ode import DifferentialEquation
 
-from scipy import stats
+from scipy import stats 
+from scipy.stats import gaussian_kde
 from scipy.integrate import odeint
 
 from mimic.utilities import *
 from mimic.model_simulate.sim_CRM import *
 from mimic.model_infer.base_infer import BaseInfer
+
+
+def get_data(input_data):
+    # Read the CSV file
+    d = pd.read_csv(input_data)
+
+    # Adjust for data size and number of species as necessary
+    # Take only time course up to t=400
+    X1_bar = d.iloc[0:38, 1:5].mean(axis=1)
+
+    # Calculate the mean of the second species
+    X2_bar = d.iloc[0:38, 5:9].mean(axis=1)
+
+    # Combine the first column with the calculated means
+    obs = pd.DataFrame({
+        'time': d.iloc[0:38, 0],
+        'X1_bar': X1_bar,
+        'X2_bar': X2_bar
+    })
+
+    # Replace negative values with 0
+    obs[obs < 0] = 0
+
+    return obs
+
+
+def get_data_m(input_data):
+    # Read the CSV file
+    d = pd.read_csv(input_data)
+
+    # Adjust for data size and number of species as necessary
+    # Take only time course up to t=400
+    X1_bar = d.iloc[0:38, 1:5].mean(axis=1)
+
+    # Combine the first column with the calculated means
+    obs = pd.DataFrame({
+        'time': d.iloc[0:38, 0],
+        'X1_bar': X1_bar,
+    })
+
+    # Replace negative values with 0
+    obs[obs < 0] = 0
+
+    return obs
+
+
+def kl_divergence_kde(posterior_samples, prior_samples, n_points=1000):
+    """
+    Compute KL divergence between posterior and prior using KDE
+    """
+    post_flat = posterior_samples.flatten()
+    prior_flat = prior_samples.flatten()
+    
+    kde_post = gaussian_kde(post_flat)
+    kde_prior = gaussian_kde(prior_flat)
+    
+    x_min = min(post_flat.min(), prior_flat.min())
+    x_max = max(post_flat.max(), prior_flat.max())
+    x_grid = np.linspace(x_min, x_max, n_points)
+    
+    p_post = kde_post(x_grid)
+    p_prior = kde_prior(x_grid)
+    
+    p_post = np.maximum(p_post, 1e-10)
+    p_prior = np.maximum(p_prior, 1e-10)
+    
+    p_post = p_post / np.trapz(p_post, x_grid)
+    p_prior = p_prior / np.trapz(p_prior, x_grid)
+    
+    kl = np.trapz(p_post * np.log(p_post / p_prior), x_grid)
+    
+    return kl
+
+
+def compute_kl_for_parameter(param_name, idata, idata_prior):
+    """
+    Compute KL divergence for a parameter, handling all dimensions
+    Returns a dictionary with detailed results
+    """
+    if param_name not in idata.posterior.data_vars:
+        print(f"Warning: {param_name} not found in posterior")
+        return None
+    
+    if param_name not in idata_prior.prior.data_vars:
+        print(f"Warning: {param_name} not found in prior")
+        return None
+    
+    # Extract samples - use .values directly
+    posterior_raw = idata.posterior[param_name].values
+    prior_raw = idata_prior.prior[param_name].values
+    
+    # Flatten chains and draws for posterior (shape: chains, draws, ...)
+    # Reshape to (samples, ...)
+    posterior = posterior_raw.reshape(-1, *posterior_raw.shape[2:])
+    
+    # Squeeze out singleton dimensions (for scalar parameters that have shape (n, 1))
+    posterior = np.squeeze(posterior)
+    prior = np.squeeze(prior_raw)
+    
+    results = {
+        'param_name': param_name,
+        'shape': posterior.shape if posterior.ndim > 0 else (1,),
+        'kl_values': [],
+        'indices': []
+    }
+    
+    # Check if truly scalar (0D or 1D with no other structure)
+    if posterior.ndim == 0 or (posterior.ndim == 1 and len(posterior.shape) == 1):
+        # Scalar parameter
+        kl = kl_divergence_kde(posterior, prior)
+        results['kl_values'] = [kl]
+        results['indices'] = ['scalar']
+        results['is_scalar'] = True
+    else:
+        # Multi-dimensional parameter
+        results['is_scalar'] = False
+        shape = posterior.shape[1:]
+        
+        if len(shape) == 1:
+            # Vector (e.g., tau_hat, w_hat, m_hat, r_hat, K_hat)
+            for i in range(shape[0]):
+                post_i = posterior[:, i]
+                prior_i = prior[:, i]
+                kl = kl_divergence_kde(post_i, prior_i)
+                results['kl_values'].append(kl)
+                results['indices'].append(f'[{i}]')
+        
+        elif len(shape) == 2:
+            # Matrix (e.g., c_hat)
+            for i in range(shape[0]):
+                for j in range(shape[1]):
+                    post_ij = posterior[:, i, j]
+                    prior_ij = prior[:, i, j]
+                    kl = kl_divergence_kde(post_ij, prior_ij)
+                    results['kl_values'].append(kl)
+                    results['indices'].append(f'[{i},{j}]')
+    
+    return results
+
 
 
 def plot_growth_curves(data, ax=None):
@@ -50,8 +190,8 @@ def plot_growth_curves(data, ax=None):
 
 def CRM_inf_func(y, t, p):
     # Unpack parameters from the vector p
-    nsp = p[0].astype("int32")   # Number of resources
-    nr = p[1].astype("int32")   # Number of species
+    nsp = p[0].astype("int32")   # Number of species
+    nr = p[1].astype("int32")   # Number of resources
     # define parameter shape in terms of nsp and nr
     tau = p[2:2 + nsp]  # Species time scales
     w = p[2 + nsp:2 + nsp + nr]  # Resource quality
@@ -81,8 +221,7 @@ def CRM_inf_func(y, t, p):
 
     # Resource consumption equation (dR)
     consumption_term = at.dot(N_safe, c)  # Matrix multiplication as tensor
-    dR = (1 / (r * K)) * (K - R_safe) * R_safe - \
-        consumption_term * R_safe  # Resource consumption equation
+    dR = (r / K) * (K - R_safe) * R_safe - consumption_term * R_safe  # Resource consumption equation
 
     # If species population or resource concentration is smaller than eps *and* decreasing,
     # then set rate of change to zero to prevent negative values in the next step
@@ -98,6 +237,133 @@ def CRM_inf_func(y, t, p):
     derivatives = at.concatenate([dN_flat, dR_flat])  # Concatenate species and resource derivatives
 
     # Return the derivatives for both species and resources as a single array
+    return derivatives
+
+def CRM_inf_func_NonRep(y, t, p):
+    # Unpack parameters from the vector p
+    nsp = p[0].astype("int32")   # Number of species
+    nr = p[1].astype("int32")   # Number of resources
+    # define parameter shape in terms of nsp and nr
+    tau = p[2:2 + nsp]  # Species time scales
+    w = p[2 + nsp:2 + nsp + nr]  # Resource quality
+    # Flattened resource preferences
+    c_flat = p[2 + nsp + nr:2 + nsp + nr + (nsp * nr)]
+    c = c_flat.reshape((nsp, nr))  # Reshape to nsp x nr matrix
+    m = p[2 + nsp + nr + (nsp * nr):2 + (2 * nsp) + nr + (nsp * nr)]  # Mortality rates
+
+    # Separate species (N) and resources (R)
+    N = y[:nsp]  # Species populations
+    R = y[nsp:]  # Resource availability
+
+    # Biologically informed constraint: ensure all values are positive
+    # ie species populations and resource concentrations are positive
+    eps = 1e-8  # Small positive number for numerical stability
+    N_safe = at.maximum(N, eps)
+    R_safe = at.maximum(R, eps)
+
+    # Species growth equation (dN)
+    growth_term = at.dot(c, w * R_safe)  # Matrix multiplication as tensor
+    dN = (N_safe / tau) * (growth_term - m)  # Species growth equation
+
+    # Resource consumption equation (dR)
+    consumption_term = at.dot(N_safe, c)  # Matrix multiplication as tensor
+    dR = - consumption_term * R_safe  # Resource consumption equation with no replenishment
+
+    # If species population or resource concentration is smaller than eps *and* decreasing,
+    # then set rate of change to zero to prevent negative values in the next step
+    dN = at.where((N < eps) & (dN < 0), 0.0, dN)
+    dR = at.where((R < eps) & (dR < 0), 0.0, dR)
+
+    # Flatten array to 1D for concatenation
+    dN_flat = at.flatten(dN)
+    dR_flat = at.flatten(dR)
+
+    # Combine dN and dR into a single 1D array
+    # derivatives = [dN[0], dN[1], dR[0], dR[1]]  # 1D array
+    derivatives = at.concatenate([dN_flat, dR_flat])  # Concatenate species and resource derivatives
+
+    # Return the derivatives for both species and resources as a single array
+    return derivatives
+
+
+
+def CRM_inf_func_CoLim(y, t, p):
+    # Unpack parameters from the vector p
+    nsp = p[0].astype("int32")   # Number of species (I)
+    nr = p[1].astype("int32")    # Number of carbon resources (j)
+    nsec = p[2].astype("int32")  # Number of secondary resources (k), e.g., NH4+
+    
+    # Define parameter shape in terms of nsp, nr, nsec
+    tau = p[3:3 + nsp]  # Species time scales
+    w_carbon = p[3 + nsp:3 + nsp + nr]  # Resource quality for carbon (w_j)
+    w_sec = p[3 + nsp + nr:3 + nsp + nr + nsec]  # Resource quality for secondary (w_k)
+    
+    # Flattened resource preferences (nsp x (nr+nsec) matrix)
+    c_flat = p[3 + nsp + nr + nsec:3 + nsp + nr + nsec + (nsp * (nr + nsec))]
+    c = c_flat.reshape((nsp, nr + nsec))  # Reshape to (i, j+k) matrix
+    
+    m = p[3 + nsp + nr + nsec + (nsp * (nr + nsec)):3 + (2 * nsp) + nr + nsec + (nsp * (nr + nsec))]  # Mortality rates
+    
+    # NH4+ production parameters (nsp x nr matrix, α_ij)
+    alpha_flat = p[3 + (2 * nsp) + nr + nsec + (nsp * (nr + nsec)):3 + (2 * nsp) + nr + nsec + (nsp * (nr + nsec)) + (nsp * nr)]
+    alpha = alpha_flat.reshape((nsp, nr))  # Reshape to (i, j) matrix
+    
+    # Separate species (N) and resources (R and S)
+    N = y[:nsp]  # Species populations
+    R_carbon = y[nsp:nsp + nr]  # Carbon resources (R_j)
+    S_sec = y[nsp + nr:]  # Secondary resources (S_k)
+    
+    # Biologically informed constraint: ensure all values are positive
+    eps = 1e-8
+    N_safe = at.maximum(N, eps)
+    R_carbon_safe = at.maximum(R_carbon, eps)
+    S_sec_safe = at.maximum(S_sec, eps)
+    
+    # Split c matrix into carbon and secondary preferences
+    c_carbon = c[:, :nr]  # c_ij (i, j)
+    c_sec = c[:, nr:]     # c_ik (i, k)
+    
+    # Species growth equation (dN/dt)
+    # Carbon utilization term: Σ_j c_ij * w_j * R_j
+    carbon_term = at.dot(c_carbon, w_carbon * R_carbon_safe)
+    
+    # Nitrogen utilization term: c_ik * w_k * S_k
+    nitrogen_term = at.dot(c_sec, w_sec * S_sec_safe)
+    
+    # Combined species growth: nitrogen limits carbon utilization multiplicatively
+    growth_term = nitrogen_term * carbon_term
+    
+    dN = (N_safe / tau) * (growth_term - m)
+    
+
+    # Carbon resource dynamics (dR_j/dt) - consumption only
+    carbon_consumption_term = at.dot(N_safe, c_carbon)
+    dR_carbon = -carbon_consumption_term * R_carbon_safe
+    
+    # Nitrogen resource dynamics (dS_k/dt) - consumption and production
+    # Consumption: -Σ_i N_i * c_ik * S_k
+    nitrogen_consumption_term = at.dot(N_safe, c_sec)
+    nitrogen_consumption = nitrogen_consumption_term * S_sec_safe
+    
+
+    # Nitrogen production from carbon metabolism: Σ_i Σ_j α_ij * N_i * c_ij * R_j
+    nitrogen_production_term = alpha * N_safe[:, None] * c_carbon * R_carbon_safe[None, :]
+    nitrogen_production = at.sum(nitrogen_production_term)
+    
+    dS_sec = -nitrogen_consumption + nitrogen_production
+    
+    # Prevent negative values
+    dN = at.where((N < eps) & (dN < 0), 0.0, dN)
+    dR_carbon = at.where((R_carbon < eps) & (dR_carbon < 0), 0.0, dR_carbon)
+    dS_sec = at.where((S_sec < eps) & (dS_sec < 0), 0.0, dS_sec)
+    
+    # Flatten and combine
+    dN_flat = at.flatten(dN)
+    dR_carbon_flat = at.flatten(dR_carbon)
+    dS_sec_flat = at.flatten(dS_sec)
+    
+    derivatives = at.concatenate([dN_flat, dR_carbon_flat, dS_sec_flat])
+    
     return derivatives
 
 
@@ -149,6 +415,7 @@ class inferCRMbayes(BaseInfer):
             yobs=None,
             num_species=None,
             num_resources=None,
+            num_secondary_resources=None,
             prior_tau_mean=None,
             prior_tau_sigma=None,
             prior_w_mean=None,
@@ -160,7 +427,11 @@ class inferCRMbayes(BaseInfer):
             prior_r_mean=None,
             prior_r_sigma=None,
             prior_K_mean=None,
-            prior_K_sigma=None):
+            prior_K_sigma=None,
+            prior_alpha_mean=None,
+            prior_alpha_sigma=None,
+            prior_epsilon_mean=None,
+            prior_epsilon_sigma=None):
 
         super().__init__()  # Call base class constructor
 
@@ -169,6 +440,7 @@ class inferCRMbayes(BaseInfer):
 
         self.num_species: Optional[int] = num_species
         self.num_resources: Optional[int] = num_resources
+        self.num_secondary_resources: Optional[int] = num_secondary_resources
 
         # Default values
         self.tau: Optional[Union[int, float]] = None  # species_timescale
@@ -177,6 +449,8 @@ class inferCRMbayes(BaseInfer):
         self.c: Optional[Union[int, float]] = None  # relative_preference
         self.m: Optional[Union[int, float]] = None  # mortality_rate
         self.K: Optional[Union[int, float]] = None  # resource_capacity
+        self.alpha: Optional[Union[int, float]] = None  # NH4+ production rate
+        self.epsilon: Optional[Union[int, float]] = None  # efficiency of resource conversion
 
         # Sampling parameters
         self.draws: Optional[int] = None
@@ -209,6 +483,14 @@ class inferCRMbayes(BaseInfer):
                                           List[Union[int, float]]]] = prior_K_mean
         self.prior_K_sigma: Optional[Union[int, float,
                                            List[Union[int, float]]]] = prior_K_sigma
+        self.prior_alpha_mean: Optional[Union[int, float,
+                                              List[Union[int, float]]]] = prior_alpha_mean
+        self.prior_alpha_sigma: Optional[Union[int, float,
+                                               List[Union[int, float]]]] = prior_alpha_sigma
+        self.prior_epsilon_mean: Optional[Union[int, float,
+                                                List[Union[int, float]]]] = prior_epsilon_mean
+        self.prior_epsilon_sigma: Optional[Union[int, float,
+                                                 List[Union[int, float]]]] = prior_epsilon_sigma
 
         self.parameters: Dict[str,
                               Optional[Union[int,
@@ -216,6 +498,7 @@ class inferCRMbayes(BaseInfer):
                                              np.ndarray,
                                              str]]] = {"num_species": self.num_species,
                                                        "num_resources": self.num_resources,
+                                                       "num_secondary_resources": self.num_secondary_resources,
                                                        "tau": self.tau,
                                                        "w": self.w,
                                                        "c": self.c,
@@ -233,19 +516,26 @@ class inferCRMbayes(BaseInfer):
                                                        "prior_r_mean": self.prior_r_mean,
                                                        "prior_r_sigma": self.prior_r_sigma,
                                                        "prior_K_mean": self.prior_K_mean,
-                                                       "prior_K_sigma": self.prior_K_sigma}
+                                                       "prior_K_sigma": self.prior_K_sigma,
+                                                       "prior_alpha_mean": self.prior_alpha_mean,
+                                                       "prior_alpha_sigma": self.prior_alpha_sigma,
+                                                       "prior_epsilon_mean": self.prior_epsilon_mean,
+                                                       "prior_epsilon_sigma": self.prior_epsilon_sigma}
 
     def set_parameters(self,
                        times: Optional[np.ndarray] = None,
                        yobs: Optional[np.ndarray] = None,
                        num_species: Optional[int] = None,
                        num_resources: Optional[int] = None,
+                       num_secondary_resources: Optional[int] = None,
                        tau: Optional[Union[List[float], np.ndarray]] = None,
                        w: Optional[Union[List[float], np.ndarray]] = None,
                        c: Optional[Union[List[List[float]], np.ndarray]] = None,
                        m: Optional[Union[List[float], np.ndarray]] = None,
                        r: Optional[Union[List[float], np.ndarray]] = None,
                        K: Optional[Union[List[float], np.ndarray]] = None,
+                       alpha: Optional[Union[List[float], np.ndarray]] = None,
+                       epsilon: Optional[Union[List[float], np.ndarray]] = None,
                        prior_tau_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
                        prior_tau_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
                        prior_w_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
@@ -258,6 +548,10 @@ class inferCRMbayes(BaseInfer):
                        prior_r_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
                        prior_K_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
                        prior_K_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_alpha_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_alpha_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_epsilon_mean: Optional[Union[int, float, List[Union[int, float]]]] = None,
+                       prior_epsilon_sigma: Optional[Union[int, float, List[Union[int, float]]]] = None,
                        draws: Optional[int] = None,
                        tune: Optional[int] = None,
                        chains: Optional[int] = None,
@@ -300,6 +594,8 @@ class inferCRMbayes(BaseInfer):
             self.num_species = num_species
         if num_resources is not None:
             self.num_resources = num_resources
+        if num_secondary_resources is not None:
+            self.num_secondary_resources = num_secondary_resources
         if tau is not None:
             self.tau = tau
         if w is not None:
@@ -312,6 +608,10 @@ class inferCRMbayes(BaseInfer):
             self.r = r
         if K is not None:
             self.K = K
+        if alpha is not None:
+            self.alpha = np.asarray(alpha, dtype=np.float64)
+        if epsilon is not None:
+            self.epsilon = np.asarray(epsilon, dtype=np.float64)
 
         # priors
         if prior_tau_mean is not None:
@@ -338,6 +638,14 @@ class inferCRMbayes(BaseInfer):
             self.prior_K_mean = prior_K_mean
         if prior_K_sigma is not None:
             self.prior_K_sigma = prior_K_sigma
+        if prior_alpha_mean is not None:
+            self.prior_alpha_mean = prior_alpha_mean
+        if prior_alpha_sigma is not None:
+            self.prior_alpha_sigma = prior_alpha_sigma
+        if prior_epsilon_mean is not None:
+            self.prior_epsilon_mean = prior_epsilon_mean
+        if prior_epsilon_sigma is not None:
+            self.prior_epsilon_sigma = prior_epsilon_sigma
 
         if draws is not None:
             self.draws = draws
@@ -353,6 +661,7 @@ class inferCRMbayes(BaseInfer):
             "yobs": self.yobs,
             "num_species": self.num_species,
             "num_resources": self.num_resources,
+            "num_secondary_resources": self.num_secondary_resources,
             "tau": self.tau,
             "w": self.w,
             "c": self.c,
@@ -371,6 +680,10 @@ class inferCRMbayes(BaseInfer):
             "prior_r_sigma": self.prior_r_sigma,
             "prior_K_mean": self.prior_K_mean,
             "prior_K_sigma": self.prior_K_sigma,
+            "prior_alpha_mean": self.prior_alpha_mean,
+            "prior_alpha_sigma": self.prior_alpha_sigma,
+            "prior_epsilon_mean": self.prior_epsilon_mean,
+            "prior_epsilon_sigma": self.prior_epsilon_sigma,
             "draws": self.draws,
             "tune": self.tune,
             "chains": self.chains,
@@ -449,9 +762,8 @@ class inferCRMbayes(BaseInfer):
             func=CRM_inf_func,  # The ODE function
             times=times,  # Time points for the solution
             n_states=n_states,  # Total state variables (nsp + nr)
-            n_theta=n_theta,
-            # Total number of parameters (2 + tau, w, c, m, r, K)
-            t0=0  # Initial time
+            n_theta=n_theta,  # Total number of parameters (2 + tau, w, c, m, r, K)
+            t0=times[0]  # Initial time
         )
 
         bayes_model = pm.Model()
@@ -511,6 +823,10 @@ class inferCRMbayes(BaseInfer):
                 K_hat = at.as_tensor_variable(K)
                 print("K_hat is fixed")
 
+
+            y0_species_hat = pm.TruncatedNormal('y0_species', mu=0.05, sigma=0.1, lower=0, shape=(nsp,))
+            print("y0_species is inferred")
+
             # Flatten to read into CRM_inf_func as a single vector
             nsp_tensor = at.as_tensor_variable([nsp])
             nr_tensor = at.as_tensor_variable([nr])
@@ -527,15 +843,16 @@ class inferCRMbayes(BaseInfer):
             # Initial conditions for the ODE
             
             # Initial species and resource populations
-            y0_species = yobs_species_only[0, :]  # Shape: (nsp,)
+            #y0_species = yobs_species_only[0, :]  # Shape: (nsp,)
 
-            # Estimate reasonable resource initial conditions
-            #y0_resources = np.full(nr, 0.05)
-            y0_resources = np.array([0.7, 0.6]) 
+            # Infer species initial conditions, but resource initial conditions are fixed as not observed
+
+            y0_resources = np.array([1,1]) 
+
 
             # Combine them
-            #y0 = np.concatenate([y0_species, y0_resources])  # Shape: (nsp + nr,)
-            y0 = np.full(nsp + nr, 10.0) # alternative: uniform starting concentrations if unknown
+            y0 = at.concatenate([y0_species_hat, at.as_tensor_variable(y0_resources)])  # Shape: (nsp + nr,)
+            #y0 = np.full(nsp + nr, 10.0) # alternative: uniform starting concentrations if unknown
             print(f"Initial conditions (y0): {y0}")
             
 
@@ -543,8 +860,8 @@ class inferCRMbayes(BaseInfer):
             crm_curves = crm_model(y0=y0, theta=theta)
 
             # Define the loglikelihood with observed data
-            #Y = pm.Lognormal( "Y",mu=at.log(crm_curves[:, :nsp]),sigma=sigma, observed=yobs_species_only)
-            Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
+            Y = pm.Lognormal( "Y",mu=at.log(crm_curves[:, :nsp]),sigma=sigma, observed=yobs_species_only)
+            #Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
 
             # For debugging:
             # print if `debug` is set to 'high' or 'low'
@@ -564,9 +881,358 @@ class inferCRMbayes(BaseInfer):
                 print("Shape of crm_curves:", crm_curves.shape.eval())
 
             # Sample the posterior
-            idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores, progressbar=True)
+            idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores, progressbar=True, idata_kwargs={'log_likelihood': True})
+            idata_prior = pm.sample_prior_predictive(samples=5000)
 
-        return idata
+        self.model = bayes_model
+
+        return idata, idata_prior
+
+
+    def run_inference_NonRep_CRM(self) -> None:
+        """
+        This function infers the parameters for the Bayesian CRM model
+
+        Returns:
+            idata: The posterior inference data
+            
+
+        """
+
+        if self.times is None or self.yobs is None:
+            raise ValueError("times, yobs must both be provided.")
+
+        # data = self.data
+        times = self.times
+        yobs = self.yobs
+        num_species = self.num_species
+        num_resources = self.num_resources
+        tau = self.tau
+        w = self.w
+        c = self.c
+        m = self.m
+        prior_tau_mean = self.prior_tau_mean
+        prior_tau_sigma = self.prior_tau_sigma
+        prior_w_mean = self.prior_w_mean
+        prior_w_sigma = self.prior_w_sigma
+        prior_c_mean = self.prior_c_mean
+        prior_c_sigma = self.prior_c_sigma
+        prior_m_mean = self.prior_m_mean
+        prior_m_sigma = self.prior_m_sigma
+        draws = self.draws
+        tune = self.tune
+        chains = self.chains
+        cores = self.cores
+
+        # Print shapes to ensure data is correct
+        print(f"times shape: {times.shape}")
+        print(f"yobs shape: {yobs.shape}")
+        print(f"Number of species: {num_species}")
+        print(f"Number of resources: {num_resources}")
+
+        # Set up initial conditions and parameters
+        nsp = num_species
+        nr = num_resources
+        n_states = nsp + nr
+        n_theta = 2 + (2 * nsp) + (1 * nr) + (nsp * nr)
+
+        yobs_species_only = yobs[:, :nsp]
+
+        # Define the DifferentialEquation model
+        crm_model_NonRep = DifferentialEquation(
+            func=CRM_inf_func_NonRep,  # The ODE function
+            times=times,  # Time points for the solution
+            n_states=n_states,  # Total state variables (nsp + nr)
+            n_theta=n_theta, # Total number of parameters (2 + tau, w, c, m)
+            t0=times[0]  # Initial time
+        )
+
+        bayes_model = pm.Model()
+        with bayes_model:
+            # Priors for unknown model parameters
+
+            sigma = pm.HalfNormal('sigma', sigma=0.1, shape=(1,))  # Same sigma for all responses
+
+            # Conditionally define parameters based on whether priors are provided
+
+            # For tau parameter
+            if prior_tau_mean is not None and prior_tau_sigma is not None:
+                tau_hat = pm.TruncatedNormal('tau_hat', mu=prior_tau_mean, sigma=prior_tau_sigma, lower=0, shape=(nsp,))
+                print("tau_hat is inferred")
+            else:
+                tau_hat = at.as_tensor_variable(tau)
+                print("tau_hat is fixed")
+
+            # For w parameter
+            if prior_w_mean is not None and prior_w_sigma is not None:
+                w_hat = pm.TruncatedNormal('w_hat', mu=prior_w_mean, sigma=prior_w_sigma, lower=0, shape=(nr,))
+                print("w_hat is inferred")
+            else:
+                w_hat = at.as_tensor_variable(w)
+                print("w_hat is fixed")
+
+            # For c parameter
+            if prior_c_mean is not None and prior_c_sigma is not None:
+                c_hat_vals = pm.TruncatedNormal('c_hat_vals', mu=prior_c_mean, sigma=prior_c_sigma, lower=0, shape=(nsp, nr))
+                c_hat = pm.Deterministic('c_hat', c_hat_vals)
+                print("c_hat is inferred")
+            else:
+                c_hat = at.as_tensor_variable(c)
+                print("c_hat is fixed")
+
+            # For m parameter
+            if prior_m_mean is not None and prior_m_sigma is not None:
+                m_hat = pm.TruncatedNormal('m_hat', mu=prior_m_mean, sigma=prior_m_sigma, lower=0, shape=(nsp,))
+                print("m_hat is inferred")
+            else:
+                m_hat = at.as_tensor_variable(m)
+                print("m_hat is fixed")
+
+            y0_species_hat = pm.TruncatedNormal('y0_species', mu=0.05, sigma=0.1, lower=0, upper=0.15, shape=(nsp,))
+            print("y0_species is inferred")
+
+
+            # Flatten to read into CRM_inf_func as a single vector
+            nsp_tensor = at.as_tensor_variable([nsp])
+            nr_tensor = at.as_tensor_variable([nr])
+
+            theta = at.concatenate([nsp_tensor, nr_tensor, tau_hat, w_hat, c_hat.flatten(), m_hat])
+
+
+            # print(f"nsp_tensor: {nsp_tensor.eval()}, nr_tensor: {nr_tensor.eval()}")
+            # print(f"tau_hat: {tau_hat.eval()}, w_hat: {w_hat.eval()}")
+            # print(f"c_hat: {c_hat.eval()}, m_hat: {m_hat.eval()}")
+            # print(f"theta: {theta.eval()}")
+
+            # Initial conditions for the ODE
+            
+            # Initial species and resource populations
+            # y0_species = yobs_species_only[0, :]  # Shape: (nsp,)
+
+            # Estimate reasonable resource initial conditions
+            #y0_resources = np.full(nr, 0.05)
+            y0_resources = np.array([1,1]) 
+
+            # Combine them
+            y0 = at.concatenate([y0_species_hat, at.as_tensor_variable(y0_resources)])  # Shape: (nsp + nr,)
+            #y0 = np.full(nsp + nr, 10.0) # alternative: uniform starting concentrations if unknown
+            print(f"Initial conditions (y0): {y0}")
+            
+
+             # Solve the ODE 
+            crm_curves_NonRep = crm_model_NonRep(y0=y0, theta=theta)
+
+            # eps = 1e-8
+            # crm_curves_NonRep_safe = at.maximum(crm_curves_NonRep[:, :nsp], eps)      
+
+            # Define the loglikelihood with observed data
+            Y = pm.Lognormal( "Y",mu=at.log(crm_curves_NonRep[:, :nsp]),sigma=sigma, observed=yobs_species_only)
+            #Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
+
+            # For debugging:
+            # print if `debug` is set to 'high' or 'low'
+            if self.debug in ["high", "low"]:
+                initial_values = bayes_model.initial_point()
+                print(f"Initial parameter values: {initial_values}")
+                print("Shape of tau_hat:", tau_hat.shape.eval())
+                print("Shape of w_hat:", w_hat.shape.eval())
+                print("Shape of c_hat:", c_hat.shape.eval())
+                print("Shape of m_hat:", m_hat.shape.eval())
+                print("Shape of nr_tensor:", nr_tensor.shape.eval())
+                print("Shape of nsp_tensor:", nsp_tensor.shape.eval())
+                print("Shape of theta:", theta.shape.eval())
+                print("Shape of yobs:", yobs.shape)
+                print("Shape of crm_curves:", crm_curves_NonRep.shape.eval())
+
+            # Sample the posterior
+            idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores, progressbar=True, idata_kwargs={'log_likelihood': True})
+            idata_prior = pm.sample_prior_predictive(samples=5000)
+
+        self.model = bayes_model
+
+        return idata, idata_prior
+    
+
+
+    def run_inference_CoLim_CRM(self) -> None:
+        """
+        This function infers the parameters for the colimitating Bayesian CRM model, where both carbon and nitrogen multiplicatively limit growth.
+
+        Returns:
+            idata: The posterior inference data
+            
+
+        """
+
+        if self.times is None or self.yobs is None:
+            raise ValueError("times, yobs must both be provided.")
+
+        # data = self.data
+        times = self.times
+        yobs = self.yobs
+        num_species = self.num_species
+        num_resources = self.num_resources
+        num_secondary_resources = self.num_secondary_resources
+        tau = self.tau
+        w = self.w
+        c = self.c
+        m = self.m
+        alpha = self.alpha
+        prior_tau_mean = self.prior_tau_mean
+        prior_tau_sigma = self.prior_tau_sigma
+        prior_w_mean = self.prior_w_mean
+        prior_w_sigma = self.prior_w_sigma
+        prior_c_mean = self.prior_c_mean
+        prior_c_sigma = self.prior_c_sigma
+        prior_m_mean = self.prior_m_mean
+        prior_m_sigma = self.prior_m_sigma
+        prior_alpha_mean = self.prior_alpha_mean
+        prior_alpha_sigma = self.prior_alpha_sigma
+        draws = self.draws
+        tune = self.tune
+        chains = self.chains
+        cores = self.cores
+
+        # Print shapes to ensure data is correct
+        print(f"times shape: {times.shape}")
+        print(f"yobs shape: {yobs.shape}")
+        print(f"Number of species: {num_species}")
+        print(f"Number of resources: {num_resources}")
+        print(f"Number of secondary resources: {num_secondary_resources}")
+
+        # Set up initial conditions and parameters
+        nsp = num_species
+        nr = num_resources
+        nsec = num_secondary_resources
+        n_states = nsp + nr + nsec
+        n_theta = 3 + (2 * nsp) + (nsp * (nr + nsec)) + (nr + nsec) + (nsp * nr)
+        yobs_species_only = yobs[:, :nsp]
+
+        # Define the DifferentialEquation model
+        crm_model_CoLim = DifferentialEquation(
+            func=CRM_inf_func_CoLim,  # The ODE function
+            times=times,  # Time points for the solution
+            n_states=n_states,  # Total state variables (nsp + nr + nsec)
+            n_theta=n_theta, # Total number of parameters (2 + tau, w, c, m)
+            t0=times[0]  # Initial time
+        )
+
+        bayes_model = pm.Model()
+        with bayes_model:
+            # Priors for unknown model parameters
+
+            sigma = pm.HalfNormal('sigma', sigma=0.1, shape=(1,))  # Same sigma for all responses
+
+            # Conditionally define parameters based on whether priors are provided
+
+            # For tau parameter
+            if prior_tau_mean is not None and prior_tau_sigma is not None:
+                tau_hat = pm.TruncatedNormal('tau_hat', mu=prior_tau_mean, sigma=prior_tau_sigma, lower=0, shape=(nsp,))
+                print("tau_hat is inferred")
+            else:
+                tau_hat = at.as_tensor_variable(tau)
+                print("tau_hat is fixed")
+
+            # For w parameter
+            if prior_w_mean is not None and prior_w_sigma is not None:
+                w_hat = pm.TruncatedNormal('w_hat', mu=prior_w_mean, sigma=prior_w_sigma, lower=0, shape=(nr + nsec,))
+                print("w_hat is inferred")
+            else:
+                w_hat = at.as_tensor_variable(w)
+                print("w_hat is fixed")
+
+            # For c parameter
+            if prior_c_mean is not None and prior_c_sigma is not None:
+                c_hat_vals = pm.TruncatedNormal('c_hat_vals', mu=prior_c_mean, sigma=prior_c_sigma, lower=0, shape=(nsp, nr + nsec))
+                c_hat = pm.Deterministic('c_hat', c_hat_vals)
+                print("c_hat is inferred")
+            else:
+                c_hat = at.as_tensor_variable(c)
+                print("c_hat is fixed")
+
+            # For m parameter
+            if prior_m_mean is not None and prior_m_sigma is not None:
+                m_hat = pm.TruncatedNormal('m_hat', mu=prior_m_mean, sigma=prior_m_sigma, lower=0, shape=(nsp,))
+                print("m_hat is inferred")
+            else:
+                m_hat = at.as_tensor_variable(m)
+                print("m_hat is fixed")
+
+            # For alpha parameter
+            if prior_alpha_mean is not None and prior_alpha_sigma is not None:
+                alpha_hat = pm.TruncatedNormal('alpha_hat', mu=prior_alpha_mean, sigma=prior_alpha_sigma, lower=0, shape=(nsp, nr))
+                print("alpha_hat is inferred")
+            else:
+                alpha_hat = at.as_tensor_variable(alpha)
+                print("alpha_hat is fixed")
+
+            y0_species_hat = pm.TruncatedNormal('y0_species', mu=0.05, sigma=0.1, lower=0, upper=0.15, shape=(nsp,))
+            print("y0_species is inferred")
+
+
+            # Flatten to read into CRM_inf_func as a single vector
+            nsp_tensor = at.as_tensor_variable([nsp])
+            nr_tensor = at.as_tensor_variable([nr])
+            nsec_tensor = at.as_tensor_variable([nsec])
+
+            theta = at.concatenate([nsp_tensor, nr_tensor, nsec_tensor, tau_hat, w_hat, c_hat.flatten(), m_hat, alpha_hat.flatten()])
+
+
+            # print(f"nsp_tensor: {nsp_tensor.eval()}, nr_tensor: {nr_tensor.eval()}")
+            # print(f"tau_hat: {tau_hat.eval()}, w_hat: {w_hat.eval()}")
+            # print(f"c_hat: {c_hat.eval()}, m_hat: {m_hat.eval()}")
+            # print(f"theta: {theta.eval()}")
+
+            # Initial conditions for the ODE
+            
+            # Initial species and resource populations
+            # y0_species = yobs_species_only[0, :]  # Shape: (nsp,)
+
+            # Estimate reasonable resource initial conditions
+            #y0_resources = np.full(nr, 0.05)
+            y0_resources = np.array([1,1]) 
+            y0_sec_resources = np.array([1])
+
+            # Combine them
+            y0 = at.concatenate([y0_species_hat, at.as_tensor_variable(y0_resources), at.as_tensor_variable(y0_sec_resources)])  # Shape: (nsp + nr + nsec,)
+            #y0 = np.full(nsp + nr, 10.0) # alternative: uniform starting concentrations if unknown
+            print(f"Initial conditions (y0): {y0}")
+            
+
+             # Solve the ODE 
+            crm_curves_CoLim = crm_model_CoLim(y0=y0, theta=theta)
+
+            # eps = 1e-8
+            # crm_curves_NonRep_safe = at.maximum(crm_curves_NonRep[:, :nsp], eps)      
+
+            # Define the loglikelihood with observed data
+            Y = pm.Lognormal( "Y",mu=at.log(crm_curves_CoLim[:, :nsp]),sigma=sigma, observed=yobs_species_only)
+            #Y = pm.Lognormal( "Y",mu=at.log(crm_curves),sigma=sigma, observed=yobs)
+
+            # For debugging:
+            # print if `debug` is set to 'high' or 'low'
+            if self.debug in ["high", "low"]:
+                initial_values = bayes_model.initial_point()
+                print(f"Initial parameter values: {initial_values}")
+                print("Shape of tau_hat:", tau_hat.shape.eval())
+                print("Shape of w_hat:", w_hat.shape.eval())
+                print("Shape of c_hat:", c_hat.shape.eval())
+                print("Shape of m_hat:", m_hat.shape.eval())
+                print("Shape of nr_tensor:", nr_tensor.shape.eval())
+                print("Shape of nsp_tensor:", nsp_tensor.shape.eval())
+                print("Shape of theta:", theta.shape.eval())
+                print("Shape of yobs:", yobs.shape)
+                print("Shape of crm_curves:", crm_curves_CoLim.shape.eval())
+
+            # Sample the posterior
+            idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=cores, progressbar=True, idata_kwargs={'log_likelihood': True})
+            idata_prior = pm.sample_prior_predictive(samples=1000)
+
+        self.model = bayes_model
+
+        return idata, idata_prior
+    
+
 
     def plot_posterior(self, idata, true_params=None):
         """
@@ -775,7 +1441,7 @@ class inferCRMbayes(BaseInfer):
                 ax = axes[i, j]
                 
                 if i == j:  # Diagonal - smooth density curves with mean lines
-                    from scipy.stats import gaussian_kde
+                    
 
                     # Add prior curve  
                     prior_mean = self.add_prior_curve(ax, param_names[i], prior_means, prior_sigmas)
@@ -828,9 +1494,9 @@ class inferCRMbayes(BaseInfer):
                 # Labels and ticks only on edges
                 if i == 0:  # Top row off-diagonal
                     if i != j:  # Only off-diagonal
-                        #ax.set_xlabel(param_names[j], fontsize=10)
-                        #ax.xaxis.set_label_position('top')
-                        #ax.xaxis.set_label_coords(0.5, 1.7)
+                        ax.set_xlabel(param_names[j], fontsize=10)
+                        ax.xaxis.set_label_position('top')
+                        # ax.xaxis.set_label_coords(0.5, 1.7)
                         ax.tick_params(axis='x', which='major', labelsize=8, labeltop=True, top=True, labelbottom=False, bottom=False)
                         plt.setp(ax.get_xticklabels(), rotation=45, ha='left')
                 else:
@@ -838,9 +1504,9 @@ class inferCRMbayes(BaseInfer):
 
 
                 if j == n_params - 1:  # Right column  
-                    #ax.set_ylabel(param_names[i], fontsize=10)
-                    #ax.yaxis.set_label_position('right')
-                    #ax.yaxis.set_label_coords(0.5, 1.7)
+                    ax.set_ylabel(param_names[i], fontsize=10)
+                    ax.yaxis.set_label_position('right')
+                    # ax.yaxis.set_label_coords(0.5, 1.7)
                     ax.tick_params(axis='y', which='major', labelsize=8, labelright=True, right=True, labelleft=False, left=False)
                 else:
                     ax.tick_params(axis='y', which='major', labelright=False, right=False, labelleft=False, left=False)
